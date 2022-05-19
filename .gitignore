@@ -1,3 +1,4 @@
 /build
 /elm-stuff
 .vscode
+.DS_Store
