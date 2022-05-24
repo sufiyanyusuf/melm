@@ -1,4 +1,4 @@
-module UI.Views exposing (..)
+module UI.Pages exposing (..)
 
 import Element exposing (..)
 

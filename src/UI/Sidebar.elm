@@ -4,8 +4,8 @@ import Element exposing (..)
 import Element.Background as Background
 import Element.Border exposing (rounded)
 import Element.Events
+import UI.Pages as Views exposing (Page)
 import UI.Styles
-import UI.Views as Views exposing (Page)
 
 
 
@@ -30,11 +30,11 @@ sidebarView currentPage =
         ]
         [ sidebarListItemView Views.Indexes (currentPage == Views.Indexes)
         , sidebarListItemView Views.Documents (currentPage == Views.Documents)
-        , sidebarListItemView Views.Settings (currentPage == Views.Settings)
         , sidebarListItemView Views.Search (currentPage == Views.Search)
         , sidebarListItemView Views.Stats (currentPage == Views.Stats)
         , sidebarListItemView Views.Keys (currentPage == Views.Keys)
         , sidebarListItemView Views.Tasks (currentPage == Views.Tasks)
+        , sidebarListItemView Views.Settings (currentPage == Views.Settings)
         ]
 
 

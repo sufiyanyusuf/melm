@@ -1,6 +1,7 @@
 module UI.PageView exposing (..)
 
 import Element exposing (..)
+import UI.Pages as Views exposing (Page)
 import UI.Pages.Documents as DocumentsView
 import UI.Pages.Indexes as IndexesView
 import UI.Pages.Keys as KeysView
@@ -8,7 +9,6 @@ import UI.Pages.Search as SearchView
 import UI.Pages.Settings as SettingsView
 import UI.Pages.Stats as StatsView
 import UI.Pages.Tasks as TasksView
-import UI.Views as Views exposing (Page)
 
 
 

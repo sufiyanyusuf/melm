@@ -1,13 +1,15 @@
 module Main exposing (..)
 
-import Api exposing (..)
+import Api.Routes.Main exposing (..)
 import Browser
 import Element exposing (..)
 import Html exposing (Html)
-import UI.PageView as PageView
+import UI.Elements
+import UI.PageView as PageView exposing (Msg(..))
+import UI.Pages as Views exposing (Page(..))
+import UI.Pages.Settings exposing (..)
 import UI.Sidebar as Sidebar
 import UI.Styles exposing (..)
-import UI.Views as Views
 
 
 
@@ -28,7 +30,7 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     let
         model =
-            { selectedPage = Views.Indexes }
+            { selectedPage = Views.Indexes, token = Nothing, savedToken = Nothing }
     in
     ( model, Cmd.none )
 
@@ -38,7 +40,7 @@ init _ =
 
 
 type alias Model =
-    { selectedPage : Views.Page }
+    { selectedPage : Views.Page, token : Maybe String, savedToken : Maybe String }
 
 
 
@@ -66,8 +68,50 @@ update msg model =
         SidebarMsg sidebarMsg ->
             handleSidebarSelection model sidebarMsg
 
-        PageViewMsg _ ->
+        PageViewMsg pageViewMsg ->
+            handlePageViewMessage model pageViewMsg
+
+
+handlePageViewMessage : Model -> PageView.Msg -> ( Model, Cmd Msg )
+handlePageViewMessage model pageViewMsg =
+    case pageViewMsg of
+        PageView.SettingsViewMsg m ->
+            handleSettingsViewMsg model m
+
+        PageView.IndexesViewMsg _ ->
+            Debug.todo "branch 'IndexesViewMsg _' not implemented"
+
+        PageView.SearchViewMsg _ ->
+            Debug.todo "branch 'SearchViewMsg _' not implemented"
+
+        PageView.StatsViewMsg _ ->
+            Debug.todo "branch 'StatsViewMsg _' not implemented"
+
+        PageView.DocumentsViewMsg _ ->
+            Debug.todo "branch 'DocumentsViewMsg _' not implemented"
+
+        PageView.KeysViewMsg _ ->
+            Debug.todo "branch 'KeysViewMsg _' not implemented"
+
+        PageView.TasksViewMsg _ ->
+            Debug.todo "branch 'TasksViewMsg _' not implemented"
+
+
+handleSettingsViewMsg : Model -> UI.Pages.Settings.Msg -> ( Model, Cmd Msg )
+handleSettingsViewMsg model msg =
+    case msg of
+        X ->
             ( model, Cmd.none )
+
+        KeyValueChanged t ->
+            ( { model | token = Just t }, Cmd.none )
+
+        SaveKeyValue ->
+            ( { model | savedToken = model.token }, Cmd.none )
+
+
+
+-- ( { model | token = Just t }, Cmd.none )
 
 
 handleSidebarSelection : Model -> Sidebar.Msg -> ( Model, Cmd Msg )

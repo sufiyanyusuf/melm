@@ -1,8 +1,10 @@
 module UI.Pages.Indexes exposing (..)
 
 import Element exposing (..)
+import Element.Background as Background
+import Element.Input as Input
+import UI.Pages as Views exposing (Page)
 import UI.Styles
-import UI.Views as Views exposing (Page)
 
 
 type Msg
@@ -11,6 +13,19 @@ type Msg
 
 view : Element Msg
 view =
-    el
-        (UI.Styles.getTypographicStyleFor UI.Styles.H1)
-        (text (Views.pageTitle Views.Indexes))
+    Element.column
+        [ width fill
+        , height fill
+        , scrollbarY
+        ]
+        [ el
+            (UI.Styles.getTypographicStyleFor UI.Styles.H1)
+            (text (Views.pageTitle Views.Indexes))
+        , Input.button
+            [ Background.color UI.Styles.color.lightGrey
+            , padding 20
+            ]
+            { onPress = Just X
+            , label = text "My Button"
+            }
+        ]

@@ -1,8 +1,8 @@
 module UI.Pages.Documents exposing (..)
 
 import Element exposing (..)
+import UI.Pages as Views exposing (Page)
 import UI.Styles
-import UI.Views as Views exposing (Page)
 
 
 type Msg

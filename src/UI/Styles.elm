@@ -11,6 +11,13 @@ type Typography
     | Body
 
 
+type Size
+    = SM
+    | MD
+    | LG
+    | XL
+
+
 color : { blue : Color, darkCharcoal : Color, lightBlue : Color, lightGrey : Color, white : Color }
 color =
     { blue = rgb255 0x72 0x9F 0xCF
@@ -25,7 +32,7 @@ getTypographicStyleFor : Typography -> List (Element.Attr () msg)
 getTypographicStyleFor style =
     case style of
         H1 ->
-            [ Font.size 48
+            [ Font.size 40
             , Font.bold
             , Font.family
                 [ Font.typeface "System-UI"
