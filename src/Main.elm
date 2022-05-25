@@ -5,8 +5,8 @@ import Browser
 import Element exposing (..)
 import Html exposing (Html)
 import UI.PageView as PageView exposing (Msg(..))
+import UI.PageViews.Settings exposing (Msg(..))
 import UI.Pages as Views exposing (Page(..))
-import UI.Pages.Settings exposing (Msg(..))
 import UI.Sidebar as Sidebar
 import UI.Styles exposing (..)
 
@@ -78,6 +78,33 @@ update msg model =
         PageViewMsg pageViewMsg ->
             handlePageViewMessage model pageViewMsg
 
+        ApiRequest r ->
+            handleApiRequest model r
+
+
+
+-- UPDATE HANDLERS
+
+
+handleApiRequest : Model -> Api.Routes.Main.Msg -> ( Model, Cmd Msg )
+handleApiRequest model apiResponse =
+    case apiResponse of
+        HandleListResponse r ->
+            case r of
+                Ok payload ->
+                    ( model, Cmd.none )
+
+                Err _ ->
+                    ( model, Cmd.none )
+
+        HandleShowResponse r ->
+            case r of
+                Ok payload ->
+                    ( model, Cmd.none )
+
+                Err _ ->
+                    ( model, Cmd.none )
+
 
 handlePageViewMessage : Model -> PageView.Msg -> ( Model, Cmd Msg )
 handlePageViewMessage model pageViewMsg =
@@ -104,7 +131,7 @@ handlePageViewMessage model pageViewMsg =
             Debug.todo "branch 'TasksViewMsg _' not implemented"
 
 
-handleSettingsViewMsg : Model -> UI.Pages.Settings.Msg -> ( Model, Cmd Msg )
+handleSettingsViewMsg : Model -> UI.PageViews.Settings.Msg -> ( Model, Cmd Msg )
 handleSettingsViewMsg model msg =
     case msg of
         X ->
@@ -143,12 +170,37 @@ handleSidebarSelection model sidebarMsg =
                 Sidebar.SelectPage p ->
                     p
     in
-    ( { model | selectedPage = selectedPage }, Cmd.none )
+    case sidebarMsg of
+        Sidebar.SelectPage p ->
+            case p of
+                Indexes ->
+                    ( { model | selectedPage = selectedPage }
+                    , Api.Routes.Main.buildRequest
+                        (Api.Routes.Main.buildPayload (List indexesRouteResponseListDecoder))
+                        (Maybe.withDefault
+                            ""
+                            model.savedToken
+                        )
+                        |> Cmd.map ApiRequest
+                    )
 
+                Settings _ ->
+                    ( { model | selectedPage = selectedPage }, Cmd.none )
 
-updateSidebarSelection : Sidebar.Model -> Page -> Sidebar.Model
-updateSidebarSelection model page =
-    { model | selectedPage = page }
+                Search ->
+                    ( { model | selectedPage = selectedPage }, Cmd.none )
+
+                Stats ->
+                    ( { model | selectedPage = selectedPage }, Cmd.none )
+
+                Documents ->
+                    ( { model | selectedPage = selectedPage }, Cmd.none )
+
+                Keys ->
+                    ( { model | selectedPage = selectedPage }, Cmd.none )
+
+                Tasks ->
+                    ( { model | selectedPage = selectedPage }, Cmd.none )
 
 
 
@@ -158,6 +210,7 @@ updateSidebarSelection model page =
 type Msg
     = SidebarMsg Sidebar.Msg
     | PageViewMsg PageView.Msg
+    | ApiRequest Api.Routes.Main.Msg
 
 
 
@@ -180,9 +233,13 @@ getSidebarViewModel model =
     }
 
 
-getSettingsViewModel : Model -> UI.Pages.Settings.Model
+getSettingsViewModel : Model -> UI.PageViews.Settings.Model
 getSettingsViewModel model =
     { tokenValue = Maybe.withDefault "" model.token, title = "Settings" }
+
+
+
+-- VIEW MODEL SETTERS
 
 
 updateSettingsViewModel : List Page -> Page -> List Page

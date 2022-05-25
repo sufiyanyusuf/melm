@@ -1,4 +1,4 @@
-module UI.Pages.Search exposing (..)
+module UI.PageViews.Tasks exposing (..)
 
 import Element exposing (..)
 import UI.Pages as Views exposing (Page)
@@ -13,4 +13,4 @@ view : Element Msg
 view =
     el
         (UI.Styles.getTypographicStyleFor UI.Styles.H1)
-        (text "(Views.pageTitle Views.Search)")
+        (text "(Views.pageTitle Views.Tasks)")

@@ -1,4 +1,4 @@
-module UI.Pages.Stats exposing (..)
+module UI.PageViews.Stats exposing (..)
 
 import Element exposing (..)
 import UI.Pages as Views exposing (Page)

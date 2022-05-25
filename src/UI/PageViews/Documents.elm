@@ -1,4 +1,4 @@
-module UI.Pages.Tasks exposing (..)
+module UI.PageViews.Documents exposing (..)
 
 import Element exposing (..)
 import UI.Pages as Views exposing (Page)
@@ -13,4 +13,4 @@ view : Element Msg
 view =
     el
         (UI.Styles.getTypographicStyleFor UI.Styles.H1)
-        (text "(Views.pageTitle Views.Tasks)")
+        (text "(Views.pageTitle Views.Documents)")

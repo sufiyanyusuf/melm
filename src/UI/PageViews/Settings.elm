@@ -1,4 +1,4 @@
-module UI.Pages.Settings exposing (..)
+module UI.PageViews.Settings exposing (..)
 
 import Element exposing (..)
 import UI.Elements as Elements exposing (button, textfield)

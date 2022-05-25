@@ -1,7 +1,7 @@
 module UI.Pages exposing (..)
 
 import Element exposing (..)
-import UI.Pages.Settings as Settings
+import UI.PageViews.Settings as Settings
 
 
 type Page

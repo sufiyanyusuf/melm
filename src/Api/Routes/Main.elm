@@ -40,32 +40,32 @@ type alias IndexesRouteResponseListItem =
 -- Builders
 
 
-buildEffect : Payload -> String -> Cmd Msg
-buildEffect p t =
+buildRequest : Payload -> String -> Cmd Msg
+buildRequest payload token =
     let
         r =
-            p.route
+            payload.route
     in
     case r of
         List d ->
             Http.request
-                { method = getRequestMethodTitle p.method
-                , headers = headers t
-                , url = p.endpoint
-                , body = p.body
+                { method = getRequestMethodTitle payload.method
+                , headers = headers token
+                , url = payload.endpoint
+                , body = payload.body
                 , expect = Http.expectJson HandleListResponse d
-                , timeout = Just 20.0
+                , timeout = Nothing
                 , tracker = Nothing
                 }
 
         Show _ d ->
             Http.request
-                { method = getRequestMethodTitle p.method
-                , headers = headers t
-                , url = p.endpoint
-                , body = p.body
+                { method = getRequestMethodTitle payload.method
+                , headers = headers token
+                , url = payload.endpoint
+                , body = payload.body
                 , expect = Http.expectJson HandleShowResponse d
-                , timeout = Just 20.0
+                , timeout = Nothing
                 , tracker = Nothing
                 }
 

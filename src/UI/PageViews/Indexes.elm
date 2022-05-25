@@ -1,4 +1,4 @@
-module UI.Pages.Indexes exposing (..)
+module UI.PageViews.Indexes exposing (..)
 
 import Element exposing (..)
 import Element.Background as Background

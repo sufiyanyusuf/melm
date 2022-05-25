@@ -1,14 +1,14 @@
 module UI.PageView exposing (..)
 
 import Element exposing (..)
+import UI.PageViews.Documents as DocumentsView
+import UI.PageViews.Indexes as IndexesView
+import UI.PageViews.Keys as KeysView
+import UI.PageViews.Search as SearchView
+import UI.PageViews.Settings as SettingsView
+import UI.PageViews.Stats as StatsView
+import UI.PageViews.Tasks as TasksView
 import UI.Pages as Views exposing (Page)
-import UI.Pages.Documents as DocumentsView
-import UI.Pages.Indexes as IndexesView
-import UI.Pages.Keys as KeysView
-import UI.Pages.Search as SearchView
-import UI.Pages.Settings as SettingsView
-import UI.Pages.Stats as StatsView
-import UI.Pages.Tasks as TasksView
 
 
 
