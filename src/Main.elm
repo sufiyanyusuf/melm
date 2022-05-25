@@ -111,14 +111,28 @@ handleSettingsViewMsg model msg =
             ( model, Cmd.none )
 
         KeyValueChanged t ->
-            ( { model | token = Just t }, Cmd.none )
+            let
+                updatedTokenValue =
+                    { model | token = Just t }
+            in
+            let
+                updatedSettingsPage =
+                    Settings (getSettingsViewModel updatedTokenValue)
+            in
+            let
+                updatedModelValue =
+                    { model
+                        | token = updatedTokenValue.token
+                        , pages = updateSettingsViewModel model.pages updatedSettingsPage
+                        , selectedPage = updatedSettingsPage
+                    }
+            in
+            ( updatedModelValue
+            , Cmd.none
+            )
 
         SaveKeyValue ->
             ( { model | savedToken = model.token }, Cmd.none )
-
-
-
--- ( { model | token = Just t }, Cmd.none )
 
 
 handleSidebarSelection : Model -> Sidebar.Msg -> ( Model, Cmd Msg )
@@ -164,3 +178,22 @@ getSidebarViewModel model =
     { pages = model.pages
     , selectedPage = model.selectedPage
     }
+
+
+getSettingsViewModel : Model -> UI.Pages.Settings.Model
+getSettingsViewModel model =
+    { tokenValue = Maybe.withDefault "" model.token, title = "Settings" }
+
+
+updateSettingsViewModel : List Page -> Page -> List Page
+updateSettingsViewModel pages updatedPage =
+    pages
+        |> List.map
+            (\p ->
+                case p of
+                    Settings _ ->
+                        updatedPage
+
+                    _ ->
+                        p
+            )

@@ -10563,7 +10563,7 @@ var $author$project$UI$Pages$Settings = function (a) {
 };
 var $author$project$UI$Pages$Stats = {$: 'Stats'};
 var $author$project$UI$Pages$Tasks = {$: 'Tasks'};
-var $author$project$UI$Pages$Settings$init = {title: 'Settings', token: ''};
+var $author$project$UI$Pages$Settings$init = {title: 'Settings', tokenValue: ''};
 var $author$project$UI$Pages$init = _List_fromArray(
 	[
 		$author$project$UI$Pages$Indexes,
@@ -10582,6 +10582,25 @@ var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $author$project$Main$subscriptions = function (_v0) {
 	return $elm$core$Platform$Sub$batch(_List_Nil);
 };
+var $author$project$Main$getSettingsViewModel = function (model) {
+	return {
+		title: 'Settings',
+		tokenValue: A2($elm$core$Maybe$withDefault, '', model.token)
+	};
+};
+var $author$project$Main$updateSettingsViewModel = F2(
+	function (pages, updatedPage) {
+		return A2(
+			$elm$core$List$map,
+			function (p) {
+				if (p.$ === 'Settings') {
+					return updatedPage;
+				} else {
+					return p;
+				}
+			},
+			pages);
+	});
 var $author$project$Main$handleSettingsViewMsg = F2(
 	function (model, msg) {
 		switch (msg.$) {
@@ -10589,13 +10608,21 @@ var $author$project$Main$handleSettingsViewMsg = F2(
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'KeyValueChanged':
 				var t = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							token: $elm$core$Maybe$Just(t)
-						}),
-					$elm$core$Platform$Cmd$none);
+				var updatedTokenValue = _Utils_update(
+					model,
+					{
+						token: $elm$core$Maybe$Just(t)
+					});
+				var updatedSettingsPage = $author$project$UI$Pages$Settings(
+					$author$project$Main$getSettingsViewModel(updatedTokenValue));
+				var updatedModelValue = _Utils_update(
+					model,
+					{
+						pages: A2($author$project$Main$updateSettingsViewModel, model.pages, updatedSettingsPage),
+						selectedPage: updatedSettingsPage,
+						token: updatedTokenValue.token
+					});
+				return _Utils_Tuple2(updatedModelValue, $elm$core$Platform$Cmd$none);
 			default:
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -18304,7 +18331,7 @@ var $author$project$UI$Pages$Settings$view = function (model) {
 				$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H1),
 				$mdgriffith$elm_ui$Element$text(model.title)),
 				$author$project$UI$Elements$spacer($author$project$UI$Styles$XL),
-				A2($author$project$UI$Elements$textfield, model.token, $author$project$UI$Pages$Settings$KeyValueChanged),
+				A2($author$project$UI$Elements$textfield, model.tokenValue, $author$project$UI$Pages$Settings$KeyValueChanged),
 				$author$project$UI$Elements$spacer($author$project$UI$Styles$SM),
 				A2($author$project$UI$Elements$button, 'Save Token', $author$project$UI$Pages$Settings$SaveKeyValue)
 			]));
@@ -18384,4 +18411,4 @@ var $author$project$Main$view = function (model) {
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"UI.Pages.Settings.Model":{"args":[],"type":"{ token : String.String, title : String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.Pages.Indexes.Msg"],"SettingsViewMsg":["UI.Pages.Settings.Msg"],"SearchViewMsg":["UI.Pages.Search.Msg"],"StatsViewMsg":["UI.Pages.Stats.Msg"],"DocumentsViewMsg":["UI.Pages.Documents.Msg"],"KeysViewMsg":["UI.Pages.Keys.Msg"],"TasksViewMsg":["UI.Pages.Tasks.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"]}},"UI.Pages.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Keys.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Search.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Settings.Msg":{"args":[],"tags":{"X":[],"KeyValueChanged":["String.String"],"SaveKeyValue":[]}},"UI.Pages.Stats.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Tasks.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Page":{"args":[],"tags":{"Indexes":[],"Settings":["UI.Pages.Settings.Model"],"Search":[],"Stats":[],"Documents":[],"Keys":[],"Tasks":[]}},"String.String":{"args":[],"tags":{"String":[]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"UI.Pages.Settings.Model":{"args":[],"type":"{ tokenValue : String.String, title : String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.Pages.Indexes.Msg"],"SettingsViewMsg":["UI.Pages.Settings.Msg"],"SearchViewMsg":["UI.Pages.Search.Msg"],"StatsViewMsg":["UI.Pages.Stats.Msg"],"DocumentsViewMsg":["UI.Pages.Documents.Msg"],"KeysViewMsg":["UI.Pages.Keys.Msg"],"TasksViewMsg":["UI.Pages.Tasks.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"]}},"UI.Pages.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Keys.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Search.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Settings.Msg":{"args":[],"tags":{"X":[],"KeyValueChanged":["String.String"],"SaveKeyValue":[]}},"UI.Pages.Stats.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Tasks.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Page":{"args":[],"tags":{"Indexes":[],"Settings":["UI.Pages.Settings.Model"],"Search":[],"Stats":[],"Documents":[],"Keys":[],"Tasks":[]}},"String.String":{"args":[],"tags":{"String":[]}}}}})}});}(this));

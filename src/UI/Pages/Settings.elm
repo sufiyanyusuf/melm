@@ -12,12 +12,12 @@ type Msg
 
 
 type alias Model =
-    { token : String, title : String }
+    { tokenValue : String, title : String }
 
 
 init : Model
 init =
-    { token = "", title = "Settings" }
+    { tokenValue = "", title = "Settings" }
 
 
 view : Model -> Element Msg
@@ -32,7 +32,7 @@ view model =
             (UI.Styles.getTypographicStyleFor UI.Styles.H1)
             (text model.title)
         , Elements.spacer UI.Styles.XL
-        , textfield model.token KeyValueChanged
+        , textfield model.tokenValue KeyValueChanged
         , Elements.spacer UI.Styles.SM
         , button "Save Token" SaveKeyValue
         ]
