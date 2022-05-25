@@ -46,8 +46,8 @@ getCurrentPageView currentPage =
         Views.Indexes ->
             IndexesView.view |> Element.map IndexesViewMsg
 
-        Views.Settings ->
-            SettingsView.view |> Element.map SettingsViewMsg
+        Views.Settings s ->
+            SettingsView.view s |> Element.map SettingsViewMsg
 
         Views.Search ->
             SearchView.view |> Element.map SearchViewMsg

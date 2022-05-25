@@ -1,10 +1,7 @@
 module UI.Pages.Settings exposing (..)
 
 import Element exposing (..)
-import Element.Background as Background
-import Element.Input as Input
 import UI.Elements as Elements exposing (button, textfield)
-import UI.Pages as Views exposing (Page)
 import UI.Styles
 
 
@@ -14,8 +11,17 @@ type Msg
     | SaveKeyValue
 
 
-view : Element Msg
-view =
+type alias Model =
+    { token : String, title : String }
+
+
+init : Model
+init =
+    { token = "", title = "Settings" }
+
+
+view : Model -> Element Msg
+view model =
     Element.column
         [ width fill
         , height fill
@@ -24,9 +30,9 @@ view =
         ]
         [ el
             (UI.Styles.getTypographicStyleFor UI.Styles.H1)
-            (text (Views.pageTitle Views.Settings))
+            (text model.title)
         , Elements.spacer UI.Styles.XL
-        , textfield "hello" KeyValueChanged
+        , textfield model.token KeyValueChanged
         , Elements.spacer UI.Styles.SM
         , button "Save Token" SaveKeyValue
         ]

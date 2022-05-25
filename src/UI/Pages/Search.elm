@@ -13,4 +13,4 @@ view : Element Msg
 view =
     el
         (UI.Styles.getTypographicStyleFor UI.Styles.H1)
-        (text (Views.pageTitle Views.Search))
+        (text "(Views.pageTitle Views.Search)")

@@ -13,4 +13,4 @@ view : Element Msg
 view =
     el
         (UI.Styles.getTypographicStyleFor UI.Styles.H1)
-        (text (Views.pageTitle Views.Documents))
+        (text "(Views.pageTitle Views.Documents)")

@@ -1,11 +1,12 @@
 module UI.Pages exposing (..)
 
 import Element exposing (..)
+import UI.Pages.Settings as Settings
 
 
 type Page
     = Indexes
-    | Settings
+    | Settings Settings.Model
     | Search
     | Stats
     | Documents
@@ -13,26 +14,33 @@ type Page
     | Tasks
 
 
-pageTitle : Page -> String
-pageTitle page =
-    case page of
-        Indexes ->
-            "Indexes"
+init : List Page
+init =
+    [ Indexes
+    , Settings Settings.init
+    , Search
+    , Stats
+    , Documents
+    , Keys
+    , Tasks
+    ]
 
-        Settings ->
-            "Settings"
 
-        Search ->
-            "Search"
 
-        Stats ->
-            "Stats"
-
-        Documents ->
-            "Documents"
-
-        Keys ->
-            "Keys"
-
-        Tasks ->
-            "Tasks"
+-- pageTitle : Page -> String
+-- pageTitle page =
+--     case page of
+--         Indexes ->
+--             "Indexes"
+--         Settings _ ->
+--             "Settings"
+--         Search ->
+--             "Search"
+--         Stats ->
+--             "Stats"
+--         Documents ->
+--             "Documents"
+--         Keys ->
+--             "Keys"
+--         Tasks ->
+--             "Tasks"

@@ -1,10 +1,11 @@
-module UI.Sidebar exposing (Msg(..), sidebarView)
+module UI.Sidebar exposing (Model, Msg(..), sidebarView)
 
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border exposing (rounded)
 import Element.Events
-import UI.Pages as Views exposing (Page)
+import Element.Input exposing (OptionState(..))
+import UI.Pages
 import UI.Styles
 
 
@@ -13,33 +14,42 @@ import UI.Styles
 
 
 type Msg
-    = SelectPage Page
+    = SelectPage UI.Pages.Page
+
+
+
+-- Model
+
+
+type alias Model =
+    { pages : List UI.Pages.Page, selectedPage : UI.Pages.Page }
 
 
 
 -- View
 
 
-sidebarView : Page -> Element Msg
-sidebarView currentPage =
-    Element.column
+sidebarView : Model -> Element Msg
+sidebarView model =
+    Element.table
         [ width (px 240)
         , height fill
         , padding 12
         , scrollbarY
         ]
-        [ sidebarListItemView Views.Indexes (currentPage == Views.Indexes)
-        , sidebarListItemView Views.Documents (currentPage == Views.Documents)
-        , sidebarListItemView Views.Search (currentPage == Views.Search)
-        , sidebarListItemView Views.Stats (currentPage == Views.Stats)
-        , sidebarListItemView Views.Keys (currentPage == Views.Keys)
-        , sidebarListItemView Views.Tasks (currentPage == Views.Tasks)
-        , sidebarListItemView Views.Settings (currentPage == Views.Settings)
-        ]
+        { data = model.pages
+        , columns =
+            [ { header = Element.none
+              , width = fill
+              , view =
+                    \page -> sidebarListItemView (getPageTitle page) (model.selectedPage == page) page
+              }
+            ]
+        }
 
 
-sidebarListItemView : Page -> Bool -> Element Msg
-sidebarListItemView page isSelected =
+sidebarListItemView : String -> Bool -> UI.Pages.Page -> Element Msg
+sidebarListItemView title isSelected page =
     el
         []
         (row
@@ -61,10 +71,35 @@ sidebarListItemView page isSelected =
             [ paragraph []
                 [ el
                     (UI.Styles.getTypographicStyleFor UI.Styles.Body)
-                    (text (Views.pageTitle page))
+                    (text title)
                 ]
             ]
         )
+
+
+getPageTitle : UI.Pages.Page -> String
+getPageTitle page =
+    case page of
+        UI.Pages.Indexes ->
+            "Indexes"
+
+        UI.Pages.Settings _ ->
+            "Settings"
+
+        UI.Pages.Search ->
+            "Search"
+
+        UI.Pages.Stats ->
+            "Stats"
+
+        UI.Pages.Documents ->
+            "Documents"
+
+        UI.Pages.Keys ->
+            "Keys"
+
+        UI.Pages.Tasks ->
+            "Tasks"
 
 
 addIf : Bool -> Attribute msg -> List (Attribute msg)

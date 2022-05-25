@@ -10555,8 +10555,27 @@ var $elm$core$Basics$never = function (_v0) {
 };
 var $elm$browser$Browser$element = _Browser_element;
 var $author$project$UI$Pages$Indexes = {$: 'Indexes'};
+var $author$project$UI$Pages$Documents = {$: 'Documents'};
+var $author$project$UI$Pages$Keys = {$: 'Keys'};
+var $author$project$UI$Pages$Search = {$: 'Search'};
+var $author$project$UI$Pages$Settings = function (a) {
+	return {$: 'Settings', a: a};
+};
+var $author$project$UI$Pages$Stats = {$: 'Stats'};
+var $author$project$UI$Pages$Tasks = {$: 'Tasks'};
+var $author$project$UI$Pages$Settings$init = {title: 'Settings', token: ''};
+var $author$project$UI$Pages$init = _List_fromArray(
+	[
+		$author$project$UI$Pages$Indexes,
+		$author$project$UI$Pages$Settings($author$project$UI$Pages$Settings$init),
+		$author$project$UI$Pages$Search,
+		$author$project$UI$Pages$Stats,
+		$author$project$UI$Pages$Documents,
+		$author$project$UI$Pages$Keys,
+		$author$project$UI$Pages$Tasks
+	]);
 var $author$project$Main$init = function (_v0) {
-	var model = {savedToken: $elm$core$Maybe$Nothing, selectedPage: $author$project$UI$Pages$Indexes, token: $elm$core$Maybe$Nothing};
+	var model = {pages: $author$project$UI$Pages$init, savedToken: $elm$core$Maybe$Nothing, selectedPage: $author$project$UI$Pages$Indexes, token: $elm$core$Maybe$Nothing};
 	return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
@@ -10596,43 +10615,43 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 82, column: 13},
-						end: {line: 82, column: 23}
+						start: {line: 89, column: 13},
+						end: {line: 89, column: 23}
 					})('branch \'IndexesViewMsg _\' not implemented');
 			case 'SearchViewMsg':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 85, column: 13},
-						end: {line: 85, column: 23}
+						start: {line: 92, column: 13},
+						end: {line: 92, column: 23}
 					})('branch \'SearchViewMsg _\' not implemented');
 			case 'StatsViewMsg':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 88, column: 13},
-						end: {line: 88, column: 23}
+						start: {line: 95, column: 13},
+						end: {line: 95, column: 23}
 					})('branch \'StatsViewMsg _\' not implemented');
 			case 'DocumentsViewMsg':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 91, column: 13},
-						end: {line: 91, column: 23}
+						start: {line: 98, column: 13},
+						end: {line: 98, column: 23}
 					})('branch \'DocumentsViewMsg _\' not implemented');
 			case 'KeysViewMsg':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 94, column: 13},
-						end: {line: 94, column: 23}
+						start: {line: 101, column: 13},
+						end: {line: 101, column: 23}
 					})('branch \'KeysViewMsg _\' not implemented');
 			default:
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 97, column: 13},
-						end: {line: 97, column: 23}
+						start: {line: 104, column: 13},
+						end: {line: 104, column: 23}
 					})('branch \'TasksViewMsg _\' not implemented');
 		}
 	});
@@ -10668,6 +10687,9 @@ var $mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
 	return {$: 'Fill', a: a};
 };
 var $mdgriffith$elm_ui$Element$fill = $mdgriffith$elm_ui$Internal$Model$Fill(1);
+var $author$project$Main$getSidebarViewModel = function (model) {
+	return {pages: model.pages, selectedPage: model.selectedPage};
+};
 var $mdgriffith$elm_ui$Internal$Model$Height = function (a) {
 	return {$: 'Height', a: a};
 };
@@ -16390,32 +16412,25 @@ var $mdgriffith$elm_ui$Element$row = F2(
 						attrs))),
 			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
 	});
-var $author$project$UI$Pages$Documents = {$: 'Documents'};
-var $author$project$UI$Pages$Keys = {$: 'Keys'};
-var $author$project$UI$Pages$Search = {$: 'Search'};
-var $author$project$UI$Pages$Settings = {$: 'Settings'};
-var $author$project$UI$Pages$Stats = {$: 'Stats'};
-var $author$project$UI$Pages$Tasks = {$: 'Tasks'};
-var $mdgriffith$elm_ui$Internal$Model$AsColumn = {$: 'AsColumn'};
-var $mdgriffith$elm_ui$Internal$Model$asColumn = $mdgriffith$elm_ui$Internal$Model$AsColumn;
-var $mdgriffith$elm_ui$Element$column = F2(
-	function (attrs, children) {
-		return A4(
-			$mdgriffith$elm_ui$Internal$Model$element,
-			$mdgriffith$elm_ui$Internal$Model$asColumn,
-			$mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				$elm$core$List$cons,
-				$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentTop + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.contentLeft)),
-				A2(
-					$elm$core$List$cons,
-					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
-					A2(
-						$elm$core$List$cons,
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
-						attrs))),
-			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
-	});
+var $author$project$UI$Sidebar$getPageTitle = function (page) {
+	switch (page.$) {
+		case 'Indexes':
+			return 'Indexes';
+		case 'Settings':
+			return 'Settings';
+		case 'Search':
+			return 'Search';
+		case 'Stats':
+			return 'Stats';
+		case 'Documents':
+			return 'Documents';
+		case 'Keys':
+			return 'Keys';
+		default:
+			return 'Tasks';
+	}
+};
+var $mdgriffith$elm_ui$Element$none = $mdgriffith$elm_ui$Internal$Model$Empty;
 var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
 	return {$: 'Px', a: a};
 };
@@ -16710,24 +16725,6 @@ var $mdgriffith$elm_ui$Element$mouseOver = function (decs) {
 			$mdgriffith$elm_ui$Internal$Model$unwrapDecorations(decs)));
 };
 var $mdgriffith$elm_ui$Element$Events$onClick = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Events$onClick);
-var $author$project$UI$Pages$pageTitle = function (page) {
-	switch (page.$) {
-		case 'Indexes':
-			return 'Indexes';
-		case 'Settings':
-			return 'Settings';
-		case 'Search':
-			return 'Search';
-		case 'Stats':
-			return 'Stats';
-		case 'Documents':
-			return 'Documents';
-		case 'Keys':
-			return 'Keys';
-		default:
-			return 'Tasks';
-	}
-};
 var $mdgriffith$elm_ui$Internal$Model$Paragraph = {$: 'Paragraph'};
 var $mdgriffith$elm_ui$Internal$Model$SpacingStyle = F3(
 	function (a, b, c) {
@@ -16782,8 +16779,8 @@ var $mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
 var $mdgriffith$elm_ui$Element$text = function (content) {
 	return $mdgriffith$elm_ui$Internal$Model$Text(content);
 };
-var $author$project$UI$Sidebar$sidebarListItemView = F2(
-	function (page, isSelected) {
+var $author$project$UI$Sidebar$sidebarListItemView = F3(
+	function (title, isSelected, page) {
 		return A2(
 			$mdgriffith$elm_ui$Element$el,
 			_List_Nil,
@@ -16825,14 +16822,237 @@ var $author$project$UI$Sidebar$sidebarListItemView = F2(
 								A2(
 								$mdgriffith$elm_ui$Element$el,
 								$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$Body),
-								$mdgriffith$elm_ui$Element$text(
-									$author$project$UI$Pages$pageTitle(page)))
+								$mdgriffith$elm_ui$Element$text(title))
 							]))
 					])));
 	});
-var $author$project$UI$Sidebar$sidebarView = function (currentPage) {
+var $mdgriffith$elm_ui$Element$InternalColumn = function (a) {
+	return {$: 'InternalColumn', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Model$GridPosition = function (a) {
+	return {$: 'GridPosition', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Model$GridTemplateStyle = function (a) {
+	return {$: 'GridTemplateStyle', a: a};
+};
+var $elm$core$List$all = F2(
+	function (isOkay, list) {
+		return !A2(
+			$elm$core$List$any,
+			A2($elm$core$Basics$composeL, $elm$core$Basics$not, isOkay),
+			list);
+	});
+var $mdgriffith$elm_ui$Internal$Model$AsGrid = {$: 'AsGrid'};
+var $mdgriffith$elm_ui$Internal$Model$asGrid = $mdgriffith$elm_ui$Internal$Model$AsGrid;
+var $mdgriffith$elm_ui$Internal$Model$getSpacing = F2(
+	function (attrs, _default) {
+		return A2(
+			$elm$core$Maybe$withDefault,
+			_default,
+			A3(
+				$elm$core$List$foldr,
+				F2(
+					function (attr, acc) {
+						if (acc.$ === 'Just') {
+							var x = acc.a;
+							return $elm$core$Maybe$Just(x);
+						} else {
+							if ((attr.$ === 'StyleClass') && (attr.b.$ === 'SpacingStyle')) {
+								var _v2 = attr.b;
+								var x = _v2.b;
+								var y = _v2.c;
+								return $elm$core$Maybe$Just(
+									_Utils_Tuple2(x, y));
+							} else {
+								return $elm$core$Maybe$Nothing;
+							}
+						}
+					}),
+				$elm$core$Maybe$Nothing,
+				attrs));
+	});
+var $mdgriffith$elm_ui$Internal$Flag$gridPosition = $mdgriffith$elm_ui$Internal$Flag$flag(35);
+var $mdgriffith$elm_ui$Internal$Flag$gridTemplate = $mdgriffith$elm_ui$Internal$Flag$flag(34);
+var $elm$core$List$repeatHelp = F3(
+	function (result, n, value) {
+		repeatHelp:
+		while (true) {
+			if (n <= 0) {
+				return result;
+			} else {
+				var $temp$result = A2($elm$core$List$cons, value, result),
+					$temp$n = n - 1,
+					$temp$value = value;
+				result = $temp$result;
+				n = $temp$n;
+				value = $temp$value;
+				continue repeatHelp;
+			}
+		}
+	});
+var $elm$core$List$repeat = F2(
+	function (n, value) {
+		return A3($elm$core$List$repeatHelp, _List_Nil, n, value);
+	});
+var $mdgriffith$elm_ui$Element$tableHelper = F2(
+	function (attrs, config) {
+		var onGrid = F3(
+			function (rowLevel, columnLevel, elem) {
+				return A4(
+					$mdgriffith$elm_ui$Internal$Model$element,
+					$mdgriffith$elm_ui$Internal$Model$asEl,
+					$mdgriffith$elm_ui$Internal$Model$div,
+					_List_fromArray(
+						[
+							A2(
+							$mdgriffith$elm_ui$Internal$Model$StyleClass,
+							$mdgriffith$elm_ui$Internal$Flag$gridPosition,
+							$mdgriffith$elm_ui$Internal$Model$GridPosition(
+								{col: columnLevel, height: 1, row: rowLevel, width: 1}))
+						]),
+					$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+						_List_fromArray(
+							[elem])));
+			});
+		var columnWidth = function (col) {
+			if (col.$ === 'InternalIndexedColumn') {
+				var colConfig = col.a;
+				return colConfig.width;
+			} else {
+				var colConfig = col.a;
+				return colConfig.width;
+			}
+		};
+		var columnHeader = function (col) {
+			if (col.$ === 'InternalIndexedColumn') {
+				var colConfig = col.a;
+				return colConfig.header;
+			} else {
+				var colConfig = col.a;
+				return colConfig.header;
+			}
+		};
+		var maybeHeaders = function (headers) {
+			return A2(
+				$elm$core$List$all,
+				$elm$core$Basics$eq($mdgriffith$elm_ui$Internal$Model$Empty),
+				headers) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
+				A2(
+					$elm$core$List$indexedMap,
+					F2(
+						function (col, header) {
+							return A3(onGrid, 1, col + 1, header);
+						}),
+					headers));
+		}(
+			A2($elm$core$List$map, columnHeader, config.columns));
+		var add = F3(
+			function (cell, columnConfig, cursor) {
+				if (columnConfig.$ === 'InternalIndexedColumn') {
+					var col = columnConfig.a;
+					return _Utils_update(
+						cursor,
+						{
+							column: cursor.column + 1,
+							elements: A2(
+								$elm$core$List$cons,
+								A3(
+									onGrid,
+									cursor.row,
+									cursor.column,
+									A2(
+										col.view,
+										_Utils_eq(maybeHeaders, $elm$core$Maybe$Nothing) ? (cursor.row - 1) : (cursor.row - 2),
+										cell)),
+								cursor.elements)
+						});
+				} else {
+					var col = columnConfig.a;
+					return {
+						column: cursor.column + 1,
+						elements: A2(
+							$elm$core$List$cons,
+							A3(
+								onGrid,
+								cursor.row,
+								cursor.column,
+								col.view(cell)),
+							cursor.elements),
+						row: cursor.row
+					};
+				}
+			});
+		var build = F3(
+			function (columns, rowData, cursor) {
+				var newCursor = A3(
+					$elm$core$List$foldl,
+					add(rowData),
+					cursor,
+					columns);
+				return {column: 1, elements: newCursor.elements, row: cursor.row + 1};
+			});
+		var children = A3(
+			$elm$core$List$foldl,
+			build(config.columns),
+			{
+				column: 1,
+				elements: _List_Nil,
+				row: _Utils_eq(maybeHeaders, $elm$core$Maybe$Nothing) ? 1 : 2
+			},
+			config.data);
+		var _v0 = A2(
+			$mdgriffith$elm_ui$Internal$Model$getSpacing,
+			attrs,
+			_Utils_Tuple2(0, 0));
+		var sX = _v0.a;
+		var sY = _v0.b;
+		var template = A2(
+			$mdgriffith$elm_ui$Internal$Model$StyleClass,
+			$mdgriffith$elm_ui$Internal$Flag$gridTemplate,
+			$mdgriffith$elm_ui$Internal$Model$GridTemplateStyle(
+				{
+					columns: A2($elm$core$List$map, columnWidth, config.columns),
+					rows: A2(
+						$elm$core$List$repeat,
+						$elm$core$List$length(config.data),
+						$mdgriffith$elm_ui$Internal$Model$Content),
+					spacing: _Utils_Tuple2(
+						$mdgriffith$elm_ui$Element$px(sX),
+						$mdgriffith$elm_ui$Element$px(sY))
+				}));
+		return A4(
+			$mdgriffith$elm_ui$Internal$Model$element,
+			$mdgriffith$elm_ui$Internal$Model$asGrid,
+			$mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+				A2($elm$core$List$cons, template, attrs)),
+			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+				function () {
+					if (maybeHeaders.$ === 'Nothing') {
+						return children.elements;
+					} else {
+						var renderedHeaders = maybeHeaders.a;
+						return _Utils_ap(
+							renderedHeaders,
+							$elm$core$List$reverse(children.elements));
+					}
+				}()));
+	});
+var $mdgriffith$elm_ui$Element$table = F2(
+	function (attrs, config) {
+		return A2(
+			$mdgriffith$elm_ui$Element$tableHelper,
+			attrs,
+			{
+				columns: A2($elm$core$List$map, $mdgriffith$elm_ui$Element$InternalColumn, config.columns),
+				data: config.data
+			});
+	});
+var $author$project$UI$Sidebar$sidebarView = function (model) {
 	return A2(
-		$mdgriffith$elm_ui$Element$column,
+		$mdgriffith$elm_ui$Element$table,
 		_List_fromArray(
 			[
 				$mdgriffith$elm_ui$Element$width(
@@ -16841,37 +17061,23 @@ var $author$project$UI$Sidebar$sidebarView = function (currentPage) {
 				$mdgriffith$elm_ui$Element$padding(12),
 				$mdgriffith$elm_ui$Element$scrollbarY
 			]),
-		_List_fromArray(
-			[
-				A2(
-				$author$project$UI$Sidebar$sidebarListItemView,
-				$author$project$UI$Pages$Indexes,
-				_Utils_eq(currentPage, $author$project$UI$Pages$Indexes)),
-				A2(
-				$author$project$UI$Sidebar$sidebarListItemView,
-				$author$project$UI$Pages$Documents,
-				_Utils_eq(currentPage, $author$project$UI$Pages$Documents)),
-				A2(
-				$author$project$UI$Sidebar$sidebarListItemView,
-				$author$project$UI$Pages$Search,
-				_Utils_eq(currentPage, $author$project$UI$Pages$Search)),
-				A2(
-				$author$project$UI$Sidebar$sidebarListItemView,
-				$author$project$UI$Pages$Stats,
-				_Utils_eq(currentPage, $author$project$UI$Pages$Stats)),
-				A2(
-				$author$project$UI$Sidebar$sidebarListItemView,
-				$author$project$UI$Pages$Keys,
-				_Utils_eq(currentPage, $author$project$UI$Pages$Keys)),
-				A2(
-				$author$project$UI$Sidebar$sidebarListItemView,
-				$author$project$UI$Pages$Tasks,
-				_Utils_eq(currentPage, $author$project$UI$Pages$Tasks)),
-				A2(
-				$author$project$UI$Sidebar$sidebarListItemView,
-				$author$project$UI$Pages$Settings,
-				_Utils_eq(currentPage, $author$project$UI$Pages$Settings))
-			]));
+		{
+			columns: _List_fromArray(
+				[
+					{
+					header: $mdgriffith$elm_ui$Element$none,
+					view: function (page) {
+						return A3(
+							$author$project$UI$Sidebar$sidebarListItemView,
+							$author$project$UI$Sidebar$getPageTitle(page),
+							_Utils_eq(model.selectedPage, page),
+							page);
+					},
+					width: $mdgriffith$elm_ui$Element$fill
+				}
+				]),
+			data: model.pages
+		});
 };
 var $author$project$UI$PageView$DocumentsViewMsg = function (a) {
 	return {$: 'DocumentsViewMsg', a: a};
@@ -16898,8 +17104,7 @@ var $author$project$UI$Styles$H1 = {$: 'H1'};
 var $author$project$UI$Pages$Documents$view = A2(
 	$mdgriffith$elm_ui$Element$el,
 	$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H1),
-	$mdgriffith$elm_ui$Element$text(
-		$author$project$UI$Pages$pageTitle($author$project$UI$Pages$Documents)));
+	$mdgriffith$elm_ui$Element$text('(Views.pageTitle Views.Documents)'));
 var $author$project$UI$Pages$Indexes$X = {$: 'X'};
 var $mdgriffith$elm_ui$Internal$Model$Button = {$: 'Button'};
 var $elm$json$Json$Encode$bool = _Json_wrap;
@@ -17023,6 +17228,26 @@ var $mdgriffith$elm_ui$Element$Input$button = F2(
 				_List_fromArray(
 					[label])));
 	});
+var $mdgriffith$elm_ui$Internal$Model$AsColumn = {$: 'AsColumn'};
+var $mdgriffith$elm_ui$Internal$Model$asColumn = $mdgriffith$elm_ui$Internal$Model$AsColumn;
+var $mdgriffith$elm_ui$Element$column = F2(
+	function (attrs, children) {
+		return A4(
+			$mdgriffith$elm_ui$Internal$Model$element,
+			$mdgriffith$elm_ui$Internal$Model$asColumn,
+			$mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentTop + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.contentLeft)),
+				A2(
+					$elm$core$List$cons,
+					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
+					A2(
+						$elm$core$List$cons,
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
+						attrs))),
+			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
+	});
 var $author$project$UI$Pages$Indexes$view = A2(
 	$mdgriffith$elm_ui$Element$column,
 	_List_fromArray(
@@ -17036,8 +17261,7 @@ var $author$project$UI$Pages$Indexes$view = A2(
 			A2(
 			$mdgriffith$elm_ui$Element$el,
 			$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H1),
-			$mdgriffith$elm_ui$Element$text(
-				$author$project$UI$Pages$pageTitle($author$project$UI$Pages$Indexes))),
+			$mdgriffith$elm_ui$Element$text('(Views.pageTitle Views.Indexes)')),
 			A2(
 			$mdgriffith$elm_ui$Element$Input$button,
 			_List_fromArray(
@@ -17053,13 +17277,11 @@ var $author$project$UI$Pages$Indexes$view = A2(
 var $author$project$UI$Pages$Keys$view = A2(
 	$mdgriffith$elm_ui$Element$el,
 	$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H1),
-	$mdgriffith$elm_ui$Element$text(
-		$author$project$UI$Pages$pageTitle($author$project$UI$Pages$Keys)));
+	$mdgriffith$elm_ui$Element$text('(Views.pageTitle Views.Keys)'));
 var $author$project$UI$Pages$Search$view = A2(
 	$mdgriffith$elm_ui$Element$el,
 	$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H1),
-	$mdgriffith$elm_ui$Element$text(
-		$author$project$UI$Pages$pageTitle($author$project$UI$Pages$Search)));
+	$mdgriffith$elm_ui$Element$text('(Views.pageTitle Views.Search)'));
 var $author$project$UI$Pages$Settings$KeyValueChanged = function (a) {
 	return {$: 'KeyValueChanged', a: a};
 };
@@ -18065,43 +18287,46 @@ var $author$project$UI$Elements$textfield = F2(
 					text: model
 				}));
 	});
-var $author$project$UI$Pages$Settings$view = A2(
-	$mdgriffith$elm_ui$Element$column,
-	_List_fromArray(
-		[
-			$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-			$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
-			$mdgriffith$elm_ui$Element$scrollbarY,
-			$mdgriffith$elm_ui$Element$padding(4)
-		]),
-	_List_fromArray(
-		[
-			A2(
-			$mdgriffith$elm_ui$Element$el,
-			$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H1),
-			$mdgriffith$elm_ui$Element$text(
-				$author$project$UI$Pages$pageTitle($author$project$UI$Pages$Settings))),
-			$author$project$UI$Elements$spacer($author$project$UI$Styles$XL),
-			A2($author$project$UI$Elements$textfield, 'hello', $author$project$UI$Pages$Settings$KeyValueChanged),
-			$author$project$UI$Elements$spacer($author$project$UI$Styles$SM),
-			A2($author$project$UI$Elements$button, 'Save Token', $author$project$UI$Pages$Settings$SaveKeyValue)
-		]));
+var $author$project$UI$Pages$Settings$view = function (model) {
+	return A2(
+		$mdgriffith$elm_ui$Element$column,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+				$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+				$mdgriffith$elm_ui$Element$scrollbarY,
+				$mdgriffith$elm_ui$Element$padding(4)
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$mdgriffith$elm_ui$Element$el,
+				$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H1),
+				$mdgriffith$elm_ui$Element$text(model.title)),
+				$author$project$UI$Elements$spacer($author$project$UI$Styles$XL),
+				A2($author$project$UI$Elements$textfield, model.token, $author$project$UI$Pages$Settings$KeyValueChanged),
+				$author$project$UI$Elements$spacer($author$project$UI$Styles$SM),
+				A2($author$project$UI$Elements$button, 'Save Token', $author$project$UI$Pages$Settings$SaveKeyValue)
+			]));
+};
 var $author$project$UI$Pages$Stats$view = A2(
 	$mdgriffith$elm_ui$Element$el,
 	$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H1),
-	$mdgriffith$elm_ui$Element$text(
-		$author$project$UI$Pages$pageTitle($author$project$UI$Pages$Stats)));
+	$mdgriffith$elm_ui$Element$text('(Views.pageTitle Views.Stats)'));
 var $author$project$UI$Pages$Tasks$view = A2(
 	$mdgriffith$elm_ui$Element$el,
 	$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H1),
-	$mdgriffith$elm_ui$Element$text(
-		$author$project$UI$Pages$pageTitle($author$project$UI$Pages$Tasks)));
+	$mdgriffith$elm_ui$Element$text('(Views.pageTitle Views.Tasks)'));
 var $author$project$UI$PageView$getCurrentPageView = function (currentPage) {
 	switch (currentPage.$) {
 		case 'Indexes':
 			return A2($mdgriffith$elm_ui$Element$map, $author$project$UI$PageView$IndexesViewMsg, $author$project$UI$Pages$Indexes$view);
 		case 'Settings':
-			return A2($mdgriffith$elm_ui$Element$map, $author$project$UI$PageView$SettingsViewMsg, $author$project$UI$Pages$Settings$view);
+			var s = currentPage.a;
+			return A2(
+				$mdgriffith$elm_ui$Element$map,
+				$author$project$UI$PageView$SettingsViewMsg,
+				$author$project$UI$Pages$Settings$view(s));
 		case 'Search':
 			return A2($mdgriffith$elm_ui$Element$map, $author$project$UI$PageView$SearchViewMsg, $author$project$UI$Pages$Search$view);
 		case 'Stats':
@@ -18148,7 +18373,8 @@ var $author$project$Main$view = function (model) {
 					A2(
 					$mdgriffith$elm_ui$Element$map,
 					$author$project$Main$SidebarMsg,
-					$author$project$UI$Sidebar$sidebarView(model.selectedPage)),
+					$author$project$UI$Sidebar$sidebarView(
+						$author$project$Main$getSidebarViewModel(model))),
 					A2(
 					$mdgriffith$elm_ui$Element$map,
 					$author$project$Main$PageViewMsg,
@@ -18158,4 +18384,4 @@ var $author$project$Main$view = function (model) {
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.Pages.Indexes.Msg"],"SettingsViewMsg":["UI.Pages.Settings.Msg"],"SearchViewMsg":["UI.Pages.Search.Msg"],"StatsViewMsg":["UI.Pages.Stats.Msg"],"DocumentsViewMsg":["UI.Pages.Documents.Msg"],"KeysViewMsg":["UI.Pages.Keys.Msg"],"TasksViewMsg":["UI.Pages.Tasks.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"]}},"UI.Pages.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Keys.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Search.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Settings.Msg":{"args":[],"tags":{"X":[],"KeyValueChanged":["String.String"],"SaveKeyValue":[]}},"UI.Pages.Stats.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Tasks.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Page":{"args":[],"tags":{"Indexes":[],"Settings":[],"Search":[],"Stats":[],"Documents":[],"Keys":[],"Tasks":[]}},"String.String":{"args":[],"tags":{"String":[]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"UI.Pages.Settings.Model":{"args":[],"type":"{ token : String.String, title : String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.Pages.Indexes.Msg"],"SettingsViewMsg":["UI.Pages.Settings.Msg"],"SearchViewMsg":["UI.Pages.Search.Msg"],"StatsViewMsg":["UI.Pages.Stats.Msg"],"DocumentsViewMsg":["UI.Pages.Documents.Msg"],"KeysViewMsg":["UI.Pages.Keys.Msg"],"TasksViewMsg":["UI.Pages.Tasks.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"]}},"UI.Pages.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Keys.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Search.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Settings.Msg":{"args":[],"tags":{"X":[],"KeyValueChanged":["String.String"],"SaveKeyValue":[]}},"UI.Pages.Stats.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Tasks.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Page":{"args":[],"tags":{"Indexes":[],"Settings":["UI.Pages.Settings.Model"],"Search":[],"Stats":[],"Documents":[],"Keys":[],"Tasks":[]}},"String.String":{"args":[],"tags":{"String":[]}}}}})}});}(this));

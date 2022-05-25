@@ -4,10 +4,9 @@ import Api.Routes.Main exposing (..)
 import Browser
 import Element exposing (..)
 import Html exposing (Html)
-import UI.Elements
 import UI.PageView as PageView exposing (Msg(..))
 import UI.Pages as Views exposing (Page(..))
-import UI.Pages.Settings exposing (..)
+import UI.Pages.Settings exposing (Msg(..))
 import UI.Sidebar as Sidebar
 import UI.Styles exposing (..)
 
@@ -30,7 +29,11 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     let
         model =
-            { selectedPage = Views.Indexes, token = Nothing, savedToken = Nothing }
+            { selectedPage = Views.Indexes
+            , token = Nothing
+            , savedToken = Nothing
+            , pages = Views.init
+            }
     in
     ( model, Cmd.none )
 
@@ -40,7 +43,11 @@ init _ =
 
 
 type alias Model =
-    { selectedPage : Views.Page, token : Maybe String, savedToken : Maybe String }
+    { selectedPage : Views.Page
+    , token : Maybe String
+    , savedToken : Maybe String
+    , pages : List Page
+    }
 
 
 
@@ -52,7 +59,7 @@ view model =
     Element.layout [ width fill, height fill, padding 20 ]
         (Element.row
             [ width fill, spacing 20, height fill ]
-            [ Sidebar.sidebarView model.selectedPage |> Element.map SidebarMsg
+            [ Sidebar.sidebarView (getSidebarViewModel model) |> Element.map SidebarMsg
             , PageView.view model.selectedPage |> Element.map PageViewMsg
             ]
         )
@@ -125,6 +132,11 @@ handleSidebarSelection model sidebarMsg =
     ( { model | selectedPage = selectedPage }, Cmd.none )
 
 
+updateSidebarSelection : Sidebar.Model -> Page -> Sidebar.Model
+updateSidebarSelection model page =
+    { model | selectedPage = page }
+
+
 
 -- MSG
 
@@ -141,3 +153,14 @@ type Msg
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.batch []
+
+
+
+-- VIEW MODEL GENERATORS
+
+
+getSidebarViewModel : Model -> Sidebar.Model
+getSidebarViewModel model =
+    { pages = model.pages
+    , selectedPage = model.selectedPage
+    }

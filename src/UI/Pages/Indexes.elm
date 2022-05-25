@@ -20,7 +20,7 @@ view =
         ]
         [ el
             (UI.Styles.getTypographicStyleFor UI.Styles.H1)
-            (text (Views.pageTitle Views.Indexes))
+            (text "(Views.pageTitle Views.Indexes)")
         , Input.button
             [ Background.color UI.Styles.color.lightGrey
             , padding 20
