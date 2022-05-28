@@ -63,9 +63,9 @@ sidebarListItemView title isSelected page =
                   , padding 8
                   , rounded 4
                   , pointer
-                  , Element.mouseOver <| [ Background.color UI.Styles.color.lightGrey ]
+                  , Element.mouseOver <| [ Background.color UI.Styles.color.gray300 ]
                   ]
-                , addIf isSelected <| Background.color UI.Styles.color.lightBlue
+                , addIf isSelected <| Background.color UI.Styles.color.primary100
                 ]
             )
             [ paragraph []
@@ -80,7 +80,7 @@ sidebarListItemView title isSelected page =
 getPageTitle : UI.Pages.Page -> String
 getPageTitle page =
     case page of
-        UI.Pages.Indexes ->
+        UI.Pages.Indexes _ ->
             "Indexes"
 
         UI.Pages.Settings _ ->
@@ -92,7 +92,7 @@ getPageTitle page =
         UI.Pages.Stats ->
             "Stats"
 
-        UI.Pages.Documents ->
+        UI.Pages.Documents _ ->
             "Documents"
 
         UI.Pages.Keys ->

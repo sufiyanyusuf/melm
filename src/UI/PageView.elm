@@ -34,7 +34,8 @@ view currentPage =
     el
         [ width fill
         , height fill
-        , padding 12
+
+        -- , padding 12
         , scrollbarY
         ]
         (getCurrentPageView currentPage)
@@ -43,8 +44,8 @@ view currentPage =
 getCurrentPageView : Page -> Element Msg
 getCurrentPageView currentPage =
     case currentPage of
-        Views.Indexes ->
-            IndexesView.view |> Element.map IndexesViewMsg
+        Views.Indexes m ->
+            IndexesView.view m |> Element.map IndexesViewMsg
 
         Views.Settings s ->
             SettingsView.view s |> Element.map SettingsViewMsg
@@ -55,8 +56,8 @@ getCurrentPageView currentPage =
         Views.Stats ->
             StatsView.view |> Element.map StatsViewMsg
 
-        Views.Documents ->
-            DocumentsView.view |> Element.map DocumentsViewMsg
+        Views.Documents m ->
+            DocumentsView.view m |> Element.map DocumentsViewMsg
 
         Views.Keys ->
             KeysView.view |> Element.map KeysViewMsg

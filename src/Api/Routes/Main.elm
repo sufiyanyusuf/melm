@@ -1,14 +1,21 @@
 module Api.Routes.Main exposing (..)
 
 import Api.Helper exposing (RequestMethod(..), getRequestMethodTitle, headers, rootUrl)
+import Dict exposing (Dict)
 import Http
-import Json.Decode exposing (Decoder, bool, field, float, int, list, map2, maybe, string)
+import Json.Decode exposing (Decoder, bool, dict, field, float, int, list, map2, maybe, string)
 import Json.Encode as Encode
+
+
+type DictValue
+    = String String
+    | Int Int
 
 
 type Msg
     = HandleListResponse (Result Http.Error (List IndexesRouteResponseListItem))
     | HandleShowResponse (Result Http.Error IndexesRouteResponseListItem)
+    | HandleDocumentsResponse (Result Http.Error String)
 
 
 type Route
@@ -17,6 +24,7 @@ type Route
     | Create ( String, Maybe String )
     | Update String
     | Delete String
+    | ListDocuments String
 
 
 type alias Payload =
@@ -78,6 +86,17 @@ buildRequest payload token =
         Delete _ ->
             Debug.todo "branch 'Delete _' not implemented"
 
+        ListDocuments i ->
+            Http.request
+                { method = getRequestMethodTitle payload.method
+                , headers = headers token
+                , url = payload.endpoint
+                , body = payload.body
+                , expect = Http.expectString HandleDocumentsResponse
+                , timeout = Nothing
+                , tracker = Nothing
+                }
+
 
 buildPayload : Route -> Payload
 buildPayload r =
@@ -114,6 +133,9 @@ buildPayload r =
 
         Delete i ->
             { method = DELETE, endpoint = rootUrl ++ "/indexes/" ++ i, body = Http.emptyBody, route = r }
+
+        ListDocuments i ->
+            { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/documents", body = Http.emptyBody, route = r }
 
 
 

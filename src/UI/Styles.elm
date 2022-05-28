@@ -1,7 +1,7 @@
 module UI.Styles exposing (..)
 
 import Element exposing (..)
-import Element.Font as Font
+import Element.Font as Font exposing (monospace)
 
 
 type Typography
@@ -9,6 +9,8 @@ type Typography
     | H2
     | H3
     | Body
+    | BodyBold
+    | Code
 
 
 type Size
@@ -16,14 +18,20 @@ type Size
     | MD
     | LG
     | XL
+    | FILL
 
 
-color : { blue : Color, darkCharcoal : Color, lightBlue : Color, lightGrey : Color, white : Color }
+
+-- color : { blue : Color, darkCharcoal : Color, lightBlue : Color, gray300 : Color, white : Color }
+
+
+color : { primary500 : Color, gray500 : Color, primary100 : Color, gray300 : Color, gray100 : Color, white : Color }
 color =
-    { blue = rgb255 0x72 0x9F 0xCF
-    , darkCharcoal = rgb255 0x2E 0x34 0x36
-    , lightBlue = rgb255 0xC5 0xE8 0xF7
-    , lightGrey = rgb255 0xE0 0xE0 0xE0
+    { primary500 = rgb255 0x72 0x9F 0xCF
+    , gray500 = rgb255 0x2E 0x34 0x36
+    , primary100 = rgb255 234 235 245
+    , gray300 = rgb255 0xE0 0xE0 0xE0
+    , gray100 = rgb255 243 244 245
     , white = rgb255 0xFF 0xFF 0xFF
     }
 
@@ -38,9 +46,8 @@ getTypographicStyleFor style =
                 [ Font.typeface "System-UI"
                 , Font.sansSerif
                 ]
-            , width fill
             , Font.letterSpacing -1
-            , Font.color color.darkCharcoal
+            , Font.color color.gray500
             ]
 
         H2 ->
@@ -50,9 +57,8 @@ getTypographicStyleFor style =
                 [ Font.typeface "System-UI"
                 , Font.sansSerif
                 ]
-            , width fill
             , Font.letterSpacing -0.4
-            , Font.color color.darkCharcoal
+            , Font.color color.gray500
             ]
 
         H3 ->
@@ -62,9 +68,8 @@ getTypographicStyleFor style =
                 [ Font.typeface "System-UI"
                 , Font.sansSerif
                 ]
-            , width fill
             , Font.letterSpacing -0.2
-            , Font.color color.darkCharcoal
+            , Font.color color.gray500
             ]
 
         Body ->
@@ -74,6 +79,25 @@ getTypographicStyleFor style =
                 [ Font.typeface "System-UI"
                 , Font.sansSerif
                 ]
-            , width fill
-            , Font.color color.darkCharcoal
+            , Font.color color.gray500
+            ]
+
+        BodyBold ->
+            [ Font.size 18
+            , Font.bold
+            , Font.family
+                [ Font.typeface "System-UI"
+                , Font.sansSerif
+                ]
+            , Font.color color.gray500
+            ]
+
+        Code ->
+            [ Font.size 14
+            , Font.regular
+            , Font.family
+                [ Font.typeface "System-UI"
+                , Font.monospace
+                ]
+            , Font.color color.gray500
             ]

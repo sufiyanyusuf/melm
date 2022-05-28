@@ -1,32 +1,43 @@
-module UI.Elements exposing (button, spacer, textfield)
+module UI.Elements exposing (button, jsonView, spacer, textfield)
 
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border
 import Element.Input as Input
+import Json.Decode as Decode
+import JsonTree
 import UI.Styles exposing (Size(..))
 
 
+jsonView : String -> JsonTree.Config msg -> Element msg
+jsonView model config =
+    el [ padding 12 ]
+        (case JsonTree.parseString model of
+            Ok rootNode ->
+                html (JsonTree.view rootNode config JsonTree.defaultState)
 
--- type Msg
---     = TextfieldValueChanged String
---     | ButtonClicked
+            Err e ->
+                Element.text ("Invalid JSON: " ++ Decode.errorToString e)
+        )
 
 
 spacer : UI.Styles.Size -> Element msg
 spacer size =
     case size of
         SM ->
-            Element.el [ Element.width (px 16), Element.height (px 16) ] (Element.text "")
+            Element.el [ Element.width (px 16), Element.height (px 16) ] Element.none
 
         MD ->
-            Element.el [ Element.width (px 20), Element.height (px 20) ] (Element.text "")
+            Element.el [ Element.width (px 20), Element.height (px 20) ] Element.none
 
         LG ->
-            Element.el [ Element.width (px 24), Element.height (px 24) ] (Element.text "")
+            Element.el [ Element.width (px 24), Element.height (px 24) ] Element.none
 
         XL ->
-            Element.el [ Element.width (px 40), Element.height (px 40) ] (Element.text "")
+            Element.el [ Element.width (px 40), Element.height (px 40) ] Element.none
+
+        FILL ->
+            Element.el [ Element.width fill, Element.height fill ] Element.none
 
 
 textfield : String -> (String -> msg) -> Element msg
@@ -39,7 +50,7 @@ textfield model handler =
             , Element.Border.width 1
             , Element.Border.rounded 4
             , Background.color UI.Styles.color.white
-            , Element.Border.color UI.Styles.color.lightGrey
+            , Element.Border.color UI.Styles.color.gray300
             , width fill
             , padding 16
 
@@ -58,10 +69,10 @@ button model msg =
     el
         (UI.Styles.getTypographicStyleFor UI.Styles.Body)
         (Input.button
-            [ Background.color UI.Styles.color.lightGrey
-            , padding 16
+            [ Background.color UI.Styles.color.gray300
+            , padding 14
             , Element.Border.rounded 4
-            , Element.mouseOver <| [ Background.color UI.Styles.color.lightGrey ]
+            , Element.mouseOver <| [ Background.color UI.Styles.color.gray300 ]
             ]
             { onPress = Just msg
             , label = text model

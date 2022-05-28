@@ -5,6 +5,7 @@ import Browser
 import Element exposing (..)
 import Html exposing (Html)
 import UI.PageView as PageView exposing (Msg(..))
+import UI.PageViews.Indexes
 import UI.PageViews.Settings exposing (Msg(..))
 import UI.Pages as Views exposing (Page(..))
 import UI.Sidebar as Sidebar
@@ -29,10 +30,13 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     let
         model =
-            { selectedPage = Views.Indexes
+            { selectedPage = Views.Indexes UI.PageViews.Indexes.init
             , token = Nothing
             , savedToken = Nothing
             , pages = Views.init
+            , indexes = []
+            , documents = []
+            , selectedIndex = Nothing
             }
     in
     ( model, Cmd.none )
@@ -47,6 +51,9 @@ type alias Model =
     , token : Maybe String
     , savedToken : Maybe String
     , pages : List Page
+    , indexes : List IndexesRouteResponseListItem
+    , documents : List String
+    , selectedIndex : Maybe IndexesRouteResponseListItem
     }
 
 
@@ -56,9 +63,9 @@ type alias Model =
 
 view : Model -> Html Msg
 view model =
-    Element.layout [ width fill, height fill, padding 20 ]
+    Element.layout [ width fill, height fill ]
         (Element.row
-            [ width fill, spacing 20, height fill ]
+            [ width fill, height fill ]
             [ Sidebar.sidebarView (getSidebarViewModel model) |> Element.map SidebarMsg
             , PageView.view model.selectedPage |> Element.map PageViewMsg
             ]
@@ -92,7 +99,25 @@ handleApiRequest model apiResponse =
         HandleListResponse r ->
             case r of
                 Ok payload ->
-                    ( model, Cmd.none )
+                    let
+                        updatedViewModel =
+                            getIndexesViewModel { model | indexes = payload }
+                    in
+                    let
+                        updatedIndexesPage =
+                            Indexes updatedViewModel
+                    in
+                    let
+                        updatedModelValue =
+                            { model
+                                | indexes = payload
+                                , pages = updateIndexesViewModel model.pages updatedIndexesPage
+                                , selectedPage = updatedIndexesPage
+                            }
+                    in
+                    ( updatedModelValue
+                    , Cmd.none
+                    )
 
                 Err _ ->
                     ( model, Cmd.none )
@@ -101,6 +126,31 @@ handleApiRequest model apiResponse =
             case r of
                 Ok payload ->
                     ( model, Cmd.none )
+
+                Err _ ->
+                    ( model, Cmd.none )
+
+        HandleDocumentsResponse r ->
+            case r of
+                Ok payload ->
+                    let
+                        documents =
+                            String.dropLeft 1 payload
+                                |> String.dropRight 1
+                                |> String.split "},"
+                                |> List.map (\p -> p ++ "}")
+                    in
+                    let
+                        updatedDocumentsPage =
+                            Documents { documents = documents }
+                    in
+                    ( { model
+                        | documents = documents
+                        , pages = updateDocumentsViewModel model.pages updatedDocumentsPage
+                        , selectedPage = updatedDocumentsPage
+                      }
+                    , Cmd.none
+                    )
 
                 Err _ ->
                     ( model, Cmd.none )
@@ -121,8 +171,8 @@ handlePageViewMessage model pageViewMsg =
         PageView.StatsViewMsg _ ->
             Debug.todo "branch 'StatsViewMsg _' not implemented"
 
-        PageView.DocumentsViewMsg _ ->
-            Debug.todo "branch 'DocumentsViewMsg _' not implemented"
+        PageView.DocumentsViewMsg m ->
+            ( model, Cmd.none )
 
         PageView.KeysViewMsg _ ->
             Debug.todo "branch 'KeysViewMsg _' not implemented"
@@ -173,7 +223,7 @@ handleSidebarSelection model sidebarMsg =
     case sidebarMsg of
         Sidebar.SelectPage p ->
             case p of
-                Indexes ->
+                Indexes _ ->
                     ( { model | selectedPage = selectedPage }
                     , Api.Routes.Main.buildRequest
                         (Api.Routes.Main.buildPayload (List indexesRouteResponseListDecoder))
@@ -193,8 +243,16 @@ handleSidebarSelection model sidebarMsg =
                 Stats ->
                     ( { model | selectedPage = selectedPage }, Cmd.none )
 
-                Documents ->
-                    ( { model | selectedPage = selectedPage }, Cmd.none )
+                Documents _ ->
+                    ( { model | selectedPage = selectedPage }
+                    , Api.Routes.Main.buildRequest
+                        (Api.Routes.Main.buildPayload (ListDocuments "suggestions"))
+                        (Maybe.withDefault
+                            ""
+                            model.savedToken
+                        )
+                        |> Cmd.map ApiRequest
+                    )
 
                 Keys ->
                     ( { model | selectedPage = selectedPage }, Cmd.none )
@@ -238,7 +296,13 @@ getSettingsViewModel model =
     { tokenValue = Maybe.withDefault "" model.token, title = "Settings" }
 
 
+getIndexesViewModel : Model -> UI.PageViews.Indexes.Model
+getIndexesViewModel model =
+    { indexes = model.indexes }
 
+
+
+-- getDocumentsViewModel : Model -> UI.PAGES
 -- VIEW MODEL SETTERS
 
 
@@ -249,6 +313,34 @@ updateSettingsViewModel pages updatedPage =
             (\p ->
                 case p of
                     Settings _ ->
+                        updatedPage
+
+                    _ ->
+                        p
+            )
+
+
+updateIndexesViewModel : List Page -> Page -> List Page
+updateIndexesViewModel pages updatedPage =
+    pages
+        |> List.map
+            (\p ->
+                case p of
+                    Indexes _ ->
+                        updatedPage
+
+                    _ ->
+                        p
+            )
+
+
+updateDocumentsViewModel : List Page -> Page -> List Page
+updateDocumentsViewModel pages updatedPage =
+    pages
+        |> List.map
+            (\p ->
+                case p of
+                    Documents _ ->
                         updatedPage
 
                     _ ->
