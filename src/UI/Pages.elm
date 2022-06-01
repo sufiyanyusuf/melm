@@ -2,29 +2,35 @@ module UI.Pages exposing (..)
 
 import Element exposing (..)
 import UI.PageViews.Documents as Documents
-import UI.PageViews.Indexes as Indexes
 import UI.PageViews.Settings as Settings
+import UI.PageViews.StopWords as StopWords
 
 
 type Page
-    = Indexes Indexes.Model
-    | Settings Settings.Model
-    | Search
+    = Settings Settings.Model
     | Stats
     | Documents Documents.Model
-    | Keys
     | Tasks
+    | RankingRules
+    | Synonyms
+    | StopWords StopWords.Model
+    | SearchableAttributes
+    | DistinctAttributes
+    | DisplayedAttributes
 
 
 init : List Page
 init =
-    [ Indexes Indexes.init
-    , Settings Settings.init
-    , Search
-    , Stats
-    , Documents Documents.init
-    , Keys
+    [ Documents Documents.init
     , Tasks
+    , RankingRules
+    , Synonyms
+    , StopWords StopWords.init
+    , SearchableAttributes
+    , DistinctAttributes
+    , DisplayedAttributes
+    , Stats
+    , Settings Settings.init
     ]
 
 

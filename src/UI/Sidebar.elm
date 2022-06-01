@@ -80,14 +80,8 @@ sidebarListItemView title isSelected page =
 getPageTitle : UI.Pages.Page -> String
 getPageTitle page =
     case page of
-        UI.Pages.Indexes _ ->
-            "Indexes"
-
         UI.Pages.Settings _ ->
             "Settings"
-
-        UI.Pages.Search ->
-            "Search"
 
         UI.Pages.Stats ->
             "Stats"
@@ -95,11 +89,26 @@ getPageTitle page =
         UI.Pages.Documents _ ->
             "Documents"
 
-        UI.Pages.Keys ->
-            "Keys"
-
         UI.Pages.Tasks ->
             "Tasks"
+
+        UI.Pages.RankingRules ->
+            "Ranking Rules"
+
+        UI.Pages.Synonyms ->
+            "Synonyms"
+
+        UI.Pages.StopWords _ ->
+            "Stop Words"
+
+        UI.Pages.SearchableAttributes ->
+            "Searchable Attributes"
+
+        UI.Pages.DistinctAttributes ->
+            "Distinct Attributes"
+
+        UI.Pages.DisplayedAttributes ->
+            "Displayed Attributes"
 
 
 addIf : Bool -> Attribute msg -> List (Attribute msg)

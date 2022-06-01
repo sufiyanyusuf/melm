@@ -5128,137 +5128,7 @@ function _Http_track(router, xhr, tracker)
 			size: event.lengthComputable ? $elm$core$Maybe$Just(event.total) : $elm$core$Maybe$Nothing
 		}))));
 	});
-}
-
-
-
-// STRINGS
-
-
-var _Parser_isSubString = F5(function(smallString, offset, row, col, bigString)
-{
-	var smallLength = smallString.length;
-	var isGood = offset + smallLength <= bigString.length;
-
-	for (var i = 0; isGood && i < smallLength; )
-	{
-		var code = bigString.charCodeAt(offset);
-		isGood =
-			smallString[i++] === bigString[offset++]
-			&& (
-				code === 0x000A /* \n */
-					? ( row++, col=1 )
-					: ( col++, (code & 0xF800) === 0xD800 ? smallString[i++] === bigString[offset++] : 1 )
-			)
-	}
-
-	return _Utils_Tuple3(isGood ? offset : -1, row, col);
-});
-
-
-
-// CHARS
-
-
-var _Parser_isSubChar = F3(function(predicate, offset, string)
-{
-	return (
-		string.length <= offset
-			? -1
-			:
-		(string.charCodeAt(offset) & 0xF800) === 0xD800
-			? (predicate(_Utils_chr(string.substr(offset, 2))) ? offset + 2 : -1)
-			:
-		(predicate(_Utils_chr(string[offset]))
-			? ((string[offset] === '\n') ? -2 : (offset + 1))
-			: -1
-		)
-	);
-});
-
-
-var _Parser_isAsciiCode = F3(function(code, offset, string)
-{
-	return string.charCodeAt(offset) === code;
-});
-
-
-
-// NUMBERS
-
-
-var _Parser_chompBase10 = F2(function(offset, string)
-{
-	for (; offset < string.length; offset++)
-	{
-		var code = string.charCodeAt(offset);
-		if (code < 0x30 || 0x39 < code)
-		{
-			return offset;
-		}
-	}
-	return offset;
-});
-
-
-var _Parser_consumeBase = F3(function(base, offset, string)
-{
-	for (var total = 0; offset < string.length; offset++)
-	{
-		var digit = string.charCodeAt(offset) - 0x30;
-		if (digit < 0 || base <= digit) break;
-		total = base * total + digit;
-	}
-	return _Utils_Tuple2(offset, total);
-});
-
-
-var _Parser_consumeBase16 = F2(function(offset, string)
-{
-	for (var total = 0; offset < string.length; offset++)
-	{
-		var code = string.charCodeAt(offset);
-		if (0x30 <= code && code <= 0x39)
-		{
-			total = 16 * total + code - 0x30;
-		}
-		else if (0x41 <= code && code <= 0x46)
-		{
-			total = 16 * total + code - 55;
-		}
-		else if (0x61 <= code && code <= 0x66)
-		{
-			total = 16 * total + code - 87;
-		}
-		else
-		{
-			break;
-		}
-	}
-	return _Utils_Tuple2(offset, total);
-});
-
-
-
-// FIND STRING
-
-
-var _Parser_findSubString = F5(function(smallString, offset, row, col, bigString)
-{
-	var newOffset = bigString.indexOf(smallString, offset);
-	var target = newOffset < 0 ? bigString.length : newOffset + smallString.length;
-
-	while (offset < target)
-	{
-		var code = bigString.charCodeAt(offset++);
-		code === 0x000A /* \n */
-			? ( col=1, row++ )
-			: ( col++, (code & 0xF800) === 0xD800 && offset++ )
-	}
-
-	return _Utils_Tuple3(newOffset, row, col);
-});
-var $elm$core$Basics$EQ = {$: 'EQ'};
+}var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
 var $elm$core$List$cons = _List_cons;
@@ -10859,31 +10729,37 @@ var $elm$core$Basics$never = function (_v0) {
 	}
 };
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$UI$Pages$Indexes = function (a) {
-	return {$: 'Indexes', a: a};
-};
-var $author$project$UI$PageViews$Indexes$init = {indexes: _List_Nil};
 var $author$project$UI$Pages$Documents = function (a) {
 	return {$: 'Documents', a: a};
 };
-var $author$project$UI$Pages$Keys = {$: 'Keys'};
-var $author$project$UI$Pages$Search = {$: 'Search'};
+var $author$project$UI$PageViews$Documents$init = {documents: _List_Nil};
+var $author$project$UI$Pages$DisplayedAttributes = {$: 'DisplayedAttributes'};
+var $author$project$UI$Pages$DistinctAttributes = {$: 'DistinctAttributes'};
+var $author$project$UI$Pages$RankingRules = {$: 'RankingRules'};
+var $author$project$UI$Pages$SearchableAttributes = {$: 'SearchableAttributes'};
 var $author$project$UI$Pages$Settings = function (a) {
 	return {$: 'Settings', a: a};
 };
 var $author$project$UI$Pages$Stats = {$: 'Stats'};
+var $author$project$UI$Pages$StopWords = function (a) {
+	return {$: 'StopWords', a: a};
+};
+var $author$project$UI$Pages$Synonyms = {$: 'Synonyms'};
 var $author$project$UI$Pages$Tasks = {$: 'Tasks'};
-var $author$project$UI$PageViews$Documents$init = {documents: _List_Nil};
 var $author$project$UI$PageViews$Settings$init = {title: 'Settings', tokenValue: ''};
+var $author$project$UI$PageViews$StopWords$init = {words: _List_Nil};
 var $author$project$UI$Pages$init = _List_fromArray(
 	[
-		$author$project$UI$Pages$Indexes($author$project$UI$PageViews$Indexes$init),
-		$author$project$UI$Pages$Settings($author$project$UI$PageViews$Settings$init),
-		$author$project$UI$Pages$Search,
-		$author$project$UI$Pages$Stats,
 		$author$project$UI$Pages$Documents($author$project$UI$PageViews$Documents$init),
-		$author$project$UI$Pages$Keys,
-		$author$project$UI$Pages$Tasks
+		$author$project$UI$Pages$Tasks,
+		$author$project$UI$Pages$RankingRules,
+		$author$project$UI$Pages$Synonyms,
+		$author$project$UI$Pages$StopWords($author$project$UI$PageViews$StopWords$init),
+		$author$project$UI$Pages$SearchableAttributes,
+		$author$project$UI$Pages$DistinctAttributes,
+		$author$project$UI$Pages$DisplayedAttributes,
+		$author$project$UI$Pages$Stats,
+		$author$project$UI$Pages$Settings($author$project$UI$PageViews$Settings$init)
 	]);
 var $author$project$Main$init = function (_v0) {
 	var model = {
@@ -10892,7 +10768,7 @@ var $author$project$Main$init = function (_v0) {
 		pages: $author$project$UI$Pages$init,
 		savedToken: $elm$core$Maybe$Nothing,
 		selectedIndex: $elm$core$Maybe$Nothing,
-		selectedPage: $author$project$UI$Pages$Indexes($author$project$UI$PageViews$Indexes$init),
+		selectedPage: $author$project$UI$Pages$Documents($author$project$UI$PageViews$Documents$init),
 		token: $elm$core$Maybe$Nothing
 	};
 	return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -10905,9 +10781,6 @@ var $elm$core$String$dropRight = F2(
 	function (n, string) {
 		return (n < 1) ? string : A3($elm$core$String$slice, 0, -n, string);
 	});
-var $author$project$Main$getIndexesViewModel = function (model) {
-	return {indexes: model.indexes};
-};
 var $author$project$Main$updateDocumentsViewModel = F2(
 	function (pages, updatedPage) {
 		return A2(
@@ -10921,42 +10794,12 @@ var $author$project$Main$updateDocumentsViewModel = F2(
 			},
 			pages);
 	});
-var $author$project$Main$updateIndexesViewModel = F2(
-	function (pages, updatedPage) {
-		return A2(
-			$elm$core$List$map,
-			function (p) {
-				if (p.$ === 'Indexes') {
-					return updatedPage;
-				} else {
-					return p;
-				}
-			},
-			pages);
-	});
 var $author$project$Main$handleApiRequest = F2(
 	function (model, apiResponse) {
 		switch (apiResponse.$) {
 			case 'HandleListResponse':
 				var r = apiResponse.a;
-				if (r.$ === 'Ok') {
-					var payload = r.a;
-					var updatedViewModel = $author$project$Main$getIndexesViewModel(
-						_Utils_update(
-							model,
-							{indexes: payload}));
-					var updatedIndexesPage = $author$project$UI$Pages$Indexes(updatedViewModel);
-					var updatedModelValue = _Utils_update(
-						model,
-						{
-							indexes: payload,
-							pages: A2($author$project$Main$updateIndexesViewModel, model.pages, updatedIndexesPage),
-							selectedPage: updatedIndexesPage
-						});
-					return _Utils_Tuple2(updatedModelValue, $elm$core$Platform$Cmd$none);
-				} else {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-				}
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'HandleShowResponse':
 				var r = apiResponse.a;
 				if (r.$ === 'Ok') {
@@ -11057,47 +10900,39 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 166, column: 13},
-						end: {line: 166, column: 23}
+						start: {line: 144, column: 13},
+						end: {line: 144, column: 23}
 					})('branch \'IndexesViewMsg _\' not implemented');
 			case 'SearchViewMsg':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 169, column: 13},
-						end: {line: 169, column: 23}
+						start: {line: 147, column: 13},
+						end: {line: 147, column: 23}
 					})('branch \'SearchViewMsg _\' not implemented');
 			case 'StatsViewMsg':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 172, column: 13},
-						end: {line: 172, column: 23}
+						start: {line: 150, column: 13},
+						end: {line: 150, column: 23}
 					})('branch \'StatsViewMsg _\' not implemented');
 			case 'DocumentsViewMsg':
 				var m = pageViewMsg.a;
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			case 'KeysViewMsg':
+			case 'TasksViewMsg':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 178, column: 13},
-						end: {line: 178, column: 23}
-					})('branch \'KeysViewMsg _\' not implemented');
-			default:
-				return _Debug_todo(
-					'Main',
-					{
-						start: {line: 181, column: 13},
-						end: {line: 181, column: 23}
+						start: {line: 156, column: 13},
+						end: {line: 156, column: 23}
 					})('branch \'TasksViewMsg _\' not implemented');
+			default:
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
 var $author$project$Main$ApiRequest = function (a) {
 	return {$: 'ApiRequest', a: a};
-};
-var $author$project$Api$Routes$Main$List = function (a) {
-	return {$: 'List', a: a};
 };
 var $author$project$Api$Routes$Main$ListDocuments = function (a) {
 	return {$: 'ListDocuments', a: a};
@@ -11515,19 +11350,6 @@ var $author$project$Api$Routes$Main$buildRequest = F2(
 					});
 		}
 	});
-var $author$project$Api$Routes$Main$IndexesRouteResponseListItem = F5(
-	function (uid, name, createdAt, updatedAt, primaryKey) {
-		return {createdAt: createdAt, name: name, primaryKey: primaryKey, uid: uid, updatedAt: updatedAt};
-	});
-var $author$project$Api$Routes$Main$indexesRouteResponseListItemDecoder = A6(
-	$elm$json$Json$Decode$map5,
-	$author$project$Api$Routes$Main$IndexesRouteResponseListItem,
-	A2($elm$json$Json$Decode$field, 'uid', $elm$json$Json$Decode$string),
-	A2($elm$json$Json$Decode$field, 'name', $elm$json$Json$Decode$string),
-	A2($elm$json$Json$Decode$field, 'createdAt', $elm$json$Json$Decode$string),
-	A2($elm$json$Json$Decode$field, 'updatedAt', $elm$json$Json$Decode$string),
-	A2($elm$json$Json$Decode$field, 'primaryKey', $elm$json$Json$Decode$string));
-var $author$project$Api$Routes$Main$indexesRouteResponseListDecoder = $elm$json$Json$Decode$list($author$project$Api$Routes$Main$indexesRouteResponseListItemDecoder);
 var $author$project$Main$handleSidebarSelection = F2(
 	function (model, sidebarMsg) {
 		var selectedPage = function () {
@@ -11536,26 +11358,7 @@ var $author$project$Main$handleSidebarSelection = F2(
 		}();
 		var p = sidebarMsg.a;
 		switch (p.$) {
-			case 'Indexes':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{selectedPage: selectedPage}),
-					A2(
-						$elm$core$Platform$Cmd$map,
-						$author$project$Main$ApiRequest,
-						A2(
-							$author$project$Api$Routes$Main$buildRequest,
-							$author$project$Api$Routes$Main$buildPayload(
-								$author$project$Api$Routes$Main$List($author$project$Api$Routes$Main$indexesRouteResponseListDecoder)),
-							A2($elm$core$Maybe$withDefault, '', model.savedToken))));
 			case 'Settings':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{selectedPage: selectedPage}),
-					$elm$core$Platform$Cmd$none);
-			case 'Search':
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -11580,18 +11383,53 @@ var $author$project$Main$handleSidebarSelection = F2(
 							$author$project$Api$Routes$Main$buildPayload(
 								$author$project$Api$Routes$Main$ListDocuments('suggestions')),
 							A2($elm$core$Maybe$withDefault, '', model.savedToken))));
-			case 'Keys':
+			case 'Tasks':
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{selectedPage: selectedPage}),
 					$elm$core$Platform$Cmd$none);
+			case 'RankingRules':
+				return _Debug_todo(
+					'Main',
+					{
+						start: {line: 225, column: 21},
+						end: {line: 225, column: 31}
+					})('branch \'RankingRules\' not implemented');
+			case 'Synonyms':
+				return _Debug_todo(
+					'Main',
+					{
+						start: {line: 228, column: 21},
+						end: {line: 228, column: 31}
+					})('branch \'Synonyms\' not implemented');
+			case 'StopWords':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{selectedPage: selectedPage}),
+					$elm$core$Platform$Cmd$none);
+			case 'SearchableAttributes':
+				return _Debug_todo(
+					'Main',
+					{
+						start: {line: 234, column: 21},
+						end: {line: 234, column: 31}
+					})('branch \'SearchableAttributes\' not implemented');
+			case 'DistinctAttributes':
+				return _Debug_todo(
+					'Main',
+					{
+						start: {line: 237, column: 21},
+						end: {line: 237, column: 31}
+					})('branch \'DistinctAttributes\' not implemented');
 			default:
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{selectedPage: selectedPage}),
-					$elm$core$Platform$Cmd$none);
+				return _Debug_todo(
+					'Main',
+					{
+						start: {line: 240, column: 21},
+						end: {line: 240, column: 31}
+					})('branch \'DisplayedAttributes\' not implemented');
 		}
 	});
 var $author$project$Main$update = F2(
@@ -17327,20 +17165,26 @@ var $mdgriffith$elm_ui$Element$row = F2(
 	});
 var $author$project$UI$Sidebar$getPageTitle = function (page) {
 	switch (page.$) {
-		case 'Indexes':
-			return 'Indexes';
 		case 'Settings':
 			return 'Settings';
-		case 'Search':
-			return 'Search';
 		case 'Stats':
 			return 'Stats';
 		case 'Documents':
 			return 'Documents';
-		case 'Keys':
-			return 'Keys';
-		default:
+		case 'Tasks':
 			return 'Tasks';
+		case 'RankingRules':
+			return 'Ranking Rules';
+		case 'Synonyms':
+			return 'Synonyms';
+		case 'StopWords':
+			return 'Stop Words';
+		case 'SearchableAttributes':
+			return 'Searchable Attributes';
+		case 'DistinctAttributes':
+			return 'Distinct Attributes';
+		default:
+			return 'Displayed Attributes';
 	}
 };
 var $mdgriffith$elm_ui$Element$none = $mdgriffith$elm_ui$Internal$Model$Empty;
@@ -18039,20 +17883,14 @@ var $author$project$UI$Sidebar$sidebarView = function (model) {
 var $author$project$UI$PageView$DocumentsViewMsg = function (a) {
 	return {$: 'DocumentsViewMsg', a: a};
 };
-var $author$project$UI$PageView$IndexesViewMsg = function (a) {
-	return {$: 'IndexesViewMsg', a: a};
-};
-var $author$project$UI$PageView$KeysViewMsg = function (a) {
-	return {$: 'KeysViewMsg', a: a};
-};
-var $author$project$UI$PageView$SearchViewMsg = function (a) {
-	return {$: 'SearchViewMsg', a: a};
-};
 var $author$project$UI$PageView$SettingsViewMsg = function (a) {
 	return {$: 'SettingsViewMsg', a: a};
 };
 var $author$project$UI$PageView$StatsViewMsg = function (a) {
 	return {$: 'StatsViewMsg', a: a};
+};
+var $author$project$UI$PageView$StopWordsViewMsg = function (a) {
+	return {$: 'StopWordsViewMsg', a: a};
 };
 var $author$project$UI$PageView$TasksViewMsg = function (a) {
 	return {$: 'TasksViewMsg', a: a};
@@ -18737,8 +18575,6 @@ var $author$project$UI$PageViews$Documents$view = function (model) {
 				$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
 				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
 				$mdgriffith$elm_ui$Element$scrollbarY,
-				$mdgriffith$elm_ui$Element$paddingEach(
-				{bottom: 0, left: 120, right: 0, top: 40}),
 				$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.gray100)
 			]),
 		_List_fromArray(
@@ -18793,8 +18629,10 @@ var $author$project$UI$PageViews$Documents$view = function (model) {
 				})
 			]));
 };
-var $author$project$UI$Styles$FILL = {$: 'FILL'};
-var $author$project$UI$PageViews$Indexes$X = {$: 'X'};
+var $author$project$UI$PageViews$Settings$KeyValueChanged = function (a) {
+	return {$: 'KeyValueChanged', a: a};
+};
+var $author$project$UI$PageViews$Settings$SaveKeyValue = {$: 'SaveKeyValue'};
 var $author$project$UI$Styles$XL = {$: 'XL'};
 var $mdgriffith$elm_ui$Internal$Model$Button = {$: 'Button'};
 var $elm$json$Json$Encode$bool = _Json_wrap;
@@ -18940,1096 +18778,6 @@ var $author$project$UI$Elements$button = F2(
 					onPress: $elm$core$Maybe$Just(msg)
 				}));
 	});
-var $author$project$UI$PageViews$Indexes$cellView = function (title) {
-	return A2(
-		$mdgriffith$elm_ui$Element$column,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
-			]),
-		_List_fromArray(
-			[
-				$author$project$UI$Elements$spacer($author$project$UI$Styles$SM),
-				A2(
-				$mdgriffith$elm_ui$Element$el,
-				$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$Body),
-				$mdgriffith$elm_ui$Element$text(title)),
-				$author$project$UI$Elements$spacer($author$project$UI$Styles$SM),
-				A2(
-				$mdgriffith$elm_ui$Element$el,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$height(
-						$mdgriffith$elm_ui$Element$px(1)),
-						$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.gray300),
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
-					]),
-				$mdgriffith$elm_ui$Element$none)
-			]));
-};
-var $author$project$UI$PageViews$Indexes$formatHourMinute = F2(
-	function (hour, minute) {
-		return (hour > 12) ? ($elm$core$String$fromInt(hour - 12) + (':' + ($elm$core$String$fromInt(minute) + ' PM'))) : ($elm$core$String$fromInt(hour) + (':' + ($elm$core$String$fromInt(minute) + ' AM')));
-	});
-var $author$project$UI$PageViews$Indexes$getMonth = function (month) {
-	switch (month.$) {
-		case 'Jan':
-			return 'Jan';
-		case 'Feb':
-			return 'Feb';
-		case 'Mar':
-			return 'Mar';
-		case 'Apr':
-			return 'Apr';
-		case 'May':
-			return 'May';
-		case 'Jun':
-			return 'Jun';
-		case 'Jul':
-			return 'Jul';
-		case 'Aug':
-			return 'Aug';
-		case 'Sep':
-			return 'Sep';
-		case 'Oct':
-			return 'Oct';
-		case 'Nov':
-			return 'Nov';
-		default:
-			return 'Dec';
-	}
-};
-var $elm$time$Time$flooredDiv = F2(
-	function (numerator, denominator) {
-		return $elm$core$Basics$floor(numerator / denominator);
-	});
-var $elm$time$Time$posixToMillis = function (_v0) {
-	var millis = _v0.a;
-	return millis;
-};
-var $elm$time$Time$toAdjustedMinutesHelp = F3(
-	function (defaultOffset, posixMinutes, eras) {
-		toAdjustedMinutesHelp:
-		while (true) {
-			if (!eras.b) {
-				return posixMinutes + defaultOffset;
-			} else {
-				var era = eras.a;
-				var olderEras = eras.b;
-				if (_Utils_cmp(era.start, posixMinutes) < 0) {
-					return posixMinutes + era.offset;
-				} else {
-					var $temp$defaultOffset = defaultOffset,
-						$temp$posixMinutes = posixMinutes,
-						$temp$eras = olderEras;
-					defaultOffset = $temp$defaultOffset;
-					posixMinutes = $temp$posixMinutes;
-					eras = $temp$eras;
-					continue toAdjustedMinutesHelp;
-				}
-			}
-		}
-	});
-var $elm$time$Time$toAdjustedMinutes = F2(
-	function (_v0, time) {
-		var defaultOffset = _v0.a;
-		var eras = _v0.b;
-		return A3(
-			$elm$time$Time$toAdjustedMinutesHelp,
-			defaultOffset,
-			A2(
-				$elm$time$Time$flooredDiv,
-				$elm$time$Time$posixToMillis(time),
-				60000),
-			eras);
-	});
-var $elm$time$Time$toCivil = function (minutes) {
-	var rawDay = A2($elm$time$Time$flooredDiv, minutes, 60 * 24) + 719468;
-	var era = (((rawDay >= 0) ? rawDay : (rawDay - 146096)) / 146097) | 0;
-	var dayOfEra = rawDay - (era * 146097);
-	var yearOfEra = ((((dayOfEra - ((dayOfEra / 1460) | 0)) + ((dayOfEra / 36524) | 0)) - ((dayOfEra / 146096) | 0)) / 365) | 0;
-	var dayOfYear = dayOfEra - (((365 * yearOfEra) + ((yearOfEra / 4) | 0)) - ((yearOfEra / 100) | 0));
-	var mp = (((5 * dayOfYear) + 2) / 153) | 0;
-	var month = mp + ((mp < 10) ? 3 : (-9));
-	var year = yearOfEra + (era * 400);
-	return {
-		day: (dayOfYear - ((((153 * mp) + 2) / 5) | 0)) + 1,
-		month: month,
-		year: year + ((month <= 2) ? 1 : 0)
-	};
-};
-var $elm$time$Time$toDay = F2(
-	function (zone, time) {
-		return $elm$time$Time$toCivil(
-			A2($elm$time$Time$toAdjustedMinutes, zone, time)).day;
-	});
-var $elm$core$Basics$modBy = _Basics_modBy;
-var $elm$time$Time$toHour = F2(
-	function (zone, time) {
-		return A2(
-			$elm$core$Basics$modBy,
-			24,
-			A2(
-				$elm$time$Time$flooredDiv,
-				A2($elm$time$Time$toAdjustedMinutes, zone, time),
-				60));
-	});
-var $elm$time$Time$toMinute = F2(
-	function (zone, time) {
-		return A2(
-			$elm$core$Basics$modBy,
-			60,
-			A2($elm$time$Time$toAdjustedMinutes, zone, time));
-	});
-var $elm$time$Time$Apr = {$: 'Apr'};
-var $elm$time$Time$Aug = {$: 'Aug'};
-var $elm$time$Time$Dec = {$: 'Dec'};
-var $elm$time$Time$Feb = {$: 'Feb'};
-var $elm$time$Time$Jan = {$: 'Jan'};
-var $elm$time$Time$Jul = {$: 'Jul'};
-var $elm$time$Time$Jun = {$: 'Jun'};
-var $elm$time$Time$Mar = {$: 'Mar'};
-var $elm$time$Time$May = {$: 'May'};
-var $elm$time$Time$Nov = {$: 'Nov'};
-var $elm$time$Time$Oct = {$: 'Oct'};
-var $elm$time$Time$Sep = {$: 'Sep'};
-var $elm$time$Time$toMonth = F2(
-	function (zone, time) {
-		var _v0 = $elm$time$Time$toCivil(
-			A2($elm$time$Time$toAdjustedMinutes, zone, time)).month;
-		switch (_v0) {
-			case 1:
-				return $elm$time$Time$Jan;
-			case 2:
-				return $elm$time$Time$Feb;
-			case 3:
-				return $elm$time$Time$Mar;
-			case 4:
-				return $elm$time$Time$Apr;
-			case 5:
-				return $elm$time$Time$May;
-			case 6:
-				return $elm$time$Time$Jun;
-			case 7:
-				return $elm$time$Time$Jul;
-			case 8:
-				return $elm$time$Time$Aug;
-			case 9:
-				return $elm$time$Time$Sep;
-			case 10:
-				return $elm$time$Time$Oct;
-			case 11:
-				return $elm$time$Time$Nov;
-			default:
-				return $elm$time$Time$Dec;
-		}
-	});
-var $elm$time$Time$toYear = F2(
-	function (zone, time) {
-		return $elm$time$Time$toCivil(
-			A2($elm$time$Time$toAdjustedMinutes, zone, time)).year;
-	});
-var $elm$time$Time$Zone = F2(
-	function (a, b) {
-		return {$: 'Zone', a: a, b: b};
-	});
-var $elm$time$Time$utc = A2($elm$time$Time$Zone, 0, _List_Nil);
-var $author$project$UI$PageViews$Indexes$formatTime = function (time) {
-	return $elm$core$String$fromInt(
-		A2($elm$time$Time$toDay, $elm$time$Time$utc, time)) + (' ' + ($author$project$UI$PageViews$Indexes$getMonth(
-		A2($elm$time$Time$toMonth, $elm$time$Time$utc, time)) + (' ' + ($elm$core$String$fromInt(
-		A2($elm$time$Time$toYear, $elm$time$Time$utc, time)) + (', ' + A2(
-		$author$project$UI$PageViews$Indexes$formatHourMinute,
-		A2($elm$time$Time$toHour, $elm$time$Time$utc, time),
-		A2($elm$time$Time$toMinute, $elm$time$Time$utc, time)))))));
-};
-var $elm$parser$Parser$Advanced$Bad = F2(
-	function (a, b) {
-		return {$: 'Bad', a: a, b: b};
-	});
-var $elm$parser$Parser$Advanced$Good = F3(
-	function (a, b, c) {
-		return {$: 'Good', a: a, b: b, c: c};
-	});
-var $elm$parser$Parser$Advanced$Parser = function (a) {
-	return {$: 'Parser', a: a};
-};
-var $elm$parser$Parser$Advanced$andThen = F2(
-	function (callback, _v0) {
-		var parseA = _v0.a;
-		return $elm$parser$Parser$Advanced$Parser(
-			function (s0) {
-				var _v1 = parseA(s0);
-				if (_v1.$ === 'Bad') {
-					var p = _v1.a;
-					var x = _v1.b;
-					return A2($elm$parser$Parser$Advanced$Bad, p, x);
-				} else {
-					var p1 = _v1.a;
-					var a = _v1.b;
-					var s1 = _v1.c;
-					var _v2 = callback(a);
-					var parseB = _v2.a;
-					var _v3 = parseB(s1);
-					if (_v3.$ === 'Bad') {
-						var p2 = _v3.a;
-						var x = _v3.b;
-						return A2($elm$parser$Parser$Advanced$Bad, p1 || p2, x);
-					} else {
-						var p2 = _v3.a;
-						var b = _v3.b;
-						var s2 = _v3.c;
-						return A3($elm$parser$Parser$Advanced$Good, p1 || p2, b, s2);
-					}
-				}
-			});
-	});
-var $elm$parser$Parser$andThen = $elm$parser$Parser$Advanced$andThen;
-var $elm$parser$Parser$ExpectingEnd = {$: 'ExpectingEnd'};
-var $elm$parser$Parser$Advanced$AddRight = F2(
-	function (a, b) {
-		return {$: 'AddRight', a: a, b: b};
-	});
-var $elm$parser$Parser$Advanced$DeadEnd = F4(
-	function (row, col, problem, contextStack) {
-		return {col: col, contextStack: contextStack, problem: problem, row: row};
-	});
-var $elm$parser$Parser$Advanced$Empty = {$: 'Empty'};
-var $elm$parser$Parser$Advanced$fromState = F2(
-	function (s, x) {
-		return A2(
-			$elm$parser$Parser$Advanced$AddRight,
-			$elm$parser$Parser$Advanced$Empty,
-			A4($elm$parser$Parser$Advanced$DeadEnd, s.row, s.col, x, s.context));
-	});
-var $elm$parser$Parser$Advanced$end = function (x) {
-	return $elm$parser$Parser$Advanced$Parser(
-		function (s) {
-			return _Utils_eq(
-				$elm$core$String$length(s.src),
-				s.offset) ? A3($elm$parser$Parser$Advanced$Good, false, _Utils_Tuple0, s) : A2(
-				$elm$parser$Parser$Advanced$Bad,
-				false,
-				A2($elm$parser$Parser$Advanced$fromState, s, x));
-		});
-};
-var $elm$parser$Parser$end = $elm$parser$Parser$Advanced$end($elm$parser$Parser$ExpectingEnd);
-var $elm$parser$Parser$Advanced$isSubChar = _Parser_isSubChar;
-var $elm$parser$Parser$Advanced$chompWhileHelp = F5(
-	function (isGood, offset, row, col, s0) {
-		chompWhileHelp:
-		while (true) {
-			var newOffset = A3($elm$parser$Parser$Advanced$isSubChar, isGood, offset, s0.src);
-			if (_Utils_eq(newOffset, -1)) {
-				return A3(
-					$elm$parser$Parser$Advanced$Good,
-					_Utils_cmp(s0.offset, offset) < 0,
-					_Utils_Tuple0,
-					{col: col, context: s0.context, indent: s0.indent, offset: offset, row: row, src: s0.src});
-			} else {
-				if (_Utils_eq(newOffset, -2)) {
-					var $temp$isGood = isGood,
-						$temp$offset = offset + 1,
-						$temp$row = row + 1,
-						$temp$col = 1,
-						$temp$s0 = s0;
-					isGood = $temp$isGood;
-					offset = $temp$offset;
-					row = $temp$row;
-					col = $temp$col;
-					s0 = $temp$s0;
-					continue chompWhileHelp;
-				} else {
-					var $temp$isGood = isGood,
-						$temp$offset = newOffset,
-						$temp$row = row,
-						$temp$col = col + 1,
-						$temp$s0 = s0;
-					isGood = $temp$isGood;
-					offset = $temp$offset;
-					row = $temp$row;
-					col = $temp$col;
-					s0 = $temp$s0;
-					continue chompWhileHelp;
-				}
-			}
-		}
-	});
-var $elm$parser$Parser$Advanced$chompWhile = function (isGood) {
-	return $elm$parser$Parser$Advanced$Parser(
-		function (s) {
-			return A5($elm$parser$Parser$Advanced$chompWhileHelp, isGood, s.offset, s.row, s.col, s);
-		});
-};
-var $elm$parser$Parser$chompWhile = $elm$parser$Parser$Advanced$chompWhile;
-var $elm$parser$Parser$Advanced$mapChompedString = F2(
-	function (func, _v0) {
-		var parse = _v0.a;
-		return $elm$parser$Parser$Advanced$Parser(
-			function (s0) {
-				var _v1 = parse(s0);
-				if (_v1.$ === 'Bad') {
-					var p = _v1.a;
-					var x = _v1.b;
-					return A2($elm$parser$Parser$Advanced$Bad, p, x);
-				} else {
-					var p = _v1.a;
-					var a = _v1.b;
-					var s1 = _v1.c;
-					return A3(
-						$elm$parser$Parser$Advanced$Good,
-						p,
-						A2(
-							func,
-							A3($elm$core$String$slice, s0.offset, s1.offset, s0.src),
-							a),
-						s1);
-				}
-			});
-	});
-var $elm$parser$Parser$Advanced$getChompedString = function (parser) {
-	return A2($elm$parser$Parser$Advanced$mapChompedString, $elm$core$Basics$always, parser);
-};
-var $elm$parser$Parser$getChompedString = $elm$parser$Parser$Advanced$getChompedString;
-var $elm$parser$Parser$Problem = function (a) {
-	return {$: 'Problem', a: a};
-};
-var $elm$parser$Parser$Advanced$problem = function (x) {
-	return $elm$parser$Parser$Advanced$Parser(
-		function (s) {
-			return A2(
-				$elm$parser$Parser$Advanced$Bad,
-				false,
-				A2($elm$parser$Parser$Advanced$fromState, s, x));
-		});
-};
-var $elm$parser$Parser$problem = function (msg) {
-	return $elm$parser$Parser$Advanced$problem(
-		$elm$parser$Parser$Problem(msg));
-};
-var $elm$parser$Parser$Advanced$succeed = function (a) {
-	return $elm$parser$Parser$Advanced$Parser(
-		function (s) {
-			return A3($elm$parser$Parser$Advanced$Good, false, a, s);
-		});
-};
-var $elm$parser$Parser$succeed = $elm$parser$Parser$Advanced$succeed;
-var $elm$core$String$toFloat = _String_toFloat;
-var $rtfeldman$elm_iso8601_date_strings$Iso8601$fractionsOfASecondInMs = A2(
-	$elm$parser$Parser$andThen,
-	function (str) {
-		if ($elm$core$String$length(str) <= 9) {
-			var _v0 = $elm$core$String$toFloat('0.' + str);
-			if (_v0.$ === 'Just') {
-				var floatVal = _v0.a;
-				return $elm$parser$Parser$succeed(
-					$elm$core$Basics$round(floatVal * 1000));
-			} else {
-				return $elm$parser$Parser$problem('Invalid float: \"' + (str + '\"'));
-			}
-		} else {
-			return $elm$parser$Parser$problem(
-				'Expected at most 9 digits, but got ' + $elm$core$String$fromInt(
-					$elm$core$String$length(str)));
-		}
-	},
-	$elm$parser$Parser$getChompedString(
-		$elm$parser$Parser$chompWhile($elm$core$Char$isDigit)));
-var $elm$time$Time$Posix = function (a) {
-	return {$: 'Posix', a: a};
-};
-var $elm$time$Time$millisToPosix = $elm$time$Time$Posix;
-var $rtfeldman$elm_iso8601_date_strings$Iso8601$fromParts = F6(
-	function (monthYearDayMs, hour, minute, second, ms, utcOffsetMinutes) {
-		return $elm$time$Time$millisToPosix((((monthYearDayMs + (((hour * 60) * 60) * 1000)) + (((minute - utcOffsetMinutes) * 60) * 1000)) + (second * 1000)) + ms);
-	});
-var $elm$parser$Parser$Advanced$map2 = F3(
-	function (func, _v0, _v1) {
-		var parseA = _v0.a;
-		var parseB = _v1.a;
-		return $elm$parser$Parser$Advanced$Parser(
-			function (s0) {
-				var _v2 = parseA(s0);
-				if (_v2.$ === 'Bad') {
-					var p = _v2.a;
-					var x = _v2.b;
-					return A2($elm$parser$Parser$Advanced$Bad, p, x);
-				} else {
-					var p1 = _v2.a;
-					var a = _v2.b;
-					var s1 = _v2.c;
-					var _v3 = parseB(s1);
-					if (_v3.$ === 'Bad') {
-						var p2 = _v3.a;
-						var x = _v3.b;
-						return A2($elm$parser$Parser$Advanced$Bad, p1 || p2, x);
-					} else {
-						var p2 = _v3.a;
-						var b = _v3.b;
-						var s2 = _v3.c;
-						return A3(
-							$elm$parser$Parser$Advanced$Good,
-							p1 || p2,
-							A2(func, a, b),
-							s2);
-					}
-				}
-			});
-	});
-var $elm$parser$Parser$Advanced$ignorer = F2(
-	function (keepParser, ignoreParser) {
-		return A3($elm$parser$Parser$Advanced$map2, $elm$core$Basics$always, keepParser, ignoreParser);
-	});
-var $elm$parser$Parser$ignorer = $elm$parser$Parser$Advanced$ignorer;
-var $elm$parser$Parser$Advanced$keeper = F2(
-	function (parseFunc, parseArg) {
-		return A3($elm$parser$Parser$Advanced$map2, $elm$core$Basics$apL, parseFunc, parseArg);
-	});
-var $elm$parser$Parser$keeper = $elm$parser$Parser$Advanced$keeper;
-var $elm$parser$Parser$Advanced$Append = F2(
-	function (a, b) {
-		return {$: 'Append', a: a, b: b};
-	});
-var $elm$parser$Parser$Advanced$oneOfHelp = F3(
-	function (s0, bag, parsers) {
-		oneOfHelp:
-		while (true) {
-			if (!parsers.b) {
-				return A2($elm$parser$Parser$Advanced$Bad, false, bag);
-			} else {
-				var parse = parsers.a.a;
-				var remainingParsers = parsers.b;
-				var _v1 = parse(s0);
-				if (_v1.$ === 'Good') {
-					var step = _v1;
-					return step;
-				} else {
-					var step = _v1;
-					var p = step.a;
-					var x = step.b;
-					if (p) {
-						return step;
-					} else {
-						var $temp$s0 = s0,
-							$temp$bag = A2($elm$parser$Parser$Advanced$Append, bag, x),
-							$temp$parsers = remainingParsers;
-						s0 = $temp$s0;
-						bag = $temp$bag;
-						parsers = $temp$parsers;
-						continue oneOfHelp;
-					}
-				}
-			}
-		}
-	});
-var $elm$parser$Parser$Advanced$oneOf = function (parsers) {
-	return $elm$parser$Parser$Advanced$Parser(
-		function (s) {
-			return A3($elm$parser$Parser$Advanced$oneOfHelp, s, $elm$parser$Parser$Advanced$Empty, parsers);
-		});
-};
-var $elm$parser$Parser$oneOf = $elm$parser$Parser$Advanced$oneOf;
-var $elm$parser$Parser$Done = function (a) {
-	return {$: 'Done', a: a};
-};
-var $elm$parser$Parser$Loop = function (a) {
-	return {$: 'Loop', a: a};
-};
-var $elm$core$String$append = _String_append;
-var $elm$parser$Parser$UnexpectedChar = {$: 'UnexpectedChar'};
-var $elm$parser$Parser$Advanced$chompIf = F2(
-	function (isGood, expecting) {
-		return $elm$parser$Parser$Advanced$Parser(
-			function (s) {
-				var newOffset = A3($elm$parser$Parser$Advanced$isSubChar, isGood, s.offset, s.src);
-				return _Utils_eq(newOffset, -1) ? A2(
-					$elm$parser$Parser$Advanced$Bad,
-					false,
-					A2($elm$parser$Parser$Advanced$fromState, s, expecting)) : (_Utils_eq(newOffset, -2) ? A3(
-					$elm$parser$Parser$Advanced$Good,
-					true,
-					_Utils_Tuple0,
-					{col: 1, context: s.context, indent: s.indent, offset: s.offset + 1, row: s.row + 1, src: s.src}) : A3(
-					$elm$parser$Parser$Advanced$Good,
-					true,
-					_Utils_Tuple0,
-					{col: s.col + 1, context: s.context, indent: s.indent, offset: newOffset, row: s.row, src: s.src}));
-			});
-	});
-var $elm$parser$Parser$chompIf = function (isGood) {
-	return A2($elm$parser$Parser$Advanced$chompIf, isGood, $elm$parser$Parser$UnexpectedChar);
-};
-var $elm$parser$Parser$Advanced$loopHelp = F4(
-	function (p, state, callback, s0) {
-		loopHelp:
-		while (true) {
-			var _v0 = callback(state);
-			var parse = _v0.a;
-			var _v1 = parse(s0);
-			if (_v1.$ === 'Good') {
-				var p1 = _v1.a;
-				var step = _v1.b;
-				var s1 = _v1.c;
-				if (step.$ === 'Loop') {
-					var newState = step.a;
-					var $temp$p = p || p1,
-						$temp$state = newState,
-						$temp$callback = callback,
-						$temp$s0 = s1;
-					p = $temp$p;
-					state = $temp$state;
-					callback = $temp$callback;
-					s0 = $temp$s0;
-					continue loopHelp;
-				} else {
-					var result = step.a;
-					return A3($elm$parser$Parser$Advanced$Good, p || p1, result, s1);
-				}
-			} else {
-				var p1 = _v1.a;
-				var x = _v1.b;
-				return A2($elm$parser$Parser$Advanced$Bad, p || p1, x);
-			}
-		}
-	});
-var $elm$parser$Parser$Advanced$loop = F2(
-	function (state, callback) {
-		return $elm$parser$Parser$Advanced$Parser(
-			function (s) {
-				return A4($elm$parser$Parser$Advanced$loopHelp, false, state, callback, s);
-			});
-	});
-var $elm$parser$Parser$Advanced$map = F2(
-	function (func, _v0) {
-		var parse = _v0.a;
-		return $elm$parser$Parser$Advanced$Parser(
-			function (s0) {
-				var _v1 = parse(s0);
-				if (_v1.$ === 'Good') {
-					var p = _v1.a;
-					var a = _v1.b;
-					var s1 = _v1.c;
-					return A3(
-						$elm$parser$Parser$Advanced$Good,
-						p,
-						func(a),
-						s1);
-				} else {
-					var p = _v1.a;
-					var x = _v1.b;
-					return A2($elm$parser$Parser$Advanced$Bad, p, x);
-				}
-			});
-	});
-var $elm$parser$Parser$map = $elm$parser$Parser$Advanced$map;
-var $elm$parser$Parser$Advanced$Done = function (a) {
-	return {$: 'Done', a: a};
-};
-var $elm$parser$Parser$Advanced$Loop = function (a) {
-	return {$: 'Loop', a: a};
-};
-var $elm$parser$Parser$toAdvancedStep = function (step) {
-	if (step.$ === 'Loop') {
-		var s = step.a;
-		return $elm$parser$Parser$Advanced$Loop(s);
-	} else {
-		var a = step.a;
-		return $elm$parser$Parser$Advanced$Done(a);
-	}
-};
-var $elm$parser$Parser$loop = F2(
-	function (state, callback) {
-		return A2(
-			$elm$parser$Parser$Advanced$loop,
-			state,
-			function (s) {
-				return A2(
-					$elm$parser$Parser$map,
-					$elm$parser$Parser$toAdvancedStep,
-					callback(s));
-			});
-	});
-var $rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt = function (quantity) {
-	var helper = function (str) {
-		if (_Utils_eq(
-			$elm$core$String$length(str),
-			quantity)) {
-			var _v0 = $elm$core$String$toInt(str);
-			if (_v0.$ === 'Just') {
-				var intVal = _v0.a;
-				return A2(
-					$elm$parser$Parser$map,
-					$elm$parser$Parser$Done,
-					$elm$parser$Parser$succeed(intVal));
-			} else {
-				return $elm$parser$Parser$problem('Invalid integer: \"' + (str + '\"'));
-			}
-		} else {
-			return A2(
-				$elm$parser$Parser$map,
-				function (nextChar) {
-					return $elm$parser$Parser$Loop(
-						A2($elm$core$String$append, str, nextChar));
-				},
-				$elm$parser$Parser$getChompedString(
-					$elm$parser$Parser$chompIf($elm$core$Char$isDigit)));
-		}
-	};
-	return A2($elm$parser$Parser$loop, '', helper);
-};
-var $elm$parser$Parser$ExpectingSymbol = function (a) {
-	return {$: 'ExpectingSymbol', a: a};
-};
-var $elm$parser$Parser$Advanced$Token = F2(
-	function (a, b) {
-		return {$: 'Token', a: a, b: b};
-	});
-var $elm$parser$Parser$Advanced$isSubString = _Parser_isSubString;
-var $elm$parser$Parser$Advanced$token = function (_v0) {
-	var str = _v0.a;
-	var expecting = _v0.b;
-	var progress = !$elm$core$String$isEmpty(str);
-	return $elm$parser$Parser$Advanced$Parser(
-		function (s) {
-			var _v1 = A5($elm$parser$Parser$Advanced$isSubString, str, s.offset, s.row, s.col, s.src);
-			var newOffset = _v1.a;
-			var newRow = _v1.b;
-			var newCol = _v1.c;
-			return _Utils_eq(newOffset, -1) ? A2(
-				$elm$parser$Parser$Advanced$Bad,
-				false,
-				A2($elm$parser$Parser$Advanced$fromState, s, expecting)) : A3(
-				$elm$parser$Parser$Advanced$Good,
-				progress,
-				_Utils_Tuple0,
-				{col: newCol, context: s.context, indent: s.indent, offset: newOffset, row: newRow, src: s.src});
-		});
-};
-var $elm$parser$Parser$Advanced$symbol = $elm$parser$Parser$Advanced$token;
-var $elm$parser$Parser$symbol = function (str) {
-	return $elm$parser$Parser$Advanced$symbol(
-		A2(
-			$elm$parser$Parser$Advanced$Token,
-			str,
-			$elm$parser$Parser$ExpectingSymbol(str)));
-};
-var $rtfeldman$elm_iso8601_date_strings$Iso8601$epochYear = 1970;
-var $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay = function (day) {
-	return $elm$parser$Parser$problem(
-		'Invalid day: ' + $elm$core$String$fromInt(day));
-};
-var $rtfeldman$elm_iso8601_date_strings$Iso8601$isLeapYear = function (year) {
-	return (!A2($elm$core$Basics$modBy, 4, year)) && ((!(!A2($elm$core$Basics$modBy, 100, year))) || (!A2($elm$core$Basics$modBy, 400, year)));
-};
-var $rtfeldman$elm_iso8601_date_strings$Iso8601$leapYearsBefore = function (y1) {
-	var y = y1 - 1;
-	return (((y / 4) | 0) - ((y / 100) | 0)) + ((y / 400) | 0);
-};
-var $rtfeldman$elm_iso8601_date_strings$Iso8601$msPerDay = 86400000;
-var $rtfeldman$elm_iso8601_date_strings$Iso8601$msPerYear = 31536000000;
-var $rtfeldman$elm_iso8601_date_strings$Iso8601$yearMonthDay = function (_v0) {
-	var year = _v0.a;
-	var month = _v0.b;
-	var dayInMonth = _v0.c;
-	if (dayInMonth < 0) {
-		return $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth);
-	} else {
-		var succeedWith = function (extraMs) {
-			var yearMs = $rtfeldman$elm_iso8601_date_strings$Iso8601$msPerYear * (year - $rtfeldman$elm_iso8601_date_strings$Iso8601$epochYear);
-			var days = ((month < 3) || (!$rtfeldman$elm_iso8601_date_strings$Iso8601$isLeapYear(year))) ? (dayInMonth - 1) : dayInMonth;
-			var dayMs = $rtfeldman$elm_iso8601_date_strings$Iso8601$msPerDay * (days + ($rtfeldman$elm_iso8601_date_strings$Iso8601$leapYearsBefore(year) - $rtfeldman$elm_iso8601_date_strings$Iso8601$leapYearsBefore($rtfeldman$elm_iso8601_date_strings$Iso8601$epochYear)));
-			return $elm$parser$Parser$succeed((extraMs + yearMs) + dayMs);
-		};
-		switch (month) {
-			case 1:
-				return (dayInMonth > 31) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(0);
-			case 2:
-				return ((dayInMonth > 29) || ((dayInMonth === 29) && (!$rtfeldman$elm_iso8601_date_strings$Iso8601$isLeapYear(year)))) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(2678400000);
-			case 3:
-				return (dayInMonth > 31) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(5097600000);
-			case 4:
-				return (dayInMonth > 30) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(7776000000);
-			case 5:
-				return (dayInMonth > 31) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(10368000000);
-			case 6:
-				return (dayInMonth > 30) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(13046400000);
-			case 7:
-				return (dayInMonth > 31) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(15638400000);
-			case 8:
-				return (dayInMonth > 31) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(18316800000);
-			case 9:
-				return (dayInMonth > 30) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(20995200000);
-			case 10:
-				return (dayInMonth > 31) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(23587200000);
-			case 11:
-				return (dayInMonth > 30) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(26265600000);
-			case 12:
-				return (dayInMonth > 31) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(28857600000);
-			default:
-				return $elm$parser$Parser$problem(
-					'Invalid month: \"' + ($elm$core$String$fromInt(month) + '\"'));
-		}
-	}
-};
-var $rtfeldman$elm_iso8601_date_strings$Iso8601$monthYearDayInMs = A2(
-	$elm$parser$Parser$andThen,
-	$rtfeldman$elm_iso8601_date_strings$Iso8601$yearMonthDay,
-	A2(
-		$elm$parser$Parser$keeper,
-		A2(
-			$elm$parser$Parser$keeper,
-			A2(
-				$elm$parser$Parser$keeper,
-				$elm$parser$Parser$succeed(
-					F3(
-						function (year, month, day) {
-							return _Utils_Tuple3(year, month, day);
-						})),
-				$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(4)),
-			$elm$parser$Parser$oneOf(
-				_List_fromArray(
-					[
-						A2(
-						$elm$parser$Parser$keeper,
-						A2(
-							$elm$parser$Parser$ignorer,
-							$elm$parser$Parser$succeed($elm$core$Basics$identity),
-							$elm$parser$Parser$symbol('-')),
-						$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)),
-						$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)
-					]))),
-		$elm$parser$Parser$oneOf(
-			_List_fromArray(
-				[
-					A2(
-					$elm$parser$Parser$keeper,
-					A2(
-						$elm$parser$Parser$ignorer,
-						$elm$parser$Parser$succeed($elm$core$Basics$identity),
-						$elm$parser$Parser$symbol('-')),
-					$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)),
-					$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)
-				]))));
-var $rtfeldman$elm_iso8601_date_strings$Iso8601$utcOffsetInMinutes = function () {
-	var utcOffsetMinutesFromParts = F3(
-		function (multiplier, hours, minutes) {
-			return (multiplier * (hours * 60)) + minutes;
-		});
-	return A2(
-		$elm$parser$Parser$keeper,
-		$elm$parser$Parser$succeed($elm$core$Basics$identity),
-		$elm$parser$Parser$oneOf(
-			_List_fromArray(
-				[
-					A2(
-					$elm$parser$Parser$map,
-					function (_v0) {
-						return 0;
-					},
-					$elm$parser$Parser$symbol('Z')),
-					A2(
-					$elm$parser$Parser$keeper,
-					A2(
-						$elm$parser$Parser$keeper,
-						A2(
-							$elm$parser$Parser$keeper,
-							$elm$parser$Parser$succeed(utcOffsetMinutesFromParts),
-							$elm$parser$Parser$oneOf(
-								_List_fromArray(
-									[
-										A2(
-										$elm$parser$Parser$map,
-										function (_v1) {
-											return 1;
-										},
-										$elm$parser$Parser$symbol('+')),
-										A2(
-										$elm$parser$Parser$map,
-										function (_v2) {
-											return -1;
-										},
-										$elm$parser$Parser$symbol('-'))
-									]))),
-						$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)),
-					$elm$parser$Parser$oneOf(
-						_List_fromArray(
-							[
-								A2(
-								$elm$parser$Parser$keeper,
-								A2(
-									$elm$parser$Parser$ignorer,
-									$elm$parser$Parser$succeed($elm$core$Basics$identity),
-									$elm$parser$Parser$symbol(':')),
-								$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)),
-								$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2),
-								$elm$parser$Parser$succeed(0)
-							]))),
-					A2(
-					$elm$parser$Parser$ignorer,
-					$elm$parser$Parser$succeed(0),
-					$elm$parser$Parser$end)
-				])));
-}();
-var $rtfeldman$elm_iso8601_date_strings$Iso8601$iso8601 = A2(
-	$elm$parser$Parser$andThen,
-	function (datePart) {
-		return $elm$parser$Parser$oneOf(
-			_List_fromArray(
-				[
-					A2(
-					$elm$parser$Parser$keeper,
-					A2(
-						$elm$parser$Parser$keeper,
-						A2(
-							$elm$parser$Parser$keeper,
-							A2(
-								$elm$parser$Parser$keeper,
-								A2(
-									$elm$parser$Parser$keeper,
-									A2(
-										$elm$parser$Parser$ignorer,
-										$elm$parser$Parser$succeed(
-											$rtfeldman$elm_iso8601_date_strings$Iso8601$fromParts(datePart)),
-										$elm$parser$Parser$symbol('T')),
-									$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)),
-								$elm$parser$Parser$oneOf(
-									_List_fromArray(
-										[
-											A2(
-											$elm$parser$Parser$keeper,
-											A2(
-												$elm$parser$Parser$ignorer,
-												$elm$parser$Parser$succeed($elm$core$Basics$identity),
-												$elm$parser$Parser$symbol(':')),
-											$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)),
-											$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)
-										]))),
-							$elm$parser$Parser$oneOf(
-								_List_fromArray(
-									[
-										A2(
-										$elm$parser$Parser$keeper,
-										A2(
-											$elm$parser$Parser$ignorer,
-											$elm$parser$Parser$succeed($elm$core$Basics$identity),
-											$elm$parser$Parser$symbol(':')),
-										$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)),
-										$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2),
-										$elm$parser$Parser$succeed(0)
-									]))),
-						$elm$parser$Parser$oneOf(
-							_List_fromArray(
-								[
-									A2(
-									$elm$parser$Parser$keeper,
-									A2(
-										$elm$parser$Parser$ignorer,
-										$elm$parser$Parser$succeed($elm$core$Basics$identity),
-										$elm$parser$Parser$symbol('.')),
-									$rtfeldman$elm_iso8601_date_strings$Iso8601$fractionsOfASecondInMs),
-									$elm$parser$Parser$succeed(0)
-								]))),
-					A2($elm$parser$Parser$ignorer, $rtfeldman$elm_iso8601_date_strings$Iso8601$utcOffsetInMinutes, $elm$parser$Parser$end)),
-					A2(
-					$elm$parser$Parser$ignorer,
-					$elm$parser$Parser$succeed(
-						A6($rtfeldman$elm_iso8601_date_strings$Iso8601$fromParts, datePart, 0, 0, 0, 0, 0)),
-					$elm$parser$Parser$end)
-				]));
-	},
-	$rtfeldman$elm_iso8601_date_strings$Iso8601$monthYearDayInMs);
-var $elm$parser$Parser$DeadEnd = F3(
-	function (row, col, problem) {
-		return {col: col, problem: problem, row: row};
-	});
-var $elm$parser$Parser$problemToDeadEnd = function (p) {
-	return A3($elm$parser$Parser$DeadEnd, p.row, p.col, p.problem);
-};
-var $elm$parser$Parser$Advanced$bagToList = F2(
-	function (bag, list) {
-		bagToList:
-		while (true) {
-			switch (bag.$) {
-				case 'Empty':
-					return list;
-				case 'AddRight':
-					var bag1 = bag.a;
-					var x = bag.b;
-					var $temp$bag = bag1,
-						$temp$list = A2($elm$core$List$cons, x, list);
-					bag = $temp$bag;
-					list = $temp$list;
-					continue bagToList;
-				default:
-					var bag1 = bag.a;
-					var bag2 = bag.b;
-					var $temp$bag = bag1,
-						$temp$list = A2($elm$parser$Parser$Advanced$bagToList, bag2, list);
-					bag = $temp$bag;
-					list = $temp$list;
-					continue bagToList;
-			}
-		}
-	});
-var $elm$parser$Parser$Advanced$run = F2(
-	function (_v0, src) {
-		var parse = _v0.a;
-		var _v1 = parse(
-			{col: 1, context: _List_Nil, indent: 1, offset: 0, row: 1, src: src});
-		if (_v1.$ === 'Good') {
-			var value = _v1.b;
-			return $elm$core$Result$Ok(value);
-		} else {
-			var bag = _v1.b;
-			return $elm$core$Result$Err(
-				A2($elm$parser$Parser$Advanced$bagToList, bag, _List_Nil));
-		}
-	});
-var $elm$parser$Parser$run = F2(
-	function (parser, source) {
-		var _v0 = A2($elm$parser$Parser$Advanced$run, parser, source);
-		if (_v0.$ === 'Ok') {
-			var a = _v0.a;
-			return $elm$core$Result$Ok(a);
-		} else {
-			var problems = _v0.a;
-			return $elm$core$Result$Err(
-				A2($elm$core$List$map, $elm$parser$Parser$problemToDeadEnd, problems));
-		}
-	});
-var $rtfeldman$elm_iso8601_date_strings$Iso8601$toTime = function (str) {
-	return A2($elm$parser$Parser$run, $rtfeldman$elm_iso8601_date_strings$Iso8601$iso8601, str);
-};
-var $author$project$UI$PageViews$Indexes$getFormattedTime = function (time) {
-	var _v0 = $rtfeldman$elm_iso8601_date_strings$Iso8601$toTime(time);
-	if (_v0.$ === 'Err') {
-		return time;
-	} else {
-		var t = _v0.a;
-		return $author$project$UI$PageViews$Indexes$formatTime(t);
-	}
-};
-var $author$project$UI$Styles$BodyBold = {$: 'BodyBold'};
-var $author$project$UI$PageViews$Indexes$headerView = function (title) {
-	return A2(
-		$mdgriffith$elm_ui$Element$column,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$mdgriffith$elm_ui$Element$el,
-				$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$BodyBold),
-				$mdgriffith$elm_ui$Element$text(title)),
-				$author$project$UI$Elements$spacer($author$project$UI$Styles$SM),
-				A2(
-				$mdgriffith$elm_ui$Element$el,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$height(
-						$mdgriffith$elm_ui$Element$px(1)),
-						$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.gray300),
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
-					]),
-				$mdgriffith$elm_ui$Element$none)
-			]));
-};
-var $author$project$UI$PageViews$Indexes$view = function (model) {
-	return A2(
-		$mdgriffith$elm_ui$Element$column,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-				$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
-				$mdgriffith$elm_ui$Element$scrollbarY,
-				$mdgriffith$elm_ui$Element$padding(4)
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$mdgriffith$elm_ui$Element$row,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
-					]),
-				_List_fromArray(
-					[
-						A2(
-						$mdgriffith$elm_ui$Element$el,
-						$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H1),
-						$mdgriffith$elm_ui$Element$text('Indexes')),
-						$author$project$UI$Elements$spacer($author$project$UI$Styles$FILL),
-						A2($author$project$UI$Elements$button, 'Add', $author$project$UI$PageViews$Indexes$X)
-					])),
-				$author$project$UI$Elements$spacer($author$project$UI$Styles$XL),
-				$author$project$UI$Elements$spacer($author$project$UI$Styles$XL),
-				A2(
-				$mdgriffith$elm_ui$Element$table,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-						$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
-						$mdgriffith$elm_ui$Element$scrollbarY
-					]),
-				{
-					columns: _List_fromArray(
-						[
-							{
-							header: $author$project$UI$PageViews$Indexes$headerView('UID'),
-							view: function (item) {
-								return $author$project$UI$PageViews$Indexes$cellView(item.uid);
-							},
-							width: $mdgriffith$elm_ui$Element$fill
-						},
-							{
-							header: $author$project$UI$PageViews$Indexes$headerView('Title'),
-							view: function (item) {
-								return $author$project$UI$PageViews$Indexes$cellView(item.name);
-							},
-							width: $mdgriffith$elm_ui$Element$fill
-						},
-							{
-							header: $author$project$UI$PageViews$Indexes$headerView('Primary Key'),
-							view: function (item) {
-								return $author$project$UI$PageViews$Indexes$cellView(item.primaryKey);
-							},
-							width: $mdgriffith$elm_ui$Element$fill
-						},
-							{
-							header: $author$project$UI$PageViews$Indexes$headerView('Created'),
-							view: function (item) {
-								return $author$project$UI$PageViews$Indexes$cellView(
-									$author$project$UI$PageViews$Indexes$getFormattedTime(item.createdAt));
-							},
-							width: $mdgriffith$elm_ui$Element$fill
-						},
-							{
-							header: $author$project$UI$PageViews$Indexes$headerView('Last Updated'),
-							view: function (item) {
-								return $author$project$UI$PageViews$Indexes$cellView(
-									$author$project$UI$PageViews$Indexes$getFormattedTime(item.updatedAt));
-							},
-							width: $mdgriffith$elm_ui$Element$fill
-						}
-						]),
-					data: model.indexes
-				})
-			]));
-};
-var $author$project$UI$PageViews$Keys$view = A2(
-	$mdgriffith$elm_ui$Element$el,
-	$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H1),
-	$mdgriffith$elm_ui$Element$text('(Views.pageTitle Views.Keys)'));
-var $author$project$UI$PageViews$Search$view = A2(
-	$mdgriffith$elm_ui$Element$el,
-	$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H1),
-	$mdgriffith$elm_ui$Element$text('(Views.pageTitle Views.Search)'));
-var $author$project$UI$PageViews$Settings$KeyValueChanged = function (a) {
-	return {$: 'KeyValueChanged', a: a};
-};
-var $author$project$UI$PageViews$Settings$SaveKeyValue = {$: 'SaveKeyValue'};
 var $mdgriffith$elm_ui$Internal$Flag$borderColor = $mdgriffith$elm_ui$Internal$Flag$flag(28);
 var $mdgriffith$elm_ui$Element$Border$color = function (clr) {
 	return A2(
@@ -20950,26 +19698,24 @@ var $author$project$UI$PageViews$Stats$view = A2(
 	$mdgriffith$elm_ui$Element$el,
 	$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H1),
 	$mdgriffith$elm_ui$Element$text('(Views.pageTitle Views.Stats)'));
+var $author$project$UI$PageViews$StopWords$view = function (m) {
+	return A2(
+		$mdgriffith$elm_ui$Element$el,
+		$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H1),
+		$mdgriffith$elm_ui$Element$text('Stop Words'));
+};
 var $author$project$UI$PageViews$Tasks$view = A2(
 	$mdgriffith$elm_ui$Element$el,
 	$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H1),
 	$mdgriffith$elm_ui$Element$text('(Views.pageTitle Views.Tasks)'));
 var $author$project$UI$PageView$getCurrentPageView = function (currentPage) {
 	switch (currentPage.$) {
-		case 'Indexes':
-			var m = currentPage.a;
-			return A2(
-				$mdgriffith$elm_ui$Element$map,
-				$author$project$UI$PageView$IndexesViewMsg,
-				$author$project$UI$PageViews$Indexes$view(m));
 		case 'Settings':
 			var s = currentPage.a;
 			return A2(
 				$mdgriffith$elm_ui$Element$map,
 				$author$project$UI$PageView$SettingsViewMsg,
 				$author$project$UI$PageViews$Settings$view(s));
-		case 'Search':
-			return A2($mdgriffith$elm_ui$Element$map, $author$project$UI$PageView$SearchViewMsg, $author$project$UI$PageViews$Search$view);
 		case 'Stats':
 			return A2($mdgriffith$elm_ui$Element$map, $author$project$UI$PageView$StatsViewMsg, $author$project$UI$PageViews$Stats$view);
 		case 'Documents':
@@ -20978,10 +19724,49 @@ var $author$project$UI$PageView$getCurrentPageView = function (currentPage) {
 				$mdgriffith$elm_ui$Element$map,
 				$author$project$UI$PageView$DocumentsViewMsg,
 				$author$project$UI$PageViews$Documents$view(m));
-		case 'Keys':
-			return A2($mdgriffith$elm_ui$Element$map, $author$project$UI$PageView$KeysViewMsg, $author$project$UI$PageViews$Keys$view);
-		default:
+		case 'Tasks':
 			return A2($mdgriffith$elm_ui$Element$map, $author$project$UI$PageView$TasksViewMsg, $author$project$UI$PageViews$Tasks$view);
+		case 'RankingRules':
+			return _Debug_todo(
+				'UI.PageView',
+				{
+					start: {line: 63, column: 13},
+					end: {line: 63, column: 23}
+				})('branch \'RankingRules\' not implemented');
+		case 'Synonyms':
+			return _Debug_todo(
+				'UI.PageView',
+				{
+					start: {line: 66, column: 13},
+					end: {line: 66, column: 23}
+				})('branch \'Synonyms\' not implemented');
+		case 'StopWords':
+			var m = currentPage.a;
+			return A2(
+				$mdgriffith$elm_ui$Element$map,
+				$author$project$UI$PageView$StopWordsViewMsg,
+				$author$project$UI$PageViews$StopWords$view(m));
+		case 'SearchableAttributes':
+			return _Debug_todo(
+				'UI.PageView',
+				{
+					start: {line: 72, column: 13},
+					end: {line: 72, column: 23}
+				})('branch \'SearchableAttributes\' not implemented');
+		case 'DistinctAttributes':
+			return _Debug_todo(
+				'UI.PageView',
+				{
+					start: {line: 75, column: 13},
+					end: {line: 75, column: 23}
+				})('branch \'DistinctAttributes\' not implemented');
+		default:
+			return _Debug_todo(
+				'UI.PageView',
+				{
+					start: {line: 78, column: 13},
+					end: {line: 78, column: 23}
+				})('branch \'DisplayedAttributes\' not implemented');
 	}
 };
 var $author$project$UI$PageView$view = function (currentPage) {
@@ -20989,9 +19774,11 @@ var $author$project$UI$PageView$view = function (currentPage) {
 		$mdgriffith$elm_ui$Element$el,
 		_List_fromArray(
 			[
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
 				$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
-				$mdgriffith$elm_ui$Element$scrollbarY
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+				$mdgriffith$elm_ui$Element$paddingEach(
+				{bottom: 0, left: 120, right: 0, top: 40}),
+				$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.gray100)
 			]),
 		$author$project$UI$PageView$getCurrentPageView(currentPage));
 };
@@ -21026,4 +19813,4 @@ var $author$project$Main$view = function (model) {
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Api.Routes.Main.IndexesRouteResponseListItem":{"args":[],"type":"{ uid : String.String, name : String.String, createdAt : String.String, updatedAt : String.String, primaryKey : String.String }"},"UI.PageViews.Documents.Model":{"args":[],"type":"{ documents : List.List String.String }"},"UI.PageViews.Indexes.Model":{"args":[],"type":"{ indexes : List.List Api.Routes.Main.IndexesRouteResponseListItem }"},"UI.PageViews.Settings.Model":{"args":[],"type":"{ tokenValue : String.String, title : String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"],"ApiRequest":["Api.Routes.Main.Msg"]}},"Api.Routes.Main.Msg":{"args":[],"tags":{"HandleListResponse":["Result.Result Http.Error (List.List Api.Routes.Main.IndexesRouteResponseListItem)"],"HandleShowResponse":["Result.Result Http.Error Api.Routes.Main.IndexesRouteResponseListItem"],"HandleDocumentsResponse":["Result.Result Http.Error String.String"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.PageViews.Indexes.Msg"],"SettingsViewMsg":["UI.PageViews.Settings.Msg"],"SearchViewMsg":["UI.PageViews.Search.Msg"],"StatsViewMsg":["UI.PageViews.Stats.Msg"],"DocumentsViewMsg":["UI.PageViews.Documents.Msg"],"KeysViewMsg":["UI.PageViews.Keys.Msg"],"TasksViewMsg":["UI.PageViews.Tasks.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"List.List":{"args":["a"],"tags":{}},"UI.PageViews.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Keys.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Search.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Settings.Msg":{"args":[],"tags":{"X":[],"KeyValueChanged":["String.String"],"SaveKeyValue":[]}},"UI.PageViews.Stats.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Tasks.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Page":{"args":[],"tags":{"Indexes":["UI.PageViews.Indexes.Model"],"Settings":["UI.PageViews.Settings.Model"],"Search":[],"Stats":[],"Documents":["UI.PageViews.Documents.Model"],"Keys":[],"Tasks":[]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"String.String":{"args":[],"tags":{"String":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Api.Routes.Main.IndexesRouteResponseListItem":{"args":[],"type":"{ uid : String.String, name : String.String, createdAt : String.String, updatedAt : String.String, primaryKey : String.String }"},"UI.PageViews.Documents.Model":{"args":[],"type":"{ documents : List.List String.String }"},"UI.PageViews.Settings.Model":{"args":[],"type":"{ tokenValue : String.String, title : String.String }"},"UI.PageViews.StopWords.Model":{"args":[],"type":"{ words : List.List String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"],"ApiRequest":["Api.Routes.Main.Msg"]}},"Api.Routes.Main.Msg":{"args":[],"tags":{"HandleListResponse":["Result.Result Http.Error (List.List Api.Routes.Main.IndexesRouteResponseListItem)"],"HandleShowResponse":["Result.Result Http.Error Api.Routes.Main.IndexesRouteResponseListItem"],"HandleDocumentsResponse":["Result.Result Http.Error String.String"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.PageViews.Indexes.Msg"],"SettingsViewMsg":["UI.PageViews.Settings.Msg"],"SearchViewMsg":["UI.PageViews.Search.Msg"],"StatsViewMsg":["UI.PageViews.Stats.Msg"],"DocumentsViewMsg":["UI.PageViews.Documents.Msg"],"TasksViewMsg":["UI.PageViews.Tasks.Msg"],"StopWordsViewMsg":["UI.PageViews.StopWords.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"List.List":{"args":["a"],"tags":{}},"UI.PageViews.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Search.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Settings.Msg":{"args":[],"tags":{"X":[],"KeyValueChanged":["String.String"],"SaveKeyValue":[]}},"UI.PageViews.Stats.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.StopWords.Msg":{"args":[],"tags":{"Add":["String.String"],"Remove":["Basics.Int"]}},"UI.PageViews.Tasks.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Page":{"args":[],"tags":{"Settings":["UI.PageViews.Settings.Model"],"Stats":[],"Documents":["UI.PageViews.Documents.Model"],"Tasks":[],"RankingRules":[],"Synonyms":[],"StopWords":["UI.PageViews.StopWords.Model"],"SearchableAttributes":[],"DistinctAttributes":[],"DisplayedAttributes":[]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"String.String":{"args":[],"tags":{"String":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}}}}})}});}(this));

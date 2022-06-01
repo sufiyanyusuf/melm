@@ -1,14 +1,16 @@
 module UI.PageView exposing (..)
 
 import Element exposing (..)
+import Element.Background
 import UI.PageViews.Documents as DocumentsView
 import UI.PageViews.Indexes as IndexesView
-import UI.PageViews.Keys as KeysView
 import UI.PageViews.Search as SearchView
 import UI.PageViews.Settings as SettingsView
 import UI.PageViews.Stats as StatsView
+import UI.PageViews.StopWords as StopWords
 import UI.PageViews.Tasks as TasksView
 import UI.Pages as Views exposing (Page)
+import UI.Styles
 
 
 
@@ -21,8 +23,8 @@ type Msg
     | SearchViewMsg SearchView.Msg
     | StatsViewMsg StatsView.Msg
     | DocumentsViewMsg DocumentsView.Msg
-    | KeysViewMsg KeysView.Msg
     | TasksViewMsg TasksView.Msg
+    | StopWordsViewMsg StopWords.Msg
 
 
 
@@ -32,11 +34,12 @@ type Msg
 view : Page -> Element Msg
 view currentPage =
     el
-        [ width fill
-        , height fill
+        [ height fill
+        , width fill
 
-        -- , padding 12
-        , scrollbarY
+        -- , scrollbarY
+        , paddingEach { top = 40, bottom = 0, left = 120, right = 0 }
+        , Element.Background.color UI.Styles.color.gray100
         ]
         (getCurrentPageView currentPage)
 
@@ -44,14 +47,8 @@ view currentPage =
 getCurrentPageView : Page -> Element Msg
 getCurrentPageView currentPage =
     case currentPage of
-        Views.Indexes m ->
-            IndexesView.view m |> Element.map IndexesViewMsg
-
         Views.Settings s ->
             SettingsView.view s |> Element.map SettingsViewMsg
-
-        Views.Search ->
-            SearchView.view |> Element.map SearchViewMsg
 
         Views.Stats ->
             StatsView.view |> Element.map StatsViewMsg
@@ -59,11 +56,26 @@ getCurrentPageView currentPage =
         Views.Documents m ->
             DocumentsView.view m |> Element.map DocumentsViewMsg
 
-        Views.Keys ->
-            KeysView.view |> Element.map KeysViewMsg
-
         Views.Tasks ->
             TasksView.view |> Element.map TasksViewMsg
+
+        Views.RankingRules ->
+            Debug.todo "branch 'RankingRules' not implemented"
+
+        Views.Synonyms ->
+            Debug.todo "branch 'Synonyms' not implemented"
+
+        Views.StopWords m ->
+            StopWords.view m |> Element.map StopWordsViewMsg
+
+        Views.SearchableAttributes ->
+            Debug.todo "branch 'SearchableAttributes' not implemented"
+
+        Views.DistinctAttributes ->
+            Debug.todo "branch 'DistinctAttributes' not implemented"
+
+        Views.DisplayedAttributes ->
+            Debug.todo "branch 'DisplayedAttributes' not implemented"
 
 
 

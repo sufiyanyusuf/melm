@@ -7,7 +7,6 @@ import Element exposing (..)
 import Element.Background as Background
 import Element.Border exposing (rounded)
 import Json.Decode as Decode exposing (Value, decodeString, dict, errorToString, field, int, string)
-import Json.Dynamic as Dynamic exposing (Dynamic, at, decoder, equals, find, resolveAt)
 import Json.Encode as Encode
 import Json.Print as Print
 import UI.Elements
@@ -34,7 +33,8 @@ view model =
         [ height fill
         , width fill
         , scrollbarY
-        , paddingEach { top = 40, bottom = 0, left = 120, right = 0 }
+
+        -- , paddingEach { top = 40, bottom = 0, left = 120, right = 0 }
         , Background.color UI.Styles.color.gray100
         ]
         [ el

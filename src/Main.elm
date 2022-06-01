@@ -5,6 +5,7 @@ import Browser
 import Element exposing (..)
 import Html exposing (Html)
 import UI.PageView as PageView exposing (Msg(..))
+import UI.PageViews.Documents
 import UI.PageViews.Indexes
 import UI.PageViews.Settings exposing (Msg(..))
 import UI.Pages as Views exposing (Page(..))
@@ -30,7 +31,7 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     let
         model =
-            { selectedPage = Views.Indexes UI.PageViews.Indexes.init
+            { selectedPage = Views.Documents UI.PageViews.Documents.init
             , token = Nothing
             , savedToken = Nothing
             , pages = Views.init
@@ -97,30 +98,7 @@ handleApiRequest : Model -> Api.Routes.Main.Msg -> ( Model, Cmd Msg )
 handleApiRequest model apiResponse =
     case apiResponse of
         HandleListResponse r ->
-            case r of
-                Ok payload ->
-                    let
-                        updatedViewModel =
-                            getIndexesViewModel { model | indexes = payload }
-                    in
-                    let
-                        updatedIndexesPage =
-                            Indexes updatedViewModel
-                    in
-                    let
-                        updatedModelValue =
-                            { model
-                                | indexes = payload
-                                , pages = updateIndexesViewModel model.pages updatedIndexesPage
-                                , selectedPage = updatedIndexesPage
-                            }
-                    in
-                    ( updatedModelValue
-                    , Cmd.none
-                    )
-
-                Err _ ->
-                    ( model, Cmd.none )
+            ( model, Cmd.none )
 
         HandleShowResponse r ->
             case r of
@@ -174,11 +152,11 @@ handlePageViewMessage model pageViewMsg =
         PageView.DocumentsViewMsg m ->
             ( model, Cmd.none )
 
-        PageView.KeysViewMsg _ ->
-            Debug.todo "branch 'KeysViewMsg _' not implemented"
-
         PageView.TasksViewMsg _ ->
             Debug.todo "branch 'TasksViewMsg _' not implemented"
+
+        PageView.StopWordsViewMsg _ ->
+            ( model, Cmd.none )
 
 
 handleSettingsViewMsg : Model -> UI.PageViews.Settings.Msg -> ( Model, Cmd Msg )
@@ -223,21 +201,7 @@ handleSidebarSelection model sidebarMsg =
     case sidebarMsg of
         Sidebar.SelectPage p ->
             case p of
-                Indexes _ ->
-                    ( { model | selectedPage = selectedPage }
-                    , Api.Routes.Main.buildRequest
-                        (Api.Routes.Main.buildPayload (List indexesRouteResponseListDecoder))
-                        (Maybe.withDefault
-                            ""
-                            model.savedToken
-                        )
-                        |> Cmd.map ApiRequest
-                    )
-
                 Settings _ ->
-                    ( { model | selectedPage = selectedPage }, Cmd.none )
-
-                Search ->
                     ( { model | selectedPage = selectedPage }, Cmd.none )
 
                 Stats ->
@@ -254,11 +218,26 @@ handleSidebarSelection model sidebarMsg =
                         |> Cmd.map ApiRequest
                     )
 
-                Keys ->
-                    ( { model | selectedPage = selectedPage }, Cmd.none )
-
                 Tasks ->
                     ( { model | selectedPage = selectedPage }, Cmd.none )
+
+                RankingRules ->
+                    Debug.todo "branch 'RankingRules' not implemented"
+
+                Synonyms ->
+                    Debug.todo "branch 'Synonyms' not implemented"
+
+                StopWords _ ->
+                    ( { model | selectedPage = selectedPage }, Cmd.none )
+
+                SearchableAttributes ->
+                    Debug.todo "branch 'SearchableAttributes' not implemented"
+
+                DistinctAttributes ->
+                    Debug.todo "branch 'DistinctAttributes' not implemented"
+
+                DisplayedAttributes ->
+                    Debug.todo "branch 'DisplayedAttributes' not implemented"
 
 
 
@@ -313,20 +292,6 @@ updateSettingsViewModel pages updatedPage =
             (\p ->
                 case p of
                     Settings _ ->
-                        updatedPage
-
-                    _ ->
-                        p
-            )
-
-
-updateIndexesViewModel : List Page -> Page -> List Page
-updateIndexesViewModel pages updatedPage =
-    pages
-        |> List.map
-            (\p ->
-                case p of
-                    Indexes _ ->
                         updatedPage
 
                     _ ->

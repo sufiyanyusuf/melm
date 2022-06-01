@@ -1,24 +1,11 @@
-module UI.Elements exposing (button, jsonView, spacer, textfield)
+module UI.Elements exposing (button, spacer, textfield)
 
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border
 import Element.Input as Input
 import Json.Decode as Decode
-import JsonTree
 import UI.Styles exposing (Size(..))
-
-
-jsonView : String -> JsonTree.Config msg -> Element msg
-jsonView model config =
-    el [ padding 12 ]
-        (case JsonTree.parseString model of
-            Ok rootNode ->
-                html (JsonTree.view rootNode config JsonTree.defaultState)
-
-            Err e ->
-                Element.text ("Invalid JSON: " ++ Decode.errorToString e)
-        )
 
 
 spacer : UI.Styles.Size -> Element msg

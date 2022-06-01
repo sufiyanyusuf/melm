@@ -1,4 +1,4 @@
-module UI.PageViews.Tasks exposing (..)
+module UI.PageViews.Synonyms exposing (..)
 
 import Element exposing (..)
 import UI.Styles

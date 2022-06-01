@@ -1,7 +1,6 @@
-module UI.PageViews.Keys exposing (..)
+module UI.PageViews.DistinctAttributes exposing (..)
 
 import Element exposing (..)
-import UI.Pages as Views exposing (Page)
 import UI.Styles
 
 
@@ -13,4 +12,4 @@ view : Element Msg
 view =
     el
         (UI.Styles.getTypographicStyleFor UI.Styles.H1)
-        (text "(Views.pageTitle Views.Keys)")
+        (text "(Views.pageTitle Views.Tasks)")
