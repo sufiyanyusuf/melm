@@ -32,7 +32,7 @@ view model =
             (UI.Styles.getTypographicStyleFor UI.Styles.H1)
             (text model.title)
         , Elements.spacer UI.Styles.XL
-        , textfield model.tokenValue KeyValueChanged
+        , textfield model.tokenValue "Token" KeyValueChanged
         , Elements.spacer UI.Styles.SM
         , button "Save Token" SaveKeyValue
         ]

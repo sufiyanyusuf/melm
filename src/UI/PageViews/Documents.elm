@@ -33,9 +33,6 @@ view model =
         [ height fill
         , width fill
         , scrollbarY
-
-        -- , paddingEach { top = 40, bottom = 0, left = 120, right = 0 }
-        , Background.color UI.Styles.color.gray100
         ]
         [ el
             (UI.Styles.getTypographicStyleFor UI.Styles.H1)

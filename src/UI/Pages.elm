@@ -26,9 +26,10 @@ init =
     , RankingRules
     , Synonyms
     , StopWords StopWords.init
-    , SearchableAttributes
-    , DistinctAttributes
-    , DisplayedAttributes
+
+    -- , SearchableAttributes
+    -- , DistinctAttributes
+    -- , DisplayedAttributes
     , Stats
     , Settings Settings.init
     ]

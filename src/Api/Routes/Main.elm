@@ -16,15 +16,19 @@ type Msg
     = HandleListResponse (Result Http.Error (List IndexesRouteResponseListItem))
     | HandleShowResponse (Result Http.Error IndexesRouteResponseListItem)
     | HandleDocumentsResponse (Result Http.Error String)
+    | HandleListStopWordsResponse (Result Http.Error (List String))
 
 
 type Route
-    = List (Decoder (List IndexesRouteResponseListItem))
-    | Show String (Decoder IndexesRouteResponseListItem)
-    | Create ( String, Maybe String )
-    | Update String
-    | Delete String
+    = ListIndexes (Decoder (List IndexesRouteResponseListItem))
+    | ShowIndex String (Decoder IndexesRouteResponseListItem)
+    | CreateIndex ( String, Maybe String )
+    | UpdateIndex String
+    | DeleteIndex String
     | ListDocuments String
+    | ListStopWords String (Decoder (List String))
+    | UpdateStopWords String (List String)
+    | ResetStopWords String
 
 
 type alias Payload =
@@ -55,7 +59,7 @@ buildRequest payload token =
             payload.route
     in
     case r of
-        List d ->
+        ListIndexes d ->
             Http.request
                 { method = getRequestMethodTitle payload.method
                 , headers = headers token
@@ -66,7 +70,7 @@ buildRequest payload token =
                 , tracker = Nothing
                 }
 
-        Show _ d ->
+        ShowIndex _ d ->
             Http.request
                 { method = getRequestMethodTitle payload.method
                 , headers = headers token
@@ -77,16 +81,16 @@ buildRequest payload token =
                 , tracker = Nothing
                 }
 
-        Create _ ->
+        CreateIndex _ ->
             Debug.todo "branch 'Create _' not implemented"
 
-        Update _ ->
+        UpdateIndex _ ->
             Debug.todo "branch 'Update _' not implemented"
 
-        Delete _ ->
+        DeleteIndex _ ->
             Debug.todo "branch 'Delete _' not implemented"
 
-        ListDocuments i ->
+        ListDocuments _ ->
             Http.request
                 { method = getRequestMethodTitle payload.method
                 , headers = headers token
@@ -97,17 +101,34 @@ buildRequest payload token =
                 , tracker = Nothing
                 }
 
+        ListStopWords _ d ->
+            Http.request
+                { method = getRequestMethodTitle payload.method
+                , headers = headers token
+                , url = payload.endpoint
+                , body = payload.body
+                , expect = Http.expectJson HandleListStopWordsResponse d
+                , timeout = Nothing
+                , tracker = Nothing
+                }
+
+        UpdateStopWords _ _ ->
+            Debug.todo "branch 'UpdateStopWords _' not implemented"
+
+        ResetStopWords _ ->
+            Debug.todo "branch 'ResetStopWords' not implemented"
+
 
 buildPayload : Route -> Payload
 buildPayload r =
     case r of
-        List _ ->
+        ListIndexes _ ->
             { method = GET, endpoint = rootUrl ++ "/indexes", body = Http.emptyBody, route = r }
 
-        Show i _ ->
+        ShowIndex i _ ->
             { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i, body = Http.emptyBody, route = r }
 
-        Create ( i, k ) ->
+        CreateIndex ( i, k ) ->
             case k of
                 Just key ->
                     let
@@ -128,14 +149,23 @@ buildPayload r =
                     in
                     { method = POST, endpoint = rootUrl ++ "/indexes", body = Http.jsonBody body, route = r }
 
-        Update i ->
+        UpdateIndex i ->
             { method = PUT, endpoint = rootUrl ++ "/indexes/" ++ i, body = Http.emptyBody, route = r }
 
-        Delete i ->
+        DeleteIndex i ->
             { method = DELETE, endpoint = rootUrl ++ "/indexes/" ++ i, body = Http.emptyBody, route = r }
 
         ListDocuments i ->
             { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/documents", body = Http.emptyBody, route = r }
+
+        ListStopWords i _ ->
+            { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/stop-words", body = Http.emptyBody, route = r }
+
+        UpdateStopWords _ _ ->
+            Debug.todo "branch 'UpdateStopWords _' not implemented"
+
+        ResetStopWords i ->
+            { method = DELETE, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/stop-words", body = Http.emptyBody, route = r }
 
 
 
@@ -170,3 +200,8 @@ indexesRouteResponseListItemDecoder =
             "primaryKey"
             string
         )
+
+
+stopWordsListItemDecoder : Decoder (List String)
+stopWordsListItemDecoder =
+    Json.Decode.list string

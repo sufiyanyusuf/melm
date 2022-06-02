@@ -8,6 +8,7 @@ import UI.PageView as PageView exposing (Msg(..))
 import UI.PageViews.Documents
 import UI.PageViews.Indexes
 import UI.PageViews.Settings exposing (Msg(..))
+import UI.PageViews.StopWords
 import UI.Pages as Views exposing (Page(..))
 import UI.Sidebar as Sidebar
 import UI.Styles exposing (..)
@@ -38,6 +39,7 @@ init _ =
             , indexes = []
             , documents = []
             , selectedIndex = Nothing
+            , stopWords = []
             }
     in
     ( model, Cmd.none )
@@ -55,6 +57,7 @@ type alias Model =
     , indexes : List IndexesRouteResponseListItem
     , documents : List String
     , selectedIndex : Maybe IndexesRouteResponseListItem
+    , stopWords : List String
     }
 
 
@@ -126,6 +129,24 @@ handleApiRequest model apiResponse =
                         | documents = documents
                         , pages = updateDocumentsViewModel model.pages updatedDocumentsPage
                         , selectedPage = updatedDocumentsPage
+                      }
+                    , Cmd.none
+                    )
+
+                Err _ ->
+                    ( model, Cmd.none )
+
+        HandleListStopWordsResponse r ->
+            case r of
+                Ok payload ->
+                    let
+                        updatedStopWordsPage =
+                            StopWords { words = payload }
+                    in
+                    ( { model
+                        | stopWords = payload
+                        , pages = updateStopWordsViewModel model.pages updatedStopWordsPage
+                        , selectedPage = updatedStopWordsPage
                       }
                     , Cmd.none
                     )
@@ -228,7 +249,15 @@ handleSidebarSelection model sidebarMsg =
                     Debug.todo "branch 'Synonyms' not implemented"
 
                 StopWords _ ->
-                    ( { model | selectedPage = selectedPage }, Cmd.none )
+                    ( { model | selectedPage = selectedPage }
+                    , Api.Routes.Main.buildRequest
+                        (Api.Routes.Main.buildPayload (ListStopWords "suggestions" Api.Routes.Main.stopWordsListItemDecoder))
+                        (Maybe.withDefault
+                            ""
+                            model.savedToken
+                        )
+                        |> Cmd.map ApiRequest
+                    )
 
                 SearchableAttributes ->
                     Debug.todo "branch 'SearchableAttributes' not implemented"
@@ -280,6 +309,11 @@ getIndexesViewModel model =
     { indexes = model.indexes }
 
 
+getStopWordsViewModel : Model -> UI.PageViews.StopWords.Model
+getStopWordsViewModel model =
+    { words = model.stopWords }
+
+
 
 -- getDocumentsViewModel : Model -> UI.PAGES
 -- VIEW MODEL SETTERS
@@ -306,6 +340,20 @@ updateDocumentsViewModel pages updatedPage =
             (\p ->
                 case p of
                     Documents _ ->
+                        updatedPage
+
+                    _ ->
+                        p
+            )
+
+
+updateStopWordsViewModel : List Page -> Page -> List Page
+updateStopWordsViewModel pages updatedPage =
+    pages
+        |> List.map
+            (\p ->
+                case p of
+                    StopWords _ ->
                         updatedPage
 
                     _ ->

@@ -5,6 +5,7 @@ import Element.Background as Background
 import Element.Border exposing (rounded)
 import Element.Events
 import Element.Input exposing (OptionState(..))
+import UI.Icons exposing (Style(..))
 import UI.Pages
 import UI.Styles
 
@@ -68,7 +69,8 @@ sidebarListItemView title isSelected page =
                 , addIf isSelected <| Background.color UI.Styles.color.primary100
                 ]
             )
-            [ paragraph []
+            [ getPageIcon page (getIconStyle isSelected)
+            , paragraph [ paddingEach { top = 0, left = 8, bottom = 0, right = 0 } ]
                 [ el
                     (UI.Styles.getTypographicStyleFor UI.Styles.Body)
                     (text title)
@@ -109,6 +111,49 @@ getPageTitle page =
 
         UI.Pages.DisplayedAttributes ->
             "Displayed Attributes"
+
+
+getPageIcon : UI.Pages.Page -> UI.Icons.Style -> Element msg
+getPageIcon page style =
+    case page of
+        UI.Pages.Settings _ ->
+            Element.html (UI.Icons.settingsGear style)
+
+        UI.Pages.Stats ->
+            Element.html (UI.Icons.pieChart style)
+
+        UI.Pages.Documents _ ->
+            Element.html (UI.Icons.documents style)
+
+        UI.Pages.Tasks ->
+            Element.html (UI.Icons.checkmark style)
+
+        UI.Pages.RankingRules ->
+            Element.html (UI.Icons.arrowUpDown style)
+
+        UI.Pages.Synonyms ->
+            Element.html (UI.Icons.dictionary style)
+
+        UI.Pages.StopWords _ ->
+            Element.html (UI.Icons.block style)
+
+        UI.Pages.SearchableAttributes ->
+            Element.html (UI.Icons.documentSearch style)
+
+        UI.Pages.DistinctAttributes ->
+            Element.html (UI.Icons.block style)
+
+        UI.Pages.DisplayedAttributes ->
+            Element.html (UI.Icons.block style)
+
+
+getIconStyle : Bool -> UI.Icons.Style
+getIconStyle isSelected =
+    if isSelected then
+        Filled
+
+    else
+        Outline
 
 
 addIf : Bool -> Attribute msg -> List (Attribute msg)
