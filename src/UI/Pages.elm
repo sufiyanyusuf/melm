@@ -4,6 +4,7 @@ import Element exposing (..)
 import UI.PageViews.Documents as Documents
 import UI.PageViews.Settings as Settings
 import UI.PageViews.StopWords as StopWords
+import UI.PageViews.Synonyms as Synonyms
 
 
 type Page
@@ -12,7 +13,7 @@ type Page
     | Documents Documents.Model
     | Tasks
     | RankingRules
-    | Synonyms
+    | Synonyms Synonyms.Model
     | StopWords StopWords.Model
     | SearchableAttributes
     | DistinctAttributes
@@ -24,7 +25,7 @@ init =
     [ Documents Documents.init
     , Tasks
     , RankingRules
-    , Synonyms
+    , Synonyms Synonyms.init
     , StopWords StopWords.init
 
     -- , SearchableAttributes

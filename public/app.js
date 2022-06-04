@@ -10733,6 +10733,17 @@ var $author$project$UI$Pages$Documents = function (a) {
 	return {$: 'Documents', a: a};
 };
 var $author$project$UI$PageViews$Documents$init = {documents: _List_Nil};
+var $author$project$UI$Components$SynonymCard$None = {$: 'None'};
+var $author$project$UI$Components$SynonymCard$init = function (index) {
+	return {index: index, requestStatus: $author$project$UI$Components$SynonymCard$None, synonymList: '', title: ''};
+};
+var $author$project$UI$PageViews$Synonyms$init = {
+	synonymCards: _List_fromArray(
+		[
+			$author$project$UI$Components$SynonymCard$init(0),
+			$author$project$UI$Components$SynonymCard$init(1)
+		])
+};
 var $author$project$UI$Pages$RankingRules = {$: 'RankingRules'};
 var $author$project$UI$Pages$Settings = function (a) {
 	return {$: 'Settings', a: a};
@@ -10741,7 +10752,9 @@ var $author$project$UI$Pages$Stats = {$: 'Stats'};
 var $author$project$UI$Pages$StopWords = function (a) {
 	return {$: 'StopWords', a: a};
 };
-var $author$project$UI$Pages$Synonyms = {$: 'Synonyms'};
+var $author$project$UI$Pages$Synonyms = function (a) {
+	return {$: 'Synonyms', a: a};
+};
 var $author$project$UI$Pages$Tasks = {$: 'Tasks'};
 var $author$project$UI$PageViews$Settings$init = {title: 'Settings', tokenValue: ''};
 var $author$project$UI$PageViews$StopWords$init = {words: _List_Nil};
@@ -10750,7 +10763,7 @@ var $author$project$UI$Pages$init = _List_fromArray(
 		$author$project$UI$Pages$Documents($author$project$UI$PageViews$Documents$init),
 		$author$project$UI$Pages$Tasks,
 		$author$project$UI$Pages$RankingRules,
-		$author$project$UI$Pages$Synonyms,
+		$author$project$UI$Pages$Synonyms($author$project$UI$PageViews$Synonyms$init),
 		$author$project$UI$Pages$StopWords($author$project$UI$PageViews$StopWords$init),
 		$author$project$UI$Pages$Stats,
 		$author$project$UI$Pages$Settings($author$project$UI$PageViews$Settings$init)
@@ -10764,6 +10777,7 @@ var $author$project$Main$init = function (_v0) {
 		selectedIndex: $elm$core$Maybe$Nothing,
 		selectedPage: $author$project$UI$Pages$Documents($author$project$UI$PageViews$Documents$init),
 		stopWords: _List_Nil,
+		synonyms: $author$project$UI$PageViews$Synonyms$init.synonymCards,
 		token: $elm$core$Maybe$Nothing
 	};
 	return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -10915,6 +10929,95 @@ var $author$project$Main$handleSettingsViewMsg = F2(
 					$elm$core$Platform$Cmd$none);
 		}
 	});
+var $author$project$Main$getSynonymsViewModel = function (model) {
+	return {synonymCards: model.synonyms};
+};
+var $author$project$UI$Components$SynonymCard$RequestedToSave = {$: 'RequestedToSave'};
+var $author$project$UI$Components$SynonymCard$update = F2(
+	function (msg, model) {
+		switch (msg.$) {
+			case 'UpdatedTitle':
+				var i = msg.a;
+				var t = msg.b;
+				return _Utils_eq(model.index, i) ? _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{title: t}),
+					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			case 'UpdatedList':
+				var i = msg.a;
+				var l = msg.b;
+				return _Utils_eq(model.index, i) ? _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{synonymList: l}),
+					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			default:
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{requestStatus: $author$project$UI$Components$SynonymCard$RequestedToSave}),
+					$elm$core$Platform$Cmd$none);
+		}
+	});
+var $author$project$UI$PageViews$Synonyms$update = F2(
+	function (msg, model) {
+		if (msg.$ === 'CardViewMsg') {
+			var m = msg.a;
+			var synonymCards = A2(
+				$elm$core$List$map,
+				function (_v1) {
+					var a = _v1.a;
+					return a;
+				},
+				A2(
+					$elm$core$List$map,
+					function (c) {
+						return A2($author$project$UI$Components$SynonymCard$update, m, c);
+					},
+					model.synonymCards));
+			return _Utils_Tuple2(
+				_Utils_update(
+					model,
+					{synonymCards: synonymCards}),
+				$elm$core$Platform$Cmd$none);
+		} else {
+			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+		}
+	});
+var $author$project$Main$updateSynonymsViewModel = F2(
+	function (pages, updatedPage) {
+		return A2(
+			$elm$core$List$map,
+			function (p) {
+				if (p.$ === 'Synonyms') {
+					return updatedPage;
+				} else {
+					return p;
+				}
+			},
+			pages);
+	});
+var $author$project$Main$handleSynonymsViewMsg = F2(
+	function (model, msg) {
+		var _v0 = A2(
+			$author$project$UI$PageViews$Synonyms$update,
+			msg,
+			$author$project$Main$getSynonymsViewModel(model));
+		var updatedSynonymsViewModel = _v0.a;
+		return _Utils_Tuple2(
+			_Utils_update(
+				model,
+				{
+					pages: A2(
+						$author$project$Main$updateSynonymsViewModel,
+						model.pages,
+						$author$project$UI$Pages$Synonyms(updatedSynonymsViewModel)),
+					selectedPage: $author$project$UI$Pages$Synonyms(updatedSynonymsViewModel),
+					synonyms: updatedSynonymsViewModel.synonymCards
+				}),
+			$elm$core$Platform$Cmd$none);
+	});
 var $elm$core$Debug$todo = _Debug_todo;
 var $author$project$Main$handlePageViewMessage = F2(
 	function (model, pageViewMsg) {
@@ -10926,22 +11029,22 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 165, column: 13},
-						end: {line: 165, column: 23}
+						start: {line: 169, column: 13},
+						end: {line: 169, column: 23}
 					})('branch \'IndexesViewMsg _\' not implemented');
 			case 'SearchViewMsg':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 168, column: 13},
-						end: {line: 168, column: 23}
+						start: {line: 172, column: 13},
+						end: {line: 172, column: 23}
 					})('branch \'SearchViewMsg _\' not implemented');
 			case 'StatsViewMsg':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 171, column: 13},
-						end: {line: 171, column: 23}
+						start: {line: 175, column: 13},
+						end: {line: 175, column: 23}
 					})('branch \'StatsViewMsg _\' not implemented');
 			case 'DocumentsViewMsg':
 				var m = pageViewMsg.a;
@@ -10950,11 +11053,14 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 177, column: 13},
-						end: {line: 177, column: 23}
+						start: {line: 181, column: 13},
+						end: {line: 181, column: 23}
 					})('branch \'TasksViewMsg _\' not implemented');
-			default:
+			case 'StopWordsViewMsg':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			default:
+				var msg = pageViewMsg.a;
+				return A2($author$project$Main$handleSynonymsViewMsg, model, msg);
 		}
 	});
 var $author$project$Main$ApiRequest = function (a) {
@@ -11465,16 +11571,15 @@ var $author$project$Main$handleSidebarSelection = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 246, column: 21},
-						end: {line: 246, column: 31}
+						start: {line: 270, column: 21},
+						end: {line: 270, column: 31}
 					})('branch \'RankingRules\' not implemented');
 			case 'Synonyms':
-				return _Debug_todo(
-					'Main',
-					{
-						start: {line: 249, column: 21},
-						end: {line: 249, column: 31}
-					})('branch \'Synonyms\' not implemented');
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{selectedPage: selectedPage}),
+					$elm$core$Platform$Cmd$none);
 			case 'StopWords':
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -11492,22 +11597,22 @@ var $author$project$Main$handleSidebarSelection = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 263, column: 21},
-						end: {line: 263, column: 31}
+						start: {line: 287, column: 21},
+						end: {line: 287, column: 31}
 					})('branch \'SearchableAttributes\' not implemented');
 			case 'DistinctAttributes':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 266, column: 21},
-						end: {line: 266, column: 31}
+						start: {line: 290, column: 21},
+						end: {line: 290, column: 31}
 					})('branch \'DistinctAttributes\' not implemented');
 			default:
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 269, column: 21},
-						end: {line: 269, column: 31}
+						start: {line: 293, column: 21},
+						end: {line: 293, column: 31}
 					})('branch \'DisplayedAttributes\' not implemented');
 		}
 	});
@@ -18440,6 +18545,9 @@ var $author$project$UI$PageView$StatsViewMsg = function (a) {
 var $author$project$UI$PageView$StopWordsViewMsg = function (a) {
 	return {$: 'StopWordsViewMsg', a: a};
 };
+var $author$project$UI$PageView$SynonymsViewMsg = function (a) {
+	return {$: 'SynonymsViewMsg', a: a};
+};
 var $author$project$UI$PageView$TasksViewMsg = function (a) {
 	return {$: 'TasksViewMsg', a: a};
 };
@@ -20524,6 +20632,97 @@ var $author$project$UI$PageViews$StopWords$view = function (model) {
 					model.words))
 			]));
 };
+var $author$project$UI$PageViews$Synonyms$CardViewMsg = function (a) {
+	return {$: 'CardViewMsg', a: a};
+};
+var $author$project$UI$Styles$MD = {$: 'MD'};
+var $author$project$UI$Components$SynonymCard$UpdatedList = F2(
+	function (a, b) {
+		return {$: 'UpdatedList', a: a, b: b};
+	});
+var $author$project$UI$Components$SynonymCard$UpdatedTitle = F2(
+	function (a, b) {
+		return {$: 'UpdatedTitle', a: a, b: b};
+	});
+var $author$project$UI$Components$SynonymCard$loadingView = function (model) {
+	return _Utils_eq(model.requestStatus, $author$project$UI$Components$SynonymCard$RequestedToSave) ? A2(
+		$mdgriffith$elm_ui$Element$el,
+		_Utils_ap(
+			$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$Body),
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$padding(12)
+				])),
+		$mdgriffith$elm_ui$Element$text('Saving')) : $mdgriffith$elm_ui$Element$none;
+};
+var $author$project$UI$Components$SynonymCard$cardView = function (model) {
+	return A2(
+		$mdgriffith$elm_ui$Element$column,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$padding(8),
+				$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.white),
+				$mdgriffith$elm_ui$Element$Border$rounded(8)
+			]),
+		_List_fromArray(
+			[
+				A3(
+				$author$project$UI$Elements$textfield,
+				model.title,
+				'Tomato',
+				$author$project$UI$Components$SynonymCard$UpdatedTitle(model.index)),
+				A3(
+				$author$project$UI$Elements$textfield,
+				model.synonymList,
+				'Tomayto, Tomaato, Tomaeto',
+				$author$project$UI$Components$SynonymCard$UpdatedList(model.index)),
+				$author$project$UI$Components$SynonymCard$loadingView(model)
+			]));
+};
+var $author$project$UI$PageViews$Synonyms$view = function (model) {
+	return A2(
+		$mdgriffith$elm_ui$Element$column,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+				$mdgriffith$elm_ui$Element$scrollbarY,
+				$mdgriffith$elm_ui$Element$padding(20)
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$mdgriffith$elm_ui$Element$el,
+				$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H1),
+				$mdgriffith$elm_ui$Element$text('Synonyms')),
+				$author$project$UI$Elements$spacer($author$project$UI$Styles$MD),
+				A2(
+				$mdgriffith$elm_ui$Element$table,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+						$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+						$mdgriffith$elm_ui$Element$scrollbarY,
+						$mdgriffith$elm_ui$Element$spacing(20)
+					]),
+				{
+					columns: _List_fromArray(
+						[
+							{
+							header: $mdgriffith$elm_ui$Element$none,
+							view: function (item) {
+								return A2(
+									$mdgriffith$elm_ui$Element$map,
+									$author$project$UI$PageViews$Synonyms$CardViewMsg,
+									$author$project$UI$Components$SynonymCard$cardView(item));
+							},
+							width: $mdgriffith$elm_ui$Element$fill
+						}
+						]),
+					data: model.synonymCards
+				})
+			]));
+};
 var $author$project$UI$PageViews$Tasks$view = A2(
 	$mdgriffith$elm_ui$Element$el,
 	$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H1),
@@ -20550,16 +20749,15 @@ var $author$project$UI$PageView$getCurrentPageView = function (currentPage) {
 			return _Debug_todo(
 				'UI.PageView',
 				{
-					start: {line: 63, column: 13},
-					end: {line: 63, column: 23}
+					start: {line: 65, column: 13},
+					end: {line: 65, column: 23}
 				})('branch \'RankingRules\' not implemented');
 		case 'Synonyms':
-			return _Debug_todo(
-				'UI.PageView',
-				{
-					start: {line: 66, column: 13},
-					end: {line: 66, column: 23}
-				})('branch \'Synonyms\' not implemented');
+			var s = currentPage.a;
+			return A2(
+				$mdgriffith$elm_ui$Element$map,
+				$author$project$UI$PageView$SynonymsViewMsg,
+				$author$project$UI$PageViews$Synonyms$view(s));
 		case 'StopWords':
 			var m = currentPage.a;
 			return A2(
@@ -20570,22 +20768,22 @@ var $author$project$UI$PageView$getCurrentPageView = function (currentPage) {
 			return _Debug_todo(
 				'UI.PageView',
 				{
-					start: {line: 72, column: 13},
-					end: {line: 72, column: 23}
+					start: {line: 74, column: 13},
+					end: {line: 74, column: 23}
 				})('branch \'SearchableAttributes\' not implemented');
 		case 'DistinctAttributes':
 			return _Debug_todo(
 				'UI.PageView',
 				{
-					start: {line: 75, column: 13},
-					end: {line: 75, column: 23}
+					start: {line: 77, column: 13},
+					end: {line: 77, column: 23}
 				})('branch \'DistinctAttributes\' not implemented');
 		default:
 			return _Debug_todo(
 				'UI.PageView',
 				{
-					start: {line: 78, column: 13},
-					end: {line: 78, column: 23}
+					start: {line: 80, column: 13},
+					end: {line: 80, column: 23}
 				})('branch \'DisplayedAttributes\' not implemented');
 	}
 };
@@ -20633,4 +20831,4 @@ var $author$project$Main$view = function (model) {
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Api.Routes.Main.IndexesRouteResponseListItem":{"args":[],"type":"{ uid : String.String, name : String.String, createdAt : String.String, updatedAt : String.String, primaryKey : String.String }"},"UI.PageViews.Documents.Model":{"args":[],"type":"{ documents : List.List String.String }"},"UI.PageViews.Settings.Model":{"args":[],"type":"{ tokenValue : String.String, title : String.String }"},"UI.PageViews.StopWords.Model":{"args":[],"type":"{ words : List.List String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"],"ApiRequest":["Api.Routes.Main.Msg"]}},"Api.Routes.Main.Msg":{"args":[],"tags":{"HandleListResponse":["Result.Result Http.Error (List.List Api.Routes.Main.IndexesRouteResponseListItem)"],"HandleShowResponse":["Result.Result Http.Error Api.Routes.Main.IndexesRouteResponseListItem"],"HandleDocumentsResponse":["Result.Result Http.Error String.String"],"HandleListStopWordsResponse":["Result.Result Http.Error (List.List String.String)"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.PageViews.Indexes.Msg"],"SettingsViewMsg":["UI.PageViews.Settings.Msg"],"SearchViewMsg":["UI.PageViews.Search.Msg"],"StatsViewMsg":["UI.PageViews.Stats.Msg"],"DocumentsViewMsg":["UI.PageViews.Documents.Msg"],"TasksViewMsg":["UI.PageViews.Tasks.Msg"],"StopWordsViewMsg":["UI.PageViews.StopWords.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"List.List":{"args":["a"],"tags":{}},"UI.PageViews.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Search.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Settings.Msg":{"args":[],"tags":{"X":[],"KeyValueChanged":["String.String"],"SaveKeyValue":[]}},"UI.PageViews.Stats.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.StopWords.Msg":{"args":[],"tags":{"NewStopWord":["String.String"],"Remove":["Basics.Int"]}},"UI.PageViews.Tasks.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Page":{"args":[],"tags":{"Settings":["UI.PageViews.Settings.Model"],"Stats":[],"Documents":["UI.PageViews.Documents.Model"],"Tasks":[],"RankingRules":[],"Synonyms":[],"StopWords":["UI.PageViews.StopWords.Model"],"SearchableAttributes":[],"DistinctAttributes":[],"DisplayedAttributes":[]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"String.String":{"args":[],"tags":{"String":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Api.Routes.Main.IndexesRouteResponseListItem":{"args":[],"type":"{ uid : String.String, name : String.String, createdAt : String.String, updatedAt : String.String, primaryKey : String.String }"},"UI.Components.SynonymCard.Model":{"args":[],"type":"{ index : Basics.Int, title : String.String, synonymList : String.String, requestStatus : UI.Components.SynonymCard.RequestStatus }"},"UI.PageViews.Documents.Model":{"args":[],"type":"{ documents : List.List String.String }"},"UI.PageViews.Settings.Model":{"args":[],"type":"{ tokenValue : String.String, title : String.String }"},"UI.PageViews.StopWords.Model":{"args":[],"type":"{ words : List.List String.String }"},"UI.PageViews.Synonyms.Model":{"args":[],"type":"{ synonymCards : List.List UI.Components.SynonymCard.Model }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"],"ApiRequest":["Api.Routes.Main.Msg"]}},"Api.Routes.Main.Msg":{"args":[],"tags":{"HandleListResponse":["Result.Result Http.Error (List.List Api.Routes.Main.IndexesRouteResponseListItem)"],"HandleShowResponse":["Result.Result Http.Error Api.Routes.Main.IndexesRouteResponseListItem"],"HandleDocumentsResponse":["Result.Result Http.Error String.String"],"HandleListStopWordsResponse":["Result.Result Http.Error (List.List String.String)"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.PageViews.Indexes.Msg"],"SettingsViewMsg":["UI.PageViews.Settings.Msg"],"SearchViewMsg":["UI.PageViews.Search.Msg"],"StatsViewMsg":["UI.PageViews.Stats.Msg"],"DocumentsViewMsg":["UI.PageViews.Documents.Msg"],"TasksViewMsg":["UI.PageViews.Tasks.Msg"],"StopWordsViewMsg":["UI.PageViews.StopWords.Msg"],"SynonymsViewMsg":["UI.PageViews.Synonyms.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"List.List":{"args":["a"],"tags":{}},"UI.PageViews.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Search.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Settings.Msg":{"args":[],"tags":{"X":[],"KeyValueChanged":["String.String"],"SaveKeyValue":[]}},"UI.PageViews.Stats.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.StopWords.Msg":{"args":[],"tags":{"NewStopWord":["String.String"],"Remove":["Basics.Int"]}},"UI.PageViews.Synonyms.Msg":{"args":[],"tags":{"Save":["UI.Components.SynonymCard.Model"],"CardViewMsg":["UI.Components.SynonymCard.Msg"]}},"UI.PageViews.Tasks.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Page":{"args":[],"tags":{"Settings":["UI.PageViews.Settings.Model"],"Stats":[],"Documents":["UI.PageViews.Documents.Model"],"Tasks":[],"RankingRules":[],"Synonyms":["UI.PageViews.Synonyms.Model"],"StopWords":["UI.PageViews.StopWords.Model"],"SearchableAttributes":[],"DistinctAttributes":[],"DisplayedAttributes":[]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"String.String":{"args":[],"tags":{"String":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"UI.Components.SynonymCard.Msg":{"args":[],"tags":{"UpdatedTitle":["Basics.Int","String.String"],"UpdatedList":["Basics.Int","String.String"],"Save":["UI.Components.SynonymCard.Model"]}},"UI.Components.SynonymCard.RequestStatus":{"args":[],"tags":{"None":[],"RequestedToSave":[],"SuccessfullySaved":[],"FailedToSave":[]}}}}})}});}(this));

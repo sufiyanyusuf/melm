@@ -8,8 +8,9 @@ import UI.PageViews.Search as SearchView
 import UI.PageViews.Settings as SettingsView
 import UI.PageViews.Stats as StatsView
 import UI.PageViews.StopWords as StopWords
+import UI.PageViews.Synonyms as SynonymsView
 import UI.PageViews.Tasks as TasksView
-import UI.Pages as Views exposing (Page)
+import UI.Pages as Views exposing (Page(..))
 import UI.Styles
 
 
@@ -25,6 +26,7 @@ type Msg
     | DocumentsViewMsg DocumentsView.Msg
     | TasksViewMsg TasksView.Msg
     | StopWordsViewMsg StopWords.Msg
+    | SynonymsViewMsg SynonymsView.Msg
 
 
 
@@ -62,8 +64,8 @@ getCurrentPageView currentPage =
         Views.RankingRules ->
             Debug.todo "branch 'RankingRules' not implemented"
 
-        Views.Synonyms ->
-            Debug.todo "branch 'Synonyms' not implemented"
+        Views.Synonyms s ->
+            SynonymsView.view s |> Element.map SynonymsViewMsg
 
         Views.StopWords m ->
             StopWords.view m |> Element.map StopWordsViewMsg

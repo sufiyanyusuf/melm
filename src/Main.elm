@@ -4,11 +4,13 @@ import Api.Routes.Main exposing (..)
 import Browser
 import Element exposing (..)
 import Html exposing (Html)
+import UI.Components.SynonymCard
 import UI.PageView as PageView exposing (Msg(..))
 import UI.PageViews.Documents
 import UI.PageViews.Indexes
 import UI.PageViews.Settings exposing (Msg(..))
 import UI.PageViews.StopWords
+import UI.PageViews.Synonyms exposing (Msg(..))
 import UI.Pages as Views exposing (Page(..))
 import UI.Sidebar as Sidebar
 import UI.Styles exposing (..)
@@ -40,6 +42,7 @@ init _ =
             , documents = []
             , selectedIndex = Nothing
             , stopWords = []
+            , synonyms = UI.PageViews.Synonyms.init.synonymCards
             }
     in
     ( model, Cmd.none )
@@ -58,6 +61,7 @@ type alias Model =
     , documents : List String
     , selectedIndex : Maybe IndexesRouteResponseListItem
     , stopWords : List String
+    , synonyms : List UI.Components.SynonymCard.Model
     }
 
 
@@ -179,6 +183,26 @@ handlePageViewMessage model pageViewMsg =
         PageView.StopWordsViewMsg _ ->
             ( model, Cmd.none )
 
+        PageView.SynonymsViewMsg msg ->
+            handleSynonymsViewMsg model msg
+
+
+handleSynonymsViewMsg : Model -> UI.PageViews.Synonyms.Msg -> ( Model, Cmd Msg )
+handleSynonymsViewMsg model msg =
+    let
+        ( updatedSynonymsViewModel, _ ) =
+            UI.PageViews.Synonyms.update msg (getSynonymsViewModel model)
+    in
+    case msg of
+        _ ->
+            ( { model
+                | pages = updateSynonymsViewModel model.pages (Synonyms updatedSynonymsViewModel)
+                , selectedPage = Synonyms updatedSynonymsViewModel
+                , synonyms = updatedSynonymsViewModel.synonymCards
+              }
+            , Cmd.none
+            )
+
 
 handleSettingsViewMsg : Model -> UI.PageViews.Settings.Msg -> ( Model, Cmd Msg )
 handleSettingsViewMsg model msg =
@@ -245,8 +269,8 @@ handleSidebarSelection model sidebarMsg =
                 RankingRules ->
                     Debug.todo "branch 'RankingRules' not implemented"
 
-                Synonyms ->
-                    Debug.todo "branch 'Synonyms' not implemented"
+                Synonyms _ ->
+                    ( { model | selectedPage = selectedPage }, Cmd.none )
 
                 StopWords _ ->
                     ( { model | selectedPage = selectedPage }
@@ -314,6 +338,11 @@ getStopWordsViewModel model =
     { words = model.stopWords }
 
 
+getSynonymsViewModel : Model -> UI.PageViews.Synonyms.Model
+getSynonymsViewModel model =
+    { synonymCards = model.synonyms }
+
+
 
 -- getDocumentsViewModel : Model -> UI.PAGES
 -- VIEW MODEL SETTERS
@@ -354,6 +383,20 @@ updateStopWordsViewModel pages updatedPage =
             (\p ->
                 case p of
                     StopWords _ ->
+                        updatedPage
+
+                    _ ->
+                        p
+            )
+
+
+updateSynonymsViewModel : List Page -> Page -> List Page
+updateSynonymsViewModel pages updatedPage =
+    pages
+        |> List.map
+            (\p ->
+                case p of
+                    Synonyms _ ->
                         updatedPage
 
                     _ ->

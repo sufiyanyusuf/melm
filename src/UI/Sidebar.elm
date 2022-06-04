@@ -97,7 +97,7 @@ getPageTitle page =
         UI.Pages.RankingRules ->
             "Ranking Rules"
 
-        UI.Pages.Synonyms ->
+        UI.Pages.Synonyms _ ->
             "Synonyms"
 
         UI.Pages.StopWords _ ->
@@ -131,7 +131,7 @@ getPageIcon page style =
         UI.Pages.RankingRules ->
             Element.html (UI.Icons.arrowUpDown style)
 
-        UI.Pages.Synonyms ->
+        UI.Pages.Synonyms _ ->
             Element.html (UI.Icons.dictionary style)
 
         UI.Pages.StopWords _ ->
