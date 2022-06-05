@@ -21,7 +21,7 @@ type Icon
     | PieChart
     | SettingsGear
     | Retry
-    | Delete
+    | Trash
     | Dictionary
     | Block
 
@@ -56,7 +56,7 @@ buildIcon icon style =
         Retry ->
             Element.html (retry style)
 
-        Delete ->
+        Trash ->
             Element.html (delete style)
 
         Dictionary ->

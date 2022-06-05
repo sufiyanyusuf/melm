@@ -42,7 +42,7 @@ handleSave : Model -> Int -> ( Model, Cmd Msg )
 handleSave model i =
     if model.index == i then
         if model.title /= "" && model.synonymList /= "" then
-            ( { model | requestStatus = RequestedToSave }, Cmd.none )
+            ( { model | requestStatus = Fired Create }, Cmd.none )
 
         else
             ( model, Cmd.none )
@@ -51,11 +51,17 @@ handleSave model i =
         ( model, Cmd.none )
 
 
+type Request
+    = Create
+    | Update
+    | Delete
+
+
 type RequestStatus
     = None
-    | RequestedToSave
-    | SuccessfullySaved
-    | FailedToSave
+    | Fired Request
+    | Success
+    | Failed Request
 
 
 type alias Model =
@@ -81,6 +87,7 @@ cardView model =
         [ padding 8
         , Element.Background.color UI.Styles.color.white
         , Element.Border.rounded 8
+        , Element.width fill
         ]
         [ UI.Elements.textfield model.title "Tomato" (UpdatedTitle model.index) (DoneEditingTitle model.index)
         , UI.Elements.textfield model.synonymList "Tomayto, Tomaato, Tomaeto" (UpdatedList model.index) (DoneEditingList model.index)
@@ -91,37 +98,39 @@ cardView model =
 
 loadingView : Model -> Element Msg
 loadingView model =
-    if model.requestStatus == RequestedToSave then
-        el
-            (UI.Styles.getTypographicStyleFor UI.Styles.Body ++ [ padding 12 ])
-            (text "Saving")
+    case model.requestStatus of
+        Fired x ->
+            el
+                (UI.Styles.getTypographicStyleFor UI.Styles.Body ++ [ padding 12 ])
+                (text (loadingString x))
 
-    else
-        Element.none
+        _ ->
+            Element.none
 
 
 failedView : Model -> Element Msg
 failedView model =
-    if model.requestStatus == FailedToSave then
-        Element.row
-            ([ padding 8
-             , Element.Background.color UI.Styles.color.white
-             , Element.Border.rounded 8
-             , Element.width Element.fill
-             ]
-                ++ UI.Styles.getTypographicStyleFor UI.Styles.Body
-            )
-            [ Element.el [ Element.width Element.fill, padding 4 ] (text "Failed to save")
-            , Element.row
-                [ Element.width Element.shrink
+    case model.requestStatus of
+        Failed x ->
+            Element.row
+                ([ padding 8
+                 , Element.Background.color UI.Styles.color.white
+                 , Element.Border.rounded 8
+                 , Element.width Element.fill
+                 ]
+                    ++ UI.Styles.getTypographicStyleFor UI.Styles.Body
+                )
+                [ Element.el [ Element.width Element.fill, padding 4 ] (text (failureString x))
+                , Element.row
+                    [ Element.width Element.shrink
+                    ]
+                    [ UI.Elements.iconButton Retry (Save model.index)
+                    , UI.Elements.iconButton Trash (Remove model.index)
+                    ]
                 ]
-                [ UI.Elements.iconButton Retry (Save model.index)
-                , UI.Elements.iconButton Delete (Remove model.index)
-                ]
-            ]
 
-    else
-        Element.none
+        _ ->
+            Element.none
 
 
 init : Int -> Model
@@ -131,3 +140,29 @@ init index =
     , synonymList = ""
     , requestStatus = None
     }
+
+
+loadingString : Request -> String
+loadingString r =
+    case r of
+        Create ->
+            "Creating"
+
+        Update ->
+            "Updating"
+
+        Delete ->
+            "Deleting"
+
+
+failureString : Request -> String
+failureString r =
+    case r of
+        Create ->
+            "Failed to create"
+
+        Update ->
+            "Failed to update"
+
+        Delete ->
+            "Failed to delete"

@@ -33,8 +33,9 @@ spacer size =
 textfield : String -> String -> (String -> msg) -> msg -> Element msg
 textfield value placeholder valueChanged loseFocus =
     el
-        (UI.Styles.getTypographicStyleFor UI.Styles.Body)
-        -- (Element.text <|String.fromInt model.viewPort.width)
+        (UI.Styles.getTypographicStyleFor UI.Styles.Body
+            ++ [ Element.width fill ]
+        )
         (Input.text
             [ spacing 8
             , Element.Border.width 0

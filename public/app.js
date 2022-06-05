@@ -10934,13 +10934,18 @@ var $author$project$Main$handleSettingsViewMsg = F2(
 var $author$project$Main$getSynonymsViewModel = function (model) {
 	return {synonymStates: model.synonyms};
 };
-var $author$project$UI$Components$SynonymCard$RequestedToSave = {$: 'RequestedToSave'};
+var $author$project$UI$Components$SynonymCard$Create = {$: 'Create'};
+var $author$project$UI$Components$SynonymCard$Fired = function (a) {
+	return {$: 'Fired', a: a};
+};
 var $author$project$UI$Components$SynonymCard$handleSave = F2(
 	function (model, i) {
 		return _Utils_eq(model.index, i) ? (((model.title !== '') && (model.synonymList !== '')) ? _Utils_Tuple2(
 			_Utils_update(
 				model,
-				{requestStatus: $author$project$UI$Components$SynonymCard$RequestedToSave}),
+				{
+					requestStatus: $author$project$UI$Components$SynonymCard$Fired($author$project$UI$Components$SynonymCard$Create)
+				}),
 			$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none)) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 	});
 var $author$project$UI$Components$SynonymCard$update = F2(
@@ -18006,7 +18011,7 @@ var $author$project$UI$Icons$buildIcon = F2(
 			case 'Retry':
 				return $mdgriffith$elm_ui$Element$html(
 					$author$project$UI$Icons$retry(style));
-			case 'Delete':
+			case 'Trash':
 				return $mdgriffith$elm_ui$Element$html(
 					$author$project$UI$Icons$delete(style));
 			case 'Dictionary':
@@ -20437,7 +20442,12 @@ var $author$project$UI$Elements$textfield = F4(
 	function (value, placeholder, valueChanged, loseFocus) {
 		return A2(
 			$mdgriffith$elm_ui$Element$el,
-			$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$Body),
+			_Utils_ap(
+				$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$Body),
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+					])),
 			A2(
 				$mdgriffith$elm_ui$Element$Input$text,
 				_List_fromArray(
@@ -20774,14 +20784,23 @@ var $author$project$UI$Components$SynonymCard$UpdatedTitle = F2(
 	function (a, b) {
 		return {$: 'UpdatedTitle', a: a, b: b};
 	});
-var $author$project$UI$Icons$Delete = {$: 'Delete'};
-var $author$project$UI$Components$SynonymCard$FailedToSave = {$: 'FailedToSave'};
 var $author$project$UI$Components$SynonymCard$Remove = function (a) {
 	return {$: 'Remove', a: a};
 };
 var $author$project$UI$Icons$Retry = {$: 'Retry'};
 var $author$project$UI$Components$SynonymCard$Save = function (a) {
 	return {$: 'Save', a: a};
+};
+var $author$project$UI$Icons$Trash = {$: 'Trash'};
+var $author$project$UI$Components$SynonymCard$failureString = function (r) {
+	switch (r.$) {
+		case 'Create':
+			return 'Failed to create';
+		case 'Update':
+			return 'Failed to update';
+		default:
+			return 'Failed to delete';
+	}
 };
 var $mdgriffith$elm_ui$Internal$Model$Active = {$: 'Active'};
 var $mdgriffith$elm_ui$Internal$Flag$active = $mdgriffith$elm_ui$Internal$Flag$flag(32);
@@ -20818,56 +20837,80 @@ var $author$project$UI$Elements$iconButton = F2(
 			A2($author$project$UI$Icons$buildIcon, icon, $author$project$UI$Icons$Outline));
 	});
 var $author$project$UI$Components$SynonymCard$failedView = function (model) {
-	return _Utils_eq(model.requestStatus, $author$project$UI$Components$SynonymCard$FailedToSave) ? A2(
-		$mdgriffith$elm_ui$Element$row,
-		_Utils_ap(
+	var _v0 = model.requestStatus;
+	if (_v0.$ === 'Failed') {
+		var x = _v0.a;
+		return A2(
+			$mdgriffith$elm_ui$Element$row,
+			_Utils_ap(
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$padding(8),
+						$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.white),
+						$mdgriffith$elm_ui$Element$Border$rounded(8),
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+					]),
+				$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$Body)),
 			_List_fromArray(
 				[
-					$mdgriffith$elm_ui$Element$padding(8),
-					$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.white),
-					$mdgriffith$elm_ui$Element$Border$rounded(8),
-					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
-				]),
-			$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$Body)),
-		_List_fromArray(
-			[
-				A2(
-				$mdgriffith$elm_ui$Element$el,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-						$mdgriffith$elm_ui$Element$padding(4)
-					]),
-				$mdgriffith$elm_ui$Element$text('Failed to save')),
-				A2(
-				$mdgriffith$elm_ui$Element$row,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink)
-					]),
-				_List_fromArray(
-					[
-						A2(
-						$author$project$UI$Elements$iconButton,
-						$author$project$UI$Icons$Retry,
-						$author$project$UI$Components$SynonymCard$Save(model.index)),
-						A2(
-						$author$project$UI$Elements$iconButton,
-						$author$project$UI$Icons$Delete,
-						$author$project$UI$Components$SynonymCard$Remove(model.index))
-					]))
-			])) : $mdgriffith$elm_ui$Element$none;
+					A2(
+					$mdgriffith$elm_ui$Element$el,
+					_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+							$mdgriffith$elm_ui$Element$padding(4)
+						]),
+					$mdgriffith$elm_ui$Element$text(
+						$author$project$UI$Components$SynonymCard$failureString(x))),
+					A2(
+					$mdgriffith$elm_ui$Element$row,
+					_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink)
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$author$project$UI$Elements$iconButton,
+							$author$project$UI$Icons$Retry,
+							$author$project$UI$Components$SynonymCard$Save(model.index)),
+							A2(
+							$author$project$UI$Elements$iconButton,
+							$author$project$UI$Icons$Trash,
+							$author$project$UI$Components$SynonymCard$Remove(model.index))
+						]))
+				]));
+	} else {
+		return $mdgriffith$elm_ui$Element$none;
+	}
+};
+var $author$project$UI$Components$SynonymCard$loadingString = function (r) {
+	switch (r.$) {
+		case 'Create':
+			return 'Creating';
+		case 'Update':
+			return 'Updating';
+		default:
+			return 'Deleting';
+	}
 };
 var $author$project$UI$Components$SynonymCard$loadingView = function (model) {
-	return _Utils_eq(model.requestStatus, $author$project$UI$Components$SynonymCard$RequestedToSave) ? A2(
-		$mdgriffith$elm_ui$Element$el,
-		_Utils_ap(
-			$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$Body),
-			_List_fromArray(
-				[
-					$mdgriffith$elm_ui$Element$padding(12)
-				])),
-		$mdgriffith$elm_ui$Element$text('Saving')) : $mdgriffith$elm_ui$Element$none;
+	var _v0 = model.requestStatus;
+	if (_v0.$ === 'Fired') {
+		var x = _v0.a;
+		return A2(
+			$mdgriffith$elm_ui$Element$el,
+			_Utils_ap(
+				$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$Body),
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$padding(12)
+					])),
+			$mdgriffith$elm_ui$Element$text(
+				$author$project$UI$Components$SynonymCard$loadingString(x)));
+	} else {
+		return $mdgriffith$elm_ui$Element$none;
+	}
 };
 var $author$project$UI$Components$SynonymCard$cardView = function (model) {
 	return A2(
@@ -20876,7 +20919,8 @@ var $author$project$UI$Components$SynonymCard$cardView = function (model) {
 			[
 				$mdgriffith$elm_ui$Element$padding(8),
 				$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.white),
-				$mdgriffith$elm_ui$Element$Border$rounded(8)
+				$mdgriffith$elm_ui$Element$Border$rounded(8),
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
 			]),
 		_List_fromArray(
 			[
@@ -21027,4 +21071,4 @@ var $author$project$Main$view = function (model) {
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Api.Routes.Main.IndexesRouteResponseListItem":{"args":[],"type":"{ uid : String.String, name : String.String, createdAt : String.String, updatedAt : String.String, primaryKey : String.String }"},"UI.Components.SynonymCard.Model":{"args":[],"type":"{ index : Basics.Int, title : String.String, synonymList : String.String, requestStatus : UI.Components.SynonymCard.RequestStatus }"},"UI.PageViews.Documents.Model":{"args":[],"type":"{ documents : List.List String.String }"},"UI.PageViews.Settings.Model":{"args":[],"type":"{ tokenValue : String.String, title : String.String }"},"UI.PageViews.StopWords.Model":{"args":[],"type":"{ words : List.List String.String }"},"UI.PageViews.Synonyms.Model":{"args":[],"type":"{ synonymStates : List.List UI.Components.SynonymCard.Model }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"],"ApiRequest":["Api.Routes.Main.Msg"]}},"Api.Routes.Main.Msg":{"args":[],"tags":{"HandleListResponse":["Result.Result Http.Error (List.List Api.Routes.Main.IndexesRouteResponseListItem)"],"HandleShowResponse":["Result.Result Http.Error Api.Routes.Main.IndexesRouteResponseListItem"],"HandleDocumentsResponse":["Result.Result Http.Error String.String"],"HandleListStopWordsResponse":["Result.Result Http.Error (List.List String.String)"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.PageViews.Indexes.Msg"],"SettingsViewMsg":["UI.PageViews.Settings.Msg"],"SearchViewMsg":["UI.PageViews.Search.Msg"],"StatsViewMsg":["UI.PageViews.Stats.Msg"],"DocumentsViewMsg":["UI.PageViews.Documents.Msg"],"TasksViewMsg":["UI.PageViews.Tasks.Msg"],"StopWordsViewMsg":["UI.PageViews.StopWords.Msg"],"SynonymsViewMsg":["UI.PageViews.Synonyms.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"List.List":{"args":["a"],"tags":{}},"UI.PageViews.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Search.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Settings.Msg":{"args":[],"tags":{"X":[],"KeyValueChanged":["String.String"],"SaveKeyValue":[],"None":[]}},"UI.PageViews.Stats.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.StopWords.Msg":{"args":[],"tags":{"NewStopWord":["String.String"],"Remove":["Basics.Int"],"None":[]}},"UI.PageViews.Synonyms.Msg":{"args":[],"tags":{"Save":["UI.Components.SynonymCard.Model"],"CardViewMsg":["UI.Components.SynonymCard.Msg"]}},"UI.PageViews.Tasks.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Page":{"args":[],"tags":{"Settings":["UI.PageViews.Settings.Model"],"Stats":[],"Documents":["UI.PageViews.Documents.Model"],"Tasks":[],"RankingRules":[],"Synonyms":["UI.PageViews.Synonyms.Model"],"StopWords":["UI.PageViews.StopWords.Model"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"String.String":{"args":[],"tags":{"String":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"UI.Components.SynonymCard.Msg":{"args":[],"tags":{"UpdatedTitle":["Basics.Int","String.String"],"UpdatedList":["Basics.Int","String.String"],"DoneEditingTitle":["Basics.Int"],"DoneEditingList":["Basics.Int"],"Save":["Basics.Int"],"Remove":["Basics.Int"]}},"UI.Components.SynonymCard.RequestStatus":{"args":[],"tags":{"None":[],"RequestedToSave":[],"SuccessfullySaved":[],"FailedToSave":[]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Api.Routes.Main.IndexesRouteResponseListItem":{"args":[],"type":"{ uid : String.String, name : String.String, createdAt : String.String, updatedAt : String.String, primaryKey : String.String }"},"UI.Components.SynonymCard.Model":{"args":[],"type":"{ index : Basics.Int, title : String.String, synonymList : String.String, requestStatus : UI.Components.SynonymCard.RequestStatus }"},"UI.PageViews.Documents.Model":{"args":[],"type":"{ documents : List.List String.String }"},"UI.PageViews.Settings.Model":{"args":[],"type":"{ tokenValue : String.String, title : String.String }"},"UI.PageViews.StopWords.Model":{"args":[],"type":"{ words : List.List String.String }"},"UI.PageViews.Synonyms.Model":{"args":[],"type":"{ synonymStates : List.List UI.Components.SynonymCard.Model }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"],"ApiRequest":["Api.Routes.Main.Msg"]}},"Api.Routes.Main.Msg":{"args":[],"tags":{"HandleListResponse":["Result.Result Http.Error (List.List Api.Routes.Main.IndexesRouteResponseListItem)"],"HandleShowResponse":["Result.Result Http.Error Api.Routes.Main.IndexesRouteResponseListItem"],"HandleDocumentsResponse":["Result.Result Http.Error String.String"],"HandleListStopWordsResponse":["Result.Result Http.Error (List.List String.String)"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.PageViews.Indexes.Msg"],"SettingsViewMsg":["UI.PageViews.Settings.Msg"],"SearchViewMsg":["UI.PageViews.Search.Msg"],"StatsViewMsg":["UI.PageViews.Stats.Msg"],"DocumentsViewMsg":["UI.PageViews.Documents.Msg"],"TasksViewMsg":["UI.PageViews.Tasks.Msg"],"StopWordsViewMsg":["UI.PageViews.StopWords.Msg"],"SynonymsViewMsg":["UI.PageViews.Synonyms.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"List.List":{"args":["a"],"tags":{}},"UI.PageViews.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Search.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Settings.Msg":{"args":[],"tags":{"X":[],"KeyValueChanged":["String.String"],"SaveKeyValue":[],"None":[]}},"UI.PageViews.Stats.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.StopWords.Msg":{"args":[],"tags":{"NewStopWord":["String.String"],"Remove":["Basics.Int"],"None":[]}},"UI.PageViews.Synonyms.Msg":{"args":[],"tags":{"Save":["UI.Components.SynonymCard.Model"],"CardViewMsg":["UI.Components.SynonymCard.Msg"]}},"UI.PageViews.Tasks.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Page":{"args":[],"tags":{"Settings":["UI.PageViews.Settings.Model"],"Stats":[],"Documents":["UI.PageViews.Documents.Model"],"Tasks":[],"RankingRules":[],"Synonyms":["UI.PageViews.Synonyms.Model"],"StopWords":["UI.PageViews.StopWords.Model"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"String.String":{"args":[],"tags":{"String":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"UI.Components.SynonymCard.Msg":{"args":[],"tags":{"UpdatedTitle":["Basics.Int","String.String"],"UpdatedList":["Basics.Int","String.String"],"DoneEditingTitle":["Basics.Int"],"DoneEditingList":["Basics.Int"],"Save":["Basics.Int"],"Remove":["Basics.Int"]}},"UI.Components.SynonymCard.RequestStatus":{"args":[],"tags":{"None":[],"Fired":["UI.Components.SynonymCard.Request"],"Success":[],"Failed":["UI.Components.SynonymCard.Request"]}},"UI.Components.SynonymCard.Request":{"args":[],"tags":{"Create":[],"Update":[],"Delete":[]}}}}})}});}(this));
