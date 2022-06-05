@@ -1,15 +1,13 @@
-module UI.Elements exposing (button, chip, spacer, textfield)
+module UI.Elements exposing (button, chip, iconButton, spacer, textfield)
 
 import Chart.Attributes exposing (background, opacity)
-import Element exposing (..)
+import Element exposing (Element, el, fill, padding, paddingEach, pointer, px, spacing, text, width)
 import Element.Background as Background
 import Element.Border
-import Element.Events
+import Element.Events exposing (onClick, onLoseFocus)
 import Element.Input as Input
-import Html.Events exposing (onClick, onMouseEnter)
-import Json.Decode as Decode
 import Svg.Attributes exposing (fillOpacity)
-import UI.Icons exposing (Style(..))
+import UI.Icons exposing (Icon, Style(..), buildIcon)
 import UI.Styles exposing (Size(..))
 
 
@@ -32,8 +30,8 @@ spacer size =
             Element.el [ Element.width fill, Element.height fill ] Element.none
 
 
-textfield : String -> String -> (String -> msg) -> Element msg
-textfield value placeholder handler =
+textfield : String -> String -> (String -> msg) -> msg -> Element msg
+textfield value placeholder valueChanged loseFocus =
     el
         (UI.Styles.getTypographicStyleFor UI.Styles.Body)
         -- (Element.text <|String.fromInt model.viewPort.width)
@@ -45,12 +43,13 @@ textfield value placeholder handler =
             , Element.Border.color UI.Styles.color.gray300
             , width fill
             , padding 12
+            , onLoseFocus loseFocus
 
             -- , Element.mouseOver <| [ Background.color UI.Styles.color.lightGrey ]
             ]
             { text = value
             , placeholder = Just (Input.placeholder [] (Element.text placeholder))
-            , onChange = handler
+            , onChange = valueChanged
             , label = Input.labelHidden ""
             }
         )
@@ -70,6 +69,19 @@ button model msg =
             , label = text model
             }
         )
+
+
+iconButton : Icon -> msg -> Element msg
+iconButton icon msg =
+    el
+        [ padding 8
+        , Element.Border.rounded 6
+        , pointer
+        , Element.Events.onClick msg
+        , Element.mouseOver [ Background.color UI.Styles.color.gray100 ]
+        , Element.mouseDown [ Background.color UI.Styles.color.gray300 ]
+        ]
+        (buildIcon icon Outline)
 
 
 chip : String -> msg -> Element msg
@@ -94,6 +106,6 @@ chip text msg =
                 , pointer
                 , Element.Events.onClick msg
                 ]
-                (Element.html (UI.Icons.close Outline))
+                (buildIcon UI.Icons.Close Outline)
             ]
         )

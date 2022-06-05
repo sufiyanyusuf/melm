@@ -9,6 +9,7 @@ type Msg
     = X
     | KeyValueChanged String
     | SaveKeyValue
+    | None
 
 
 type alias Model =
@@ -32,7 +33,7 @@ view model =
             (UI.Styles.getTypographicStyleFor UI.Styles.H1)
             (text model.title)
         , Elements.spacer UI.Styles.XL
-        , textfield model.tokenValue "Token" KeyValueChanged
+        , textfield model.tokenValue "Token" KeyValueChanged None
         , Elements.spacer UI.Styles.SM
         , button "Save Token" SaveKeyValue
         ]

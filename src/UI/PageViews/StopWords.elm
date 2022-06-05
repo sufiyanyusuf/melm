@@ -8,6 +8,7 @@ import UI.Styles
 type Msg
     = NewStopWord String
     | Remove Int
+    | None
 
 
 type alias Model =
@@ -32,7 +33,7 @@ view model =
             (UI.Styles.getTypographicStyleFor UI.Styles.H1)
             (text "Stop Words")
         , UI.Elements.spacer UI.Styles.XL
-        , UI.Elements.textfield "" "Add a word" NewStopWord
+        , UI.Elements.textfield "" "Add a word" NewStopWord None
         , UI.Elements.spacer UI.Styles.SM
         , Element.wrappedRow
             [ spacing 12

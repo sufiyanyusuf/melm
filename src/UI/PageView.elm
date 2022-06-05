@@ -70,15 +70,6 @@ getCurrentPageView currentPage =
         Views.StopWords m ->
             StopWords.view m |> Element.map StopWordsViewMsg
 
-        Views.SearchableAttributes ->
-            Debug.todo "branch 'SearchableAttributes' not implemented"
-
-        Views.DistinctAttributes ->
-            Debug.todo "branch 'DistinctAttributes' not implemented"
-
-        Views.DisplayedAttributes ->
-            Debug.todo "branch 'DisplayedAttributes' not implemented"
-
 
 
 --|> Element.map Msg

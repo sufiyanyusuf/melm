@@ -42,7 +42,7 @@ init _ =
             , documents = []
             , selectedIndex = Nothing
             , stopWords = []
-            , synonyms = UI.PageViews.Synonyms.init.synonymCards
+            , synonyms = UI.PageViews.Synonyms.init.synonymStates
             }
     in
     ( model, Cmd.none )
@@ -198,7 +198,7 @@ handleSynonymsViewMsg model msg =
             ( { model
                 | pages = updateSynonymsViewModel model.pages (Synonyms updatedSynonymsViewModel)
                 , selectedPage = Synonyms updatedSynonymsViewModel
-                , synonyms = updatedSynonymsViewModel.synonymCards
+                , synonyms = updatedSynonymsViewModel.synonymStates
               }
             , Cmd.none
             )
@@ -233,6 +233,9 @@ handleSettingsViewMsg model msg =
 
         SaveKeyValue ->
             ( { model | savedToken = model.token }, Cmd.none )
+
+        None ->
+            ( model, Cmd.none )
 
 
 handleSidebarSelection : Model -> Sidebar.Msg -> ( Model, Cmd Msg )
@@ -283,15 +286,6 @@ handleSidebarSelection model sidebarMsg =
                         |> Cmd.map ApiRequest
                     )
 
-                SearchableAttributes ->
-                    Debug.todo "branch 'SearchableAttributes' not implemented"
-
-                DistinctAttributes ->
-                    Debug.todo "branch 'DistinctAttributes' not implemented"
-
-                DisplayedAttributes ->
-                    Debug.todo "branch 'DisplayedAttributes' not implemented"
-
 
 
 -- MSG
@@ -340,7 +334,7 @@ getStopWordsViewModel model =
 
 getSynonymsViewModel : Model -> UI.PageViews.Synonyms.Model
 getSynonymsViewModel model =
-    { synonymCards = model.synonyms }
+    { synonymStates = model.synonyms }
 
 
 

@@ -15,9 +15,6 @@ type Page
     | RankingRules
     | Synonyms Synonyms.Model
     | StopWords StopWords.Model
-    | SearchableAttributes
-    | DistinctAttributes
-    | DisplayedAttributes
 
 
 init : List Page

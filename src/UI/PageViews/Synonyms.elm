@@ -13,11 +13,11 @@ update msg model =
         CardViewMsg m ->
             let
                 synonymCards =
-                    model.synonymCards
+                    model.synonymStates
                         |> List.map (\c -> SynonymCard.update m c)
                         |> List.map (\( a, _ ) -> a)
             in
-            ( { model | synonymCards = synonymCards }, Cmd.none )
+            ( { model | synonymStates = synonymCards }, Cmd.none )
 
         _ ->
             ( model, Cmd.none )
@@ -29,13 +29,13 @@ type Msg
 
 
 type alias Model =
-    { synonymCards : List SynonymCard.Model
+    { synonymStates : List SynonymCard.Model
     }
 
 
 init : Model
 init =
-    { synonymCards = [ SynonymCard.init 0, SynonymCard.init 1 ] }
+    { synonymStates = [ SynonymCard.init 0, SynonymCard.init 1 ] }
 
 
 view : Model -> Element Msg
@@ -58,7 +58,7 @@ view model =
             , scrollbarY
             , spacing 20
             ]
-            { data = model.synonymCards
+            { data = model.synonymStates
             , columns =
                 [ { header = Element.none
                   , width = fill

@@ -1,11 +1,13 @@
 module UI.Sidebar exposing (Model, Msg(..), sidebarView)
 
+-- import UI.Pages exposing (Page(..))
+
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border exposing (rounded)
 import Element.Events
 import Element.Input exposing (OptionState(..))
-import UI.Icons exposing (Style(..))
+import UI.Icons exposing (Icon(..), Style(..))
 import UI.Pages
 import UI.Styles
 
@@ -103,48 +105,30 @@ getPageTitle page =
         UI.Pages.StopWords _ ->
             "Stop Words"
 
-        UI.Pages.SearchableAttributes ->
-            "Searchable Attributes"
-
-        UI.Pages.DistinctAttributes ->
-            "Distinct Attributes"
-
-        UI.Pages.DisplayedAttributes ->
-            "Displayed Attributes"
-
 
 getPageIcon : UI.Pages.Page -> UI.Icons.Style -> Element msg
 getPageIcon page style =
     case page of
         UI.Pages.Settings _ ->
-            Element.html (UI.Icons.settingsGear style)
+            UI.Icons.buildIcon SettingsGear style
 
         UI.Pages.Stats ->
-            Element.html (UI.Icons.pieChart style)
+            UI.Icons.buildIcon PieChart style
 
         UI.Pages.Documents _ ->
-            Element.html (UI.Icons.documents style)
+            UI.Icons.buildIcon Documents style
 
         UI.Pages.Tasks ->
-            Element.html (UI.Icons.checkmark style)
+            UI.Icons.buildIcon Checkmark style
 
         UI.Pages.RankingRules ->
-            Element.html (UI.Icons.arrowUpDown style)
+            UI.Icons.buildIcon ArrowUpDown style
 
         UI.Pages.Synonyms _ ->
-            Element.html (UI.Icons.dictionary style)
+            UI.Icons.buildIcon Dictionary style
 
         UI.Pages.StopWords _ ->
-            Element.html (UI.Icons.block style)
-
-        UI.Pages.SearchableAttributes ->
-            Element.html (UI.Icons.documentSearch style)
-
-        UI.Pages.DistinctAttributes ->
-            Element.html (UI.Icons.block style)
-
-        UI.Pages.DisplayedAttributes ->
-            Element.html (UI.Icons.block style)
+            UI.Icons.buildIcon Block style
 
 
 getIconStyle : Bool -> UI.Icons.Style
