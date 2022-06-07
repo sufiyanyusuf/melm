@@ -4,8 +4,9 @@ import Api.Routes.Main exposing (..)
 import Browser
 import Element exposing (..)
 import Html exposing (Html)
+import Http
 import Json.Decode as Decode
-import SweetPoll
+import SweetPoll exposing (PollingState)
 import UI.Components.SynonymCard
 import UI.PageView as PageView exposing (Msg(..))
 import UI.PageViews.Documents
@@ -39,7 +40,6 @@ init _ =
         config =
             SweetPoll.defaultConfig
                 (Decode.field "fulldate" Decode.string)
-                -- From http://tiny.cc/currenttime
                 "https://script.google.com/macros/s/AKfycbyd5AcbAnWi2Yn0xhFRbyzS4qMq1VucMVgVvhul5XqS9HkAyJY/exec"
 
         ( initialPollingState, initialCmd ) =
@@ -55,10 +55,11 @@ init _ =
             , selectedIndex = Nothing
             , stopWords = []
             , synonyms = UI.PageViews.Synonyms.init.synonymStates
-            , sweetPoll = initialPollingState
+            , pollingState = Nothing
+            , requestQueue = []
             }
     in
-    ( model, initialCmd |> Cmd.map PollUpdate )
+    ( model, Cmd.none )
 
 
 
@@ -75,7 +76,8 @@ type alias Model =
     , selectedIndex : Maybe IndexesRouteResponseListItem
     , stopWords : List String
     , synonyms : List UI.Components.SynonymCard.Model
-    , sweetPoll : SweetPoll.PollingState String
+    , pollingState : Maybe (SweetPoll.PollingState String)
+    , requestQueue : List Int
     }
 
 
@@ -102,7 +104,7 @@ type Msg
     = SidebarMsg Sidebar.Msg
     | PageViewMsg PageView.Msg
     | ApiRequest Api.Routes.Main.Msg
-    | PollUpdate (SweetPoll.Msg String)
+    | PollUpdate Int (SweetPoll.Config String) (SweetPoll.Msg String)
 
 
 
@@ -121,33 +123,28 @@ update msg model =
         ApiRequest r ->
             handleApiRequest model r
 
-        PollUpdate x ->
-            let
-                config : SweetPoll.Config String
-                config =
-                    SweetPoll.defaultConfig
-                        (Decode.field "fulldate" Decode.string)
-                        "https://script.google.com/macros/s/AKfycbyd5AcbAnWi2Yn0xhFRbyzS4qMq1VucMVgVvhul5XqS9HkAyJY/exec"
-            in
-            case SweetPoll.update config x model.sweetPoll of
-                { newState, newData, error, cmd } ->
-                    case newData of
-                        Just y ->
-                            -- update model
-                            ( model, Cmd.none )
-
-                        Nothing ->
-                            ( { model | sweetPoll = newState }
-                            , cmd |> Cmd.map PollUpdate
-                            )
+        PollUpdate i c m ->
+            ( model, Cmd.none )
 
 
 
--- Debug.log (Maybe.withDefault "" newData)
---     ( { model | sweetPoll = newState }
---     , cmd |> Cmd.map PollUpdate
---     )
--- ( model, Cmd.none )
+-- let
+--     config : SweetPoll.Config String
+--     config =
+--         SweetPoll.defaultConfig
+--             (Decode.field "fulldate" Decode.string)
+--             "https://script.google.com/macros/s/AKfycbyd5AcbAnWi2Yn0xhFRbyzS4qMq1VucMVgVvhul5XqS9HkAyJY/exec"
+-- in
+-- case SweetPoll.update config x model.pollingState of
+--     { newState, newData, error, cmd } ->
+--         case newData of
+--             Just y ->
+--                 -- update model
+--                 ( model, Cmd.none )
+--             Nothing ->
+--                 ( { model | pollingState = newState }
+--                 , cmd |> Cmd.map PollUpdate
+--                 )
 -- UPDATE HANDLERS
 
 
@@ -378,7 +375,6 @@ getSynonymsViewModel model =
 
 
 
--- getDocumentsViewModel : Model -> UI.PAGES
 -- VIEW MODEL SETTERS
 
 
@@ -436,3 +432,88 @@ updateSynonymsViewModel pages updatedPage =
                     _ ->
                         p
             )
+
+
+getPollingState : Model -> SweetPoll.Msg String -> SweetPoll.Config String -> Int -> ( Model, Cmd Msg )
+getPollingState model message config i =
+    let
+        ( state, _ ) =
+            SweetPoll.init config
+    in
+    case model.pollingState of
+        Just s ->
+            case SweetPoll.update config message s of
+                { newState, newData, error, cmd } ->
+                    handlePollSignal model newState newData error cmd config i
+
+        Nothing ->
+            case SweetPoll.update config message state of
+                { newState, newData, error, cmd } ->
+                    handlePollSignal model newState newData error cmd config i
+
+
+handlePollSignal :
+    Model
+    -> PollingState String
+    -> Maybe String
+    -> Maybe Http.Error
+    -> Cmd (SweetPoll.Msg String)
+    -> SweetPoll.Config String
+    -> Int
+    -> ( Model, Cmd Msg )
+handlePollSignal model newState newData error cmd config id =
+    case error of
+        Just _ ->
+            ( { model | pollingState = Nothing }
+            , Cmd.none
+            )
+
+        _ ->
+            case newData of
+                Just d ->
+                    case d of
+                        "enqueued" ->
+                            ( { model | pollingState = Just newState }
+                            , cmd |> Cmd.map (PollUpdate id config)
+                            )
+
+                        "processing" ->
+                            ( { model | pollingState = Just newState }
+                            , cmd |> Cmd.map (PollUpdate id config)
+                            )
+
+                        "succeeded" ->
+                            ( { model | pollingState = Nothing }
+                            , Cmd.none
+                            )
+
+                        "failed" ->
+                            ( { model | pollingState = Nothing }
+                            , Cmd.none
+                            )
+
+                        _ ->
+                            ( model, Cmd.none )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+
+
+-- let
+--     config : SweetPoll.Config String
+--     config =
+--         SweetPoll.defaultConfig
+--             (Decode.field "fulldate" Decode.string)
+--             "https://script.google.com/macros/s/AKfycbyd5AcbAnWi2Yn0xhFRbyzS4qMq1VucMVgVvhul5XqS9HkAyJY/exec"
+-- in
+-- case SweetPoll.update config x model.pollingState of
+--     { newState, newData, error, cmd } ->
+--         case newData of
+--             Just y ->
+--                 -- update model
+--                 ( model, Cmd.none )
+--             Nothing ->
+--                 ( { model | pollingState = newState }
+--                 , cmd |> Cmd.map PollUpdate
+--                 )
