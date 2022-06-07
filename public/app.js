@@ -11226,22 +11226,22 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 210, column: 13},
-						end: {line: 210, column: 23}
+						start: {line: 219, column: 13},
+						end: {line: 219, column: 23}
 					})('branch \'IndexesViewMsg _\' not implemented');
 			case 'SearchViewMsg':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 213, column: 13},
-						end: {line: 213, column: 23}
+						start: {line: 222, column: 13},
+						end: {line: 222, column: 23}
 					})('branch \'SearchViewMsg _\' not implemented');
 			case 'StatsViewMsg':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 216, column: 13},
-						end: {line: 216, column: 23}
+						start: {line: 225, column: 13},
+						end: {line: 225, column: 23}
 					})('branch \'StatsViewMsg _\' not implemented');
 			case 'DocumentsViewMsg':
 				var m = pageViewMsg.a;
@@ -11250,8 +11250,8 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 222, column: 13},
-						end: {line: 222, column: 23}
+						start: {line: 231, column: 13},
+						end: {line: 231, column: 23}
 					})('branch \'TasksViewMsg _\' not implemented');
 			case 'StopWordsViewMsg':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -11713,8 +11713,8 @@ var $author$project$Main$handleSidebarSelection = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 314, column: 21},
-						end: {line: 314, column: 31}
+						start: {line: 323, column: 21},
+						end: {line: 323, column: 31}
 					})('branch \'RankingRules\' not implemented');
 			case 'Synonyms':
 				return _Utils_Tuple2(
@@ -11809,11 +11809,16 @@ var $author$project$Main$update = F2(
 				var newData = _v1.newData;
 				var error = _v1.error;
 				var cmd = _v1.cmd;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{sweetPoll: newState}),
-					A2($elm$core$Platform$Cmd$map, $author$project$Main$PollUpdate, cmd));
+				if (newData.$ === 'Just') {
+					var y = newData.a;
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{sweetPoll: newState}),
+						A2($elm$core$Platform$Cmd$map, $author$project$Main$PollUpdate, cmd));
+				}
 		}
 	});
 var $author$project$Main$PageViewMsg = function (a) {

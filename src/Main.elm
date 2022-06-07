@@ -127,17 +127,26 @@ update msg model =
                 config =
                     SweetPoll.defaultConfig
                         (Decode.field "fulldate" Decode.string)
-                        -- From http://tiny.cc/currenttime
                         "https://script.google.com/macros/s/AKfycbyd5AcbAnWi2Yn0xhFRbyzS4qMq1VucMVgVvhul5XqS9HkAyJY/exec"
             in
             case SweetPoll.update config x model.sweetPoll of
                 { newState, newData, error, cmd } ->
-                    ( { model | sweetPoll = newState }
-                    , cmd |> Cmd.map PollUpdate
-                    )
+                    case newData of
+                        Just y ->
+                            -- update model
+                            ( model, Cmd.none )
+
+                        Nothing ->
+                            ( { model | sweetPoll = newState }
+                            , cmd |> Cmd.map PollUpdate
+                            )
 
 
 
+-- Debug.log (Maybe.withDefault "" newData)
+--     ( { model | sweetPoll = newState }
+--     , cmd |> Cmd.map PollUpdate
+--     )
 -- ( model, Cmd.none )
 -- UPDATE HANDLERS
 
