@@ -4,6 +4,8 @@ import Api.Routes.Main exposing (..)
 import Browser
 import Element exposing (..)
 import Html exposing (Html)
+import Json.Decode as Decode
+import SweetPoll
 import UI.Components.SynonymCard
 import UI.PageView as PageView exposing (Msg(..))
 import UI.PageViews.Documents
@@ -33,6 +35,16 @@ main =
 init : () -> ( Model, Cmd Msg )
 init _ =
     let
+        config : SweetPoll.Config String
+        config =
+            SweetPoll.defaultConfig
+                (Decode.field "fulldate" Decode.string)
+                -- From http://tiny.cc/currenttime
+                "https://script.google.com/macros/s/AKfycbyd5AcbAnWi2Yn0xhFRbyzS4qMq1VucMVgVvhul5XqS9HkAyJY/exec"
+
+        ( initialPollingState, initialCmd ) =
+            SweetPoll.init config
+
         model =
             { selectedPage = Views.Documents UI.PageViews.Documents.init
             , token = Nothing
@@ -43,9 +55,10 @@ init _ =
             , selectedIndex = Nothing
             , stopWords = []
             , synonyms = UI.PageViews.Synonyms.init.synonymStates
+            , sweetPoll = initialPollingState
             }
     in
-    ( model, Cmd.none )
+    ( model, initialCmd |> Cmd.map PollUpdate )
 
 
 
@@ -62,6 +75,7 @@ type alias Model =
     , selectedIndex : Maybe IndexesRouteResponseListItem
     , stopWords : List String
     , synonyms : List UI.Components.SynonymCard.Model
+    , sweetPoll : SweetPoll.PollingState String
     }
 
 
@@ -81,6 +95,17 @@ view model =
 
 
 
+-- MSG
+
+
+type Msg
+    = SidebarMsg Sidebar.Msg
+    | PageViewMsg PageView.Msg
+    | ApiRequest Api.Routes.Main.Msg
+    | PollUpdate (SweetPoll.Msg String)
+
+
+
 -- UPDATE
 
 
@@ -96,8 +121,24 @@ update msg model =
         ApiRequest r ->
             handleApiRequest model r
 
+        PollUpdate x ->
+            let
+                config : SweetPoll.Config String
+                config =
+                    SweetPoll.defaultConfig
+                        (Decode.field "fulldate" Decode.string)
+                        -- From http://tiny.cc/currenttime
+                        "https://script.google.com/macros/s/AKfycbyd5AcbAnWi2Yn0xhFRbyzS4qMq1VucMVgVvhul5XqS9HkAyJY/exec"
+            in
+            case SweetPoll.update config x model.sweetPoll of
+                { newState, newData, error, cmd } ->
+                    ( { model | sweetPoll = newState }
+                    , cmd |> Cmd.map PollUpdate
+                    )
 
 
+
+-- ( model, Cmd.none )
 -- UPDATE HANDLERS
 
 
@@ -285,16 +326,6 @@ handleSidebarSelection model sidebarMsg =
                         )
                         |> Cmd.map ApiRequest
                     )
-
-
-
--- MSG
-
-
-type Msg
-    = SidebarMsg Sidebar.Msg
-    | PageViewMsg PageView.Msg
-    | ApiRequest Api.Routes.Main.Msg
 
 
 
