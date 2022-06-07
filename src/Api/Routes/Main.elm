@@ -29,6 +29,7 @@ type Route
     | ListStopWords String (Decoder (List String))
     | UpdateStopWords String (List String)
     | ResetStopWords String
+    | GetTask Int
 
 
 type alias Payload =
@@ -118,6 +119,9 @@ buildRequest payload token =
         ResetStopWords _ ->
             Debug.todo "branch 'ResetStopWords' not implemented"
 
+        GetTask _ ->
+            Debug.todo "branch 'Get Task' not implemented"
+
 
 buildPayload : Route -> Payload
 buildPayload r =
@@ -166,6 +170,9 @@ buildPayload r =
 
         ResetStopWords i ->
             { method = DELETE, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/stop-words", body = Http.emptyBody, route = r }
+
+        GetTask i ->
+            { method = GET, endpoint = rootUrl ++ "/tasks/" ++ String.fromInt i, body = Http.emptyBody, route = r }
 
 
 

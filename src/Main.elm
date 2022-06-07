@@ -1,5 +1,6 @@
 module Main exposing (..)
 
+import Api.Helper exposing (rootUrl)
 import Api.Routes.Main exposing (..)
 import Browser
 import Element exposing (..)
@@ -497,6 +498,17 @@ handlePollSignal model newState newData error cmd config id =
 
                 Nothing ->
                     ( model, Cmd.none )
+
+
+taskConfigBuilder : Int -> SweetPoll.Config String
+taskConfigBuilder id =
+    let
+        payload =
+            buildPayload (GetTask id)
+    in
+    SweetPoll.defaultConfig
+        (Decode.field "status" Decode.string)
+        payload.endpoint
 
 
 
