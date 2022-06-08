@@ -46,6 +46,26 @@ type Msg
     | AddToPollQueue Int
 
 
+
+-- MODEL
+
+
+type alias Model =
+    { selectedPage : Views.Page
+    , token : Maybe String
+    , savedToken : Maybe String
+    , pages : List Page
+    , indexes : List IndexesRouteResponseListItem
+    , documents : List String
+    , selectedIndex : Maybe IndexesRouteResponseListItem
+    , stopWords : List String
+    , synonyms : List UI.Components.SynonymCard.Model
+
+    -- , pollingState : Maybe (SweetPoll.PollingState String)
+    , pollingQueue : List ( Int, SweetPoll.PollingState String )
+    }
+
+
 init : () -> ( Model, Cmd Msg )
 init _ =
     let
@@ -66,30 +86,10 @@ init _ =
             , selectedIndex = Nothing
             , stopWords = []
             , synonyms = UI.PageViews.Synonyms.init.synonymStates
-            , pollingState = Nothing
             , pollingQueue = []
             }
     in
     ( model, Cmd.none )
-
-
-
--- MODEL
-
-
-type alias Model =
-    { selectedPage : Views.Page
-    , token : Maybe String
-    , savedToken : Maybe String
-    , pages : List Page
-    , indexes : List IndexesRouteResponseListItem
-    , documents : List String
-    , selectedIndex : Maybe IndexesRouteResponseListItem
-    , stopWords : List String
-    , synonyms : List UI.Components.SynonymCard.Model
-    , pollingState : Maybe (SweetPoll.PollingState String)
-    , pollingQueue : List Int
-    }
 
 
 
@@ -124,7 +124,7 @@ update msg model =
             handleApiRequest model r
 
         PollUpdate taskId m ->
-            updateOnPoll model m taskId
+            handlePollUpdate model m taskId
 
         AddToPollQueue taskId ->
             handlePollRequest model taskId
@@ -339,7 +339,11 @@ handleSidebarSelection model sidebarMsg =
 
 handlePollRequest : Model -> Int -> ( Model, Cmd Msg )
 handlePollRequest model taskId =
-    if List.member taskId model.pollingQueue then
+    let
+        taskIds =
+            List.map (\( id, _ ) -> id) model.pollingQueue
+    in
+    if List.member taskId taskIds then
         ( model, Cmd.none )
 
     else
@@ -348,8 +352,7 @@ handlePollRequest model taskId =
                 SweetPoll.init (taskConfigBuilder taskId)
         in
         ( { model
-            | pollingQueue = model.pollingQueue ++ [ taskId ]
-            , pollingState = Just pollState
+            | pollingQueue = model.pollingQueue ++ [ ( taskId, pollState ) ]
           }
         , pollCmd |> Cmd.map (PollUpdate taskId)
         )
@@ -455,25 +458,24 @@ updateSynonymsViewModel pages updatedPage =
             )
 
 
-updateOnPoll : Model -> SweetPoll.Msg String -> Int -> ( Model, Cmd Msg )
-updateOnPoll model message i =
+handlePollUpdate : Model -> SweetPoll.Msg String -> Int -> ( Model, Cmd Msg )
+handlePollUpdate model message i =
     let
         config =
             taskConfigBuilder i
 
-        ( state, _ ) =
-            SweetPoll.init config
+        item =
+            List.filter (\( a, _ ) -> a == i) model.pollingQueue
+                |> List.head
     in
-    case model.pollingState of
-        Just s ->
-            case SweetPoll.update config message s of
+    case item of
+        Just ( id, pollingState ) ->
+            case SweetPoll.update config message pollingState of
                 { newState, newData, error, cmd } ->
-                    handlePollSignal model newState newData error cmd i
+                    handlePollSignal model newState newData error cmd id
 
         Nothing ->
-            case SweetPoll.update config message state of
-                { newState, newData, error, cmd } ->
-                    handlePollSignal model newState newData error cmd i
+            ( model, Cmd.none )
 
 
 handlePollSignal :
@@ -487,7 +489,7 @@ handlePollSignal :
 handlePollSignal model newState newData error cmd id =
     case error of
         Just _ ->
-            ( { model | pollingState = Nothing }
+            ( model
             , Cmd.none
             )
 
@@ -496,22 +498,37 @@ handlePollSignal model newState newData error cmd id =
                 Just d ->
                     case d of
                         "enqueued" ->
-                            ( { model | pollingState = Just newState }
+                            ( { model
+                                | pollingQueue =
+                                    List.map
+                                        (updatePollState id newState)
+                                        model.pollingQueue
+                              }
                             , cmd |> Cmd.map (PollUpdate id)
                             )
 
                         "processing" ->
-                            ( { model | pollingState = Just newState }
+                            ( { model
+                                | pollingQueue =
+                                    List.map
+                                        (updatePollState id newState)
+                                        model.pollingQueue
+                              }
                             , cmd |> Cmd.map (PollUpdate id)
                             )
 
                         "succeeded" ->
-                            ( { model | pollingState = Nothing }
-                            , Cmd.none
+                            ( { model
+                                | pollingQueue =
+                                    List.map
+                                        (updatePollState id newState)
+                                        model.pollingQueue
+                              }
+                            , cmd |> Cmd.map (PollUpdate id)
                             )
 
                         "failed" ->
-                            ( { model | pollingState = Nothing }
+                            ( { model | pollingQueue = List.filter (\( x, _ ) -> x /= id) model.pollingQueue }
                             , Cmd.none
                             )
 
@@ -519,4 +536,16 @@ handlePollSignal model newState newData error cmd id =
                             ( model, Cmd.none )
 
                 Nothing ->
-                    ( model, Cmd.none )
+                    ( { model | pollingQueue = List.filter (\( x, _ ) -> x /= id) model.pollingQueue }
+                    , Cmd.none
+                    )
+
+
+updatePollState : Int -> PollingState String -> (( Int, PollingState String ) -> ( Int, PollingState String ))
+updatePollState id newState =
+    \( x, s ) ->
+        if x == id then
+            ( x, newState )
+
+        else
+            ( x, s )

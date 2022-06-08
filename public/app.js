@@ -10774,7 +10774,6 @@ var $author$project$Main$init = function (_v0) {
 		indexes: _List_Nil,
 		pages: $author$project$UI$Pages$init,
 		pollingQueue: _List_Nil,
-		pollingState: $elm$core$Maybe$Nothing,
 		savedToken: $elm$core$Maybe$Nothing,
 		selectedIndex: $elm$core$Maybe$Nothing,
 		selectedPage: $author$project$UI$Pages$Documents($author$project$UI$PageViews$Documents$init),
@@ -11383,7 +11382,14 @@ var $author$project$Api$Routes$Main$taskConfigBuilder = function (id) {
 };
 var $author$project$Main$handlePollRequest = F2(
 	function (model, taskId) {
-		if (A2($elm$core$List$member, taskId, model.pollingQueue)) {
+		var taskIds = A2(
+			$elm$core$List$map,
+			function (_v1) {
+				var id = _v1.a;
+				return id;
+			},
+			model.pollingQueue);
+		if (A2($elm$core$List$member, taskId, taskIds)) {
 			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		} else {
 			var _v0 = $NoRedInk$elm_sweet_poll$SweetPoll$init(
@@ -11397,13 +11403,200 @@ var $author$project$Main$handlePollRequest = F2(
 						pollingQueue: _Utils_ap(
 							model.pollingQueue,
 							_List_fromArray(
-								[taskId])),
-						pollingState: $elm$core$Maybe$Just(pollState)
+								[
+									_Utils_Tuple2(taskId, pollState)
+								]))
 					}),
 				A2(
 					$elm$core$Platform$Cmd$map,
 					$author$project$Main$PollUpdate(taskId),
 					pollCmd));
+		}
+	});
+var $elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
+var $author$project$Main$updatePollState = F2(
+	function (id, newState) {
+		return function (_v0) {
+			var x = _v0.a;
+			var s = _v0.b;
+			return _Utils_eq(x, id) ? _Utils_Tuple2(x, newState) : _Utils_Tuple2(x, s);
+		};
+	});
+var $author$project$Main$handlePollSignal = F6(
+	function (model, newState, newData, error, cmd, id) {
+		if (error.$ === 'Just') {
+			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+		} else {
+			if (newData.$ === 'Just') {
+				var d = newData.a;
+				switch (d) {
+					case 'enqueued':
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									pollingQueue: A2(
+										$elm$core$List$map,
+										A2($author$project$Main$updatePollState, id, newState),
+										model.pollingQueue)
+								}),
+							A2(
+								$elm$core$Platform$Cmd$map,
+								$author$project$Main$PollUpdate(id),
+								cmd));
+					case 'processing':
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									pollingQueue: A2(
+										$elm$core$List$map,
+										A2($author$project$Main$updatePollState, id, newState),
+										model.pollingQueue)
+								}),
+							A2(
+								$elm$core$Platform$Cmd$map,
+								$author$project$Main$PollUpdate(id),
+								cmd));
+					case 'succeeded':
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									pollingQueue: A2(
+										$elm$core$List$map,
+										A2($author$project$Main$updatePollState, id, newState),
+										model.pollingQueue)
+								}),
+							A2(
+								$elm$core$Platform$Cmd$map,
+								$author$project$Main$PollUpdate(id),
+								cmd));
+					case 'failed':
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									pollingQueue: A2(
+										$elm$core$List$filter,
+										function (_v3) {
+											var x = _v3.a;
+											return !_Utils_eq(x, id);
+										},
+										model.pollingQueue)
+								}),
+							$elm$core$Platform$Cmd$none);
+					default:
+						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
+			} else {
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							pollingQueue: A2(
+								$elm$core$List$filter,
+								function (_v4) {
+									var x = _v4.a;
+									return !_Utils_eq(x, id);
+								},
+								model.pollingQueue)
+						}),
+					$elm$core$Platform$Cmd$none);
+			}
+		}
+	});
+var $elm$core$List$head = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(x);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $NoRedInk$elm_sweet_poll$SweetPoll$update = F3(
+	function (config, action, _v0) {
+		var model = _v0.a;
+		if (action.a.$ === 'Ok') {
+			var newData = action.a.a;
+			var dataChanged = !_Utils_eq(
+				$elm$core$Maybe$Just(newData),
+				model.lastData);
+			var _v2 = dataChanged ? _Utils_Tuple2(1.0, 1) : ((_Utils_cmp(model.sameCount + 1, config.samesBeforeDelay) > -1) ? _Utils_Tuple2(model.delayMultiplier * 1.2, model.sameCount + 1) : _Utils_Tuple2(model.delayMultiplier, model.sameCount + 1));
+			var newDelayMultiplier = _v2.a;
+			var newSameCount = _v2.b;
+			var newState = $NoRedInk$elm_sweet_poll$SweetPoll$PollingState(
+				_Utils_update(
+					model,
+					{
+						delayMultiplier: newDelayMultiplier,
+						lastData: $elm$core$Maybe$Just(newData),
+						sameCount: newSameCount
+					}));
+			return {
+				cmd: A2($NoRedInk$elm_sweet_poll$SweetPoll$runPoll, config, newState),
+				error: $elm$core$Maybe$Nothing,
+				newData: $elm$core$Maybe$Just(newData),
+				newState: newState
+			};
+		} else {
+			var error = action.a.a;
+			var newDelayMultiplier = model.delayMultiplier * config.delayMultiplier;
+			if (_Utils_cmp(config.delay * newDelayMultiplier, config.maxDelay) < 1) {
+				var newState = $NoRedInk$elm_sweet_poll$SweetPoll$PollingState(
+					_Utils_update(
+						model,
+						{delayMultiplier: newDelayMultiplier}));
+				return {
+					cmd: A2($NoRedInk$elm_sweet_poll$SweetPoll$runPoll, config, newState),
+					error: $elm$core$Maybe$Just(error),
+					newData: $elm$core$Maybe$Nothing,
+					newState: newState
+				};
+			} else {
+				return {
+					cmd: $elm$core$Platform$Cmd$none,
+					error: $elm$core$Maybe$Just(error),
+					newData: $elm$core$Maybe$Nothing,
+					newState: $NoRedInk$elm_sweet_poll$SweetPoll$PollingState(model)
+				};
+			}
+		}
+	});
+var $author$project$Main$handlePollUpdate = F3(
+	function (model, message, i) {
+		var item = $elm$core$List$head(
+			A2(
+				$elm$core$List$filter,
+				function (_v3) {
+					var a = _v3.a;
+					return _Utils_eq(a, i);
+				},
+				model.pollingQueue));
+		var config = $author$project$Api$Routes$Main$taskConfigBuilder(i);
+		if (item.$ === 'Just') {
+			var _v1 = item.a;
+			var id = _v1.a;
+			var pollingState = _v1.b;
+			var _v2 = A3($NoRedInk$elm_sweet_poll$SweetPoll$update, config, message, pollingState);
+			var newState = _v2.newState;
+			var newData = _v2.newData;
+			var error = _v2.error;
+			var cmd = _v2.cmd;
+			return A6($author$project$Main$handlePollSignal, model, newState, newData, error, cmd, i);
+		} else {
+			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
 var $author$project$Main$ApiRequest = function (a) {
@@ -11811,132 +12004,6 @@ var $author$project$Main$handleSidebarSelection = F2(
 							A2($elm$core$Maybe$withDefault, '', model.savedToken))));
 		}
 	});
-var $author$project$Main$handlePollSignal = F6(
-	function (model, newState, newData, error, cmd, id) {
-		if (error.$ === 'Just') {
-			return _Utils_Tuple2(
-				_Utils_update(
-					model,
-					{pollingState: $elm$core$Maybe$Nothing}),
-				$elm$core$Platform$Cmd$none);
-		} else {
-			if (newData.$ === 'Just') {
-				var d = newData.a;
-				switch (d) {
-					case 'enqueued':
-						return _Utils_Tuple2(
-							_Utils_update(
-								model,
-								{
-									pollingState: $elm$core$Maybe$Just(newState)
-								}),
-							A2(
-								$elm$core$Platform$Cmd$map,
-								$author$project$Main$PollUpdate(id),
-								cmd));
-					case 'processing':
-						return _Utils_Tuple2(
-							_Utils_update(
-								model,
-								{
-									pollingState: $elm$core$Maybe$Just(newState)
-								}),
-							A2(
-								$elm$core$Platform$Cmd$map,
-								$author$project$Main$PollUpdate(id),
-								cmd));
-					case 'succeeded':
-						return _Utils_Tuple2(
-							_Utils_update(
-								model,
-								{pollingState: $elm$core$Maybe$Nothing}),
-							$elm$core$Platform$Cmd$none);
-					case 'failed':
-						return _Utils_Tuple2(
-							_Utils_update(
-								model,
-								{pollingState: $elm$core$Maybe$Nothing}),
-							$elm$core$Platform$Cmd$none);
-					default:
-						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-				}
-			} else {
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			}
-		}
-	});
-var $NoRedInk$elm_sweet_poll$SweetPoll$update = F3(
-	function (config, action, _v0) {
-		var model = _v0.a;
-		if (action.a.$ === 'Ok') {
-			var newData = action.a.a;
-			var dataChanged = !_Utils_eq(
-				$elm$core$Maybe$Just(newData),
-				model.lastData);
-			var _v2 = dataChanged ? _Utils_Tuple2(1.0, 1) : ((_Utils_cmp(model.sameCount + 1, config.samesBeforeDelay) > -1) ? _Utils_Tuple2(model.delayMultiplier * 1.2, model.sameCount + 1) : _Utils_Tuple2(model.delayMultiplier, model.sameCount + 1));
-			var newDelayMultiplier = _v2.a;
-			var newSameCount = _v2.b;
-			var newState = $NoRedInk$elm_sweet_poll$SweetPoll$PollingState(
-				_Utils_update(
-					model,
-					{
-						delayMultiplier: newDelayMultiplier,
-						lastData: $elm$core$Maybe$Just(newData),
-						sameCount: newSameCount
-					}));
-			return {
-				cmd: A2($NoRedInk$elm_sweet_poll$SweetPoll$runPoll, config, newState),
-				error: $elm$core$Maybe$Nothing,
-				newData: $elm$core$Maybe$Just(newData),
-				newState: newState
-			};
-		} else {
-			var error = action.a.a;
-			var newDelayMultiplier = model.delayMultiplier * config.delayMultiplier;
-			if (_Utils_cmp(config.delay * newDelayMultiplier, config.maxDelay) < 1) {
-				var newState = $NoRedInk$elm_sweet_poll$SweetPoll$PollingState(
-					_Utils_update(
-						model,
-						{delayMultiplier: newDelayMultiplier}));
-				return {
-					cmd: A2($NoRedInk$elm_sweet_poll$SweetPoll$runPoll, config, newState),
-					error: $elm$core$Maybe$Just(error),
-					newData: $elm$core$Maybe$Nothing,
-					newState: newState
-				};
-			} else {
-				return {
-					cmd: $elm$core$Platform$Cmd$none,
-					error: $elm$core$Maybe$Just(error),
-					newData: $elm$core$Maybe$Nothing,
-					newState: $NoRedInk$elm_sweet_poll$SweetPoll$PollingState(model)
-				};
-			}
-		}
-	});
-var $author$project$Main$updateOnPoll = F3(
-	function (model, message, i) {
-		var config = $author$project$Api$Routes$Main$taskConfigBuilder(i);
-		var _v0 = $NoRedInk$elm_sweet_poll$SweetPoll$init(config);
-		var state = _v0.a;
-		var _v1 = model.pollingState;
-		if (_v1.$ === 'Just') {
-			var s = _v1.a;
-			var _v2 = A3($NoRedInk$elm_sweet_poll$SweetPoll$update, config, message, s);
-			var newState = _v2.newState;
-			var newData = _v2.newData;
-			var error = _v2.error;
-			var cmd = _v2.cmd;
-			return A6($author$project$Main$handlePollSignal, model, newState, newData, error, cmd, i);
-		} else {
-			var _v3 = A3($NoRedInk$elm_sweet_poll$SweetPoll$update, config, message, state);
-			var newState = _v3.newState;
-			var newData = _v3.newData;
-			var error = _v3.error;
-			var cmd = _v3.cmd;
-			return A6($author$project$Main$handlePollSignal, model, newState, newData, error, cmd, i);
-		}
-	});
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -11952,7 +12019,7 @@ var $author$project$Main$update = F2(
 			case 'PollUpdate':
 				var taskId = msg.a;
 				var m = msg.b;
-				return A3($author$project$Main$updateOnPoll, model, m, taskId);
+				return A3($author$project$Main$handlePollUpdate, model, m, taskId);
 			default:
 				var taskId = msg.a;
 				return A2($author$project$Main$handlePollRequest, model, taskId);
@@ -15247,17 +15314,6 @@ var $mdgriffith$elm_ui$Internal$Model$renderNullAdjustmentRule = F2(
 var $mdgriffith$elm_ui$Internal$Model$adjust = F3(
 	function (size, height, vertical) {
 		return {height: height / size, size: size, vertical: vertical};
-	});
-var $elm$core$List$filter = F2(
-	function (isGood, list) {
-		return A3(
-			$elm$core$List$foldr,
-			F2(
-				function (x, xs) {
-					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
-				}),
-			_List_Nil,
-			list);
 	});
 var $elm$core$List$maximum = function (list) {
 	if (list.b) {
@@ -20102,15 +20158,6 @@ var $mdgriffith$elm_ui$Element$Input$getHeight = function (attr) {
 	if (attr.$ === 'Height') {
 		var h = attr.a;
 		return $elm$core$Maybe$Just(h);
-	} else {
-		return $elm$core$Maybe$Nothing;
-	}
-};
-var $elm$core$List$head = function (list) {
-	if (list.b) {
-		var x = list.a;
-		var xs = list.b;
-		return $elm$core$Maybe$Just(x);
 	} else {
 		return $elm$core$Maybe$Nothing;
 	}
