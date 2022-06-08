@@ -17,12 +17,12 @@ type Page
     | StopWords StopWords.Model
 
 
-init : List Page
-init =
+init : String -> List Page
+init indexUid =
     [ Documents Documents.init
     , Tasks
     , RankingRules
-    , Synonyms Synonyms.init
+    , Synonyms (Synonyms.init indexUid)
     , StopWords StopWords.init
     , Stats
     , Settings Settings.init

@@ -55,6 +55,7 @@ type alias IndexesRouteResponseListItem =
 
 type alias SettingsRouteResponseItem =
     { uid : Int
+    , indexUid : String
     }
 
 
@@ -264,8 +265,12 @@ taskConfigBuilder id =
 
 settingsUpdateDecoder : Decoder SettingsRouteResponseItem
 settingsUpdateDecoder =
-    Json.Decode.map SettingsRouteResponseItem
+    Json.Decode.map2 SettingsRouteResponseItem
         (field
             "uid"
             int
+        )
+        (field
+            "indexUid"
+            string
         )

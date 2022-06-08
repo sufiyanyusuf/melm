@@ -40,9 +40,9 @@ type alias Model =
     }
 
 
-init : Model
-init =
-    { synonymStates = [ SynonymCard.init 0, SynonymCard.init 1 ] }
+init : String -> Model
+init indexUid =
+    { synonymStates = [ SynonymCard.init 0 indexUid, SynonymCard.init 1 indexUid ] }
 
 
 view : Model -> Element Msg
