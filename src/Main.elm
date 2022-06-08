@@ -1,12 +1,10 @@
 module Main exposing (..)
 
-import Api.Helper exposing (rootUrl)
 import Api.Routes.Main exposing (..)
 import Browser
 import Element exposing (..)
 import Html exposing (Html)
 import Http
-import Json.Decode exposing (decodeValue)
 import SweetPoll exposing (PollingState)
 import UI.Components.SynonymCard exposing (Msg(..))
 import UI.PageView as PageView exposing (Msg(..))
@@ -47,6 +45,14 @@ type Msg
 
 
 
+-- Task id, indexUid
+
+
+type Task
+    = UpdateSynonymsTask Int String
+
+
+
 -- MODEL
 
 
@@ -60,8 +66,6 @@ type alias Model =
     , selectedIndex : Maybe IndexesRouteResponseListItem
     , stopWords : List String
     , synonyms : List UI.Components.SynonymCard.Model
-
-    -- , pollingState : Maybe (SweetPoll.PollingState String)
     , pollingQueue : List ( Int, SweetPoll.PollingState String )
     }
 
@@ -69,13 +73,6 @@ type alias Model =
 init : () -> ( Model, Cmd Msg )
 init _ =
     let
-        -- config : SweetPoll.Config String
-        -- config =
-        --     SweetPoll.defaultConfig
-        --         (Decode.field "fulldate" Decode.string)
-        --         "https://script.google.com/macros/s/AKfycbyd5AcbAnWi2Yn0xhFRbyzS4qMq1VucMVgVvhul5XqS9HkAyJY/exec"
-        -- ( initialPollingState, initialCmd ) =
-        --     SweetPoll.init config
         model =
             { selectedPage = Views.Documents UI.PageViews.Documents.init
             , token = Nothing
@@ -204,8 +201,7 @@ handleApiRequest model apiResponse =
                     update (AddToPollQueue payload.uid) model
 
                 Err _ ->
-                    Debug.log "Errrror"
-                        ( model, Cmd.none )
+                    ( model, Cmd.none )
 
 
 handlePageViewMessage : Model -> PageView.Msg -> ( Model, Cmd Msg )
@@ -243,14 +239,6 @@ handleSynonymsViewMsg model msg =
             case m of
                 CardViewMsg cm ->
                     case cm of
-                        Save i ->
-                            let
-                                ( updatedSynonymsViewModel, _ ) =
-                                    UI.PageViews.Synonyms.update msg (getSynonymsViewModel model)
-                            in
-                            Debug.log "Save ev in main"
-                                ( model, Cmd.none )
-
                         DoneEditingList x ->
                             case model.selectedIndex of
                                 Just i ->

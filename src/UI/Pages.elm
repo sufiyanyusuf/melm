@@ -24,10 +24,6 @@ init =
     , RankingRules
     , Synonyms Synonyms.init
     , StopWords StopWords.init
-
-    -- , SearchableAttributes
-    -- , DistinctAttributes
-    -- , DisplayedAttributes
     , Stats
     , Settings Settings.init
     ]

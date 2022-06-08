@@ -20,7 +20,7 @@ update msg model =
 
         UpdatedList i l ->
             if model.index == i then
-                ( { model | synonymsValue = l }, Cmd.none )
+                ( { model | synonymsValue = l, synonymList = String.split "," l }, Cmd.none )
 
             else
                 ( model, Cmd.none )
@@ -62,6 +62,7 @@ type alias Model =
     , synonymsValue : String
     , requestStatus : RequestStatus
     , synonymList : List String
+    , taskId : Maybe Int
     }
 
 
@@ -134,6 +135,7 @@ init index =
     , synonymsValue = ""
     , requestStatus = None
     , synonymList = []
+    , taskId = Nothing
     }
 
 
