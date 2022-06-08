@@ -3,8 +3,9 @@ module Api.Routes.Main exposing (..)
 import Api.Helper exposing (RequestMethod(..), getRequestMethodTitle, headers, rootUrl)
 import Dict exposing (Dict)
 import Http
-import Json.Decode exposing (Decoder, bool, dict, field, float, int, list, map2, maybe, string)
+import Json.Decode exposing (Decoder, bool, decodeString, decodeValue, dict, field, float, int, list, map2, maybe, string)
 import Json.Encode as Encode
+import Set exposing (Set)
 import SweetPoll exposing (PollingState)
 
 
@@ -18,6 +19,7 @@ type Msg
     | HandleShowResponse (Result Http.Error IndexesRouteResponseListItem)
     | HandleDocumentsResponse (Result Http.Error String)
     | HandleListStopWordsResponse (Result Http.Error (List String))
+    | HandleUpdateSynonymsResponse (Result Http.Error SettingsRouteResponseItem)
 
 
 type Route
@@ -31,6 +33,7 @@ type Route
     | UpdateStopWords String (List String)
     | ResetStopWords String
     | GetTask Int
+    | UpdateSynonyms String ( String, List String ) (Decoder SettingsRouteResponseItem)
 
 
 type alias Payload =
@@ -47,6 +50,11 @@ type alias IndexesRouteResponseListItem =
     , createdAt : String
     , updatedAt : String
     , primaryKey : String
+    }
+
+
+type alias SettingsRouteResponseItem =
+    { uid : Int
     }
 
 
@@ -123,6 +131,17 @@ buildRequest payload token =
         GetTask _ ->
             Debug.todo "branch 'Get Task' not implemented"
 
+        UpdateSynonyms _ _ d ->
+            Http.request
+                { method = getRequestMethodTitle payload.method
+                , headers = headers token
+                , url = payload.endpoint
+                , body = payload.body
+                , expect = Http.expectJson HandleUpdateSynonymsResponse d
+                , timeout = Nothing
+                , tracker = Nothing
+                }
+
 
 buildPayload : Route -> Payload
 buildPayload r =
@@ -174,6 +193,15 @@ buildPayload r =
 
         GetTask i ->
             { method = GET, endpoint = rootUrl ++ "/tasks/" ++ String.fromInt i, body = Http.emptyBody, route = r }
+
+        UpdateSynonyms i ( k, v ) _ ->
+            let
+                body =
+                    Encode.object
+                        [ ( k, Encode.list Encode.string v )
+                        ]
+            in
+            { method = POST, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/synonyms", body = Http.jsonBody body, route = r }
 
 
 
@@ -228,3 +256,16 @@ taskConfigBuilder id =
     , delayMultiplier = 2
     , maxDelay = 40
     }
+
+
+
+-- settingsUpdateDecoder : Decoder Int
+
+
+settingsUpdateDecoder : Decoder SettingsRouteResponseItem
+settingsUpdateDecoder =
+    Json.Decode.map SettingsRouteResponseItem
+        (field
+            "uid"
+            int
+        )

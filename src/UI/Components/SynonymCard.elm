@@ -20,41 +20,33 @@ update msg model =
 
         UpdatedList i l ->
             if model.index == i then
-                ( { model | synonymList = l }, Cmd.none )
+                ( { model | synonymsValue = l }, Cmd.none )
 
             else
                 ( model, Cmd.none )
 
-        DoneEditingTitle i ->
-            handleSave model i
-
-        DoneEditingList i ->
-            handleSave model i
-
-        Save i ->
-            ( model, Cmd.none )
-
-        Remove i ->
+        _ ->
             ( model, Cmd.none )
 
 
-handleSave : Model -> Int -> ( Model, Cmd Msg )
-handleSave model i =
-    if model.index == i then
-        if model.title /= "" && model.synonymList /= "" then
-            ( { model | requestStatus = Fired Create }, Cmd.none )
 
-        else
-            ( model, Cmd.none )
-
-    else
-        ( model, Cmd.none )
+-- DoneEditingTitle i ->
+--     handleSave model i
+-- DoneEditingList i ->
+--     handleSave model i
+-- Remove i ->
+--     ( model, Cmd.none )
+-- RetrySave i ->
+--     ( model, Cmd.none )
+-- Save i ->
+--     Debug.log "Save event recv in card..."
+--         ( model, Cmd.none )
 
 
 type Request
-    = Create
-    | Update
-    | Delete
+    = Create Int
+    | Update Int
+    | Delete Int
 
 
 type RequestStatus
@@ -67,8 +59,9 @@ type RequestStatus
 type alias Model =
     { index : Int
     , title : String
-    , synonymList : String
+    , synonymsValue : String
     , requestStatus : RequestStatus
+    , synonymList : List String
     }
 
 
@@ -76,9 +69,10 @@ type Msg
     = UpdatedTitle Int String
     | UpdatedList Int String
     | DoneEditingTitle Int
-    | DoneEditingList Int
-    | Save Int
+    | DoneEditingList Model
     | Remove Int
+    | RetrySave Int
+    | Save Int
 
 
 cardView : Model -> Element Msg
@@ -90,7 +84,7 @@ cardView model =
         , Element.width fill
         ]
         [ UI.Elements.textfield model.title "Tomato" (UpdatedTitle model.index) (DoneEditingTitle model.index)
-        , UI.Elements.textfield model.synonymList "Tomayto, Tomaato, Tomaeto" (UpdatedList model.index) (DoneEditingList model.index)
+        , UI.Elements.textfield model.synonymsValue "Tomayto, Tomaato, Tomaeto" (UpdatedList model.index) (DoneEditingList model)
         , loadingView model
         , failedView model
         ]
@@ -124,7 +118,7 @@ failedView model =
                 , Element.row
                     [ Element.width Element.shrink
                     ]
-                    [ UI.Elements.iconButton Retry (Save model.index)
+                    [ UI.Elements.iconButton Retry (RetrySave model.index)
                     , UI.Elements.iconButton Trash (Remove model.index)
                     ]
                 ]
@@ -137,32 +131,33 @@ init : Int -> Model
 init index =
     { index = index
     , title = ""
-    , synonymList = ""
+    , synonymsValue = ""
     , requestStatus = None
+    , synonymList = []
     }
 
 
 loadingString : Request -> String
 loadingString r =
     case r of
-        Create ->
+        Create i ->
             "Creating"
 
-        Update ->
+        Update i ->
             "Updating"
 
-        Delete ->
+        Delete i ->
             "Deleting"
 
 
 failureString : Request -> String
 failureString r =
     case r of
-        Create ->
+        Create i ->
             "Failed to create"
 
-        Update ->
+        Update i ->
             "Failed to update"
 
-        Delete ->
+        Delete i ->
             "Failed to delete"

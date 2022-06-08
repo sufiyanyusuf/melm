@@ -11,21 +11,28 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         CardViewMsg m ->
-            let
-                synonymCards =
-                    model.synonymStates
-                        |> List.map (\c -> SynonymCard.update m c)
-                        |> List.map (\( a, _ ) -> a)
-            in
-            ( { model | synonymStates = synonymCards }, Cmd.none )
+            case m of
+                Save i ->
+                    let
+                        synonymCards =
+                            model.synonymStates
+                                |> List.map (\c -> SynonymCard.update m c)
+                                |> List.map (\( a, _ ) -> a)
+                    in
+                    ( { model | synonymStates = synonymCards }, Cmd.none )
 
-        _ ->
-            ( model, Cmd.none )
+                _ ->
+                    let
+                        synonymCards =
+                            model.synonymStates
+                                |> List.map (\c -> SynonymCard.update m c)
+                                |> List.map (\( a, _ ) -> a)
+                    in
+                    ( { model | synonymStates = synonymCards }, Cmd.none )
 
 
 type Msg
-    = Save SynonymCard.Model
-    | CardViewMsg SynonymCard.Msg
+    = CardViewMsg SynonymCard.Msg
 
 
 type alias Model =

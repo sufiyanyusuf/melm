@@ -6,9 +6,9 @@ import Browser
 import Element exposing (..)
 import Html exposing (Html)
 import Http
-import Json.Decode as Decode
+import Json.Decode exposing (decodeValue)
 import SweetPoll exposing (PollingState)
-import UI.Components.SynonymCard
+import UI.Components.SynonymCard exposing (Msg(..))
 import UI.PageView as PageView exposing (Msg(..))
 import UI.PageViews.Documents
 import UI.PageViews.Indexes
@@ -83,7 +83,14 @@ init _ =
             , pages = Views.init
             , indexes = []
             , documents = []
-            , selectedIndex = Nothing
+            , selectedIndex =
+                Just
+                    { uid = "suggestions"
+                    , name = "suggestions"
+                    , createdAt = ""
+                    , updatedAt = ""
+                    , primaryKey = "id"
+                    }
             , stopWords = []
             , synonyms = UI.PageViews.Synonyms.init.synonymStates
             , pollingQueue = []
@@ -131,23 +138,6 @@ update msg model =
 
 
 
--- let
---     config : SweetPoll.Config String
---     config =
---         SweetPoll.defaultConfig
---             (Decode.field "fulldate" Decode.string)
---             "https://script.google.com/macros/s/AKfycbyd5AcbAnWi2Yn0xhFRbyzS4qMq1VucMVgVvhul5XqS9HkAyJY/exec"
--- in
--- case SweetPoll.update config x model.pollingState of
---     { newState, newData, error, cmd } ->
---         case newData of
---             Just y ->
---                 -- update model
---                 ( model, Cmd.none )
---             Nothing ->
---                 ( { model | pollingState = newState }
---                 , cmd |> Cmd.map PollUpdate
---                 )
 -- UPDATE HANDLERS
 
 
@@ -208,6 +198,15 @@ handleApiRequest model apiResponse =
                 Err _ ->
                     ( model, Cmd.none )
 
+        HandleUpdateSynonymsResponse r ->
+            case r of
+                Ok payload ->
+                    update (AddToPollQueue payload.uid) model
+
+                Err _ ->
+                    Debug.log "Errrror"
+                        ( model, Cmd.none )
+
 
 handlePageViewMessage : Model -> PageView.Msg -> ( Model, Cmd Msg )
 handlePageViewMessage model pageViewMsg =
@@ -239,19 +238,55 @@ handlePageViewMessage model pageViewMsg =
 
 handleSynonymsViewMsg : Model -> UI.PageViews.Synonyms.Msg -> ( Model, Cmd Msg )
 handleSynonymsViewMsg model msg =
-    let
-        ( updatedSynonymsViewModel, _ ) =
-            UI.PageViews.Synonyms.update msg (getSynonymsViewModel model)
-    in
     case msg of
-        _ ->
-            ( { model
-                | pages = updateSynonymsViewModel model.pages (Synonyms updatedSynonymsViewModel)
-                , selectedPage = Synonyms updatedSynonymsViewModel
-                , synonyms = updatedSynonymsViewModel.synonymStates
-              }
-            , Cmd.none
-            )
+        m ->
+            case m of
+                CardViewMsg cm ->
+                    case cm of
+                        Save i ->
+                            let
+                                ( updatedSynonymsViewModel, _ ) =
+                                    UI.PageViews.Synonyms.update msg (getSynonymsViewModel model)
+                            in
+                            Debug.log "Save ev in main"
+                                ( model, Cmd.none )
+
+                        DoneEditingList x ->
+                            case model.selectedIndex of
+                                Just i ->
+                                    let
+                                        ( updatedSynonymsViewModel, _ ) =
+                                            UI.PageViews.Synonyms.update msg (getSynonymsViewModel model)
+                                    in
+                                    ( { model
+                                        | pages = updateSynonymsViewModel model.pages (Synonyms updatedSynonymsViewModel)
+                                        , selectedPage = Synonyms updatedSynonymsViewModel
+                                        , synonyms = updatedSynonymsViewModel.synonymStates
+                                      }
+                                    , Api.Routes.Main.buildRequest
+                                        (Api.Routes.Main.buildPayload (UpdateSynonyms i.uid ( x.title, x.synonymList ) Api.Routes.Main.settingsUpdateDecoder))
+                                        (Maybe.withDefault
+                                            ""
+                                            model.savedToken
+                                        )
+                                        |> Cmd.map ApiRequest
+                                    )
+
+                                Nothing ->
+                                    ( model, Cmd.none )
+
+                        _ ->
+                            let
+                                ( updatedSynonymsViewModel, _ ) =
+                                    UI.PageViews.Synonyms.update msg (getSynonymsViewModel model)
+                            in
+                            ( { model
+                                | pages = updateSynonymsViewModel model.pages (Synonyms updatedSynonymsViewModel)
+                                , selectedPage = Synonyms updatedSynonymsViewModel
+                                , synonyms = updatedSynonymsViewModel.synonymStates
+                              }
+                            , Cmd.none
+                            )
 
 
 handleSettingsViewMsg : Model -> UI.PageViews.Settings.Msg -> ( Model, Cmd Msg )
@@ -518,13 +553,8 @@ handlePollSignal model newState newData error cmd id =
                             )
 
                         "succeeded" ->
-                            ( { model
-                                | pollingQueue =
-                                    List.map
-                                        (updatePollState id newState)
-                                        model.pollingQueue
-                              }
-                            , cmd |> Cmd.map (PollUpdate id)
+                            ( { model | pollingQueue = List.filter (\( x, _ ) -> x /= id) model.pollingQueue }
+                            , Cmd.none
                             )
 
                         "failed" ->
