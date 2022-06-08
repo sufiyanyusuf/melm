@@ -10732,169 +10732,6 @@ var $elm$browser$Browser$element = _Browser_element;
 var $author$project$UI$Pages$Documents = function (a) {
 	return {$: 'Documents', a: a};
 };
-var $NoRedInk$elm_sweet_poll$SweetPoll$defaultConfig = F2(
-	function (decoder, url) {
-		return {decoder: decoder, delay: 1000 * 7, delayMultiplier: 1.2, maxDelay: (1000 * 60) * 3, samesBeforeDelay: 3, url: url};
-	});
-var $NoRedInk$elm_sweet_poll$SweetPoll$PollingState = function (a) {
-	return {$: 'PollingState', a: a};
-};
-var $NoRedInk$elm_sweet_poll$SweetPoll$PollResult = function (a) {
-	return {$: 'PollResult', a: a};
-};
-var $elm$core$Task$onError = _Scheduler_onError;
-var $elm$core$Task$attempt = F2(
-	function (resultToMessage, task) {
-		return $elm$core$Task$command(
-			$elm$core$Task$Perform(
-				A2(
-					$elm$core$Task$onError,
-					A2(
-						$elm$core$Basics$composeL,
-						A2($elm$core$Basics$composeL, $elm$core$Task$succeed, resultToMessage),
-						$elm$core$Result$Err),
-					A2(
-						$elm$core$Task$andThen,
-						A2(
-							$elm$core$Basics$composeL,
-							A2($elm$core$Basics$composeL, $elm$core$Task$succeed, resultToMessage),
-							$elm$core$Result$Ok),
-						task))));
-	});
-var $elm$core$Process$sleep = _Process_sleep;
-var $elm$http$Http$BadStatus_ = F2(
-	function (a, b) {
-		return {$: 'BadStatus_', a: a, b: b};
-	});
-var $elm$http$Http$BadUrl_ = function (a) {
-	return {$: 'BadUrl_', a: a};
-};
-var $elm$http$Http$GoodStatus_ = F2(
-	function (a, b) {
-		return {$: 'GoodStatus_', a: a, b: b};
-	});
-var $elm$http$Http$NetworkError_ = {$: 'NetworkError_'};
-var $elm$http$Http$Receiving = function (a) {
-	return {$: 'Receiving', a: a};
-};
-var $elm$http$Http$Sending = function (a) {
-	return {$: 'Sending', a: a};
-};
-var $elm$http$Http$Timeout_ = {$: 'Timeout_'};
-var $elm$core$Maybe$isJust = function (maybe) {
-	if (maybe.$ === 'Just') {
-		return true;
-	} else {
-		return false;
-	}
-};
-var $elm$core$Platform$sendToSelf = _Platform_sendToSelf;
-var $elm$http$Http$emptyBody = _Http_emptyBody;
-var $elm$http$Http$Header = F2(
-	function (a, b) {
-		return {$: 'Header', a: a, b: b};
-	});
-var $elm$http$Http$header = $elm$http$Http$Header;
-var $elm$http$Http$BadBody = function (a) {
-	return {$: 'BadBody', a: a};
-};
-var $elm$http$Http$BadStatus = function (a) {
-	return {$: 'BadStatus', a: a};
-};
-var $elm$http$Http$BadUrl = function (a) {
-	return {$: 'BadUrl', a: a};
-};
-var $elm$http$Http$NetworkError = {$: 'NetworkError'};
-var $elm$http$Http$Timeout = {$: 'Timeout'};
-var $elm$core$Result$mapError = F2(
-	function (f, result) {
-		if (result.$ === 'Ok') {
-			var v = result.a;
-			return $elm$core$Result$Ok(v);
-		} else {
-			var e = result.a;
-			return $elm$core$Result$Err(
-				f(e));
-		}
-	});
-var $elm$http$Http$stringResolver = A2(_Http_expect, '', $elm$core$Basics$identity);
-var $NoRedInk$elm_sweet_poll$SweetPoll$resolveJsonResponse = function (decoder) {
-	return $elm$http$Http$stringResolver(
-		function (response) {
-			switch (response.$) {
-				case 'BadUrl_':
-					var badUrl = response.a;
-					return $elm$core$Result$Err(
-						$elm$http$Http$BadUrl(badUrl));
-				case 'Timeout_':
-					return $elm$core$Result$Err($elm$http$Http$Timeout);
-				case 'NetworkError_':
-					return $elm$core$Result$Err($elm$http$Http$NetworkError);
-				case 'BadStatus_':
-					var metadata = response.a;
-					return $elm$core$Result$Err(
-						$elm$http$Http$BadStatus(metadata.statusCode));
-				default:
-					var body = response.b;
-					return A2(
-						$elm$core$Result$mapError,
-						A2($elm$core$Basics$composeR, $elm$json$Json$Decode$errorToString, $elm$http$Http$BadBody),
-						A2($elm$json$Json$Decode$decodeString, decoder, body));
-			}
-		});
-};
-var $elm$core$Task$fail = _Scheduler_fail;
-var $elm$http$Http$resultToTask = function (result) {
-	if (result.$ === 'Ok') {
-		var a = result.a;
-		return $elm$core$Task$succeed(a);
-	} else {
-		var x = result.a;
-		return $elm$core$Task$fail(x);
-	}
-};
-var $elm$http$Http$task = function (r) {
-	return A3(
-		_Http_toTask,
-		_Utils_Tuple0,
-		$elm$http$Http$resultToTask,
-		{allowCookiesFromOtherDomains: false, body: r.body, expect: r.resolver, headers: r.headers, method: r.method, timeout: r.timeout, tracker: $elm$core$Maybe$Nothing, url: r.url});
-};
-var $NoRedInk$elm_sweet_poll$SweetPoll$toTask = F2(
-	function (url, decoder) {
-		return $elm$http$Http$task(
-			{
-				body: $elm$http$Http$emptyBody,
-				headers: _List_fromArray(
-					[
-						A2($elm$http$Http$header, 'Accept', 'application/json')
-					]),
-				method: 'GET',
-				resolver: $NoRedInk$elm_sweet_poll$SweetPoll$resolveJsonResponse(decoder),
-				timeout: $elm$core$Maybe$Nothing,
-				url: url
-			});
-	});
-var $NoRedInk$elm_sweet_poll$SweetPoll$runPoll = F2(
-	function (config, _v0) {
-		var model = _v0.a;
-		return A2(
-			$elm$core$Task$attempt,
-			$NoRedInk$elm_sweet_poll$SweetPoll$PollResult,
-			A2(
-				$elm$core$Task$andThen,
-				function (_v1) {
-					return A2($NoRedInk$elm_sweet_poll$SweetPoll$toTask, config.url, config.decoder);
-				},
-				$elm$core$Process$sleep(config.delay * model.delayMultiplier)));
-	});
-var $NoRedInk$elm_sweet_poll$SweetPoll$init = function (config) {
-	var model = $NoRedInk$elm_sweet_poll$SweetPoll$PollingState(
-		{delayMultiplier: 1.0, lastData: $elm$core$Maybe$Nothing, sameCount: 1});
-	return _Utils_Tuple2(
-		model,
-		A2($NoRedInk$elm_sweet_poll$SweetPoll$runPoll, config, model));
-};
 var $author$project$UI$PageViews$Documents$init = {documents: _List_Nil};
 var $author$project$UI$Components$SynonymCard$None = {$: 'None'};
 var $author$project$UI$Components$SynonymCard$init = function (index) {
@@ -10936,8 +10773,8 @@ var $author$project$Main$init = function (_v0) {
 		documents: _List_Nil,
 		indexes: _List_Nil,
 		pages: $author$project$UI$Pages$init,
+		pollingQueue: _List_Nil,
 		pollingState: $elm$core$Maybe$Nothing,
-		requestQueue: _List_Nil,
 		savedToken: $elm$core$Maybe$Nothing,
 		selectedIndex: $elm$core$Maybe$Nothing,
 		selectedPage: $author$project$UI$Pages$Documents($author$project$UI$PageViews$Documents$init),
@@ -10945,13 +10782,6 @@ var $author$project$Main$init = function (_v0) {
 		synonyms: $author$project$UI$PageViews$Synonyms$init.synonymStates,
 		token: $elm$core$Maybe$Nothing
 	};
-	var config = A2(
-		$NoRedInk$elm_sweet_poll$SweetPoll$defaultConfig,
-		A2($elm$json$Json$Decode$field, 'fulldate', $elm$json$Json$Decode$string),
-		'https://script.google.com/macros/s/AKfycbyd5AcbAnWi2Yn0xhFRbyzS4qMq1VucMVgVvhul5XqS9HkAyJY/exec');
-	var _v1 = $NoRedInk$elm_sweet_poll$SweetPoll$init(config);
-	var initialPollingState = _v1.a;
-	var initialCmd = _v1.b;
 	return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
@@ -11222,22 +11052,22 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 216, column: 13},
-						end: {line: 216, column: 23}
+						start: {line: 219, column: 13},
+						end: {line: 219, column: 23}
 					})('branch \'IndexesViewMsg _\' not implemented');
 			case 'SearchViewMsg':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 219, column: 13},
-						end: {line: 219, column: 23}
+						start: {line: 222, column: 13},
+						end: {line: 222, column: 23}
 					})('branch \'SearchViewMsg _\' not implemented');
 			case 'StatsViewMsg':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 222, column: 13},
-						end: {line: 222, column: 23}
+						start: {line: 225, column: 13},
+						end: {line: 225, column: 23}
 					})('branch \'StatsViewMsg _\' not implemented');
 			case 'DocumentsViewMsg':
 				var m = pageViewMsg.a;
@@ -11246,8 +11076,8 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 228, column: 13},
-						end: {line: 228, column: 23}
+						start: {line: 231, column: 13},
+						end: {line: 231, column: 23}
 					})('branch \'TasksViewMsg _\' not implemented');
 			case 'StopWordsViewMsg':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -11256,16 +11086,202 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return A2($author$project$Main$handleSynonymsViewMsg, model, msg);
 		}
 	});
-var $author$project$Main$ApiRequest = function (a) {
-	return {$: 'ApiRequest', a: a};
-};
-var $author$project$Api$Routes$Main$ListDocuments = function (a) {
-	return {$: 'ListDocuments', a: a};
-};
-var $author$project$Api$Routes$Main$ListStopWords = F2(
+var $author$project$Main$PollUpdate = F2(
 	function (a, b) {
-		return {$: 'ListStopWords', a: a, b: b};
+		return {$: 'PollUpdate', a: a, b: b};
 	});
+var $NoRedInk$elm_sweet_poll$SweetPoll$PollingState = function (a) {
+	return {$: 'PollingState', a: a};
+};
+var $NoRedInk$elm_sweet_poll$SweetPoll$PollResult = function (a) {
+	return {$: 'PollResult', a: a};
+};
+var $elm$core$Task$onError = _Scheduler_onError;
+var $elm$core$Task$attempt = F2(
+	function (resultToMessage, task) {
+		return $elm$core$Task$command(
+			$elm$core$Task$Perform(
+				A2(
+					$elm$core$Task$onError,
+					A2(
+						$elm$core$Basics$composeL,
+						A2($elm$core$Basics$composeL, $elm$core$Task$succeed, resultToMessage),
+						$elm$core$Result$Err),
+					A2(
+						$elm$core$Task$andThen,
+						A2(
+							$elm$core$Basics$composeL,
+							A2($elm$core$Basics$composeL, $elm$core$Task$succeed, resultToMessage),
+							$elm$core$Result$Ok),
+						task))));
+	});
+var $elm$core$Process$sleep = _Process_sleep;
+var $elm$http$Http$BadStatus_ = F2(
+	function (a, b) {
+		return {$: 'BadStatus_', a: a, b: b};
+	});
+var $elm$http$Http$BadUrl_ = function (a) {
+	return {$: 'BadUrl_', a: a};
+};
+var $elm$http$Http$GoodStatus_ = F2(
+	function (a, b) {
+		return {$: 'GoodStatus_', a: a, b: b};
+	});
+var $elm$http$Http$NetworkError_ = {$: 'NetworkError_'};
+var $elm$http$Http$Receiving = function (a) {
+	return {$: 'Receiving', a: a};
+};
+var $elm$http$Http$Sending = function (a) {
+	return {$: 'Sending', a: a};
+};
+var $elm$http$Http$Timeout_ = {$: 'Timeout_'};
+var $elm$core$Maybe$isJust = function (maybe) {
+	if (maybe.$ === 'Just') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var $elm$core$Platform$sendToSelf = _Platform_sendToSelf;
+var $elm$http$Http$emptyBody = _Http_emptyBody;
+var $elm$http$Http$Header = F2(
+	function (a, b) {
+		return {$: 'Header', a: a, b: b};
+	});
+var $elm$http$Http$header = $elm$http$Http$Header;
+var $elm$http$Http$BadBody = function (a) {
+	return {$: 'BadBody', a: a};
+};
+var $elm$http$Http$BadStatus = function (a) {
+	return {$: 'BadStatus', a: a};
+};
+var $elm$http$Http$BadUrl = function (a) {
+	return {$: 'BadUrl', a: a};
+};
+var $elm$http$Http$NetworkError = {$: 'NetworkError'};
+var $elm$http$Http$Timeout = {$: 'Timeout'};
+var $elm$core$Result$mapError = F2(
+	function (f, result) {
+		if (result.$ === 'Ok') {
+			var v = result.a;
+			return $elm$core$Result$Ok(v);
+		} else {
+			var e = result.a;
+			return $elm$core$Result$Err(
+				f(e));
+		}
+	});
+var $elm$http$Http$stringResolver = A2(_Http_expect, '', $elm$core$Basics$identity);
+var $NoRedInk$elm_sweet_poll$SweetPoll$resolveJsonResponse = function (decoder) {
+	return $elm$http$Http$stringResolver(
+		function (response) {
+			switch (response.$) {
+				case 'BadUrl_':
+					var badUrl = response.a;
+					return $elm$core$Result$Err(
+						$elm$http$Http$BadUrl(badUrl));
+				case 'Timeout_':
+					return $elm$core$Result$Err($elm$http$Http$Timeout);
+				case 'NetworkError_':
+					return $elm$core$Result$Err($elm$http$Http$NetworkError);
+				case 'BadStatus_':
+					var metadata = response.a;
+					return $elm$core$Result$Err(
+						$elm$http$Http$BadStatus(metadata.statusCode));
+				default:
+					var body = response.b;
+					return A2(
+						$elm$core$Result$mapError,
+						A2($elm$core$Basics$composeR, $elm$json$Json$Decode$errorToString, $elm$http$Http$BadBody),
+						A2($elm$json$Json$Decode$decodeString, decoder, body));
+			}
+		});
+};
+var $elm$core$Task$fail = _Scheduler_fail;
+var $elm$http$Http$resultToTask = function (result) {
+	if (result.$ === 'Ok') {
+		var a = result.a;
+		return $elm$core$Task$succeed(a);
+	} else {
+		var x = result.a;
+		return $elm$core$Task$fail(x);
+	}
+};
+var $elm$http$Http$task = function (r) {
+	return A3(
+		_Http_toTask,
+		_Utils_Tuple0,
+		$elm$http$Http$resultToTask,
+		{allowCookiesFromOtherDomains: false, body: r.body, expect: r.resolver, headers: r.headers, method: r.method, timeout: r.timeout, tracker: $elm$core$Maybe$Nothing, url: r.url});
+};
+var $NoRedInk$elm_sweet_poll$SweetPoll$toTask = F2(
+	function (url, decoder) {
+		return $elm$http$Http$task(
+			{
+				body: $elm$http$Http$emptyBody,
+				headers: _List_fromArray(
+					[
+						A2($elm$http$Http$header, 'Accept', 'application/json')
+					]),
+				method: 'GET',
+				resolver: $NoRedInk$elm_sweet_poll$SweetPoll$resolveJsonResponse(decoder),
+				timeout: $elm$core$Maybe$Nothing,
+				url: url
+			});
+	});
+var $NoRedInk$elm_sweet_poll$SweetPoll$runPoll = F2(
+	function (config, _v0) {
+		var model = _v0.a;
+		return A2(
+			$elm$core$Task$attempt,
+			$NoRedInk$elm_sweet_poll$SweetPoll$PollResult,
+			A2(
+				$elm$core$Task$andThen,
+				function (_v1) {
+					return A2($NoRedInk$elm_sweet_poll$SweetPoll$toTask, config.url, config.decoder);
+				},
+				$elm$core$Process$sleep(config.delay * model.delayMultiplier)));
+	});
+var $NoRedInk$elm_sweet_poll$SweetPoll$init = function (config) {
+	var model = $NoRedInk$elm_sweet_poll$SweetPoll$PollingState(
+		{delayMultiplier: 1.0, lastData: $elm$core$Maybe$Nothing, sameCount: 1});
+	return _Utils_Tuple2(
+		model,
+		A2($NoRedInk$elm_sweet_poll$SweetPoll$runPoll, config, model));
+};
+var $elm$core$List$any = F2(
+	function (isOkay, list) {
+		any:
+		while (true) {
+			if (!list.b) {
+				return false;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				if (isOkay(x)) {
+					return true;
+				} else {
+					var $temp$isOkay = isOkay,
+						$temp$list = xs;
+					isOkay = $temp$isOkay;
+					list = $temp$list;
+					continue any;
+				}
+			}
+		}
+	});
+var $elm$core$List$member = F2(
+	function (x, xs) {
+		return A2(
+			$elm$core$List$any,
+			function (a) {
+				return _Utils_eq(a, x);
+			},
+			xs);
+	});
+var $author$project$Api$Routes$Main$GetTask = function (a) {
+	return {$: 'GetTask', a: a};
+};
 var $author$project$Api$Helper$DELETE = {$: 'DELETE'};
 var $author$project$Api$Helper$GET = {$: 'GET'};
 var $author$project$Api$Helper$POST = {$: 'POST'};
@@ -11337,14 +11353,69 @@ var $author$project$Api$Routes$Main$buildPayload = function (r) {
 			return _Debug_todo(
 				'Api.Routes.Main',
 				{
-					start: {line: 165, column: 13},
-					end: {line: 165, column: 23}
+					start: {line: 170, column: 13},
+					end: {line: 170, column: 23}
 				})('branch \'UpdateStopWords _\' not implemented');
-		default:
+		case 'ResetStopWords':
 			var i = r.a;
 			return {body: $elm$http$Http$emptyBody, endpoint: $author$project$Api$Helper$rootUrl + ('/indexes/' + (i + '/settings/stop-words')), method: $author$project$Api$Helper$DELETE, route: r};
+		default:
+			var i = r.a;
+			return {
+				body: $elm$http$Http$emptyBody,
+				endpoint: $author$project$Api$Helper$rootUrl + ('/tasks/' + $elm$core$String$fromInt(i)),
+				method: $author$project$Api$Helper$GET,
+				route: r
+			};
 	}
 };
+var $author$project$Api$Routes$Main$taskConfigBuilder = function (id) {
+	var payload = $author$project$Api$Routes$Main$buildPayload(
+		$author$project$Api$Routes$Main$GetTask(id));
+	return {
+		decoder: A2($elm$json$Json$Decode$field, 'status', $elm$json$Json$Decode$string),
+		delay: 0.5,
+		delayMultiplier: 2,
+		maxDelay: 40,
+		samesBeforeDelay: 5,
+		url: payload.endpoint
+	};
+};
+var $author$project$Main$handlePollRequest = F2(
+	function (model, taskId) {
+		if (A2($elm$core$List$member, taskId, model.pollingQueue)) {
+			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+		} else {
+			var _v0 = $NoRedInk$elm_sweet_poll$SweetPoll$init(
+				$author$project$Api$Routes$Main$taskConfigBuilder(taskId));
+			var pollState = _v0.a;
+			var pollCmd = _v0.b;
+			return _Utils_Tuple2(
+				_Utils_update(
+					model,
+					{
+						pollingQueue: _Utils_ap(
+							model.pollingQueue,
+							_List_fromArray(
+								[taskId])),
+						pollingState: $elm$core$Maybe$Just(pollState)
+					}),
+				A2(
+					$elm$core$Platform$Cmd$map,
+					$author$project$Main$PollUpdate(taskId),
+					pollCmd));
+		}
+	});
+var $author$project$Main$ApiRequest = function (a) {
+	return {$: 'ApiRequest', a: a};
+};
+var $author$project$Api$Routes$Main$ListDocuments = function (a) {
+	return {$: 'ListDocuments', a: a};
+};
+var $author$project$Api$Routes$Main$ListStopWords = F2(
+	function (a, b) {
+		return {$: 'ListStopWords', a: a, b: b};
+	});
 var $author$project$Api$Routes$Main$HandleDocumentsResponse = function (a) {
 	return {$: 'HandleDocumentsResponse', a: a};
 };
@@ -11609,22 +11680,22 @@ var $author$project$Api$Routes$Main$buildRequest = F2(
 				return _Debug_todo(
 					'Api.Routes.Main',
 					{
-						start: {line: 85, column: 13},
-						end: {line: 85, column: 23}
+						start: {line: 87, column: 13},
+						end: {line: 87, column: 23}
 					})('branch \'Create _\' not implemented');
 			case 'UpdateIndex':
 				return _Debug_todo(
 					'Api.Routes.Main',
 					{
-						start: {line: 88, column: 13},
-						end: {line: 88, column: 23}
+						start: {line: 90, column: 13},
+						end: {line: 90, column: 23}
 					})('branch \'Update _\' not implemented');
 			case 'DeleteIndex':
 				return _Debug_todo(
 					'Api.Routes.Main',
 					{
-						start: {line: 91, column: 13},
-						end: {line: 91, column: 23}
+						start: {line: 93, column: 13},
+						end: {line: 93, column: 23}
 					})('branch \'Delete _\' not implemented');
 			case 'ListDocuments':
 				return $elm$http$Http$request(
@@ -11653,16 +11724,23 @@ var $author$project$Api$Routes$Main$buildRequest = F2(
 				return _Debug_todo(
 					'Api.Routes.Main',
 					{
-						start: {line: 116, column: 13},
-						end: {line: 116, column: 23}
+						start: {line: 118, column: 13},
+						end: {line: 118, column: 23}
 					})('branch \'UpdateStopWords _\' not implemented');
+			case 'ResetStopWords':
+				return _Debug_todo(
+					'Api.Routes.Main',
+					{
+						start: {line: 121, column: 13},
+						end: {line: 121, column: 23}
+					})('branch \'ResetStopWords\' not implemented');
 			default:
 				return _Debug_todo(
 					'Api.Routes.Main',
 					{
-						start: {line: 119, column: 13},
-						end: {line: 119, column: 23}
-					})('branch \'ResetStopWords\' not implemented');
+						start: {line: 124, column: 13},
+						end: {line: 124, column: 23}
+					})('branch \'Get Task\' not implemented');
 		}
 	});
 var $author$project$Api$Routes$Main$stopWordsListItemDecoder = $elm$json$Json$Decode$list($elm$json$Json$Decode$string);
@@ -11709,8 +11787,8 @@ var $author$project$Main$handleSidebarSelection = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 320, column: 21},
-						end: {line: 320, column: 31}
+						start: {line: 323, column: 21},
+						end: {line: 323, column: 31}
 					})('branch \'RankingRules\' not implemented');
 			case 'Synonyms':
 				return _Utils_Tuple2(
@@ -11733,6 +11811,132 @@ var $author$project$Main$handleSidebarSelection = F2(
 							A2($elm$core$Maybe$withDefault, '', model.savedToken))));
 		}
 	});
+var $author$project$Main$handlePollSignal = F6(
+	function (model, newState, newData, error, cmd, id) {
+		if (error.$ === 'Just') {
+			return _Utils_Tuple2(
+				_Utils_update(
+					model,
+					{pollingState: $elm$core$Maybe$Nothing}),
+				$elm$core$Platform$Cmd$none);
+		} else {
+			if (newData.$ === 'Just') {
+				var d = newData.a;
+				switch (d) {
+					case 'enqueued':
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									pollingState: $elm$core$Maybe$Just(newState)
+								}),
+							A2(
+								$elm$core$Platform$Cmd$map,
+								$author$project$Main$PollUpdate(id),
+								cmd));
+					case 'processing':
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									pollingState: $elm$core$Maybe$Just(newState)
+								}),
+							A2(
+								$elm$core$Platform$Cmd$map,
+								$author$project$Main$PollUpdate(id),
+								cmd));
+					case 'succeeded':
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{pollingState: $elm$core$Maybe$Nothing}),
+							$elm$core$Platform$Cmd$none);
+					case 'failed':
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{pollingState: $elm$core$Maybe$Nothing}),
+							$elm$core$Platform$Cmd$none);
+					default:
+						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
+			} else {
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			}
+		}
+	});
+var $NoRedInk$elm_sweet_poll$SweetPoll$update = F3(
+	function (config, action, _v0) {
+		var model = _v0.a;
+		if (action.a.$ === 'Ok') {
+			var newData = action.a.a;
+			var dataChanged = !_Utils_eq(
+				$elm$core$Maybe$Just(newData),
+				model.lastData);
+			var _v2 = dataChanged ? _Utils_Tuple2(1.0, 1) : ((_Utils_cmp(model.sameCount + 1, config.samesBeforeDelay) > -1) ? _Utils_Tuple2(model.delayMultiplier * 1.2, model.sameCount + 1) : _Utils_Tuple2(model.delayMultiplier, model.sameCount + 1));
+			var newDelayMultiplier = _v2.a;
+			var newSameCount = _v2.b;
+			var newState = $NoRedInk$elm_sweet_poll$SweetPoll$PollingState(
+				_Utils_update(
+					model,
+					{
+						delayMultiplier: newDelayMultiplier,
+						lastData: $elm$core$Maybe$Just(newData),
+						sameCount: newSameCount
+					}));
+			return {
+				cmd: A2($NoRedInk$elm_sweet_poll$SweetPoll$runPoll, config, newState),
+				error: $elm$core$Maybe$Nothing,
+				newData: $elm$core$Maybe$Just(newData),
+				newState: newState
+			};
+		} else {
+			var error = action.a.a;
+			var newDelayMultiplier = model.delayMultiplier * config.delayMultiplier;
+			if (_Utils_cmp(config.delay * newDelayMultiplier, config.maxDelay) < 1) {
+				var newState = $NoRedInk$elm_sweet_poll$SweetPoll$PollingState(
+					_Utils_update(
+						model,
+						{delayMultiplier: newDelayMultiplier}));
+				return {
+					cmd: A2($NoRedInk$elm_sweet_poll$SweetPoll$runPoll, config, newState),
+					error: $elm$core$Maybe$Just(error),
+					newData: $elm$core$Maybe$Nothing,
+					newState: newState
+				};
+			} else {
+				return {
+					cmd: $elm$core$Platform$Cmd$none,
+					error: $elm$core$Maybe$Just(error),
+					newData: $elm$core$Maybe$Nothing,
+					newState: $NoRedInk$elm_sweet_poll$SweetPoll$PollingState(model)
+				};
+			}
+		}
+	});
+var $author$project$Main$updateOnPoll = F3(
+	function (model, message, i) {
+		var config = $author$project$Api$Routes$Main$taskConfigBuilder(i);
+		var _v0 = $NoRedInk$elm_sweet_poll$SweetPoll$init(config);
+		var state = _v0.a;
+		var _v1 = model.pollingState;
+		if (_v1.$ === 'Just') {
+			var s = _v1.a;
+			var _v2 = A3($NoRedInk$elm_sweet_poll$SweetPoll$update, config, message, s);
+			var newState = _v2.newState;
+			var newData = _v2.newData;
+			var error = _v2.error;
+			var cmd = _v2.cmd;
+			return A6($author$project$Main$handlePollSignal, model, newState, newData, error, cmd, i);
+		} else {
+			var _v3 = A3($NoRedInk$elm_sweet_poll$SweetPoll$update, config, message, state);
+			var newState = _v3.newState;
+			var newData = _v3.newData;
+			var error = _v3.error;
+			var cmd = _v3.cmd;
+			return A6($author$project$Main$handlePollSignal, model, newState, newData, error, cmd, i);
+		}
+	});
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -11745,11 +11949,13 @@ var $author$project$Main$update = F2(
 			case 'ApiRequest':
 				var r = msg.a;
 				return A2($author$project$Main$handleApiRequest, model, r);
+			case 'PollUpdate':
+				var taskId = msg.a;
+				var m = msg.b;
+				return A3($author$project$Main$updateOnPoll, model, m, taskId);
 			default:
-				var i = msg.a;
-				var c = msg.b;
-				var m = msg.c;
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				var taskId = msg.a;
+				return A2($author$project$Main$handlePollRequest, model, taskId);
 		}
 	});
 var $author$project$Main$PageViewMsg = function (a) {
@@ -14312,27 +14518,6 @@ var $mdgriffith$elm_ui$Internal$Model$staticRoot = function (opts) {
 				_List_Nil);
 	}
 };
-var $elm$core$List$any = F2(
-	function (isOkay, list) {
-		any:
-		while (true) {
-			if (!list.b) {
-				return false;
-			} else {
-				var x = list.a;
-				var xs = list.b;
-				if (isOkay(x)) {
-					return true;
-				} else {
-					var $temp$isOkay = isOkay,
-						$temp$list = xs;
-					isOkay = $temp$isOkay;
-					list = $temp$list;
-					continue any;
-				}
-			}
-		}
-	});
 var $mdgriffith$elm_ui$Internal$Model$fontName = function (font) {
 	switch (font.$) {
 		case 'Serif':
@@ -21193,4 +21378,4 @@ var $author$project$Main$view = function (model) {
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"SweetPoll.Config":{"args":["data"],"type":"{ url : String.String, decoder : Json.Decode.Decoder data, delay : Basics.Float, samesBeforeDelay : Basics.Int, delayMultiplier : Basics.Float, maxDelay : Basics.Float }"},"Api.Routes.Main.IndexesRouteResponseListItem":{"args":[],"type":"{ uid : String.String, name : String.String, createdAt : String.String, updatedAt : String.String, primaryKey : String.String }"},"UI.Components.SynonymCard.Model":{"args":[],"type":"{ index : Basics.Int, title : String.String, synonymList : String.String, requestStatus : UI.Components.SynonymCard.RequestStatus }"},"UI.PageViews.Documents.Model":{"args":[],"type":"{ documents : List.List String.String }"},"UI.PageViews.Settings.Model":{"args":[],"type":"{ tokenValue : String.String, title : String.String }"},"UI.PageViews.StopWords.Model":{"args":[],"type":"{ words : List.List String.String }"},"UI.PageViews.Synonyms.Model":{"args":[],"type":"{ synonymStates : List.List UI.Components.SynonymCard.Model }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"],"ApiRequest":["Api.Routes.Main.Msg"],"PollUpdate":["Basics.Int","SweetPoll.Config String.String","SweetPoll.Msg String.String"]}},"Json.Decode.Decoder":{"args":["a"],"tags":{"Decoder":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Api.Routes.Main.Msg":{"args":[],"tags":{"HandleListResponse":["Result.Result Http.Error (List.List Api.Routes.Main.IndexesRouteResponseListItem)"],"HandleShowResponse":["Result.Result Http.Error Api.Routes.Main.IndexesRouteResponseListItem"],"HandleDocumentsResponse":["Result.Result Http.Error String.String"],"HandleListStopWordsResponse":["Result.Result Http.Error (List.List String.String)"]}},"SweetPoll.Msg":{"args":["data"],"tags":{"PollResult":["Result.Result Http.Error data"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.PageViews.Indexes.Msg"],"SettingsViewMsg":["UI.PageViews.Settings.Msg"],"SearchViewMsg":["UI.PageViews.Search.Msg"],"StatsViewMsg":["UI.PageViews.Stats.Msg"],"DocumentsViewMsg":["UI.PageViews.Documents.Msg"],"TasksViewMsg":["UI.PageViews.Tasks.Msg"],"StopWordsViewMsg":["UI.PageViews.StopWords.Msg"],"SynonymsViewMsg":["UI.PageViews.Synonyms.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"]}},"String.String":{"args":[],"tags":{"String":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"List.List":{"args":["a"],"tags":{}},"UI.PageViews.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Search.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Settings.Msg":{"args":[],"tags":{"X":[],"KeyValueChanged":["String.String"],"SaveKeyValue":[],"None":[]}},"UI.PageViews.Stats.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.StopWords.Msg":{"args":[],"tags":{"NewStopWord":["String.String"],"Remove":["Basics.Int"],"None":[]}},"UI.PageViews.Synonyms.Msg":{"args":[],"tags":{"Save":["UI.Components.SynonymCard.Model"],"CardViewMsg":["UI.Components.SynonymCard.Msg"]}},"UI.PageViews.Tasks.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Page":{"args":[],"tags":{"Settings":["UI.PageViews.Settings.Model"],"Stats":[],"Documents":["UI.PageViews.Documents.Model"],"Tasks":[],"RankingRules":[],"Synonyms":["UI.PageViews.Synonyms.Model"],"StopWords":["UI.PageViews.StopWords.Model"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"UI.Components.SynonymCard.Msg":{"args":[],"tags":{"UpdatedTitle":["Basics.Int","String.String"],"UpdatedList":["Basics.Int","String.String"],"DoneEditingTitle":["Basics.Int"],"DoneEditingList":["Basics.Int"],"Save":["Basics.Int"],"Remove":["Basics.Int"]}},"UI.Components.SynonymCard.RequestStatus":{"args":[],"tags":{"None":[],"Fired":["UI.Components.SynonymCard.Request"],"Success":[],"Failed":["UI.Components.SynonymCard.Request"]}},"UI.Components.SynonymCard.Request":{"args":[],"tags":{"Create":[],"Update":[],"Delete":[]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Api.Routes.Main.IndexesRouteResponseListItem":{"args":[],"type":"{ uid : String.String, name : String.String, createdAt : String.String, updatedAt : String.String, primaryKey : String.String }"},"UI.Components.SynonymCard.Model":{"args":[],"type":"{ index : Basics.Int, title : String.String, synonymList : String.String, requestStatus : UI.Components.SynonymCard.RequestStatus }"},"UI.PageViews.Documents.Model":{"args":[],"type":"{ documents : List.List String.String }"},"UI.PageViews.Settings.Model":{"args":[],"type":"{ tokenValue : String.String, title : String.String }"},"UI.PageViews.StopWords.Model":{"args":[],"type":"{ words : List.List String.String }"},"UI.PageViews.Synonyms.Model":{"args":[],"type":"{ synonymStates : List.List UI.Components.SynonymCard.Model }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"],"ApiRequest":["Api.Routes.Main.Msg"],"PollUpdate":["Basics.Int","SweetPoll.Msg String.String"],"AddToPollQueue":["Basics.Int"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Api.Routes.Main.Msg":{"args":[],"tags":{"HandleListResponse":["Result.Result Http.Error (List.List Api.Routes.Main.IndexesRouteResponseListItem)"],"HandleShowResponse":["Result.Result Http.Error Api.Routes.Main.IndexesRouteResponseListItem"],"HandleDocumentsResponse":["Result.Result Http.Error String.String"],"HandleListStopWordsResponse":["Result.Result Http.Error (List.List String.String)"]}},"SweetPoll.Msg":{"args":["data"],"tags":{"PollResult":["Result.Result Http.Error data"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.PageViews.Indexes.Msg"],"SettingsViewMsg":["UI.PageViews.Settings.Msg"],"SearchViewMsg":["UI.PageViews.Search.Msg"],"StatsViewMsg":["UI.PageViews.Stats.Msg"],"DocumentsViewMsg":["UI.PageViews.Documents.Msg"],"TasksViewMsg":["UI.PageViews.Tasks.Msg"],"StopWordsViewMsg":["UI.PageViews.StopWords.Msg"],"SynonymsViewMsg":["UI.PageViews.Synonyms.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"]}},"String.String":{"args":[],"tags":{"String":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"List.List":{"args":["a"],"tags":{}},"UI.PageViews.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Search.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Settings.Msg":{"args":[],"tags":{"X":[],"KeyValueChanged":["String.String"],"SaveKeyValue":[],"None":[]}},"UI.PageViews.Stats.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.StopWords.Msg":{"args":[],"tags":{"NewStopWord":["String.String"],"Remove":["Basics.Int"],"None":[]}},"UI.PageViews.Synonyms.Msg":{"args":[],"tags":{"Save":["UI.Components.SynonymCard.Model"],"CardViewMsg":["UI.Components.SynonymCard.Msg"]}},"UI.PageViews.Tasks.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Page":{"args":[],"tags":{"Settings":["UI.PageViews.Settings.Model"],"Stats":[],"Documents":["UI.PageViews.Documents.Model"],"Tasks":[],"RankingRules":[],"Synonyms":["UI.PageViews.Synonyms.Model"],"StopWords":["UI.PageViews.StopWords.Model"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"UI.Components.SynonymCard.Msg":{"args":[],"tags":{"UpdatedTitle":["Basics.Int","String.String"],"UpdatedList":["Basics.Int","String.String"],"DoneEditingTitle":["Basics.Int"],"DoneEditingList":["Basics.Int"],"Save":["Basics.Int"],"Remove":["Basics.Int"]}},"UI.Components.SynonymCard.RequestStatus":{"args":[],"tags":{"None":[],"Fired":["UI.Components.SynonymCard.Request"],"Success":[],"Failed":["UI.Components.SynonymCard.Request"]}},"UI.Components.SynonymCard.Request":{"args":[],"tags":{"Create":[],"Update":[],"Delete":[]}}}}})}});}(this));

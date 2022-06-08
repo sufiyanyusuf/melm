@@ -34,18 +34,28 @@ main =
         }
 
 
+
+-- MSG
+
+
+type Msg
+    = SidebarMsg Sidebar.Msg
+    | PageViewMsg PageView.Msg
+    | ApiRequest Api.Routes.Main.Msg
+    | PollUpdate Int (SweetPoll.Msg String)
+    | AddToPollQueue Int
+
+
 init : () -> ( Model, Cmd Msg )
 init _ =
     let
-        config : SweetPoll.Config String
-        config =
-            SweetPoll.defaultConfig
-                (Decode.field "fulldate" Decode.string)
-                "https://script.google.com/macros/s/AKfycbyd5AcbAnWi2Yn0xhFRbyzS4qMq1VucMVgVvhul5XqS9HkAyJY/exec"
-
-        ( initialPollingState, initialCmd ) =
-            SweetPoll.init config
-
+        -- config : SweetPoll.Config String
+        -- config =
+        --     SweetPoll.defaultConfig
+        --         (Decode.field "fulldate" Decode.string)
+        --         "https://script.google.com/macros/s/AKfycbyd5AcbAnWi2Yn0xhFRbyzS4qMq1VucMVgVvhul5XqS9HkAyJY/exec"
+        -- ( initialPollingState, initialCmd ) =
+        --     SweetPoll.init config
         model =
             { selectedPage = Views.Documents UI.PageViews.Documents.init
             , token = Nothing
@@ -57,7 +67,7 @@ init _ =
             , stopWords = []
             , synonyms = UI.PageViews.Synonyms.init.synonymStates
             , pollingState = Nothing
-            , requestQueue = []
+            , pollingQueue = []
             }
     in
     ( model, Cmd.none )
@@ -78,7 +88,7 @@ type alias Model =
     , stopWords : List String
     , synonyms : List UI.Components.SynonymCard.Model
     , pollingState : Maybe (SweetPoll.PollingState String)
-    , requestQueue : List Int
+    , pollingQueue : List Int
     }
 
 
@@ -98,17 +108,6 @@ view model =
 
 
 
--- MSG
-
-
-type Msg
-    = SidebarMsg Sidebar.Msg
-    | PageViewMsg PageView.Msg
-    | ApiRequest Api.Routes.Main.Msg
-    | PollUpdate Int (SweetPoll.Config String) (SweetPoll.Msg String)
-
-
-
 -- UPDATE
 
 
@@ -124,8 +123,11 @@ update msg model =
         ApiRequest r ->
             handleApiRequest model r
 
-        PollUpdate i c m ->
-            ( model, Cmd.none )
+        PollUpdate taskId m ->
+            updateOnPoll model m taskId
+
+        AddToPollQueue taskId ->
+            handlePollRequest model taskId
 
 
 
@@ -335,6 +337,24 @@ handleSidebarSelection model sidebarMsg =
                     )
 
 
+handlePollRequest : Model -> Int -> ( Model, Cmd Msg )
+handlePollRequest model taskId =
+    if List.member taskId model.pollingQueue then
+        ( model, Cmd.none )
+
+    else
+        let
+            ( pollState, pollCmd ) =
+                SweetPoll.init (taskConfigBuilder taskId)
+        in
+        ( { model
+            | pollingQueue = model.pollingQueue ++ [ taskId ]
+            , pollingState = Just pollState
+          }
+        , pollCmd |> Cmd.map (PollUpdate taskId)
+        )
+
+
 
 -- SUBSCRIPTIONS
 
@@ -435,9 +455,12 @@ updateSynonymsViewModel pages updatedPage =
             )
 
 
-getPollingState : Model -> SweetPoll.Msg String -> SweetPoll.Config String -> Int -> ( Model, Cmd Msg )
-getPollingState model message config i =
+updateOnPoll : Model -> SweetPoll.Msg String -> Int -> ( Model, Cmd Msg )
+updateOnPoll model message i =
     let
+        config =
+            taskConfigBuilder i
+
         ( state, _ ) =
             SweetPoll.init config
     in
@@ -445,12 +468,12 @@ getPollingState model message config i =
         Just s ->
             case SweetPoll.update config message s of
                 { newState, newData, error, cmd } ->
-                    handlePollSignal model newState newData error cmd config i
+                    handlePollSignal model newState newData error cmd i
 
         Nothing ->
             case SweetPoll.update config message state of
                 { newState, newData, error, cmd } ->
-                    handlePollSignal model newState newData error cmd config i
+                    handlePollSignal model newState newData error cmd i
 
 
 handlePollSignal :
@@ -459,10 +482,9 @@ handlePollSignal :
     -> Maybe String
     -> Maybe Http.Error
     -> Cmd (SweetPoll.Msg String)
-    -> SweetPoll.Config String
     -> Int
     -> ( Model, Cmd Msg )
-handlePollSignal model newState newData error cmd config id =
+handlePollSignal model newState newData error cmd id =
     case error of
         Just _ ->
             ( { model | pollingState = Nothing }
@@ -475,12 +497,12 @@ handlePollSignal model newState newData error cmd config id =
                     case d of
                         "enqueued" ->
                             ( { model | pollingState = Just newState }
-                            , cmd |> Cmd.map (PollUpdate id config)
+                            , cmd |> Cmd.map (PollUpdate id)
                             )
 
                         "processing" ->
                             ( { model | pollingState = Just newState }
-                            , cmd |> Cmd.map (PollUpdate id config)
+                            , cmd |> Cmd.map (PollUpdate id)
                             )
 
                         "succeeded" ->
@@ -498,34 +520,3 @@ handlePollSignal model newState newData error cmd config id =
 
                 Nothing ->
                     ( model, Cmd.none )
-
-
-taskConfigBuilder : Int -> SweetPoll.Config String
-taskConfigBuilder id =
-    let
-        payload =
-            buildPayload (GetTask id)
-    in
-    SweetPoll.defaultConfig
-        (Decode.field "status" Decode.string)
-        payload.endpoint
-
-
-
--- let
---     config : SweetPoll.Config String
---     config =
---         SweetPoll.defaultConfig
---             (Decode.field "fulldate" Decode.string)
---             "https://script.google.com/macros/s/AKfycbyd5AcbAnWi2Yn0xhFRbyzS4qMq1VucMVgVvhul5XqS9HkAyJY/exec"
--- in
--- case SweetPoll.update config x model.pollingState of
---     { newState, newData, error, cmd } ->
---         case newData of
---             Just y ->
---                 -- update model
---                 ( model, Cmd.none )
---             Nothing ->
---                 ( { model | pollingState = newState }
---                 , cmd |> Cmd.map PollUpdate
---                 )

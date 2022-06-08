@@ -5,6 +5,7 @@ import Dict exposing (Dict)
 import Http
 import Json.Decode exposing (Decoder, bool, dict, field, float, int, list, map2, maybe, string)
 import Json.Encode as Encode
+import SweetPoll exposing (PollingState)
 
 
 type DictValue
@@ -212,3 +213,18 @@ indexesRouteResponseListItemDecoder =
 stopWordsListItemDecoder : Decoder (List String)
 stopWordsListItemDecoder =
     Json.Decode.list string
+
+
+taskConfigBuilder : Int -> SweetPoll.Config String
+taskConfigBuilder id =
+    let
+        payload =
+            buildPayload (GetTask id)
+    in
+    { url = payload.endpoint
+    , decoder = field "status" string
+    , delay = 0.5
+    , samesBeforeDelay = 5
+    , delayMultiplier = 2
+    , maxDelay = 40
+    }
