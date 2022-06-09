@@ -1,6 +1,7 @@
 module UI.PageViews.Synonyms exposing (..)
 
 import Api.Routes.Main exposing (..)
+import Dict exposing (Dict)
 import Element exposing (..)
 import UI.Components.SynonymCard as SynonymCard exposing (Msg(..))
 import UI.Elements
@@ -57,8 +58,6 @@ view model =
             (UI.Styles.getTypographicStyleFor UI.Styles.H1)
             (text "Synonyms")
         , UI.Elements.spacer UI.Styles.MD
-
-        -- , cardView (initSynonymCard 0) |> Element.map CardViewMsg
         , Element.table
             [ width fill
             , height fill
@@ -75,3 +74,8 @@ view model =
                 ]
             }
         ]
+
+
+convertToDictionary : Model -> Dict String (List String)
+convertToDictionary model =
+    Debug.todo ""

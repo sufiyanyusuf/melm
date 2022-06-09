@@ -34,7 +34,7 @@ type Route
     | UpdateStopWords String (List String)
     | ResetStopWords String
     | GetTask Int
-    | UpdateSynonyms String ( String, List String ) (Decoder SettingsRouteResponseItem)
+    | UpdateSynonyms String (Dict String (List String)) (Decoder SettingsRouteResponseItem)
     | ListSynonyms String (Decoder (Dict String (List String)))
 
 
@@ -209,12 +209,10 @@ buildPayload r =
         GetTask i ->
             { method = GET, endpoint = rootUrl ++ "/tasks/" ++ String.fromInt i, body = Http.emptyBody, route = r }
 
-        UpdateSynonyms i ( k, v ) _ ->
+        UpdateSynonyms i dic _ ->
             let
                 body =
-                    Encode.object
-                        [ ( k, Encode.list Encode.string v )
-                        ]
+                    Encode.dict identity (Encode.list Encode.string) dic
             in
             { method = POST, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/synonyms", body = Http.jsonBody body, route = r }
 

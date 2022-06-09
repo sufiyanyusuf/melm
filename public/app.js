@@ -10813,7 +10813,7 @@ var $author$project$Main$buildSynonymsViewModel = F2(
 						index: index,
 						indexId: indexId,
 						requestStatus: $author$project$UI$Components$SynonymCard$None,
-						synonymList: _List_Nil,
+						synonymList: values,
 						synonymsValue: A3(
 							$elm$core$List$foldl,
 							F2(
@@ -10894,6 +10894,22 @@ var $author$project$Api$Helper$DELETE = {$: 'DELETE'};
 var $author$project$Api$Helper$GET = {$: 'GET'};
 var $author$project$Api$Helper$POST = {$: 'POST'};
 var $author$project$Api$Helper$PUT = {$: 'PUT'};
+var $elm$json$Json$Encode$dict = F3(
+	function (toKey, toValue, dictionary) {
+		return _Json_wrap(
+			A3(
+				$elm$core$Dict$foldl,
+				F3(
+					function (key, value, obj) {
+						return A3(
+							_Json_addField,
+							toKey(key),
+							toValue(value),
+							obj);
+					}),
+				_Json_emptyObject(_Utils_Tuple0),
+				dictionary));
+	});
 var $elm$http$Http$BadStatus_ = F2(
 	function (a, b) {
 		return {$: 'BadStatus_', a: a, b: b};
@@ -11006,16 +11022,12 @@ var $author$project$Api$Routes$Main$buildPayload = function (r) {
 			};
 		case 'UpdateSynonyms':
 			var i = r.a;
-			var _v3 = r.b;
-			var k = _v3.a;
-			var v = _v3.b;
-			var body = $elm$json$Json$Encode$object(
-				_List_fromArray(
-					[
-						_Utils_Tuple2(
-						k,
-						A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, v))
-					]));
+			var dic = r.b;
+			var body = A3(
+				$elm$json$Json$Encode$dict,
+				$elm$core$Basics$identity,
+				$elm$json$Json$Encode$list($elm$json$Json$Encode$string),
+				dic);
 			return {
 				body: $elm$http$Http$jsonBody(body),
 				endpoint: $author$project$Api$Helper$rootUrl + ('/indexes/' + (i + '/settings/synonyms')),
@@ -11520,6 +11532,12 @@ var $author$project$Main$handleSynonymsViewMsg = F2(
 			var _v3 = model.selectedIndex;
 			if (_v3.$ === 'Just') {
 				var i = _v3.a;
+				var currentSynonyms = A2(
+					$elm$core$List$map,
+					function (s) {
+						return _Utils_Tuple2(s.title, s.synonymList);
+					},
+					model.synonyms);
 				var _v4 = A2(
 					$author$project$UI$PageViews$Synonyms$update,
 					msg,
@@ -11545,7 +11563,7 @@ var $author$project$Main$handleSynonymsViewMsg = F2(
 								A3(
 									$author$project$Api$Routes$Main$UpdateSynonyms,
 									i.uid,
-									_Utils_Tuple2(x.title, x.synonymList),
+									$elm$core$Dict$fromList(currentSynonyms),
 									$author$project$Api$Routes$Main$settingsUpdateDecoder)),
 							A2($elm$core$Maybe$withDefault, '', model.savedToken))));
 			} else {
@@ -12046,8 +12064,8 @@ var $author$project$Main$handleSidebarSelection = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 368, column: 21},
-						end: {line: 368, column: 31}
+						start: {line: 371, column: 21},
+						end: {line: 371, column: 31}
 					})('branch \'RankingRules\' not implemented');
 			case 'Synonyms':
 				return _Utils_Tuple2(

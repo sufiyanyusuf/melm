@@ -13,7 +13,7 @@ import UI.PageViews.Documents
 import UI.PageViews.Indexes
 import UI.PageViews.Settings exposing (Msg(..))
 import UI.PageViews.StopWords
-import UI.PageViews.Synonyms exposing (Msg(..))
+import UI.PageViews.Synonyms exposing (Msg(..), convertToDictionary)
 import UI.Pages as Views exposing (Page(..))
 import UI.Sidebar as Sidebar
 import UI.Styles exposing (..)
@@ -267,6 +267,9 @@ handleSynonymsViewMsg model msg =
                                     let
                                         ( updatedSynonymsViewModel, _ ) =
                                             UI.PageViews.Synonyms.update msg (getSynonymsViewModel model)
+
+                                        currentSynonyms =
+                                            List.map (\s -> ( s.title, s.synonymList )) model.synonyms
                                     in
                                     ( { model
                                         | pages = updateSynonymsViewModel model.pages (Synonyms updatedSynonymsViewModel)
@@ -274,7 +277,7 @@ handleSynonymsViewMsg model msg =
                                         , synonyms = updatedSynonymsViewModel.synonymStates
                                       }
                                     , Api.Routes.Main.buildRequest
-                                        (Api.Routes.Main.buildPayload (UpdateSynonyms i.uid ( x.title, x.synonymList ) Api.Routes.Main.settingsUpdateDecoder))
+                                        (Api.Routes.Main.buildPayload (UpdateSynonyms i.uid (Dict.fromList currentSynonyms) Api.Routes.Main.settingsUpdateDecoder))
                                         (Maybe.withDefault
                                             ""
                                             model.savedToken
@@ -613,7 +616,7 @@ buildSynonymsViewModel d indexId =
                 , title = title
                 , synonymsValue = List.foldl (\x a -> x ++ "," ++ a) "" values
                 , requestStatus = UI.Components.SynonymCard.None
-                , synonymList = []
+                , synonymList = values
                 , taskId = Nothing
                 , indexId = indexId
                 }

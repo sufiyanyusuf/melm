@@ -1,5 +1,6 @@
 module UI.Components.SynonymCard exposing (..)
 
+import Dict exposing (Dict)
 import Element exposing (..)
 import Element.Background
 import Element.Border
