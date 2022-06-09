@@ -209,7 +209,7 @@ handleApiRequest model apiResponse =
                 Ok payload ->
                     let
                         synonyms =
-                            buildSynonymsViewModel payload
+                            buildSynonymsViewModel payload x
 
                         updatedSynonymsPage =
                             Synonyms { synonymStates = synonyms }
@@ -368,7 +368,15 @@ handleSidebarSelection model sidebarMsg =
                     Debug.todo "branch 'RankingRules' not implemented"
 
                 Synonyms _ ->
-                    ( { model | selectedPage = selectedPage }, Cmd.none )
+                    ( { model | selectedPage = selectedPage }
+                    , Api.Routes.Main.buildRequest
+                        (Api.Routes.Main.buildPayload (ListSynonyms "suggestions" Api.Routes.Main.synonymsListDecoder))
+                        (Maybe.withDefault
+                            ""
+                            model.savedToken
+                        )
+                        |> Cmd.map ApiRequest
+                    )
 
                 StopWords _ ->
                     ( { model | selectedPage = selectedPage }
@@ -595,8 +603,8 @@ updatePollState task newState =
             ( t, s )
 
 
-buildSynonymsViewModel : Dict String (List String) -> List UI.Components.SynonymCard.Model
-buildSynonymsViewModel d =
+buildSynonymsViewModel : Dict String (List String) -> String -> List UI.Components.SynonymCard.Model
+buildSynonymsViewModel d indexId =
     d
         |> Dict.toList
         |> List.indexedMap
@@ -607,6 +615,6 @@ buildSynonymsViewModel d =
                 , requestStatus = UI.Components.SynonymCard.None
                 , synonymList = []
                 , taskId = Nothing
-                , indexId = ""
+                , indexId = indexId
                 }
             )

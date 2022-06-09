@@ -20,7 +20,7 @@ type Msg
     | HandleDocumentsResponse (Result Http.Error String)
     | HandleListStopWordsResponse (Result Http.Error (List String))
     | HandleUpdateSynonymsResponse (Result Http.Error SettingsRouteResponseItem)
-    | HandleListSynonymsResponse (Result Http.Error (Dict String (List String))) Int
+    | HandleListSynonymsResponse (Result Http.Error (Dict String (List String))) String
 
 
 type Route
@@ -35,7 +35,7 @@ type Route
     | ResetStopWords String
     | GetTask Int
     | UpdateSynonyms String ( String, List String ) (Decoder SettingsRouteResponseItem)
-    | ListSynonyms String (Decoder (Dict String (List String))) Int
+    | ListSynonyms String (Decoder (Dict String (List String)))
 
 
 type alias Payload =
@@ -145,7 +145,7 @@ buildRequest payload token =
                 , tracker = Nothing
                 }
 
-        ListSynonyms _ d x ->
+        ListSynonyms x d ->
             Http.request
                 { method = getRequestMethodTitle payload.method
                 , headers = headers token
@@ -218,12 +218,17 @@ buildPayload r =
             in
             { method = POST, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/synonyms", body = Http.jsonBody body, route = r }
 
-        ListSynonyms i _ _ ->
+        ListSynonyms i _ ->
             { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/synonyms", body = Http.emptyBody, route = r }
 
 
 
 -- Decoders
+
+
+synonymsListDecoder : Decoder (Dict String (List String))
+synonymsListDecoder =
+    Json.Decode.dict (list string)
 
 
 indexesRouteResponseListDecoder : Decoder (List IndexesRouteResponseListItem)
@@ -274,10 +279,6 @@ taskConfigBuilder id =
     , delayMultiplier = 2
     , maxDelay = 40
     }
-
-
-
--- settingsUpdateDecoder : Decoder Int
 
 
 settingsUpdateDecoder : Decoder SettingsRouteResponseItem
