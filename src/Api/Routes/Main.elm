@@ -20,6 +20,7 @@ type Msg
     | HandleDocumentsResponse (Result Http.Error String)
     | HandleListStopWordsResponse (Result Http.Error (List String))
     | HandleUpdateSynonymsResponse (Result Http.Error SettingsRouteResponseItem)
+    | HandleListSynonymsResponse (Result Http.Error (Dict String (List String))) Int
 
 
 type Route
@@ -34,6 +35,7 @@ type Route
     | ResetStopWords String
     | GetTask Int
     | UpdateSynonyms String ( String, List String ) (Decoder SettingsRouteResponseItem)
+    | ListSynonyms String (Decoder (Dict String (List String))) Int
 
 
 type alias Payload =
@@ -143,6 +145,18 @@ buildRequest payload token =
                 , tracker = Nothing
                 }
 
+        ListSynonyms _ d x ->
+            Http.request
+                { method = getRequestMethodTitle payload.method
+                , headers = headers token
+                , url = payload.endpoint
+                , body = payload.body
+                , expect = Http.expectJson HandleListSynonymsResponse d
+                , timeout = Nothing
+                , tracker = Nothing
+                }
+                |> Cmd.map (\a -> a x)
+
 
 buildPayload : Route -> Payload
 buildPayload r =
@@ -203,6 +217,9 @@ buildPayload r =
                         ]
             in
             { method = POST, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/synonyms", body = Http.jsonBody body, route = r }
+
+        ListSynonyms i _ _ ->
+            { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/synonyms", body = Http.emptyBody, route = r }
 
 
 

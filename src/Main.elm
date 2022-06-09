@@ -2,6 +2,7 @@ module Main exposing (..)
 
 import Api.Routes.Main exposing (..)
 import Browser
+import Dict exposing (Dict)
 import Element exposing (..)
 import Html exposing (Html)
 import Http
@@ -199,6 +200,27 @@ handleApiRequest model apiResponse =
             case r of
                 Ok payload ->
                     update (AddToPollQueue (UpdateSynonymsTask payload.uid payload.indexUid)) model
+
+                Err _ ->
+                    ( model, Cmd.none )
+
+        HandleListSynonymsResponse r x ->
+            case r of
+                Ok payload ->
+                    let
+                        synonyms =
+                            buildSynonymsViewModel payload
+
+                        updatedSynonymsPage =
+                            Synonyms { synonymStates = synonyms }
+                    in
+                    ( { model
+                        | synonyms = synonyms
+                        , pages = updateSynonymsViewModel model.pages updatedSynonymsPage
+                        , selectedPage = updatedSynonymsPage
+                      }
+                    , Cmd.none
+                    )
 
                 Err _ ->
                     ( model, Cmd.none )
@@ -571,3 +593,20 @@ updatePollState task newState =
 
         else
             ( t, s )
+
+
+buildSynonymsViewModel : Dict String (List String) -> List UI.Components.SynonymCard.Model
+buildSynonymsViewModel d =
+    d
+        |> Dict.toList
+        |> List.indexedMap
+            (\index ( title, values ) ->
+                { index = index
+                , title = title
+                , synonymsValue = List.foldl (\x a -> x ++ "," ++ a) "" values
+                , requestStatus = UI.Components.SynonymCard.None
+                , synonymList = []
+                , taskId = Nothing
+                , indexId = ""
+                }
+            )
