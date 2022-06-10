@@ -13,7 +13,7 @@ import UI.PageViews.Documents
 import UI.PageViews.Indexes
 import UI.PageViews.Settings exposing (Msg(..))
 import UI.PageViews.StopWords
-import UI.PageViews.Synonyms exposing (Msg(..), convertToDictionary)
+import UI.PageViews.Synonyms exposing (Msg(..))
 import UI.Pages as Views exposing (Page(..))
 import UI.Sidebar as Sidebar
 import UI.Styles exposing (..)
@@ -66,7 +66,7 @@ type alias Model =
     , documents : List String
     , selectedIndex : Maybe IndexesRouteResponseListItem
     , stopWords : List String
-    , synonyms : List UI.Components.SynonymCard.Model
+    , synonyms : List UI.Components.SynonymCard.Model -- Decouple this
     , pollingQueue : List ( Task, SweetPoll.PollingState String )
     }
 
@@ -204,15 +204,15 @@ handleApiRequest model apiResponse =
                 Err _ ->
                     ( model, Cmd.none )
 
-        HandleListSynonymsResponse r x ->
+        HandleListSynonymsResponse r indexUid ->
             case r of
                 Ok payload ->
                     let
                         synonyms =
-                            buildSynonymsViewModel payload x
+                            buildSynonymsViewModel payload indexUid
 
                         updatedSynonymsPage =
-                            Synonyms { synonymStates = synonyms }
+                            Synonyms { synonymStates = synonyms, indexUid = indexUid }
                     in
                     ( { model
                         | synonyms = synonyms
@@ -256,42 +256,39 @@ handlePageViewMessage model pageViewMsg =
 
 handleSynonymsViewMsg : Model -> UI.PageViews.Synonyms.Msg -> ( Model, Cmd Msg )
 handleSynonymsViewMsg model msg =
-    case msg of
-        m ->
-            case m of
-                CardViewMsg cm ->
-                    case cm of
-                        DoneEditingList x ->
-                            case model.selectedIndex of
-                                Just i ->
-                                    let
-                                        ( updatedSynonymsViewModel, _ ) =
-                                            UI.PageViews.Synonyms.update msg (getSynonymsViewModel model)
+    case model.selectedIndex of
+        Just i ->
+            case msg of
+                m ->
+                    case m of
+                        Sync ->
+                            let
+                                ( updatedSynonymsViewModel, _ ) =
+                                    UI.PageViews.Synonyms.update msg (getSynonymsViewModel model i.uid)
 
-                                        currentSynonyms =
-                                            List.map (\s -> ( s.title, s.synonymList )) model.synonyms
-                                    in
-                                    ( { model
-                                        | pages = updateSynonymsViewModel model.pages (Synonyms updatedSynonymsViewModel)
-                                        , selectedPage = Synonyms updatedSynonymsViewModel
-                                        , synonyms = updatedSynonymsViewModel.synonymStates
-                                      }
-                                    , Api.Routes.Main.buildRequest
-                                        (Api.Routes.Main.buildPayload (UpdateSynonyms i.uid (Dict.fromList currentSynonyms) Api.Routes.Main.settingsUpdateDecoder))
-                                        (Maybe.withDefault
-                                            ""
-                                            model.savedToken
-                                        )
-                                        |> Cmd.map ApiRequest
-                                    )
-
-                                Nothing ->
-                                    ( model, Cmd.none )
+                                currentSynonyms =
+                                    List.map
+                                        (\s -> ( s.synonymKey, s.synonymList ))
+                                        model.synonyms
+                            in
+                            ( { model
+                                | pages = updateSynonymsViewModel model.pages (Synonyms updatedSynonymsViewModel)
+                                , selectedPage = Synonyms updatedSynonymsViewModel
+                                , synonyms = updatedSynonymsViewModel.synonymStates
+                              }
+                            , Api.Routes.Main.buildRequest
+                                (Api.Routes.Main.buildPayload (UpdateSynonyms i.uid (Dict.fromList currentSynonyms) Api.Routes.Main.settingsUpdateDecoder))
+                                (Maybe.withDefault
+                                    ""
+                                    model.savedToken
+                                )
+                                |> Cmd.map ApiRequest
+                            )
 
                         _ ->
                             let
                                 ( updatedSynonymsViewModel, _ ) =
-                                    UI.PageViews.Synonyms.update msg (getSynonymsViewModel model)
+                                    UI.PageViews.Synonyms.update msg (getSynonymsViewModel model i.uid)
                             in
                             ( { model
                                 | pages = updateSynonymsViewModel model.pages (Synonyms updatedSynonymsViewModel)
@@ -300,6 +297,9 @@ handleSynonymsViewMsg model msg =
                               }
                             , Cmd.none
                             )
+
+        Nothing ->
+            ( model, Cmd.none )
 
 
 handleSettingsViewMsg : Model -> UI.PageViews.Settings.Msg -> ( Model, Cmd Msg )
@@ -451,9 +451,9 @@ getStopWordsViewModel model =
     { words = model.stopWords }
 
 
-getSynonymsViewModel : Model -> UI.PageViews.Synonyms.Model
-getSynonymsViewModel model =
-    { synonymStates = model.synonyms }
+getSynonymsViewModel : Model -> String -> UI.PageViews.Synonyms.Model
+getSynonymsViewModel model indexUid =
+    { synonymStates = model.synonyms, indexUid = indexUid }
 
 
 
@@ -613,11 +613,12 @@ buildSynonymsViewModel d indexId =
         |> List.indexedMap
             (\index ( title, values ) ->
                 { index = index
-                , title = title
-                , synonymsValue = List.foldl (\x a -> x ++ "," ++ a) "" values
+                , synonymKey = title
+                , synonymsValue = List.foldl (\x a -> x ++ "," ++ a) "" values |> String.dropRight 1
                 , requestStatus = UI.Components.SynonymCard.None
                 , synonymList = values
                 , taskId = Nothing
                 , indexId = indexId
+                , saved = Just ( title, values )
                 }
             )
