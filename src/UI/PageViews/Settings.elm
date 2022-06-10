@@ -6,8 +6,7 @@ import UI.Styles
 
 
 type Msg
-    = X
-    | KeyValueChanged String
+    = KeyValueChanged String
     | SaveKeyValue
     | None
 

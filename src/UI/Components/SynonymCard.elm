@@ -25,12 +25,11 @@ type alias Model =
 type Msg
     = UpdatedTitle Int String
     | UpdatedList Int String
-    | DoneEditingTitle Int
-    | DoneEditingList Model
     | Remove Int
     | RetrySave Int
     | Save Int
     | Reset
+    | DoneEditing
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -64,7 +63,7 @@ type Request
 
 
 type RequestStatus
-    = None
+    = NoRequest
     | Fired Request
     | Success
     | Failed Request
@@ -78,8 +77,8 @@ view model =
         , Element.Border.rounded 8
         , Element.width fill
         ]
-        [ UI.Elements.textfield model.synonymKey "Tomato" (UpdatedTitle model.index) (DoneEditingTitle model.index)
-        , UI.Elements.textfield model.synonymsValue "Tomayto, Tomaato, Tomaeto" (UpdatedList model.index) (DoneEditingList model)
+        [ UI.Elements.textfield model.synonymKey "Tomato" (UpdatedTitle model.index) DoneEditing
+        , UI.Elements.textfield model.synonymsValue "Tomayto, Tomaato, Tomaeto" (UpdatedList model.index) DoneEditing
         , loadingView model
         , failedView model
         ]
@@ -142,7 +141,7 @@ init index indexUid =
     { index = index
     , synonymKey = ""
     , synonymsValue = ""
-    , requestStatus = None
+    , requestStatus = NoRequest
     , saved = Nothing
     , synonymList = []
     , taskId = Nothing

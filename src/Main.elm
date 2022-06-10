@@ -11,7 +11,7 @@ import UI.Components.SynonymCard exposing (Msg(..))
 import UI.PageView as PageView exposing (Msg(..))
 import UI.PageViews.Documents
 import UI.PageViews.Indexes
-import UI.PageViews.Settings exposing (Msg(..))
+import UI.PageViews.Settings as SettingsPage
 import UI.PageViews.StopWords
 import UI.PageViews.Synonyms exposing (Msg(..))
 import UI.Pages as Views exposing (Page(..))
@@ -302,13 +302,10 @@ handleSynonymsViewMsg model msg =
             ( model, Cmd.none )
 
 
-handleSettingsViewMsg : Model -> UI.PageViews.Settings.Msg -> ( Model, Cmd Msg )
+handleSettingsViewMsg : Model -> SettingsPage.Msg -> ( Model, Cmd Msg )
 handleSettingsViewMsg model msg =
     case msg of
-        X ->
-            ( model, Cmd.none )
-
-        KeyValueChanged t ->
+        SettingsPage.KeyValueChanged t ->
             let
                 updatedTokenValue =
                     { model | token = Just t }
@@ -329,10 +326,10 @@ handleSettingsViewMsg model msg =
             , Cmd.none
             )
 
-        SaveKeyValue ->
+        SettingsPage.SaveKeyValue ->
             ( { model | savedToken = model.token }, Cmd.none )
 
-        None ->
+        SettingsPage.None ->
             ( model, Cmd.none )
 
 
@@ -436,7 +433,7 @@ getSidebarViewModel model =
     }
 
 
-getSettingsViewModel : Model -> UI.PageViews.Settings.Model
+getSettingsViewModel : Model -> SettingsPage.Model
 getSettingsViewModel model =
     { tokenValue = Maybe.withDefault "" model.token, title = "Settings" }
 
@@ -615,7 +612,7 @@ buildSynonymsViewModel d indexId =
                 { index = index
                 , synonymKey = title
                 , synonymsValue = List.foldl (\x a -> x ++ "," ++ a) "" values |> String.dropRight 1
-                , requestStatus = UI.Components.SynonymCard.None
+                , requestStatus = UI.Components.SynonymCard.NoRequest
                 , synonymList = values
                 , taskId = Nothing
                 , indexId = indexId
