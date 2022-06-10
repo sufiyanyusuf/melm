@@ -1,10 +1,8 @@
 module UI.Components.SynonymCard exposing (..)
 
-import Dict exposing (Dict)
 import Element exposing (..)
 import Element.Background
 import Element.Border
-import Svg.Attributes exposing (mode)
 import UI.Elements
 import UI.Icons exposing (Icon(..), Style(..))
 import UI.Styles
@@ -152,26 +150,26 @@ init index indexUid =
 loadingString : Request -> String
 loadingString r =
     case r of
-        Create i ->
+        Create _ ->
             "Creating"
 
-        Update i ->
+        Update _ ->
             "Updating"
 
-        Delete i ->
+        Delete _ ->
             "Deleting"
 
 
 failureString : Request -> String
 failureString r =
     case r of
-        Create i ->
+        Create _ ->
             "Failed to create"
 
-        Update i ->
+        Update _ ->
             "Failed to update"
 
-        Delete i ->
+        Delete _ ->
             "Failed to delete"
 
 

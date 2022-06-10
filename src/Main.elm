@@ -270,6 +270,7 @@ handleSynonymsViewMsg model msg =
                                     List.map
                                         (\s -> ( s.synonymKey, s.synonymList ))
                                         model.synonyms
+                                        |> List.filter (\( k, v ) -> k /= "" && v /= [])
                             in
                             ( { model
                                 | pages = updateSynonymsViewModel model.pages (Synonyms updatedSynonymsViewModel)
@@ -277,7 +278,12 @@ handleSynonymsViewMsg model msg =
                                 , synonyms = updatedSynonymsViewModel.synonymStates
                               }
                             , Api.Routes.Main.buildRequest
-                                (Api.Routes.Main.buildPayload (UpdateSynonyms i.uid (Dict.fromList currentSynonyms) Api.Routes.Main.settingsUpdateDecoder))
+                                (Api.Routes.Main.buildPayload
+                                    (UpdateSynonyms i.uid
+                                        (Dict.fromList currentSynonyms)
+                                        Api.Routes.Main.settingsUpdateDecoder
+                                    )
+                                )
                                 (Maybe.withDefault
                                     ""
                                     model.savedToken

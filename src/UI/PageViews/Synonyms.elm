@@ -1,7 +1,6 @@
 module UI.PageViews.Synonyms exposing (..)
 
 import Api.Routes.Main exposing (..)
-import Dict exposing (Dict)
 import Element exposing (..)
 import UI.Components.SynonymCard as SynonymCard exposing (Msg(..))
 import UI.Elements
@@ -87,7 +86,7 @@ view model =
 
 
 toolbarView : Model -> Element Msg
-toolbarView model =
+toolbarView _ =
     Element.row
         [ Element.width Element.shrink
         , padding 12

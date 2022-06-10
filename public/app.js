@@ -21375,7 +21375,7 @@ var $author$project$UI$PageViews$Synonyms$CardViewMsg = function (a) {
 var $author$project$UI$Styles$MD = {$: 'MD'};
 var $author$project$UI$PageViews$Synonyms$New = {$: 'New'};
 var $author$project$UI$PageViews$Synonyms$Sync = {$: 'Sync'};
-var $author$project$UI$PageViews$Synonyms$toolbarView = function (model) {
+var $author$project$UI$PageViews$Synonyms$toolbarView = function (_v0) {
 	return A2(
 		$mdgriffith$elm_ui$Element$row,
 		_List_fromArray(
@@ -21410,13 +21410,10 @@ var $author$project$UI$Icons$Trash = {$: 'Trash'};
 var $author$project$UI$Components$SynonymCard$failureString = function (r) {
 	switch (r.$) {
 		case 'Create':
-			var i = r.a;
 			return 'Failed to create';
 		case 'Update':
-			var i = r.a;
 			return 'Failed to update';
 		default:
-			var i = r.a;
 			return 'Failed to delete';
 	}
 };
@@ -21505,13 +21502,10 @@ var $author$project$UI$Components$SynonymCard$failedView = function (model) {
 var $author$project$UI$Components$SynonymCard$loadingString = function (r) {
 	switch (r.$) {
 		case 'Create':
-			var i = r.a;
 			return 'Creating';
 		case 'Update':
-			var i = r.a;
 			return 'Updating';
 		default:
-			var i = r.a;
 			return 'Deleting';
 	}
 };
