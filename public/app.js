@@ -10806,7 +10806,7 @@ var $elm$core$String$dropRight = F2(
 	function (n, string) {
 		return (n < 1) ? string : A3($elm$core$String$slice, 0, -n, string);
 	});
-var $author$project$Main$buildSynonymsViewModel = F2(
+var $author$project$Main$buildSynonymsViewModelFromApiResponse = F2(
 	function (d, indexId) {
 		return A2(
 			$elm$core$List$indexedMap,
@@ -11434,6 +11434,17 @@ var $author$project$Api$Routes$Main$buildRequest = F2(
 						}));
 		}
 	});
+var $elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
 var $author$project$Main$getSynonymsViewModel = F2(
 	function (model, indexUid) {
 		return {indexUid: indexUid, synonymStates: model.synonyms};
@@ -11569,11 +11580,18 @@ var $author$project$Main$handleSynonymsViewMsg = F2(
 			var m = msg;
 			if (m.$ === 'Sync') {
 				var currentSynonyms = A2(
-					$elm$core$List$map,
-					function (s) {
-						return _Utils_Tuple2(s.synonymKey, s.synonymList);
+					$elm$core$List$filter,
+					function (_v4) {
+						var k = _v4.a;
+						var v = _v4.b;
+						return (k !== '') && (!_Utils_eq(v, _List_Nil));
 					},
-					model.synonyms);
+					A2(
+						$elm$core$List$map,
+						function (s) {
+							return _Utils_Tuple2(s.synonymKey, s.synonymList);
+						},
+						model.synonyms));
 				var _v3 = A2(
 					$author$project$UI$PageViews$Synonyms$update,
 					msg,
@@ -11603,11 +11621,11 @@ var $author$project$Main$handleSynonymsViewMsg = F2(
 									$author$project$Api$Routes$Main$settingsUpdateDecoder)),
 							A2($elm$core$Maybe$withDefault, '', model.savedToken))));
 			} else {
-				var _v4 = A2(
+				var _v5 = A2(
 					$author$project$UI$PageViews$Synonyms$update,
 					msg,
 					A2($author$project$Main$getSynonymsViewModel, model, i.uid));
-				var updatedSynonymsViewModel = _v4.a;
+				var updatedSynonymsViewModel = _v5.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -11635,22 +11653,22 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 236, column: 13},
-						end: {line: 236, column: 23}
+						start: {line: 243, column: 13},
+						end: {line: 243, column: 23}
 					})('branch \'IndexesViewMsg _\' not implemented');
 			case 'SearchViewMsg':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 239, column: 13},
-						end: {line: 239, column: 23}
+						start: {line: 246, column: 13},
+						end: {line: 246, column: 23}
 					})('branch \'SearchViewMsg _\' not implemented');
 			case 'StatsViewMsg':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 242, column: 13},
-						end: {line: 242, column: 23}
+						start: {line: 249, column: 13},
+						end: {line: 249, column: 23}
 					})('branch \'StatsViewMsg _\' not implemented');
 			case 'DocumentsViewMsg':
 				var m = pageViewMsg.a;
@@ -11659,8 +11677,8 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 248, column: 13},
-						end: {line: 248, column: 23}
+						start: {line: 255, column: 13},
+						end: {line: 255, column: 23}
 					})('branch \'TasksViewMsg _\' not implemented');
 			case 'StopWordsViewMsg':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -11856,17 +11874,13 @@ var $author$project$Main$handlePollRequest = F2(
 					pollCmd));
 		}
 	});
-var $elm$core$List$filter = F2(
-	function (isGood, list) {
-		return A3(
-			$elm$core$List$foldr,
-			F2(
-				function (x, xs) {
-					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
-				}),
-			_List_Nil,
-			list);
-	});
+var $author$project$UI$Components$SynonymCard$Failed = {$: 'Failed'};
+var $author$project$UI$Components$SynonymCard$Fired = {$: 'Fired'};
+var $author$project$UI$Components$SynonymCard$Success = {$: 'Success'};
+var $author$project$Main$getTaskIndexUid = function (task) {
+	var uid = task.b;
+	return uid;
+};
 var $author$project$Main$updatePollState = F2(
 	function (task, newState) {
 		return function (_v0) {
@@ -11874,6 +11888,34 @@ var $author$project$Main$updatePollState = F2(
 			var s = _v0.b;
 			return _Utils_eq(t, task) ? _Utils_Tuple2(t, newState) : _Utils_Tuple2(t, s);
 		};
+	});
+var $elm$core$List$sortBy = _List_sortBy;
+var $elm$core$List$sort = function (xs) {
+	return A2($elm$core$List$sortBy, $elm$core$Basics$identity, xs);
+};
+var $author$project$UI$Components$SynonymCard$valueChanged = function (model) {
+	var _v0 = model.saved;
+	if (_v0.$ === 'Just') {
+		var _v1 = _v0.a;
+		var k = _v1.a;
+		var v = _v1.b;
+		return (!_Utils_eq(model.synonymKey, k)) || (!_Utils_eq(
+			$elm$core$List$sort(model.synonymList),
+			$elm$core$List$sort(v)));
+	} else {
+		return (model.synonymKey !== '') && (!_Utils_eq(model.synonymList, _List_Nil));
+	}
+};
+var $author$project$UI$PageViews$Synonyms$updateSyncStatusState = F2(
+	function (model, status) {
+		return A2(
+			$elm$core$List$map,
+			function (c) {
+				return $author$project$UI$Components$SynonymCard$valueChanged(c) ? _Utils_update(
+					c,
+					{requestStatus: status}) : c;
+			},
+			model);
 	});
 var $author$project$Main$handlePollSignal = F6(
 	function (model, newState, newData, error, cmd, task) {
@@ -11898,31 +11940,53 @@ var $author$project$Main$handlePollSignal = F6(
 								$author$project$Main$PollUpdate(task),
 								cmd));
 					case 'processing':
+						var updatedSynonyms = A2($author$project$UI$PageViews$Synonyms$updateSyncStatusState, model.synonyms, $author$project$UI$Components$SynonymCard$Fired);
+						var updatedSynonymsPageViewModel = {
+							indexUid: $author$project$Main$getTaskIndexUid(task),
+							synonymStates: updatedSynonyms
+						};
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
 								{
+									pages: A2(
+										$author$project$Main$updateSynonymsViewModel,
+										model.pages,
+										$author$project$UI$Pages$Synonyms(updatedSynonymsPageViewModel)),
 									pollingQueue: A2(
 										$elm$core$List$map,
 										A2($author$project$Main$updatePollState, task, newState),
-										model.pollingQueue)
+										model.pollingQueue),
+									selectedPage: $author$project$UI$Pages$Synonyms(updatedSynonymsPageViewModel),
+									synonyms: updatedSynonyms
 								}),
 							A2(
 								$elm$core$Platform$Cmd$map,
 								$author$project$Main$PollUpdate(task),
 								cmd));
 					case 'succeeded':
+						var updatedSynonyms = A2($author$project$UI$PageViews$Synonyms$updateSyncStatusState, model.synonyms, $author$project$UI$Components$SynonymCard$Success);
+						var updatedSynonymsPageViewModel = {
+							indexUid: $author$project$Main$getTaskIndexUid(task),
+							synonymStates: updatedSynonyms
+						};
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
 								{
+									pages: A2(
+										$author$project$Main$updateSynonymsViewModel,
+										model.pages,
+										$author$project$UI$Pages$Synonyms(updatedSynonymsPageViewModel)),
 									pollingQueue: A2(
 										$elm$core$List$filter,
 										function (_v3) {
 											var x = _v3.a;
 											return !_Utils_eq(x, task);
 										},
-										model.pollingQueue)
+										model.pollingQueue),
+									selectedPage: $author$project$UI$Pages$Synonyms(updatedSynonymsPageViewModel),
+									synonyms: updatedSynonyms
 								}),
 							$elm$core$Platform$Cmd$none);
 					case 'failed':
@@ -11936,7 +12000,8 @@ var $author$project$Main$handlePollSignal = F6(
 											var x = _v4.a;
 											return !_Utils_eq(x, task);
 										},
-										model.pollingQueue)
+										model.pollingQueue),
+									synonyms: A2($author$project$UI$PageViews$Synonyms$updateSyncStatusState, model.synonyms, $author$project$UI$Components$SynonymCard$Failed)
 								}),
 							$elm$core$Platform$Cmd$none);
 					default:
@@ -12100,8 +12165,8 @@ var $author$project$Main$handleSidebarSelection = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 368, column: 21},
-						end: {line: 368, column: 31}
+						start: {line: 381, column: 21},
+						end: {line: 381, column: 31}
 					})('branch \'RankingRules\' not implemented');
 			case 'Synonyms':
 				return _Utils_Tuple2(
@@ -12236,7 +12301,7 @@ var $author$project$Main$handleApiRequest = F2(
 				var indexUid = apiResponse.b;
 				if (r.$ === 'Ok') {
 					var payload = r.a;
-					var synonyms = A2($author$project$Main$buildSynonymsViewModel, payload, indexUid);
+					var synonyms = A2($author$project$Main$buildSynonymsViewModelFromApiResponse, payload, indexUid);
 					var updatedSynonymsPage = $author$project$UI$Pages$Synonyms(
 						{indexUid: indexUid, synonymStates: synonyms});
 					return _Utils_Tuple2(
@@ -21372,7 +21437,7 @@ var $author$project$UI$PageViews$StopWords$view = function (model) {
 var $author$project$UI$PageViews$Synonyms$CardViewMsg = function (a) {
 	return {$: 'CardViewMsg', a: a};
 };
-var $author$project$UI$Styles$MD = {$: 'MD'};
+var $author$project$UI$Styles$LG = {$: 'LG'};
 var $author$project$UI$PageViews$Synonyms$New = {$: 'New'};
 var $author$project$UI$PageViews$Synonyms$Sync = {$: 'Sync'};
 var $author$project$UI$PageViews$Synonyms$toolbarView = function (_v0) {
@@ -21380,8 +21445,7 @@ var $author$project$UI$PageViews$Synonyms$toolbarView = function (_v0) {
 		$mdgriffith$elm_ui$Element$row,
 		_List_fromArray(
 			[
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
-				$mdgriffith$elm_ui$Element$padding(12)
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink)
 			]),
 		_List_fromArray(
 			[
@@ -21407,16 +21471,6 @@ var $author$project$UI$Components$SynonymCard$RetrySave = function (a) {
 	return {$: 'RetrySave', a: a};
 };
 var $author$project$UI$Icons$Trash = {$: 'Trash'};
-var $author$project$UI$Components$SynonymCard$failureString = function (r) {
-	switch (r.$) {
-		case 'Create':
-			return 'Failed to create';
-		case 'Update':
-			return 'Failed to update';
-		default:
-			return 'Failed to delete';
-	}
-};
 var $mdgriffith$elm_ui$Internal$Model$Active = {$: 'Active'};
 var $mdgriffith$elm_ui$Internal$Flag$active = $mdgriffith$elm_ui$Internal$Flag$flag(32);
 var $mdgriffith$elm_ui$Element$mouseDown = function (decs) {
@@ -21454,7 +21508,6 @@ var $author$project$UI$Elements$iconButton = F2(
 var $author$project$UI$Components$SynonymCard$failedView = function (model) {
 	var _v0 = model.requestStatus;
 	if (_v0.$ === 'Failed') {
-		var x = _v0.a;
 		return A2(
 			$mdgriffith$elm_ui$Element$row,
 			_Utils_ap(
@@ -21475,8 +21528,7 @@ var $author$project$UI$Components$SynonymCard$failedView = function (model) {
 							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
 							$mdgriffith$elm_ui$Element$padding(4)
 						]),
-					$mdgriffith$elm_ui$Element$text(
-						$author$project$UI$Components$SynonymCard$failureString(x))),
+					$mdgriffith$elm_ui$Element$text('Failed')),
 					A2(
 					$mdgriffith$elm_ui$Element$row,
 					_List_fromArray(
@@ -21499,20 +21551,9 @@ var $author$project$UI$Components$SynonymCard$failedView = function (model) {
 		return $mdgriffith$elm_ui$Element$none;
 	}
 };
-var $author$project$UI$Components$SynonymCard$loadingString = function (r) {
-	switch (r.$) {
-		case 'Create':
-			return 'Creating';
-		case 'Update':
-			return 'Updating';
-		default:
-			return 'Deleting';
-	}
-};
 var $author$project$UI$Components$SynonymCard$loadingView = function (model) {
 	var _v0 = model.requestStatus;
 	if (_v0.$ === 'Fired') {
-		var x = _v0.a;
 		return A2(
 			$mdgriffith$elm_ui$Element$el,
 			_Utils_ap(
@@ -21521,8 +21562,7 @@ var $author$project$UI$Components$SynonymCard$loadingView = function (model) {
 					[
 						$mdgriffith$elm_ui$Element$padding(12)
 					])),
-			$mdgriffith$elm_ui$Element$text(
-				$author$project$UI$Components$SynonymCard$loadingString(x)));
+			$mdgriffith$elm_ui$Element$text('Syncing'));
 	} else {
 		return $mdgriffith$elm_ui$Element$none;
 	}
@@ -21571,7 +21611,7 @@ var $author$project$UI$PageViews$Synonyms$view = function (model) {
 				$mdgriffith$elm_ui$Element$el,
 				$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H1),
 				$mdgriffith$elm_ui$Element$text('Synonyms')),
-				$author$project$UI$Elements$spacer($author$project$UI$Styles$MD),
+				$author$project$UI$Elements$spacer($author$project$UI$Styles$LG),
 				A2(
 				$mdgriffith$elm_ui$Element$table,
 				_List_fromArray(
@@ -21597,6 +21637,7 @@ var $author$project$UI$PageViews$Synonyms$view = function (model) {
 						]),
 					data: model.synonymStates
 				}),
+				$author$project$UI$Elements$spacer($author$project$UI$Styles$LG),
 				$author$project$UI$PageViews$Synonyms$toolbarView(model)
 			]));
 };
@@ -21687,4 +21728,4 @@ var $author$project$Main$view = function (model) {
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Api.Routes.Main.IndexesRouteResponseListItem":{"args":[],"type":"{ uid : String.String, name : String.String, createdAt : String.String, updatedAt : String.String, primaryKey : String.String }"},"Api.Routes.Main.SettingsRouteResponseItem":{"args":[],"type":"{ uid : Basics.Int, indexUid : String.String }"},"UI.Components.SynonymCard.Model":{"args":[],"type":"{ index : Basics.Int, synonymKey : String.String, synonymsValue : String.String, synonymList : List.List String.String, saved : Maybe.Maybe ( String.String, List.List String.String ), requestStatus : UI.Components.SynonymCard.RequestStatus, taskId : Maybe.Maybe Basics.Int, indexId : String.String }"},"UI.PageViews.Documents.Model":{"args":[],"type":"{ documents : List.List String.String }"},"UI.PageViews.Settings.Model":{"args":[],"type":"{ tokenValue : String.String, title : String.String }"},"UI.PageViews.StopWords.Model":{"args":[],"type":"{ words : List.List String.String }"},"UI.PageViews.Synonyms.Model":{"args":[],"type":"{ synonymStates : List.List UI.Components.SynonymCard.Model, indexUid : String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"],"ApiRequest":["Api.Routes.Main.Msg"],"PollUpdate":["Main.Task","SweetPoll.Msg String.String"],"AddToPollQueue":["Main.Task"]}},"Api.Routes.Main.Msg":{"args":[],"tags":{"HandleListResponse":["Result.Result Http.Error (List.List Api.Routes.Main.IndexesRouteResponseListItem)"],"HandleShowResponse":["Result.Result Http.Error Api.Routes.Main.IndexesRouteResponseListItem"],"HandleDocumentsResponse":["Result.Result Http.Error String.String"],"HandleListStopWordsResponse":["Result.Result Http.Error (List.List String.String)"],"HandleUpdateSynonymsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleListSynonymsResponse":["Result.Result Http.Error (Dict.Dict String.String (List.List String.String))","String.String"]}},"SweetPoll.Msg":{"args":["data"],"tags":{"PollResult":["Result.Result Http.Error data"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.PageViews.Indexes.Msg"],"SettingsViewMsg":["UI.PageViews.Settings.Msg"],"SearchViewMsg":["UI.PageViews.Search.Msg"],"StatsViewMsg":["UI.PageViews.Stats.Msg"],"DocumentsViewMsg":["UI.PageViews.Documents.Msg"],"TasksViewMsg":["UI.PageViews.Tasks.Msg"],"StopWordsViewMsg":["UI.PageViews.StopWords.Msg"],"SynonymsViewMsg":["UI.PageViews.Synonyms.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"]}},"String.String":{"args":[],"tags":{"String":[]}},"Main.Task":{"args":[],"tags":{"UpdateSynonymsTask":["Basics.Int","String.String"]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"List.List":{"args":["a"],"tags":{}},"UI.PageViews.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Search.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Settings.Msg":{"args":[],"tags":{"KeyValueChanged":["String.String"],"SaveKeyValue":[],"None":[]}},"UI.PageViews.Stats.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.StopWords.Msg":{"args":[],"tags":{"NewStopWord":["String.String"],"Remove":["Basics.Int"],"None":[]}},"UI.PageViews.Synonyms.Msg":{"args":[],"tags":{"CardViewMsg":["UI.Components.SynonymCard.Msg"],"Sync":[],"New":[]}},"UI.PageViews.Tasks.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Page":{"args":[],"tags":{"Settings":["UI.PageViews.Settings.Model"],"Stats":[],"Documents":["UI.PageViews.Documents.Model"],"Tasks":[],"RankingRules":[],"Synonyms":["UI.PageViews.Synonyms.Model"],"StopWords":["UI.PageViews.StopWords.Model"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"UI.Components.SynonymCard.Msg":{"args":[],"tags":{"UpdatedTitle":["Basics.Int","String.String"],"UpdatedList":["Basics.Int","String.String"],"Remove":["Basics.Int"],"RetrySave":["Basics.Int"],"Save":["Basics.Int"],"Reset":[],"DoneEditing":[]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}},"UI.Components.SynonymCard.RequestStatus":{"args":[],"tags":{"NoRequest":[],"Fired":["UI.Components.SynonymCard.Request"],"Success":[],"Failed":["UI.Components.SynonymCard.Request"]}},"UI.Components.SynonymCard.Request":{"args":[],"tags":{"Create":["Basics.Int"],"Update":["Basics.Int"],"Delete":["Basics.Int"]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Api.Routes.Main.IndexesRouteResponseListItem":{"args":[],"type":"{ uid : String.String, name : String.String, createdAt : String.String, updatedAt : String.String, primaryKey : String.String }"},"Api.Routes.Main.SettingsRouteResponseItem":{"args":[],"type":"{ uid : Basics.Int, indexUid : String.String }"},"UI.Components.SynonymCard.Model":{"args":[],"type":"{ index : Basics.Int, synonymKey : String.String, synonymsValue : String.String, synonymList : List.List String.String, saved : Maybe.Maybe ( String.String, List.List String.String ), requestStatus : UI.Components.SynonymCard.RequestStatus, taskId : Maybe.Maybe Basics.Int, indexId : String.String }"},"UI.PageViews.Documents.Model":{"args":[],"type":"{ documents : List.List String.String }"},"UI.PageViews.Settings.Model":{"args":[],"type":"{ tokenValue : String.String, title : String.String }"},"UI.PageViews.StopWords.Model":{"args":[],"type":"{ words : List.List String.String }"},"UI.PageViews.Synonyms.Model":{"args":[],"type":"{ synonymStates : List.List UI.Components.SynonymCard.Model, indexUid : String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"],"ApiRequest":["Api.Routes.Main.Msg"],"PollUpdate":["Main.Task","SweetPoll.Msg String.String"],"AddToPollQueue":["Main.Task"]}},"Api.Routes.Main.Msg":{"args":[],"tags":{"HandleListResponse":["Result.Result Http.Error (List.List Api.Routes.Main.IndexesRouteResponseListItem)"],"HandleShowResponse":["Result.Result Http.Error Api.Routes.Main.IndexesRouteResponseListItem"],"HandleDocumentsResponse":["Result.Result Http.Error String.String"],"HandleListStopWordsResponse":["Result.Result Http.Error (List.List String.String)"],"HandleUpdateSynonymsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleListSynonymsResponse":["Result.Result Http.Error (Dict.Dict String.String (List.List String.String))","String.String"]}},"SweetPoll.Msg":{"args":["data"],"tags":{"PollResult":["Result.Result Http.Error data"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.PageViews.Indexes.Msg"],"SettingsViewMsg":["UI.PageViews.Settings.Msg"],"SearchViewMsg":["UI.PageViews.Search.Msg"],"StatsViewMsg":["UI.PageViews.Stats.Msg"],"DocumentsViewMsg":["UI.PageViews.Documents.Msg"],"TasksViewMsg":["UI.PageViews.Tasks.Msg"],"StopWordsViewMsg":["UI.PageViews.StopWords.Msg"],"SynonymsViewMsg":["UI.PageViews.Synonyms.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"]}},"String.String":{"args":[],"tags":{"String":[]}},"Main.Task":{"args":[],"tags":{"UpdateSynonymsTask":["Basics.Int","String.String"]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"List.List":{"args":["a"],"tags":{}},"UI.PageViews.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Search.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Settings.Msg":{"args":[],"tags":{"KeyValueChanged":["String.String"],"SaveKeyValue":[],"None":[]}},"UI.PageViews.Stats.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.StopWords.Msg":{"args":[],"tags":{"NewStopWord":["String.String"],"Remove":["Basics.Int"],"None":[]}},"UI.PageViews.Synonyms.Msg":{"args":[],"tags":{"CardViewMsg":["UI.Components.SynonymCard.Msg"],"Sync":[],"New":[]}},"UI.PageViews.Tasks.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Page":{"args":[],"tags":{"Settings":["UI.PageViews.Settings.Model"],"Stats":[],"Documents":["UI.PageViews.Documents.Model"],"Tasks":[],"RankingRules":[],"Synonyms":["UI.PageViews.Synonyms.Model"],"StopWords":["UI.PageViews.StopWords.Model"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"UI.Components.SynonymCard.Msg":{"args":[],"tags":{"UpdatedTitle":["Basics.Int","String.String"],"UpdatedList":["Basics.Int","String.String"],"Remove":["Basics.Int"],"RetrySave":["Basics.Int"],"Save":["Basics.Int"],"Reset":[],"DoneEditing":[]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}},"UI.Components.SynonymCard.RequestStatus":{"args":[],"tags":{"NoRequest":[],"Fired":[],"Success":[],"Failed":[]}}}}})}});}(this));

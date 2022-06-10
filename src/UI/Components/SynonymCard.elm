@@ -55,16 +55,16 @@ update msg model =
 
 
 type Request
-    = Create Int
-    | Update Int
-    | Delete Int
+    = Create
+    | Update
+    | Delete
 
 
 type RequestStatus
     = NoRequest
-    | Fired Request
+    | Fired
     | Success
-    | Failed Request
+    | Failed
 
 
 view : Model -> Element Msg
@@ -99,10 +99,10 @@ valueChangedView model =
 loadingView : Model -> Element Msg
 loadingView model =
     case model.requestStatus of
-        Fired x ->
+        Fired ->
             el
                 (UI.Styles.getTypographicStyleFor UI.Styles.Body ++ [ padding 12 ])
-                (text (loadingString x))
+                (text "Syncing")
 
         _ ->
             Element.none
@@ -111,7 +111,7 @@ loadingView model =
 failedView : Model -> Element Msg
 failedView model =
     case model.requestStatus of
-        Failed x ->
+        Failed ->
             Element.row
                 ([ padding 8
                  , Element.Background.color UI.Styles.color.white
@@ -121,7 +121,7 @@ failedView model =
                     ++ UI.Styles.getTypographicStyleFor UI.Styles.Body
                 )
                 [ Element.el [ Element.width Element.fill, padding 4 ]
-                    (text (failureString x))
+                    (text "Failed")
                 , Element.row
                     [ Element.width Element.shrink
                     ]
@@ -145,32 +145,6 @@ init index indexUid =
     , taskId = Nothing
     , indexId = indexUid
     }
-
-
-loadingString : Request -> String
-loadingString r =
-    case r of
-        Create _ ->
-            "Creating"
-
-        Update _ ->
-            "Updating"
-
-        Delete _ ->
-            "Deleting"
-
-
-failureString : Request -> String
-failureString r =
-    case r of
-        Create _ ->
-            "Failed to create"
-
-        Update _ ->
-            "Failed to update"
-
-        Delete _ ->
-            "Failed to delete"
 
 
 valueChanged : Model -> Bool

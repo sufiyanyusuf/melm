@@ -65,7 +65,7 @@ view model =
         [ el
             (UI.Styles.getTypographicStyleFor UI.Styles.H1)
             (text "Synonyms")
-        , UI.Elements.spacer UI.Styles.MD
+        , UI.Elements.spacer UI.Styles.LG
         , Element.table
             [ width fill
             , height fill
@@ -81,6 +81,7 @@ view model =
                   }
                 ]
             }
+        , UI.Elements.spacer UI.Styles.LG
         , toolbarView model
         ]
 
@@ -89,9 +90,21 @@ toolbarView : Model -> Element Msg
 toolbarView _ =
     Element.row
         [ Element.width Element.shrink
-        , padding 12
         ]
         [ UI.Elements.button "New" New
         , UI.Elements.spacer UI.Styles.SM
         , UI.Elements.button "Save" Sync
         ]
+
+
+updateSyncStatusState : List SynonymCard.Model -> SynonymCard.RequestStatus -> List SynonymCard.Model
+updateSyncStatusState model status =
+    List.map
+        (\c ->
+            if SynonymCard.valueChanged c then
+                { c | requestStatus = status }
+
+            else
+                c
+        )
+        model

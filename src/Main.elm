@@ -7,7 +7,7 @@ import Element exposing (..)
 import Html exposing (Html)
 import Http
 import SweetPoll exposing (PollingState)
-import UI.Components.SynonymCard exposing (Msg(..))
+import UI.Components.SynonymCard exposing (Msg(..), RequestStatus(..))
 import UI.PageView as PageView exposing (Msg(..))
 import UI.PageViews.Documents
 import UI.PageViews.Indexes
@@ -51,6 +51,13 @@ type Msg
 
 type Task
     = UpdateSynonymsTask Int String
+
+
+getTaskIndexUid : Task -> String
+getTaskIndexUid task =
+    case task of
+        UpdateSynonymsTask _ uid ->
+            uid
 
 
 
@@ -209,7 +216,7 @@ handleApiRequest model apiResponse =
                 Ok payload ->
                     let
                         synonyms =
-                            buildSynonymsViewModel payload indexUid
+                            buildSynonymsViewModelFromApiResponse payload indexUid
 
                         updatedSynonymsPage =
                             Synonyms { synonymStates = synonyms, indexUid = indexUid }
@@ -571,22 +578,47 @@ handlePollSignal model newState newData error cmd task =
                             )
 
                         "processing" ->
+                            let
+                                updatedSynonyms =
+                                    UI.PageViews.Synonyms.updateSyncStatusState model.synonyms Fired
+
+                                updatedSynonymsPageViewModel =
+                                    { synonymStates = updatedSynonyms, indexUid = getTaskIndexUid task }
+                            in
                             ( { model
                                 | pollingQueue =
                                     List.map
                                         (updatePollState task newState)
                                         model.pollingQueue
+                                , synonyms = updatedSynonyms
+                                , pages = updateSynonymsViewModel model.pages (Synonyms updatedSynonymsPageViewModel)
+                                , selectedPage = Synonyms updatedSynonymsPageViewModel
                               }
                             , cmd |> Cmd.map (PollUpdate task)
                             )
 
                         "succeeded" ->
-                            ( { model | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue }
+                            let
+                                updatedSynonyms =
+                                    UI.PageViews.Synonyms.updateSyncStatusState model.synonyms Success
+
+                                updatedSynonymsPageViewModel =
+                                    { synonymStates = updatedSynonyms, indexUid = getTaskIndexUid task }
+                            in
+                            ( { model
+                                | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue
+                                , synonyms = updatedSynonyms
+                                , pages = updateSynonymsViewModel model.pages (Synonyms updatedSynonymsPageViewModel)
+                                , selectedPage = Synonyms updatedSynonymsPageViewModel
+                              }
                             , Cmd.none
                             )
 
                         "failed" ->
-                            ( { model | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue }
+                            ( { model
+                                | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue
+                                , synonyms = UI.PageViews.Synonyms.updateSyncStatusState model.synonyms Failed
+                              }
                             , Cmd.none
                             )
 
@@ -609,8 +641,8 @@ updatePollState task newState =
             ( t, s )
 
 
-buildSynonymsViewModel : Dict String (List String) -> String -> List UI.Components.SynonymCard.Model
-buildSynonymsViewModel d indexId =
+buildSynonymsViewModelFromApiResponse : Dict String (List String) -> String -> List UI.Components.SynonymCard.Model
+buildSynonymsViewModelFromApiResponse d indexId =
     d
         |> Dict.toList
         |> List.indexedMap
