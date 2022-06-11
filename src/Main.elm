@@ -10,7 +10,7 @@ import Json.Decode exposing (Value)
 import SweetPoll exposing (PollingState)
 import UI.Components.SynonymCard exposing (Msg(..), RequestStatus(..))
 import UI.PageView as PageView exposing (Msg(..))
-import UI.PageViews.Attributes as AttributesPage
+import UI.PageViews.Attributes as AttributesPage exposing (buildModelFromResponse)
 import UI.PageViews.Documents
 import UI.PageViews.Indexes
 import UI.PageViews.Settings as SettingsPage
@@ -79,34 +79,12 @@ type alias Model =
     , stopWords : List String
     , synonyms : List UI.Components.SynonymCard.Model -- Decouple this
     , pollingQueue : List ( Task, SweetPoll.PollingState String )
+    , displayedAttrs : List AttributesPage.Attribute
+    , sortableAttrs : List AttributesPage.Attribute
+    , searchableAttrs : List AttributesPage.Attribute
+    , filterableAttrs : List AttributesPage.Attribute
+    , distinctAttrs : List AttributesPage.Attribute
     }
-
-
-init : () -> ( Model, Cmd Msg )
-init _ =
-    let
-        model =
-            { selectedPage = Views.Documents UI.PageViews.Documents.init
-            , token = Nothing
-            , savedToken = Nothing
-            , pages = Views.init "suggestions"
-            , indexes = []
-            , documents = []
-            , selectedIndex =
-                Just
-                    { uid = "suggestions"
-                    , name = "suggestions"
-                    , createdAt = ""
-                    , updatedAt = ""
-                    , primaryKey = "id"
-                    }
-            , stopWords = []
-            , synonyms = (UI.PageViews.Synonyms.init "suggestions").synonymStates -- need to decouple ui from state
-            , pollingQueue = []
-            , documentKeys = ( "suggestions", [] )
-            }
-    in
-    ( model, Cmd.none )
 
 
 
@@ -264,8 +242,35 @@ handleApiRequest model apiResponse =
                     ( model, Cmd.none )
 
         HandleIndexKeysResponse v ->
-            Debug.log "recv & p?"
-                ( model, Cmd.none )
+            -- fire mult commands
+            ( model
+            , Api.Routes.Main.buildRequest
+                (Api.Routes.Main.buildPayload (ListDisplayedAttrs "suggestions" Api.Routes.Main.stringListDecoder))
+                (Maybe.withDefault
+                    ""
+                    model.savedToken
+                )
+                |> Cmd.map ApiRequest
+            )
+
+        HandleDisplayedAttrsResponse r indexUid ->
+            case r of
+                Ok payload ->
+                    let
+                        updatedModel =
+                            buildModelFromResponse AttributesPage.Displayed
+                                payload
+                                { displayed = model.displayedAttrs
+                                , sortable = model.sortableAttrs
+                                , searchable = model.searchableAttrs
+                                , filterable = model.filterableAttrs
+                                , distinct = model.distinctAttrs
+                                }
+                    in
+                    ( model, Cmd.none )
+
+                Err _ ->
+                    ( model, Cmd.none )
 
 
 handlePageViewMessage : Model -> PageView.Msg -> ( Model, Cmd Msg )
@@ -437,7 +442,7 @@ handleSidebarSelection model sidebarMsg =
                 StopWords _ ->
                     ( { model | selectedPage = selectedPage }
                     , Api.Routes.Main.buildRequest
-                        (Api.Routes.Main.buildPayload (ListStopWords "suggestions" Api.Routes.Main.stopWordsListItemDecoder))
+                        (Api.Routes.Main.buildPayload (ListStopWords "suggestions" Api.Routes.Main.stringListDecoder))
                         (Maybe.withDefault
                             ""
                             model.savedToken
@@ -740,3 +745,35 @@ buildSynonymsViewModelFromApiResponse d indexId =
                 , saved = Just ( title, values )
                 }
             )
+
+
+init : () -> ( Model, Cmd Msg )
+init _ =
+    let
+        model =
+            { selectedPage = Views.Documents UI.PageViews.Documents.init
+            , token = Nothing
+            , savedToken = Nothing
+            , pages = Views.init "suggestions"
+            , indexes = []
+            , documents = []
+            , selectedIndex =
+                Just
+                    { uid = "suggestions"
+                    , name = "suggestions"
+                    , createdAt = ""
+                    , updatedAt = ""
+                    , primaryKey = "id"
+                    }
+            , stopWords = []
+            , synonyms = (UI.PageViews.Synonyms.init "suggestions").synonymStates -- need to decouple ui from state
+            , pollingQueue = []
+            , documentKeys = ( "suggestions", [] )
+            , displayedAttrs = []
+            , sortableAttrs = []
+            , searchableAttrs = []
+            , filterableAttrs = []
+            , distinctAttrs = []
+            }
+    in
+    ( model, Cmd.none )

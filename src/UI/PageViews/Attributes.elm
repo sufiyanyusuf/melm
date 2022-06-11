@@ -80,6 +80,14 @@ type alias Model =
     }
 
 
+type AttributeType
+    = Displayed
+    | Sortable
+    | Searchabe
+    | Filterable
+    | Distinct
+
+
 buildModelFromAttributes : List String -> Model
 buildModelFromAttributes l =
     { displayed =
@@ -123,3 +131,24 @@ buildModelFromAttributes l =
             )
             l
     }
+
+
+buildModelFromResponse : AttributeType -> List String -> Model -> Model
+buildModelFromResponse a r m =
+    case a of
+        Displayed ->
+            let
+                displayedAttrs =
+                    m.displayed
+            in
+            if r == [ "*" ] then
+                -- Turn all on
+                m
+
+            else
+                -- map through list, compare & assign
+                -- List.map (\x -> x) r
+                m
+
+        _ ->
+            m

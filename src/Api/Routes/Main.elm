@@ -17,6 +17,7 @@ type Msg
     | HandleListSynonymsResponse (Result Http.Error (Dict String (List String))) String
     | HandleDocumentAttrsResponse (Result Http.Error String) String
     | HandleIndexKeysResponse IndexKeys
+    | HandleDisplayedAttrsResponse (Result Http.Error (List String)) String
 
 
 type Route
@@ -33,6 +34,7 @@ type Route
     | UpdateSynonyms String (Dict String (List String)) (Decoder SettingsRouteResponseItem)
     | ListSynonyms String (Decoder (Dict String (List String)))
     | ListIndexAttributes String
+    | ListDisplayedAttrs String (Decoder (List String))
 
 
 type alias Payload =
@@ -172,6 +174,18 @@ buildRequest payload token =
                 }
                 |> Cmd.map (\a -> a x)
 
+        ListDisplayedAttrs x d ->
+            Http.request
+                { method = getRequestMethodTitle payload.method
+                , headers = headers token
+                , url = payload.endpoint
+                , body = payload.body
+                , expect = Http.expectJson HandleDisplayedAttrsResponse d
+                , timeout = Nothing
+                , tracker = Nothing
+                }
+                |> Cmd.map (\a -> a x)
+
 
 buildPayload : Route -> Payload
 buildPayload r =
@@ -235,7 +249,10 @@ buildPayload r =
             { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/synonyms", body = Http.emptyBody, route = r }
 
         ListIndexAttributes i ->
-            { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/documents", body = Http.emptyBody, route = r }
+            { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/stats", body = Http.emptyBody, route = r }
+
+        ListDisplayedAttrs i _ ->
+            { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/displayed-attributes", body = Http.emptyBody, route = r }
 
 
 
@@ -277,8 +294,8 @@ indexesRouteResponseListItemDecoder =
         )
 
 
-stopWordsListItemDecoder : Decoder (List String)
-stopWordsListItemDecoder =
+stringListDecoder : Decoder (List String)
+stringListDecoder =
     Json.Decode.list string
 
 
