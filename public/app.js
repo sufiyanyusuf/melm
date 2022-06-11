@@ -10818,6 +10818,7 @@ var $author$project$UI$Pages$init = function (indexUid) {
 };
 var $author$project$Main$init = function (_v0) {
 	var model = {
+		documentKeys: _Utils_Tuple2('suggestions', _List_Nil),
 		documents: _List_Nil,
 		indexes: _List_Nil,
 		pages: $author$project$UI$Pages$init('suggestions'),
@@ -11750,22 +11751,22 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 262, column: 13},
-						end: {line: 262, column: 23}
+						start: {line: 278, column: 13},
+						end: {line: 278, column: 23}
 					})('branch \'IndexesViewMsg _\' not implemented');
 			case 'SearchViewMsg':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 265, column: 13},
-						end: {line: 265, column: 23}
+						start: {line: 281, column: 13},
+						end: {line: 281, column: 23}
 					})('branch \'SearchViewMsg _\' not implemented');
 			case 'StatsViewMsg':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 268, column: 13},
-						end: {line: 268, column: 23}
+						start: {line: 284, column: 13},
+						end: {line: 284, column: 23}
 					})('branch \'StatsViewMsg _\' not implemented');
 			case 'DocumentsViewMsg':
 				var m = pageViewMsg.a;
@@ -11774,8 +11775,8 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 274, column: 13},
-						end: {line: 274, column: 23}
+						start: {line: 290, column: 13},
+						end: {line: 290, column: 23}
 					})('branch \'TasksViewMsg _\' not implemented');
 			case 'StopWordsViewMsg':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -12268,8 +12269,8 @@ var $author$project$Main$handleSidebarSelection = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 408, column: 21},
-						end: {line: 408, column: 31}
+						start: {line: 424, column: 21},
+						end: {line: 424, column: 31}
 					})('branch \'RankingRules\' not implemented');
 			case 'Synonyms':
 				return _Utils_Tuple2(
@@ -12313,6 +12314,19 @@ var $author$project$Main$handleSidebarSelection = F2(
 		}
 	});
 var $elm$core$Debug$log = _Debug_log;
+var $author$project$Main$updateAttributesViewModel = F2(
+	function (pages, updatedPage) {
+		return A2(
+			$elm$core$List$map,
+			function (p) {
+				if (p.$ === 'Attributes') {
+					return updatedPage;
+				} else {
+					return p;
+				}
+			},
+			pages);
+	});
 var $author$project$Main$updateDocumentsViewModel = F2(
 	function (pages, updatedPage) {
 		return A2(
@@ -12474,8 +12488,18 @@ var $author$project$Main$update = F2(
 				var task = msg.a;
 				return A2($author$project$Main$handlePollRequest, model, task);
 			default:
-				var indexUid = msg.a;
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				var p = msg.a;
+				var updatedAttributes = $author$project$UI$PageViews$Attributes$buildModelFromAttributes(p.keys);
+				var updatedAttributesPage = $author$project$UI$Pages$Attributes(updatedAttributes);
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							documentKeys: _Utils_Tuple2(p.indexUid, p.keys),
+							pages: A2($author$project$Main$updateAttributesViewModel, model.pages, updatedAttributesPage),
+							selectedPage: updatedAttributesPage
+						}),
+					$elm$core$Platform$Cmd$none);
 		}
 	});
 var $author$project$Main$PageViewMsg = function (a) {

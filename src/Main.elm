@@ -74,6 +74,7 @@ type alias Model =
     , pages : List Page
     , indexes : List IndexesRouteResponseListItem -- Decouple this
     , documents : List String
+    , documentKeys : ( String, List String )
     , selectedIndex : Maybe IndexesRouteResponseListItem -- Decouple this
     , stopWords : List String
     , synonyms : List UI.Components.SynonymCard.Model -- Decouple this
@@ -102,6 +103,7 @@ init _ =
             , stopWords = []
             , synonyms = (UI.PageViews.Synonyms.init "suggestions").synonymStates -- need to decouple ui from state
             , pollingQueue = []
+            , documentKeys = ( "suggestions", [] )
             }
     in
     ( model, Cmd.none )
@@ -144,9 +146,23 @@ update msg model =
         AddToPollQueue task ->
             handlePollRequest model task
 
-        UpdateKeysForIndex indexUid ->
+        UpdateKeysForIndex p ->
+            let
+                updatedAttributes =
+                    AttributesPage.buildModelFromAttributes p.keys
+            in
+            let
+                updatedAttributesPage =
+                    Attributes updatedAttributes
+            in
             -- update keys in model for index
-            ( model, Cmd.none )
+            ( { model
+                | documentKeys = ( p.indexUid, p.keys )
+                , pages = updateAttributesViewModel model.pages updatedAttributesPage
+                , selectedPage = updatedAttributesPage
+              }
+            , Cmd.none
+            )
 
 
 
@@ -572,6 +588,20 @@ updateSynonymsViewModel pages updatedPage =
             (\p ->
                 case p of
                     Synonyms _ ->
+                        updatedPage
+
+                    _ ->
+                        p
+            )
+
+
+updateAttributesViewModel : List Page -> Page -> List Page
+updateAttributesViewModel pages updatedPage =
+    pages
+        |> List.map
+            (\p ->
+                case p of
+                    Attributes _ ->
                         updatedPage
 
                     _ ->
