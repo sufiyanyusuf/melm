@@ -60,7 +60,6 @@ view model =
         [ height fill
         , width fill
         , scrollbarY
-        , padding 20
         ]
         [ el
             (UI.Styles.getTypographicStyleFor UI.Styles.H1)
@@ -71,6 +70,7 @@ view model =
             , height fill
             , scrollbarY
             , spacing 20
+            , paddingEach { top = 20, bottom = 0, left = 0, right = 120 }
             ]
             { data = model.synonymStates
             , columns =
@@ -83,6 +83,7 @@ view model =
             }
         , UI.Elements.spacer UI.Styles.LG
         , toolbarView model
+        , UI.Elements.spacer UI.Styles.MD
         ]
 
 

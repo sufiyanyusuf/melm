@@ -1,6 +1,7 @@
 module UI.Pages exposing (..)
 
 import Element exposing (..)
+import UI.PageViews.Attributes as Attributes
 import UI.PageViews.Documents as Documents
 import UI.PageViews.Settings as Settings
 import UI.PageViews.StopWords as StopWords
@@ -15,6 +16,7 @@ type Page
     | RankingRules
     | Synonyms Synonyms.Model
     | StopWords StopWords.Model
+    | Attributes Attributes.Model
 
 
 init : String -> List Page
@@ -26,6 +28,7 @@ init indexUid =
     , StopWords StopWords.init
     , Stats
     , Settings Settings.init
+    , Attributes Attributes.init
     ]
 
 

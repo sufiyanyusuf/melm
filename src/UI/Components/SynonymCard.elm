@@ -2,7 +2,8 @@ module UI.Components.SynonymCard exposing (..)
 
 import Element exposing (..)
 import Element.Background
-import Element.Border
+import Element.Border exposing (rounded)
+import Svg.Attributes exposing (radius)
 import UI.Elements
 import UI.Icons exposing (Icon(..), Style(..))
 import UI.Styles
@@ -100,9 +101,21 @@ loadingView : Model -> Element Msg
 loadingView model =
     case model.requestStatus of
         Fired ->
-            el
-                (UI.Styles.getTypographicStyleFor UI.Styles.Body ++ [ padding 12 ])
-                (text "Syncing")
+            Element.row
+                [ Element.width Element.shrink
+                , paddingEach { top = 0, left = 8, bottom = 0, right = 0 }
+                ]
+                [ el
+                    [ Element.Background.color UI.Styles.color.primary200
+                    , width (px 12)
+                    , height (px 12)
+                    , rounded 6
+                    ]
+                    (text "")
+                , el
+                    (UI.Styles.getTypographicStyleFor UI.Styles.Body ++ [ padding 12 ])
+                    (text "Syncing")
+                ]
 
         _ ->
             Element.none

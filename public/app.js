@@ -10748,6 +10748,9 @@ var $author$project$UI$PageViews$Synonyms$init = function (indexUid) {
 			])
 	};
 };
+var $author$project$UI$Pages$Attributes = function (a) {
+	return {$: 'Attributes', a: a};
+};
 var $author$project$UI$Pages$RankingRules = {$: 'RankingRules'};
 var $author$project$UI$Pages$Settings = function (a) {
 	return {$: 'Settings', a: a};
@@ -10760,6 +10763,43 @@ var $author$project$UI$Pages$Synonyms = function (a) {
 	return {$: 'Synonyms', a: a};
 };
 var $author$project$UI$Pages$Tasks = {$: 'Tasks'};
+var $author$project$UI$PageViews$Attributes$buildModelFromAttributes = function (l) {
+	return {
+		displayed: A2(
+			$elm$core$List$map,
+			function (x) {
+				return {isOn: true, title: x};
+			},
+			l),
+		distinct: A2(
+			$elm$core$List$map,
+			function (x) {
+				return {isOn: false, title: x};
+			},
+			l),
+		filterable: A2(
+			$elm$core$List$map,
+			function (x) {
+				return {isOn: true, title: x};
+			},
+			l),
+		searchable: A2(
+			$elm$core$List$map,
+			function (x) {
+				return {isOn: true, title: x};
+			},
+			l),
+		sortable: A2(
+			$elm$core$List$map,
+			function (x) {
+				return {isOn: true, title: x};
+			},
+			l)
+	};
+};
+var $author$project$UI$PageViews$Attributes$init = $author$project$UI$PageViews$Attributes$buildModelFromAttributes(
+	_List_fromArray(
+		['attr a', 'attr b', 'attr c']));
 var $author$project$UI$PageViews$Settings$init = {title: 'Settings', tokenValue: ''};
 var $author$project$UI$PageViews$StopWords$init = {words: _List_Nil};
 var $author$project$UI$Pages$init = function (indexUid) {
@@ -10772,7 +10812,8 @@ var $author$project$UI$Pages$init = function (indexUid) {
 			$author$project$UI$PageViews$Synonyms$init(indexUid)),
 			$author$project$UI$Pages$StopWords($author$project$UI$PageViews$StopWords$init),
 			$author$project$UI$Pages$Stats,
-			$author$project$UI$Pages$Settings($author$project$UI$PageViews$Settings$init)
+			$author$project$UI$Pages$Settings($author$project$UI$PageViews$Settings$init),
+			$author$project$UI$Pages$Attributes($author$project$UI$PageViews$Attributes$init)
 		]);
 };
 var $author$project$Main$init = function (_v0) {
@@ -10837,6 +10878,10 @@ var $author$project$Main$buildSynonymsViewModelFromApiResponse = F2(
 					};
 				}),
 			$elm$core$Dict$toList(d));
+	});
+var $author$project$Main$handleAttributesViewMsg = F2(
+	function (model, msg) {
+		return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 	});
 var $author$project$Main$getSettingsViewModel = function (model) {
 	return {
@@ -11010,8 +11055,8 @@ var $author$project$Api$Routes$Main$buildPayload = function (r) {
 			return _Debug_todo(
 				'Api.Routes.Main',
 				{
-					start: {line: 204, column: 13},
-					end: {line: 204, column: 23}
+					start: {line: 216, column: 13},
+					end: {line: 216, column: 23}
 				})('branch \'UpdateStopWords _\' not implemented');
 		case 'ResetStopWords':
 			var i = r.a;
@@ -11038,10 +11083,16 @@ var $author$project$Api$Routes$Main$buildPayload = function (r) {
 				method: $author$project$Api$Helper$POST,
 				route: r
 			};
-		default:
+		case 'ListSynonyms':
 			var i = r.a;
 			return {body: $elm$http$Http$emptyBody, endpoint: $author$project$Api$Helper$rootUrl + ('/indexes/' + (i + '/settings/synonyms')), method: $author$project$Api$Helper$GET, route: r};
+		default:
+			var i = r.a;
+			return {body: $elm$http$Http$emptyBody, endpoint: $author$project$Api$Helper$rootUrl + ('/indexes/' + (i + '/documents')), method: $author$project$Api$Helper$GET, route: r};
 	}
+};
+var $author$project$Api$Routes$Main$HandleDocumentAttrsResponse = function (a) {
+	return {$: 'HandleDocumentAttrsResponse', a: a};
 };
 var $author$project$Api$Routes$Main$HandleDocumentsResponse = function (a) {
 	return {$: 'HandleDocumentsResponse', a: a};
@@ -11341,28 +11392,39 @@ var $author$project$Api$Routes$Main$buildRequest = F2(
 				return _Debug_todo(
 					'Api.Routes.Main',
 					{
-						start: {line: 98, column: 13},
-						end: {line: 98, column: 23}
+						start: {line: 99, column: 13},
+						end: {line: 99, column: 23}
 					})('branch \'Create _\' not implemented');
 			case 'UpdateIndex':
 				return _Debug_todo(
 					'Api.Routes.Main',
 					{
-						start: {line: 101, column: 13},
-						end: {line: 101, column: 23}
+						start: {line: 102, column: 13},
+						end: {line: 102, column: 23}
 					})('branch \'Update _\' not implemented');
 			case 'DeleteIndex':
 				return _Debug_todo(
 					'Api.Routes.Main',
 					{
-						start: {line: 104, column: 13},
-						end: {line: 104, column: 23}
+						start: {line: 105, column: 13},
+						end: {line: 105, column: 23}
 					})('branch \'Delete _\' not implemented');
 			case 'ListDocuments':
 				return $elm$http$Http$request(
 					{
 						body: payload.body,
 						expect: $elm$http$Http$expectString($author$project$Api$Routes$Main$HandleDocumentsResponse),
+						headers: $author$project$Api$Helper$headers(token),
+						method: $author$project$Api$Helper$getRequestMethodTitle(payload.method),
+						timeout: $elm$core$Maybe$Nothing,
+						tracker: $elm$core$Maybe$Nothing,
+						url: payload.endpoint
+					});
+			case 'ListIndexAttributes':
+				return $elm$http$Http$request(
+					{
+						body: payload.body,
+						expect: $elm$http$Http$expectString($author$project$Api$Routes$Main$HandleDocumentAttrsResponse),
 						headers: $author$project$Api$Helper$headers(token),
 						method: $author$project$Api$Helper$getRequestMethodTitle(payload.method),
 						timeout: $elm$core$Maybe$Nothing,
@@ -11385,22 +11447,22 @@ var $author$project$Api$Routes$Main$buildRequest = F2(
 				return _Debug_todo(
 					'Api.Routes.Main',
 					{
-						start: {line: 129, column: 13},
-						end: {line: 129, column: 23}
+						start: {line: 141, column: 13},
+						end: {line: 141, column: 23}
 					})('branch \'UpdateStopWords _\' not implemented');
 			case 'ResetStopWords':
 				return _Debug_todo(
 					'Api.Routes.Main',
 					{
-						start: {line: 132, column: 13},
-						end: {line: 132, column: 23}
+						start: {line: 144, column: 13},
+						end: {line: 144, column: 23}
 					})('branch \'ResetStopWords\' not implemented');
 			case 'GetTask':
 				return _Debug_todo(
 					'Api.Routes.Main',
 					{
-						start: {line: 135, column: 13},
-						end: {line: 135, column: 23}
+						start: {line: 147, column: 13},
+						end: {line: 147, column: 23}
 					})('branch \'Get Task\' not implemented');
 			case 'UpdateSynonyms':
 				var d = r.c;
@@ -11653,22 +11715,22 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 243, column: 13},
-						end: {line: 243, column: 23}
+						start: {line: 247, column: 13},
+						end: {line: 247, column: 23}
 					})('branch \'IndexesViewMsg _\' not implemented');
 			case 'SearchViewMsg':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 246, column: 13},
-						end: {line: 246, column: 23}
+						start: {line: 250, column: 13},
+						end: {line: 250, column: 23}
 					})('branch \'SearchViewMsg _\' not implemented');
 			case 'StatsViewMsg':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 249, column: 13},
-						end: {line: 249, column: 23}
+						start: {line: 253, column: 13},
+						end: {line: 253, column: 23}
 					})('branch \'StatsViewMsg _\' not implemented');
 			case 'DocumentsViewMsg':
 				var m = pageViewMsg.a;
@@ -11677,14 +11739,17 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 255, column: 13},
-						end: {line: 255, column: 23}
+						start: {line: 259, column: 13},
+						end: {line: 259, column: 23}
 					})('branch \'TasksViewMsg _\' not implemented');
 			case 'StopWordsViewMsg':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			default:
+			case 'SynonymsViewMsg':
 				var msg = pageViewMsg.a;
 				return A2($author$project$Main$handleSynonymsViewMsg, model, msg);
+			default:
+				var msg = pageViewMsg.a;
+				return A2($author$project$Main$handleAttributesViewMsg, model, msg);
 		}
 	});
 var $author$project$Main$PollUpdate = F2(
@@ -12111,6 +12176,9 @@ var $author$project$Main$handlePollUpdate = F3(
 var $author$project$Api$Routes$Main$ListDocuments = function (a) {
 	return {$: 'ListDocuments', a: a};
 };
+var $author$project$Api$Routes$Main$ListIndexAttributes = function (a) {
+	return {$: 'ListIndexAttributes', a: a};
+};
 var $author$project$Api$Routes$Main$ListStopWords = F2(
 	function (a, b) {
 		return {$: 'ListStopWords', a: a, b: b};
@@ -12165,8 +12233,8 @@ var $author$project$Main$handleSidebarSelection = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 381, column: 21},
-						end: {line: 381, column: 31}
+						start: {line: 393, column: 21},
+						end: {line: 393, column: 31}
 					})('branch \'RankingRules\' not implemented');
 			case 'Synonyms':
 				return _Utils_Tuple2(
@@ -12181,7 +12249,7 @@ var $author$project$Main$handleSidebarSelection = F2(
 							$author$project$Api$Routes$Main$buildPayload(
 								A2($author$project$Api$Routes$Main$ListSynonyms, 'suggestions', $author$project$Api$Routes$Main$synonymsListDecoder)),
 							A2($elm$core$Maybe$withDefault, '', model.savedToken))));
-			default:
+			case 'StopWords':
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -12193,6 +12261,19 @@ var $author$project$Main$handleSidebarSelection = F2(
 							$author$project$Api$Routes$Main$buildRequest,
 							$author$project$Api$Routes$Main$buildPayload(
 								A2($author$project$Api$Routes$Main$ListStopWords, 'suggestions', $author$project$Api$Routes$Main$stopWordsListItemDecoder)),
+							A2($elm$core$Maybe$withDefault, '', model.savedToken))));
+			default:
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{selectedPage: selectedPage}),
+					A2(
+						$elm$core$Platform$Cmd$map,
+						$author$project$Main$ApiRequest,
+						A2(
+							$author$project$Api$Routes$Main$buildRequest,
+							$author$project$Api$Routes$Main$buildPayload(
+								$author$project$Api$Routes$Main$ListIndexAttributes('suggestions')),
 							A2($elm$core$Maybe$withDefault, '', model.savedToken))));
 		}
 	});
@@ -12296,7 +12377,7 @@ var $author$project$Main$handleApiRequest = F2(
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
-			default:
+			case 'HandleListSynonymsResponse':
 				var r = apiResponse.a;
 				var indexUid = apiResponse.b;
 				if (r.$ === 'Ok') {
@@ -12316,6 +12397,14 @@ var $author$project$Main$handleApiRequest = F2(
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
+			default:
+				var r = apiResponse.a;
+				return _Debug_todo(
+					'Main',
+					{
+						start: {line: 237, column: 13},
+						end: {line: 237, column: 23}
+					})('');
 		}
 	});
 var $author$project$Main$update = F2(
@@ -18038,8 +18127,10 @@ var $author$project$UI$Sidebar$getPageTitle = function (page) {
 			return 'Ranking Rules';
 		case 'Synonyms':
 			return 'Synonyms';
-		default:
+		case 'StopWords':
 			return 'Stop Words';
+		default:
+			return 'Attributes';
 	}
 };
 var $mdgriffith$elm_ui$Element$none = $mdgriffith$elm_ui$Internal$Model$Empty;
@@ -18096,9 +18187,12 @@ var $mdgriffith$elm_ui$Element$rgb255 = F3(
 	});
 var $author$project$UI$Styles$color = {
 	gray100: A3($mdgriffith$elm_ui$Element$rgb255, 243, 244, 245),
+	gray200: A3($mdgriffith$elm_ui$Element$rgb255, 243, 244, 245),
 	gray300: A3($mdgriffith$elm_ui$Element$rgb255, 224, 224, 224),
 	gray500: A3($mdgriffith$elm_ui$Element$rgb255, 46, 52, 54),
 	primary100: A3($mdgriffith$elm_ui$Element$rgb255, 234, 235, 245),
+	primary200: A3($mdgriffith$elm_ui$Element$rgb255, 218, 221, 246),
+	primary300: A3($mdgriffith$elm_ui$Element$rgb255, 218, 221, 246),
 	primary500: A3($mdgriffith$elm_ui$Element$rgb255, 114, 159, 207),
 	white: A3($mdgriffith$elm_ui$Element$rgb255, 255, 255, 255)
 };
@@ -18131,6 +18225,7 @@ var $author$project$UI$Icons$Dictionary = {$: 'Dictionary'};
 var $author$project$UI$Icons$Documents = {$: 'Documents'};
 var $author$project$UI$Icons$PieChart = {$: 'PieChart'};
 var $author$project$UI$Icons$SettingsGear = {$: 'SettingsGear'};
+var $author$project$UI$Icons$Switches = {$: 'Switches'};
 var $elm$svg$Svg$Attributes$d = _VirtualDom_attribute('d');
 var $elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
 var $elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
@@ -18618,8 +18713,8 @@ var $author$project$UI$Icons$switches = function (style) {
 			_List_fromArray(
 				[
 					$elm$svg$Svg$Attributes$width('25'),
-					$elm$svg$Svg$Attributes$height('25'),
-					$elm$svg$Svg$Attributes$viewBox('0 0 25 25'),
+					$elm$svg$Svg$Attributes$height('23'),
+					$elm$svg$Svg$Attributes$viewBox('0 0 25 23'),
 					$elm$svg$Svg$Attributes$fill('none'),
 					$elm$svg$Svg$Attributes$xmlSpace('http://www.w3.org/2000/svg')
 				]),
@@ -18629,7 +18724,7 @@ var $author$project$UI$Icons$switches = function (style) {
 					$elm$svg$Svg$path,
 					_List_fromArray(
 						[
-							$elm$svg$Svg$Attributes$d('M12.5 24.4922C14.1328 24.4922 15.668 24.1797 17.1055 23.5547C18.5508 22.9297 19.8242 22.0664 20.9258 20.9648C22.0273 19.8633 22.8906 18.5938 23.5156 17.1562C24.1406 15.7109 24.4531 14.1719 24.4531 12.5391C24.4531 10.9062 24.1406 9.37109 23.5156 7.93359C22.8906 6.48828 22.0273 5.21484 20.9258 4.11328C19.8242 3.01172 18.5508 2.14844 17.1055 1.52344C15.6602 0.898438 14.1211 0.585938 12.4883 0.585938C10.8555 0.585938 9.31641 0.898438 7.87109 1.52344C6.43359 2.14844 5.16406 3.01172 4.0625 4.11328C2.96875 5.21484 2.10938 6.48828 1.48438 7.93359C0.859375 9.37109 0.546875 10.9062 0.546875 12.5391C0.546875 14.1719 0.859375 15.7109 1.48438 17.1562C2.10938 18.5938 2.97266 19.8633 4.07422 20.9648C5.17578 22.0664 6.44531 22.9297 7.88281 23.5547C9.32812 24.1797 10.8672 24.4922 12.5 24.4922ZM11.1875 18.2578C10.9844 18.2578 10.8008 18.2148 10.6367 18.1289C10.4727 18.043 10.3125 17.8984 10.1562 17.6953L7.21484 14.0859C7.12891 13.9688 7.05859 13.8477 7.00391 13.7227C6.95703 13.5898 6.93359 13.457 6.93359 13.3242C6.93359 13.0586 7.02344 12.832 7.20312 12.6445C7.38281 12.4492 7.60547 12.3516 7.87109 12.3516C8.04297 12.3516 8.19531 12.3867 8.32812 12.457C8.46875 12.5273 8.61328 12.6602 8.76172 12.8555L11.1406 15.9258L16.1445 7.88672C16.3633 7.52734 16.6445 7.34766 16.9883 7.34766C17.2383 7.34766 17.4648 7.42969 17.668 7.59375C17.8711 7.75 17.9727 7.96484 17.9727 8.23828C17.9727 8.37109 17.9414 8.50391 17.8789 8.63672C17.8164 8.76953 17.75 8.89453 17.6797 9.01172L12.1719 17.6953C12.0469 17.8828 11.9023 18.0234 11.7383 18.1172C11.5742 18.2109 11.3906 18.2578 11.1875 18.2578Z'),
+							$elm$svg$Svg$Attributes$d('M5.53906 22.5898H19.4609C20.3828 22.5898 21.2227 22.3867 21.9805 21.9805C22.7383 21.582 23.3398 21.0195 23.7852 20.293C24.2383 19.5742 24.4648 18.7344 24.4648 17.7734C24.4648 16.8125 24.2383 15.9727 23.7852 15.2539C23.3398 14.5273 22.7383 13.9648 21.9805 13.5664C21.2227 13.1602 20.3828 12.957 19.4609 12.957H5.53906C4.60938 12.957 3.76562 13.1602 3.00781 13.5664C2.25 13.9648 1.64453 14.5273 1.19141 15.2539C0.746094 15.9727 0.523438 16.8125 0.523438 17.7734C0.523438 18.7344 0.746094 19.5742 1.19141 20.293C1.64453 21.0195 2.25 21.582 3.00781 21.9805C3.76562 22.3867 4.60938 22.5898 5.53906 22.5898ZM19.7539 20.8203C19.1914 20.8125 18.6797 20.6719 18.2188 20.3984C17.7656 20.125 17.4023 19.7578 17.1289 19.2969C16.8555 18.8359 16.7188 18.3242 16.7188 17.7617C16.7188 17.207 16.8555 16.6992 17.1289 16.2383C17.4023 15.7773 17.7656 15.4102 18.2188 15.1367C18.6797 14.8633 19.1914 14.7266 19.7539 14.7266C20.3164 14.7266 20.8281 14.8633 21.2891 15.1367C21.7578 15.4102 22.1289 15.7773 22.4023 16.2383C22.6758 16.6914 22.8086 17.1953 22.8008 17.75C22.8008 18.3125 22.6641 18.8281 22.3906 19.2969C22.1172 19.7656 21.75 20.1367 21.2891 20.4102C20.8281 20.6836 20.3164 20.8203 19.7539 20.8203ZM6.01953 11.1523H18.9805C19.9883 11.1523 20.9062 10.9297 21.7344 10.4844C22.5703 10.0391 23.2344 9.41406 23.7266 8.60938C24.2188 7.80469 24.4648 6.87109 24.4648 5.80859C24.4648 4.74609 24.2188 3.8125 23.7266 3.00781C23.2344 2.20312 22.5703 1.57812 21.7344 1.13281C20.9062 0.6875 19.9883 0.464844 18.9805 0.464844H6.01953C5.01172 0.464844 4.08984 0.6875 3.25391 1.13281C2.42578 1.57812 1.76172 2.20312 1.26172 3.00781C0.769531 3.8125 0.523438 4.74609 0.523438 5.80859C0.523438 6.87109 0.769531 7.80469 1.26172 8.60938C1.76172 9.41406 2.42578 10.0391 3.25391 10.4844C4.08984 10.9297 5.01172 11.1523 6.01953 11.1523ZM6.01953 9.38281C5.36328 9.38281 4.75 9.23438 4.17969 8.9375C3.61719 8.63281 3.16016 8.21484 2.80859 7.68359C2.46484 7.14453 2.29297 6.51953 2.29297 5.80859C2.29297 5.09766 2.46484 4.47656 2.80859 3.94531C3.16016 3.40625 3.61719 2.98828 4.17969 2.69141C4.75 2.38672 5.36328 2.23438 6.01953 2.23438H18.9805C19.6289 2.23438 20.2344 2.38672 20.7969 2.69141C21.3672 2.98828 21.8242 3.40625 22.168 3.94531C22.5195 4.47656 22.6953 5.09766 22.6953 5.80859C22.6953 6.51953 22.5195 7.14453 22.168 7.68359C21.8242 8.21484 21.3672 8.63281 20.7969 8.9375C20.2344 9.23438 19.6289 9.38281 18.9805 9.38281H6.01953ZM6.01953 8.58594C6.53516 8.59375 7 8.47266 7.41406 8.22266C7.83594 7.96484 8.17188 7.625 8.42188 7.20312C8.67969 6.77344 8.80859 6.30078 8.80859 5.78516C8.81641 5.26953 8.69531 4.80469 8.44531 4.39062C8.19531 3.96875 7.85547 3.63672 7.42578 3.39453C7.00391 3.14453 6.53516 3.01953 6.01953 3.01953C5.50391 3.01953 5.03516 3.14453 4.61328 3.39453C4.19141 3.64453 3.85547 3.98047 3.60547 4.40234C3.36328 4.82422 3.24219 5.28906 3.24219 5.79688C3.24219 6.3125 3.36328 6.78125 3.60547 7.20312C3.85547 7.625 4.19141 7.96094 4.61328 8.21094C5.03516 8.46094 5.50391 8.58594 6.01953 8.58594Z'),
 							$elm$svg$Svg$Attributes$fill('#111F53')
 						]),
 					_List_Nil)
@@ -18640,8 +18735,8 @@ var $author$project$UI$Icons$switches = function (style) {
 			_List_fromArray(
 				[
 					$elm$svg$Svg$Attributes$width('25'),
-					$elm$svg$Svg$Attributes$height('25'),
-					$elm$svg$Svg$Attributes$viewBox('0 0 25 25'),
+					$elm$svg$Svg$Attributes$height('23'),
+					$elm$svg$Svg$Attributes$viewBox('0 0 25 23'),
 					$elm$svg$Svg$Attributes$fill('none'),
 					$elm$svg$Svg$Attributes$xmlSpace('http://www.w3.org/2000/svg')
 				]),
@@ -18651,7 +18746,7 @@ var $author$project$UI$Icons$switches = function (style) {
 					$elm$svg$Svg$path,
 					_List_fromArray(
 						[
-							$elm$svg$Svg$Attributes$d('M12.5 24.4922C14.1328 24.4922 15.668 24.1797 17.1055 23.5547C18.5508 22.9297 19.8242 22.0664 20.9258 20.9648C22.0273 19.8633 22.8906 18.5938 23.5156 17.1562C24.1406 15.7109 24.4531 14.1719 24.4531 12.5391C24.4531 10.9062 24.1406 9.37109 23.5156 7.93359C22.8906 6.48828 22.0273 5.21484 20.9258 4.11328C19.8242 3.01172 18.5508 2.14844 17.1055 1.52344C15.6602 0.898438 14.1211 0.585938 12.4883 0.585938C10.8555 0.585938 9.31641 0.898438 7.87109 1.52344C6.43359 2.14844 5.16406 3.01172 4.0625 4.11328C2.96875 5.21484 2.10938 6.48828 1.48438 7.93359C0.859375 9.37109 0.546875 10.9062 0.546875 12.5391C0.546875 14.1719 0.859375 15.7109 1.48438 17.1562C2.10938 18.5938 2.97266 19.8633 4.07422 20.9648C5.17578 22.0664 6.44531 22.9297 7.88281 23.5547C9.32812 24.1797 10.8672 24.4922 12.5 24.4922ZM11.1875 18.2578C10.9844 18.2578 10.8008 18.2148 10.6367 18.1289C10.4727 18.043 10.3125 17.8984 10.1562 17.6953L7.21484 14.0859C7.12891 13.9688 7.05859 13.8477 7.00391 13.7227C6.95703 13.5898 6.93359 13.457 6.93359 13.3242C6.93359 13.0586 7.02344 12.832 7.20312 12.6445C7.38281 12.4492 7.60547 12.3516 7.87109 12.3516C8.04297 12.3516 8.19531 12.3867 8.32812 12.457C8.46875 12.5273 8.61328 12.6602 8.76172 12.8555L11.1406 15.9258L16.1445 7.88672C16.3633 7.52734 16.6445 7.34766 16.9883 7.34766C17.2383 7.34766 17.4648 7.42969 17.668 7.59375C17.8711 7.75 17.9727 7.96484 17.9727 8.23828C17.9727 8.37109 17.9414 8.50391 17.8789 8.63672C17.8164 8.76953 17.75 8.89453 17.6797 9.01172L12.1719 17.6953C12.0469 17.8828 11.9023 18.0234 11.7383 18.1172C11.5742 18.2109 11.3906 18.2578 11.1875 18.2578Z'),
+							$elm$svg$Svg$Attributes$d('M5.53906 22.5898H19.4609C20.3828 22.5898 21.2227 22.3867 21.9805 21.9805C22.7383 21.582 23.3398 21.0195 23.7852 20.293C24.2383 19.5742 24.4648 18.7344 24.4648 17.7734C24.4648 16.8125 24.2383 15.9727 23.7852 15.2539C23.3398 14.5273 22.7383 13.9648 21.9805 13.5664C21.2227 13.1602 20.3828 12.957 19.4609 12.957H5.53906C4.60938 12.957 3.76562 13.1602 3.00781 13.5664C2.25 13.9648 1.64453 14.5273 1.19141 15.2539C0.746094 15.9727 0.523438 16.8125 0.523438 17.7734C0.523438 18.7344 0.746094 19.5742 1.19141 20.293C1.64453 21.0195 2.25 21.582 3.00781 21.9805C3.76562 22.3867 4.60938 22.5898 5.53906 22.5898ZM19.7539 20.8203C19.1914 20.8125 18.6797 20.6719 18.2188 20.3984C17.7656 20.125 17.4023 19.7578 17.1289 19.2969C16.8555 18.8359 16.7188 18.3242 16.7188 17.7617C16.7188 17.207 16.8555 16.6992 17.1289 16.2383C17.4023 15.7773 17.7656 15.4102 18.2188 15.1367C18.6797 14.8633 19.1914 14.7266 19.7539 14.7266C20.3164 14.7266 20.8281 14.8633 21.2891 15.1367C21.7578 15.4102 22.1289 15.7773 22.4023 16.2383C22.6758 16.6914 22.8086 17.1953 22.8008 17.75C22.8008 18.3125 22.6641 18.8281 22.3906 19.2969C22.1172 19.7656 21.75 20.1367 21.2891 20.4102C20.8281 20.6836 20.3164 20.8203 19.7539 20.8203ZM6.01953 11.1523H18.9805C19.9883 11.1523 20.9062 10.9297 21.7344 10.4844C22.5703 10.0391 23.2344 9.41406 23.7266 8.60938C24.2188 7.80469 24.4648 6.87109 24.4648 5.80859C24.4648 4.74609 24.2188 3.8125 23.7266 3.00781C23.2344 2.20312 22.5703 1.57812 21.7344 1.13281C20.9062 0.6875 19.9883 0.464844 18.9805 0.464844H6.01953C5.01172 0.464844 4.08984 0.6875 3.25391 1.13281C2.42578 1.57812 1.76172 2.20312 1.26172 3.00781C0.769531 3.8125 0.523438 4.74609 0.523438 5.80859C0.523438 6.87109 0.769531 7.80469 1.26172 8.60938C1.76172 9.41406 2.42578 10.0391 3.25391 10.4844C4.08984 10.9297 5.01172 11.1523 6.01953 11.1523ZM6.01953 9.38281C5.36328 9.38281 4.75 9.23438 4.17969 8.9375C3.61719 8.63281 3.16016 8.21484 2.80859 7.68359C2.46484 7.14453 2.29297 6.51953 2.29297 5.80859C2.29297 5.09766 2.46484 4.47656 2.80859 3.94531C3.16016 3.40625 3.61719 2.98828 4.17969 2.69141C4.75 2.38672 5.36328 2.23438 6.01953 2.23438H18.9805C19.6289 2.23438 20.2344 2.38672 20.7969 2.69141C21.3672 2.98828 21.8242 3.40625 22.168 3.94531C22.5195 4.47656 22.6953 5.09766 22.6953 5.80859C22.6953 6.51953 22.5195 7.14453 22.168 7.68359C21.8242 8.21484 21.3672 8.63281 20.7969 8.9375C20.2344 9.23438 19.6289 9.38281 18.9805 9.38281H6.01953ZM6.01953 8.58594C6.53516 8.59375 7 8.47266 7.41406 8.22266C7.83594 7.96484 8.17188 7.625 8.42188 7.20312C8.67969 6.77344 8.80859 6.30078 8.80859 5.78516C8.81641 5.26953 8.69531 4.80469 8.44531 4.39062C8.19531 3.96875 7.85547 3.63672 7.42578 3.39453C7.00391 3.14453 6.53516 3.01953 6.01953 3.01953C5.50391 3.01953 5.03516 3.14453 4.61328 3.39453C4.19141 3.64453 3.85547 3.98047 3.60547 4.40234C3.36328 4.82422 3.24219 5.28906 3.24219 5.79688C3.24219 6.3125 3.36328 6.78125 3.60547 7.20312C3.85547 7.625 4.19141 7.96094 4.61328 8.21094C5.03516 8.46094 5.50391 8.58594 6.01953 8.58594Z'),
 							$elm$svg$Svg$Attributes$fill('#111F53')
 						]),
 					_List_Nil)
@@ -18714,8 +18809,10 @@ var $author$project$UI$Sidebar$getPageIcon = F2(
 				return A2($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$ArrowUpDown, style);
 			case 'Synonyms':
 				return A2($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Dictionary, style);
-			default:
+			case 'StopWords':
 				return A2($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Block, style);
+			default:
+				return A2($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Switches, style);
 		}
 	});
 var $mdgriffith$elm_ui$Internal$Flag$fontWeight = $mdgriffith$elm_ui$Internal$Flag$flag(13);
@@ -19099,7 +19196,7 @@ var $author$project$UI$Sidebar$sidebarListItemView = F3(
 							A2(
 							$author$project$UI$Sidebar$addIf,
 							isSelected,
-							$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.primary100))
+							$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.primary200))
 						])),
 				_List_fromArray(
 					[
@@ -19376,6 +19473,9 @@ var $author$project$UI$Sidebar$sidebarView = function (model) {
 			data: model.pages
 		});
 };
+var $author$project$UI$PageView$AttributesViewMsg = function (a) {
+	return {$: 'AttributesViewMsg', a: a};
+};
 var $author$project$UI$PageView$DocumentsViewMsg = function (a) {
 	return {$: 'DocumentsViewMsg', a: a};
 };
@@ -19394,19 +19494,12 @@ var $author$project$UI$PageView$SynonymsViewMsg = function (a) {
 var $author$project$UI$PageView$TasksViewMsg = function (a) {
 	return {$: 'TasksViewMsg', a: a};
 };
-var $author$project$UI$Styles$Code = {$: 'Code'};
 var $author$project$UI$Styles$H1 = {$: 'H1'};
-var $author$project$UI$Styles$SM = {$: 'SM'};
-var $author$project$UI$PageViews$Documents$card = function (t) {
-	return _Utils_ap(
-		t,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$padding(20),
-				$mdgriffith$elm_ui$Element$Border$rounded(12),
-				$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.white)
-			]));
-};
+var $author$project$UI$Styles$LG = {$: 'LG'};
+var $author$project$UI$Styles$H2 = {$: 'H2'};
+var $author$project$UI$Styles$MD = {$: 'MD'};
+var $author$project$UI$Styles$FILL = {$: 'FILL'};
+var $author$project$UI$Styles$XS = {$: 'XS'};
 var $mdgriffith$elm_ui$Internal$Model$AsColumn = {$: 'AsColumn'};
 var $mdgriffith$elm_ui$Internal$Model$asColumn = $mdgriffith$elm_ui$Internal$Model$AsColumn;
 var $mdgriffith$elm_ui$Element$column = F2(
@@ -19427,6 +19520,426 @@ var $mdgriffith$elm_ui$Element$column = F2(
 						attrs))),
 			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
 	});
+var $author$project$UI$Elements$spacer = function (size) {
+	switch (size.$) {
+		case 'XS':
+			return A2(
+				$mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$width(
+						$mdgriffith$elm_ui$Element$px(16)),
+						$mdgriffith$elm_ui$Element$height(
+						$mdgriffith$elm_ui$Element$px(8))
+					]),
+				$mdgriffith$elm_ui$Element$none);
+		case 'SM':
+			return A2(
+				$mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$width(
+						$mdgriffith$elm_ui$Element$px(16)),
+						$mdgriffith$elm_ui$Element$height(
+						$mdgriffith$elm_ui$Element$px(16))
+					]),
+				$mdgriffith$elm_ui$Element$none);
+		case 'MD':
+			return A2(
+				$mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$width(
+						$mdgriffith$elm_ui$Element$px(20)),
+						$mdgriffith$elm_ui$Element$height(
+						$mdgriffith$elm_ui$Element$px(20))
+					]),
+				$mdgriffith$elm_ui$Element$none);
+		case 'LG':
+			return A2(
+				$mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$width(
+						$mdgriffith$elm_ui$Element$px(24)),
+						$mdgriffith$elm_ui$Element$height(
+						$mdgriffith$elm_ui$Element$px(24))
+					]),
+				$mdgriffith$elm_ui$Element$none);
+		case 'XL':
+			return A2(
+				$mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$width(
+						$mdgriffith$elm_ui$Element$px(40)),
+						$mdgriffith$elm_ui$Element$height(
+						$mdgriffith$elm_ui$Element$px(40))
+					]),
+				$mdgriffith$elm_ui$Element$none);
+		default:
+			return A2(
+				$mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+						$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill)
+					]),
+				$mdgriffith$elm_ui$Element$none);
+	}
+};
+var $mdgriffith$elm_ui$Internal$Model$InFront = {$: 'InFront'};
+var $mdgriffith$elm_ui$Element$createNearby = F2(
+	function (loc, element) {
+		if (element.$ === 'Empty') {
+			return $mdgriffith$elm_ui$Internal$Model$NoAttribute;
+		} else {
+			return A2($mdgriffith$elm_ui$Internal$Model$Nearby, loc, element);
+		}
+	});
+var $mdgriffith$elm_ui$Element$inFront = function (element) {
+	return A2($mdgriffith$elm_ui$Element$createNearby, $mdgriffith$elm_ui$Internal$Model$InFront, element);
+};
+var $author$project$UI$Elements$switchBody = function (model) {
+	var background = model ? $author$project$UI$Styles$color.primary500 : $author$project$UI$Styles$color.gray300;
+	return A2(
+		$mdgriffith$elm_ui$Element$el,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$Background$color(background),
+				$mdgriffith$elm_ui$Element$width(
+				$mdgriffith$elm_ui$Element$px(48)),
+				$mdgriffith$elm_ui$Element$height(
+				$mdgriffith$elm_ui$Element$px(32)),
+				$mdgriffith$elm_ui$Element$Border$rounded(20)
+			]),
+		$mdgriffith$elm_ui$Element$none);
+};
+var $mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
+var $mdgriffith$elm_ui$Element$centerY = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$CenterY);
+var $mdgriffith$elm_ui$Internal$Model$MoveX = function (a) {
+	return {$: 'MoveX', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Flag$moveX = $mdgriffith$elm_ui$Internal$Flag$flag(25);
+var $mdgriffith$elm_ui$Element$moveRight = function (x) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$TransformComponent,
+		$mdgriffith$elm_ui$Internal$Flag$moveX,
+		$mdgriffith$elm_ui$Internal$Model$MoveX(x));
+};
+var $author$project$UI$Elements$switchHandle = function (model) {
+	var position = model ? 20 : 4;
+	return A2(
+		$mdgriffith$elm_ui$Element$el,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.white),
+				$mdgriffith$elm_ui$Element$width(
+				$mdgriffith$elm_ui$Element$px(24)),
+				$mdgriffith$elm_ui$Element$height(
+				$mdgriffith$elm_ui$Element$px(24)),
+				$mdgriffith$elm_ui$Element$Border$rounded(12),
+				$mdgriffith$elm_ui$Element$centerY,
+				$mdgriffith$elm_ui$Element$moveRight(position)
+			]),
+		$mdgriffith$elm_ui$Element$none);
+};
+var $author$project$UI$Elements$switch = function (model) {
+	return A2(
+		$mdgriffith$elm_ui$Element$el,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$inFront(
+				$author$project$UI$Elements$switchHandle(model)),
+				$mdgriffith$elm_ui$Element$pointer
+			]),
+		$author$project$UI$Elements$switchBody(model));
+};
+var $author$project$UI$PageViews$Attributes$cardViewRow = function (model) {
+	return A2(
+		$mdgriffith$elm_ui$Element$column,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+			]),
+		_List_fromArray(
+			[
+				$author$project$UI$Elements$spacer($author$project$UI$Styles$XS),
+				A2(
+				$mdgriffith$elm_ui$Element$row,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$mdgriffith$elm_ui$Element$el,
+						$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$Body),
+						$mdgriffith$elm_ui$Element$text(model.title)),
+						$author$project$UI$Elements$spacer($author$project$UI$Styles$FILL),
+						$author$project$UI$Elements$switch(model.isOn)
+					]))
+			]));
+};
+var $author$project$UI$PageViews$Attributes$cardView = function (model) {
+	return A2(
+		$mdgriffith$elm_ui$Element$column,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.white),
+				$mdgriffith$elm_ui$Element$Border$rounded(12),
+				$mdgriffith$elm_ui$Element$padding(24),
+				$mdgriffith$elm_ui$Element$width(
+				$mdgriffith$elm_ui$Element$px(320))
+			]),
+		_Utils_ap(
+			_List_fromArray(
+				[
+					A2(
+					$mdgriffith$elm_ui$Element$el,
+					$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H2),
+					$mdgriffith$elm_ui$Element$text('Displayed')),
+					$author$project$UI$Elements$spacer($author$project$UI$Styles$MD)
+				]),
+			A2(
+				$elm$core$List$map,
+				function (x) {
+					return $author$project$UI$PageViews$Attributes$cardViewRow(x);
+				},
+				model.displayed)));
+};
+var $mdgriffith$elm_ui$Internal$Model$Padding = F5(
+	function (a, b, c, d, e) {
+		return {$: 'Padding', a: a, b: b, c: c, d: d, e: e};
+	});
+var $mdgriffith$elm_ui$Internal$Model$Spaced = F3(
+	function (a, b, c) {
+		return {$: 'Spaced', a: a, b: b, c: c};
+	});
+var $mdgriffith$elm_ui$Internal$Model$extractSpacingAndPadding = function (attrs) {
+	return A3(
+		$elm$core$List$foldr,
+		F2(
+			function (attr, _v0) {
+				var pad = _v0.a;
+				var spacing = _v0.b;
+				return _Utils_Tuple2(
+					function () {
+						if (pad.$ === 'Just') {
+							var x = pad.a;
+							return pad;
+						} else {
+							if ((attr.$ === 'StyleClass') && (attr.b.$ === 'PaddingStyle')) {
+								var _v3 = attr.b;
+								var name = _v3.a;
+								var t = _v3.b;
+								var r = _v3.c;
+								var b = _v3.d;
+								var l = _v3.e;
+								return $elm$core$Maybe$Just(
+									A5($mdgriffith$elm_ui$Internal$Model$Padding, name, t, r, b, l));
+							} else {
+								return $elm$core$Maybe$Nothing;
+							}
+						}
+					}(),
+					function () {
+						if (spacing.$ === 'Just') {
+							var x = spacing.a;
+							return spacing;
+						} else {
+							if ((attr.$ === 'StyleClass') && (attr.b.$ === 'SpacingStyle')) {
+								var _v6 = attr.b;
+								var name = _v6.a;
+								var x = _v6.b;
+								var y = _v6.c;
+								return $elm$core$Maybe$Just(
+									A3($mdgriffith$elm_ui$Internal$Model$Spaced, name, x, y));
+							} else {
+								return $elm$core$Maybe$Nothing;
+							}
+						}
+					}());
+			}),
+		_Utils_Tuple2($elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing),
+		attrs);
+};
+var $mdgriffith$elm_ui$Internal$Model$paddingNameFloat = F4(
+	function (top, right, bottom, left) {
+		return 'pad-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(top) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(right) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(bottom) + ('-' + $mdgriffith$elm_ui$Internal$Model$floatClass(left)))))));
+	});
+var $mdgriffith$elm_ui$Element$wrappedRow = F2(
+	function (attrs, children) {
+		var _v0 = $mdgriffith$elm_ui$Internal$Model$extractSpacingAndPadding(attrs);
+		var padded = _v0.a;
+		var spaced = _v0.b;
+		if (spaced.$ === 'Nothing') {
+			return A4(
+				$mdgriffith$elm_ui$Internal$Model$element,
+				$mdgriffith$elm_ui$Internal$Model$asRow,
+				$mdgriffith$elm_ui$Internal$Model$div,
+				A2(
+					$elm$core$List$cons,
+					$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentLeft + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.contentCenterY + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.wrapped)))),
+					A2(
+						$elm$core$List$cons,
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
+						A2(
+							$elm$core$List$cons,
+							$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
+							attrs))),
+				$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
+		} else {
+			var _v2 = spaced.a;
+			var spaceName = _v2.a;
+			var x = _v2.b;
+			var y = _v2.c;
+			var newPadding = function () {
+				if (padded.$ === 'Just') {
+					var _v5 = padded.a;
+					var name = _v5.a;
+					var t = _v5.b;
+					var r = _v5.c;
+					var b = _v5.d;
+					var l = _v5.e;
+					if ((_Utils_cmp(r, x / 2) > -1) && (_Utils_cmp(b, y / 2) > -1)) {
+						var newTop = t - (y / 2);
+						var newRight = r - (x / 2);
+						var newLeft = l - (x / 2);
+						var newBottom = b - (y / 2);
+						return $elm$core$Maybe$Just(
+							A2(
+								$mdgriffith$elm_ui$Internal$Model$StyleClass,
+								$mdgriffith$elm_ui$Internal$Flag$padding,
+								A5(
+									$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
+									A4($mdgriffith$elm_ui$Internal$Model$paddingNameFloat, newTop, newRight, newBottom, newLeft),
+									newTop,
+									newRight,
+									newBottom,
+									newLeft)));
+					} else {
+						return $elm$core$Maybe$Nothing;
+					}
+				} else {
+					return $elm$core$Maybe$Nothing;
+				}
+			}();
+			if (newPadding.$ === 'Just') {
+				var pad = newPadding.a;
+				return A4(
+					$mdgriffith$elm_ui$Internal$Model$element,
+					$mdgriffith$elm_ui$Internal$Model$asRow,
+					$mdgriffith$elm_ui$Internal$Model$div,
+					A2(
+						$elm$core$List$cons,
+						$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentLeft + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.contentCenterY + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.wrapped)))),
+						A2(
+							$elm$core$List$cons,
+							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
+							A2(
+								$elm$core$List$cons,
+								$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
+								_Utils_ap(
+									attrs,
+									_List_fromArray(
+										[pad]))))),
+					$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
+			} else {
+				var halfY = -(y / 2);
+				var halfX = -(x / 2);
+				return A4(
+					$mdgriffith$elm_ui$Internal$Model$element,
+					$mdgriffith$elm_ui$Internal$Model$asEl,
+					$mdgriffith$elm_ui$Internal$Model$div,
+					attrs,
+					$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+						_List_fromArray(
+							[
+								A4(
+								$mdgriffith$elm_ui$Internal$Model$element,
+								$mdgriffith$elm_ui$Internal$Model$asRow,
+								$mdgriffith$elm_ui$Internal$Model$div,
+								A2(
+									$elm$core$List$cons,
+									$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentLeft + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.contentCenterY + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.wrapped)))),
+									A2(
+										$elm$core$List$cons,
+										$mdgriffith$elm_ui$Internal$Model$Attr(
+											A2(
+												$elm$html$Html$Attributes$style,
+												'margin',
+												$elm$core$String$fromFloat(halfY) + ('px' + (' ' + ($elm$core$String$fromFloat(halfX) + 'px'))))),
+										A2(
+											$elm$core$List$cons,
+											$mdgriffith$elm_ui$Internal$Model$Attr(
+												A2(
+													$elm$html$Html$Attributes$style,
+													'width',
+													'calc(100% + ' + ($elm$core$String$fromInt(x) + 'px)'))),
+											A2(
+												$elm$core$List$cons,
+												$mdgriffith$elm_ui$Internal$Model$Attr(
+													A2(
+														$elm$html$Html$Attributes$style,
+														'height',
+														'calc(100% + ' + ($elm$core$String$fromInt(y) + 'px)'))),
+												A2(
+													$elm$core$List$cons,
+													A2(
+														$mdgriffith$elm_ui$Internal$Model$StyleClass,
+														$mdgriffith$elm_ui$Internal$Flag$spacing,
+														A3($mdgriffith$elm_ui$Internal$Model$SpacingStyle, spaceName, x, y)),
+													_List_Nil))))),
+								$mdgriffith$elm_ui$Internal$Model$Unkeyed(children))
+							])));
+			}
+		}
+	});
+var $author$project$UI$PageViews$Attributes$view = function (model) {
+	return A2(
+		$mdgriffith$elm_ui$Element$column,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+				$mdgriffith$elm_ui$Element$scrollbarY
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$mdgriffith$elm_ui$Element$el,
+				$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H1),
+				$mdgriffith$elm_ui$Element$text('Attributes')),
+				$author$project$UI$Elements$spacer($author$project$UI$Styles$LG),
+				A2(
+				$mdgriffith$elm_ui$Element$wrappedRow,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$spacing(12),
+						$mdgriffith$elm_ui$Element$paddingEach(
+						{bottom: 0, left: 0, right: 320, top: 20})
+					]),
+				_List_fromArray(
+					[
+						$author$project$UI$PageViews$Attributes$cardView(model)
+					])),
+				$author$project$UI$Elements$spacer($author$project$UI$Styles$LG)
+			]));
+};
+var $author$project$UI$Styles$Code = {$: 'Code'};
+var $author$project$UI$Styles$SM = {$: 'SM'};
+var $author$project$UI$PageViews$Documents$card = function (t) {
+	return _Utils_ap(
+		t,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$padding(20),
+				$mdgriffith$elm_ui$Element$Border$rounded(12),
+				$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.white)
+			]));
+};
 var $author$project$UI$PageViews$Documents$getIdString = F2(
 	function (json, key) {
 		var _v0 = A2(
@@ -19966,63 +20479,6 @@ var $ThinkAlexandria$elm_pretty_print_json$Json$Print$prettyString = F2(
 					$ThinkAlexandria$elm_pretty_print_json$Json$Print$decodeDoc(indent),
 					json)));
 	});
-var $author$project$UI$Elements$spacer = function (size) {
-	switch (size.$) {
-		case 'SM':
-			return A2(
-				$mdgriffith$elm_ui$Element$el,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$width(
-						$mdgriffith$elm_ui$Element$px(16)),
-						$mdgriffith$elm_ui$Element$height(
-						$mdgriffith$elm_ui$Element$px(16))
-					]),
-				$mdgriffith$elm_ui$Element$none);
-		case 'MD':
-			return A2(
-				$mdgriffith$elm_ui$Element$el,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$width(
-						$mdgriffith$elm_ui$Element$px(20)),
-						$mdgriffith$elm_ui$Element$height(
-						$mdgriffith$elm_ui$Element$px(20))
-					]),
-				$mdgriffith$elm_ui$Element$none);
-		case 'LG':
-			return A2(
-				$mdgriffith$elm_ui$Element$el,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$width(
-						$mdgriffith$elm_ui$Element$px(24)),
-						$mdgriffith$elm_ui$Element$height(
-						$mdgriffith$elm_ui$Element$px(24))
-					]),
-				$mdgriffith$elm_ui$Element$none);
-		case 'XL':
-			return A2(
-				$mdgriffith$elm_ui$Element$el,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$width(
-						$mdgriffith$elm_ui$Element$px(40)),
-						$mdgriffith$elm_ui$Element$height(
-						$mdgriffith$elm_ui$Element$px(40))
-					]),
-				$mdgriffith$elm_ui$Element$none);
-		default:
-			return A2(
-				$mdgriffith$elm_ui$Element$el,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-						$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill)
-					]),
-				$mdgriffith$elm_ui$Element$none);
-	}
-};
 var $elm$core$Result$withDefault = F2(
 	function (def, result) {
 		if (result.$ === 'Ok') {
@@ -20358,14 +20814,6 @@ var $mdgriffith$elm_ui$Element$Input$autofill = A2(
 	$mdgriffith$elm_ui$Internal$Model$Attr,
 	$elm$html$Html$Attributes$attribute('autocomplete'));
 var $mdgriffith$elm_ui$Internal$Model$Behind = {$: 'Behind'};
-var $mdgriffith$elm_ui$Element$createNearby = F2(
-	function (loc, element) {
-		if (element.$ === 'Empty') {
-			return $mdgriffith$elm_ui$Internal$Model$NoAttribute;
-		} else {
-			return A2($mdgriffith$elm_ui$Internal$Model$Nearby, loc, element);
-		}
-	});
 var $mdgriffith$elm_ui$Element$behindContent = function (element) {
 	return A2($mdgriffith$elm_ui$Element$createNearby, $mdgriffith$elm_ui$Internal$Model$Behind, element);
 };
@@ -20488,10 +20936,6 @@ var $mdgriffith$elm_ui$Element$Input$hiddenLabelAttribute = function (label) {
 		return $mdgriffith$elm_ui$Internal$Model$NoAttribute;
 	}
 };
-var $mdgriffith$elm_ui$Internal$Model$InFront = {$: 'InFront'};
-var $mdgriffith$elm_ui$Element$inFront = function (element) {
-	return A2($mdgriffith$elm_ui$Element$createNearby, $mdgriffith$elm_ui$Internal$Model$InFront, element);
-};
 var $mdgriffith$elm_ui$Element$Input$isConstrained = function (len) {
 	isConstrained:
 	while (true) {
@@ -20587,10 +21031,6 @@ var $mdgriffith$elm_ui$Element$Input$isPixel = function (len) {
 		}
 	}
 };
-var $mdgriffith$elm_ui$Internal$Model$paddingNameFloat = F4(
-	function (top, right, bottom, left) {
-		return 'pad-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(top) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(right) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(bottom) + ('-' + $mdgriffith$elm_ui$Internal$Model$floatClass(left)))))));
-	});
 var $mdgriffith$elm_ui$Element$Input$redistributeOver = F4(
 	function (isMultiline, stacked, attr, els) {
 		switch (attr.$) {
@@ -21211,190 +21651,6 @@ var $author$project$UI$Elements$chip = F2(
 						A2($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Close, $author$project$UI$Icons$Outline))
 					])));
 	});
-var $mdgriffith$elm_ui$Internal$Model$Padding = F5(
-	function (a, b, c, d, e) {
-		return {$: 'Padding', a: a, b: b, c: c, d: d, e: e};
-	});
-var $mdgriffith$elm_ui$Internal$Model$Spaced = F3(
-	function (a, b, c) {
-		return {$: 'Spaced', a: a, b: b, c: c};
-	});
-var $mdgriffith$elm_ui$Internal$Model$extractSpacingAndPadding = function (attrs) {
-	return A3(
-		$elm$core$List$foldr,
-		F2(
-			function (attr, _v0) {
-				var pad = _v0.a;
-				var spacing = _v0.b;
-				return _Utils_Tuple2(
-					function () {
-						if (pad.$ === 'Just') {
-							var x = pad.a;
-							return pad;
-						} else {
-							if ((attr.$ === 'StyleClass') && (attr.b.$ === 'PaddingStyle')) {
-								var _v3 = attr.b;
-								var name = _v3.a;
-								var t = _v3.b;
-								var r = _v3.c;
-								var b = _v3.d;
-								var l = _v3.e;
-								return $elm$core$Maybe$Just(
-									A5($mdgriffith$elm_ui$Internal$Model$Padding, name, t, r, b, l));
-							} else {
-								return $elm$core$Maybe$Nothing;
-							}
-						}
-					}(),
-					function () {
-						if (spacing.$ === 'Just') {
-							var x = spacing.a;
-							return spacing;
-						} else {
-							if ((attr.$ === 'StyleClass') && (attr.b.$ === 'SpacingStyle')) {
-								var _v6 = attr.b;
-								var name = _v6.a;
-								var x = _v6.b;
-								var y = _v6.c;
-								return $elm$core$Maybe$Just(
-									A3($mdgriffith$elm_ui$Internal$Model$Spaced, name, x, y));
-							} else {
-								return $elm$core$Maybe$Nothing;
-							}
-						}
-					}());
-			}),
-		_Utils_Tuple2($elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing),
-		attrs);
-};
-var $mdgriffith$elm_ui$Element$wrappedRow = F2(
-	function (attrs, children) {
-		var _v0 = $mdgriffith$elm_ui$Internal$Model$extractSpacingAndPadding(attrs);
-		var padded = _v0.a;
-		var spaced = _v0.b;
-		if (spaced.$ === 'Nothing') {
-			return A4(
-				$mdgriffith$elm_ui$Internal$Model$element,
-				$mdgriffith$elm_ui$Internal$Model$asRow,
-				$mdgriffith$elm_ui$Internal$Model$div,
-				A2(
-					$elm$core$List$cons,
-					$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentLeft + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.contentCenterY + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.wrapped)))),
-					A2(
-						$elm$core$List$cons,
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
-						A2(
-							$elm$core$List$cons,
-							$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
-							attrs))),
-				$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
-		} else {
-			var _v2 = spaced.a;
-			var spaceName = _v2.a;
-			var x = _v2.b;
-			var y = _v2.c;
-			var newPadding = function () {
-				if (padded.$ === 'Just') {
-					var _v5 = padded.a;
-					var name = _v5.a;
-					var t = _v5.b;
-					var r = _v5.c;
-					var b = _v5.d;
-					var l = _v5.e;
-					if ((_Utils_cmp(r, x / 2) > -1) && (_Utils_cmp(b, y / 2) > -1)) {
-						var newTop = t - (y / 2);
-						var newRight = r - (x / 2);
-						var newLeft = l - (x / 2);
-						var newBottom = b - (y / 2);
-						return $elm$core$Maybe$Just(
-							A2(
-								$mdgriffith$elm_ui$Internal$Model$StyleClass,
-								$mdgriffith$elm_ui$Internal$Flag$padding,
-								A5(
-									$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
-									A4($mdgriffith$elm_ui$Internal$Model$paddingNameFloat, newTop, newRight, newBottom, newLeft),
-									newTop,
-									newRight,
-									newBottom,
-									newLeft)));
-					} else {
-						return $elm$core$Maybe$Nothing;
-					}
-				} else {
-					return $elm$core$Maybe$Nothing;
-				}
-			}();
-			if (newPadding.$ === 'Just') {
-				var pad = newPadding.a;
-				return A4(
-					$mdgriffith$elm_ui$Internal$Model$element,
-					$mdgriffith$elm_ui$Internal$Model$asRow,
-					$mdgriffith$elm_ui$Internal$Model$div,
-					A2(
-						$elm$core$List$cons,
-						$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentLeft + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.contentCenterY + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.wrapped)))),
-						A2(
-							$elm$core$List$cons,
-							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
-							A2(
-								$elm$core$List$cons,
-								$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
-								_Utils_ap(
-									attrs,
-									_List_fromArray(
-										[pad]))))),
-					$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
-			} else {
-				var halfY = -(y / 2);
-				var halfX = -(x / 2);
-				return A4(
-					$mdgriffith$elm_ui$Internal$Model$element,
-					$mdgriffith$elm_ui$Internal$Model$asEl,
-					$mdgriffith$elm_ui$Internal$Model$div,
-					attrs,
-					$mdgriffith$elm_ui$Internal$Model$Unkeyed(
-						_List_fromArray(
-							[
-								A4(
-								$mdgriffith$elm_ui$Internal$Model$element,
-								$mdgriffith$elm_ui$Internal$Model$asRow,
-								$mdgriffith$elm_ui$Internal$Model$div,
-								A2(
-									$elm$core$List$cons,
-									$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentLeft + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.contentCenterY + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.wrapped)))),
-									A2(
-										$elm$core$List$cons,
-										$mdgriffith$elm_ui$Internal$Model$Attr(
-											A2(
-												$elm$html$Html$Attributes$style,
-												'margin',
-												$elm$core$String$fromFloat(halfY) + ('px' + (' ' + ($elm$core$String$fromFloat(halfX) + 'px'))))),
-										A2(
-											$elm$core$List$cons,
-											$mdgriffith$elm_ui$Internal$Model$Attr(
-												A2(
-													$elm$html$Html$Attributes$style,
-													'width',
-													'calc(100% + ' + ($elm$core$String$fromInt(x) + 'px)'))),
-											A2(
-												$elm$core$List$cons,
-												$mdgriffith$elm_ui$Internal$Model$Attr(
-													A2(
-														$elm$html$Html$Attributes$style,
-														'height',
-														'calc(100% + ' + ($elm$core$String$fromInt(y) + 'px)'))),
-												A2(
-													$elm$core$List$cons,
-													A2(
-														$mdgriffith$elm_ui$Internal$Model$StyleClass,
-														$mdgriffith$elm_ui$Internal$Flag$spacing,
-														A3($mdgriffith$elm_ui$Internal$Model$SpacingStyle, spaceName, x, y)),
-													_List_Nil))))),
-								$mdgriffith$elm_ui$Internal$Model$Unkeyed(children))
-							])));
-			}
-		}
-	});
 var $author$project$UI$PageViews$StopWords$view = function (model) {
 	return A2(
 		$mdgriffith$elm_ui$Element$column,
@@ -21437,7 +21693,6 @@ var $author$project$UI$PageViews$StopWords$view = function (model) {
 var $author$project$UI$PageViews$Synonyms$CardViewMsg = function (a) {
 	return {$: 'CardViewMsg', a: a};
 };
-var $author$project$UI$Styles$LG = {$: 'LG'};
 var $author$project$UI$PageViews$Synonyms$New = {$: 'New'};
 var $author$project$UI$PageViews$Synonyms$Sync = {$: 'Sync'};
 var $author$project$UI$PageViews$Synonyms$toolbarView = function (_v0) {
@@ -21495,7 +21750,8 @@ var $author$project$UI$Elements$iconButton = F2(
 					$mdgriffith$elm_ui$Element$mouseOver(
 					_List_fromArray(
 						[
-							$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.gray100)
+							$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.gray100),
+							$mdgriffith$elm_ui$Element$alpha(0.5)
 						])),
 					$mdgriffith$elm_ui$Element$mouseDown(
 					_List_fromArray(
@@ -21555,14 +21811,37 @@ var $author$project$UI$Components$SynonymCard$loadingView = function (model) {
 	var _v0 = model.requestStatus;
 	if (_v0.$ === 'Fired') {
 		return A2(
-			$mdgriffith$elm_ui$Element$el,
-			_Utils_ap(
-				$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$Body),
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$padding(12)
-					])),
-			$mdgriffith$elm_ui$Element$text('Syncing'));
+			$mdgriffith$elm_ui$Element$row,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
+					$mdgriffith$elm_ui$Element$paddingEach(
+					{bottom: 0, left: 8, right: 0, top: 0})
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$mdgriffith$elm_ui$Element$el,
+					_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.primary200),
+							$mdgriffith$elm_ui$Element$width(
+							$mdgriffith$elm_ui$Element$px(12)),
+							$mdgriffith$elm_ui$Element$height(
+							$mdgriffith$elm_ui$Element$px(12)),
+							$mdgriffith$elm_ui$Element$Border$rounded(6)
+						]),
+					$mdgriffith$elm_ui$Element$text('')),
+					A2(
+					$mdgriffith$elm_ui$Element$el,
+					_Utils_ap(
+						$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$Body),
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$padding(12)
+							])),
+					$mdgriffith$elm_ui$Element$text('Syncing'))
+				]));
 	} else {
 		return $mdgriffith$elm_ui$Element$none;
 	}
@@ -21602,8 +21881,7 @@ var $author$project$UI$PageViews$Synonyms$view = function (model) {
 			[
 				$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
 				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-				$mdgriffith$elm_ui$Element$scrollbarY,
-				$mdgriffith$elm_ui$Element$padding(20)
+				$mdgriffith$elm_ui$Element$scrollbarY
 			]),
 		_List_fromArray(
 			[
@@ -21619,7 +21897,9 @@ var $author$project$UI$PageViews$Synonyms$view = function (model) {
 						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
 						$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
 						$mdgriffith$elm_ui$Element$scrollbarY,
-						$mdgriffith$elm_ui$Element$spacing(20)
+						$mdgriffith$elm_ui$Element$spacing(20),
+						$mdgriffith$elm_ui$Element$paddingEach(
+						{bottom: 0, left: 0, right: 120, top: 20})
 					]),
 				{
 					columns: _List_fromArray(
@@ -21638,7 +21918,8 @@ var $author$project$UI$PageViews$Synonyms$view = function (model) {
 					data: model.synonymStates
 				}),
 				$author$project$UI$Elements$spacer($author$project$UI$Styles$LG),
-				$author$project$UI$PageViews$Synonyms$toolbarView(model)
+				$author$project$UI$PageViews$Synonyms$toolbarView(model),
+				$author$project$UI$Elements$spacer($author$project$UI$Styles$MD)
 			]));
 };
 var $author$project$UI$PageViews$Tasks$view = A2(
@@ -21667,8 +21948,8 @@ var $author$project$UI$PageView$getCurrentPageView = function (currentPage) {
 			return _Debug_todo(
 				'UI.PageView',
 				{
-					start: {line: 65, column: 13},
-					end: {line: 65, column: 23}
+					start: {line: 67, column: 13},
+					end: {line: 67, column: 23}
 				})('branch \'RankingRules\' not implemented');
 		case 'Synonyms':
 			var s = currentPage.a;
@@ -21676,12 +21957,18 @@ var $author$project$UI$PageView$getCurrentPageView = function (currentPage) {
 				$mdgriffith$elm_ui$Element$map,
 				$author$project$UI$PageView$SynonymsViewMsg,
 				$author$project$UI$PageViews$Synonyms$view(s));
-		default:
+		case 'StopWords':
 			var m = currentPage.a;
 			return A2(
 				$mdgriffith$elm_ui$Element$map,
 				$author$project$UI$PageView$StopWordsViewMsg,
 				$author$project$UI$PageViews$StopWords$view(m));
+		default:
+			var m = currentPage.a;
+			return A2(
+				$mdgriffith$elm_ui$Element$map,
+				$author$project$UI$PageView$AttributesViewMsg,
+				$author$project$UI$PageViews$Attributes$view(m));
 	}
 };
 var $author$project$UI$PageView$view = function (currentPage) {
@@ -21728,4 +22015,4 @@ var $author$project$Main$view = function (model) {
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Api.Routes.Main.IndexesRouteResponseListItem":{"args":[],"type":"{ uid : String.String, name : String.String, createdAt : String.String, updatedAt : String.String, primaryKey : String.String }"},"Api.Routes.Main.SettingsRouteResponseItem":{"args":[],"type":"{ uid : Basics.Int, indexUid : String.String }"},"UI.Components.SynonymCard.Model":{"args":[],"type":"{ index : Basics.Int, synonymKey : String.String, synonymsValue : String.String, synonymList : List.List String.String, saved : Maybe.Maybe ( String.String, List.List String.String ), requestStatus : UI.Components.SynonymCard.RequestStatus, taskId : Maybe.Maybe Basics.Int, indexId : String.String }"},"UI.PageViews.Documents.Model":{"args":[],"type":"{ documents : List.List String.String }"},"UI.PageViews.Settings.Model":{"args":[],"type":"{ tokenValue : String.String, title : String.String }"},"UI.PageViews.StopWords.Model":{"args":[],"type":"{ words : List.List String.String }"},"UI.PageViews.Synonyms.Model":{"args":[],"type":"{ synonymStates : List.List UI.Components.SynonymCard.Model, indexUid : String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"],"ApiRequest":["Api.Routes.Main.Msg"],"PollUpdate":["Main.Task","SweetPoll.Msg String.String"],"AddToPollQueue":["Main.Task"]}},"Api.Routes.Main.Msg":{"args":[],"tags":{"HandleListResponse":["Result.Result Http.Error (List.List Api.Routes.Main.IndexesRouteResponseListItem)"],"HandleShowResponse":["Result.Result Http.Error Api.Routes.Main.IndexesRouteResponseListItem"],"HandleDocumentsResponse":["Result.Result Http.Error String.String"],"HandleListStopWordsResponse":["Result.Result Http.Error (List.List String.String)"],"HandleUpdateSynonymsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleListSynonymsResponse":["Result.Result Http.Error (Dict.Dict String.String (List.List String.String))","String.String"]}},"SweetPoll.Msg":{"args":["data"],"tags":{"PollResult":["Result.Result Http.Error data"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.PageViews.Indexes.Msg"],"SettingsViewMsg":["UI.PageViews.Settings.Msg"],"SearchViewMsg":["UI.PageViews.Search.Msg"],"StatsViewMsg":["UI.PageViews.Stats.Msg"],"DocumentsViewMsg":["UI.PageViews.Documents.Msg"],"TasksViewMsg":["UI.PageViews.Tasks.Msg"],"StopWordsViewMsg":["UI.PageViews.StopWords.Msg"],"SynonymsViewMsg":["UI.PageViews.Synonyms.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"]}},"String.String":{"args":[],"tags":{"String":[]}},"Main.Task":{"args":[],"tags":{"UpdateSynonymsTask":["Basics.Int","String.String"]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"List.List":{"args":["a"],"tags":{}},"UI.PageViews.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Search.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Settings.Msg":{"args":[],"tags":{"KeyValueChanged":["String.String"],"SaveKeyValue":[],"None":[]}},"UI.PageViews.Stats.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.StopWords.Msg":{"args":[],"tags":{"NewStopWord":["String.String"],"Remove":["Basics.Int"],"None":[]}},"UI.PageViews.Synonyms.Msg":{"args":[],"tags":{"CardViewMsg":["UI.Components.SynonymCard.Msg"],"Sync":[],"New":[]}},"UI.PageViews.Tasks.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Page":{"args":[],"tags":{"Settings":["UI.PageViews.Settings.Model"],"Stats":[],"Documents":["UI.PageViews.Documents.Model"],"Tasks":[],"RankingRules":[],"Synonyms":["UI.PageViews.Synonyms.Model"],"StopWords":["UI.PageViews.StopWords.Model"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"UI.Components.SynonymCard.Msg":{"args":[],"tags":{"UpdatedTitle":["Basics.Int","String.String"],"UpdatedList":["Basics.Int","String.String"],"Remove":["Basics.Int"],"RetrySave":["Basics.Int"],"Save":["Basics.Int"],"Reset":[],"DoneEditing":[]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}},"UI.Components.SynonymCard.RequestStatus":{"args":[],"tags":{"NoRequest":[],"Fired":[],"Success":[],"Failed":[]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Api.Routes.Main.IndexesRouteResponseListItem":{"args":[],"type":"{ uid : String.String, name : String.String, createdAt : String.String, updatedAt : String.String, primaryKey : String.String }"},"Api.Routes.Main.SettingsRouteResponseItem":{"args":[],"type":"{ uid : Basics.Int, indexUid : String.String }"},"UI.PageViews.Attributes.Attribute":{"args":[],"type":"{ title : String.String, isOn : Basics.Bool }"},"UI.Components.SynonymCard.Model":{"args":[],"type":"{ index : Basics.Int, synonymKey : String.String, synonymsValue : String.String, synonymList : List.List String.String, saved : Maybe.Maybe ( String.String, List.List String.String ), requestStatus : UI.Components.SynonymCard.RequestStatus, taskId : Maybe.Maybe Basics.Int, indexId : String.String }"},"UI.PageViews.Attributes.Model":{"args":[],"type":"{ displayed : List.List UI.PageViews.Attributes.Attribute, sortable : List.List UI.PageViews.Attributes.Attribute, searchable : List.List UI.PageViews.Attributes.Attribute, filterable : List.List UI.PageViews.Attributes.Attribute, distinct : List.List UI.PageViews.Attributes.Attribute }"},"UI.PageViews.Documents.Model":{"args":[],"type":"{ documents : List.List String.String }"},"UI.PageViews.Settings.Model":{"args":[],"type":"{ tokenValue : String.String, title : String.String }"},"UI.PageViews.StopWords.Model":{"args":[],"type":"{ words : List.List String.String }"},"UI.PageViews.Synonyms.Model":{"args":[],"type":"{ synonymStates : List.List UI.Components.SynonymCard.Model, indexUid : String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"],"ApiRequest":["Api.Routes.Main.Msg"],"PollUpdate":["Main.Task","SweetPoll.Msg String.String"],"AddToPollQueue":["Main.Task"]}},"Api.Routes.Main.Msg":{"args":[],"tags":{"HandleListResponse":["Result.Result Http.Error (List.List Api.Routes.Main.IndexesRouteResponseListItem)"],"HandleShowResponse":["Result.Result Http.Error Api.Routes.Main.IndexesRouteResponseListItem"],"HandleDocumentsResponse":["Result.Result Http.Error String.String"],"HandleListStopWordsResponse":["Result.Result Http.Error (List.List String.String)"],"HandleUpdateSynonymsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleListSynonymsResponse":["Result.Result Http.Error (Dict.Dict String.String (List.List String.String))","String.String"],"HandleDocumentAttrsResponse":["Result.Result Http.Error String.String"]}},"SweetPoll.Msg":{"args":["data"],"tags":{"PollResult":["Result.Result Http.Error data"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.PageViews.Indexes.Msg"],"SettingsViewMsg":["UI.PageViews.Settings.Msg"],"SearchViewMsg":["UI.PageViews.Search.Msg"],"StatsViewMsg":["UI.PageViews.Stats.Msg"],"DocumentsViewMsg":["UI.PageViews.Documents.Msg"],"TasksViewMsg":["UI.PageViews.Tasks.Msg"],"StopWordsViewMsg":["UI.PageViews.StopWords.Msg"],"SynonymsViewMsg":["UI.PageViews.Synonyms.Msg"],"AttributesViewMsg":["UI.PageViews.Attributes.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"]}},"String.String":{"args":[],"tags":{"String":[]}},"Main.Task":{"args":[],"tags":{"UpdateSynonymsTask":["Basics.Int","String.String"]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"List.List":{"args":["a"],"tags":{}},"UI.PageViews.Attributes.Msg":{"args":[],"tags":{"X":["Basics.Bool"]}},"UI.PageViews.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Search.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Settings.Msg":{"args":[],"tags":{"KeyValueChanged":["String.String"],"SaveKeyValue":[],"None":[]}},"UI.PageViews.Stats.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.StopWords.Msg":{"args":[],"tags":{"NewStopWord":["String.String"],"Remove":["Basics.Int"],"None":[]}},"UI.PageViews.Synonyms.Msg":{"args":[],"tags":{"CardViewMsg":["UI.Components.SynonymCard.Msg"],"Sync":[],"New":[]}},"UI.PageViews.Tasks.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Page":{"args":[],"tags":{"Settings":["UI.PageViews.Settings.Model"],"Stats":[],"Documents":["UI.PageViews.Documents.Model"],"Tasks":[],"RankingRules":[],"Synonyms":["UI.PageViews.Synonyms.Model"],"StopWords":["UI.PageViews.StopWords.Model"],"Attributes":["UI.PageViews.Attributes.Model"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"UI.Components.SynonymCard.Msg":{"args":[],"tags":{"UpdatedTitle":["Basics.Int","String.String"],"UpdatedList":["Basics.Int","String.String"],"Remove":["Basics.Int"],"RetrySave":["Basics.Int"],"Save":["Basics.Int"],"Reset":[],"DoneEditing":[]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}},"UI.Components.SynonymCard.RequestStatus":{"args":[],"tags":{"NoRequest":[],"Fired":[],"Success":[],"Failed":[]}}}}})}});}(this));

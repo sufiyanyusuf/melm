@@ -3,10 +3,9 @@ module Api.Routes.Main exposing (..)
 import Api.Helper exposing (RequestMethod(..), getRequestMethodTitle, headers, rootUrl)
 import Dict exposing (Dict)
 import Http
-import Json.Decode exposing (Decoder, bool, decodeString, decodeValue, dict, field, float, int, list, map2, maybe, string)
+import Json.Decode exposing (Decoder, field, int, list, string)
 import Json.Encode as Encode
-import Set exposing (Set)
-import SweetPoll exposing (PollingState)
+import SweetPoll
 
 
 type DictValue
@@ -21,6 +20,7 @@ type Msg
     | HandleListStopWordsResponse (Result Http.Error (List String))
     | HandleUpdateSynonymsResponse (Result Http.Error SettingsRouteResponseItem)
     | HandleListSynonymsResponse (Result Http.Error (Dict String (List String))) String
+    | HandleDocumentAttrsResponse (Result Http.Error String)
 
 
 type Route
@@ -36,6 +36,7 @@ type Route
     | GetTask Int
     | UpdateSynonyms String (Dict String (List String)) (Decoder SettingsRouteResponseItem)
     | ListSynonyms String (Decoder (Dict String (List String)))
+    | ListIndexAttributes String
 
 
 type alias Payload =
@@ -110,6 +111,17 @@ buildRequest payload token =
                 , url = payload.endpoint
                 , body = payload.body
                 , expect = Http.expectString HandleDocumentsResponse
+                , timeout = Nothing
+                , tracker = Nothing
+                }
+
+        ListIndexAttributes _ ->
+            Http.request
+                { method = getRequestMethodTitle payload.method
+                , headers = headers token
+                , url = payload.endpoint
+                , body = payload.body
+                , expect = Http.expectString HandleDocumentAttrsResponse
                 , timeout = Nothing
                 , tracker = Nothing
                 }
@@ -218,6 +230,9 @@ buildPayload r =
 
         ListSynonyms i _ ->
             { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/synonyms", body = Http.emptyBody, route = r }
+
+        ListIndexAttributes i ->
+            { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/documents", body = Http.emptyBody, route = r }
 
 
 

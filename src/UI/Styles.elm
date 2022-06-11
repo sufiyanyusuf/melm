@@ -4,6 +4,15 @@ import Element exposing (..)
 import Element.Font as Font exposing (monospace)
 
 
+type Size
+    = XS
+    | SM
+    | MD
+    | LG
+    | XL
+    | FILL
+
+
 type Typography
     = H1
     | H2
@@ -13,26 +22,29 @@ type Typography
     | Code
 
 
-type Size
-    = SM
-    | MD
-    | LG
-    | XL
-    | FILL
-
-
-
--- color : { blue : Color, darkCharcoal : Color, lightBlue : Color, gray300 : Color, white : Color }
-
-
-color : { primary500 : Color, gray500 : Color, primary100 : Color, gray300 : Color, gray100 : Color, white : Color }
+color :
+    { primary500 : Color
+    , primary300 : Color
+    , primary200 : Color
+    , primary100 : Color
+    , gray500 : Color
+    , gray300 : Color
+    , gray200 : Color
+    , gray100 : Color
+    , green500 : Color
+    , white : Color
+    }
 color =
     { primary500 = rgb255 0x72 0x9F 0xCF
-    , gray500 = rgb255 0x2E 0x34 0x36
+    , primary300 = rgb255 218 221 246
+    , primary200 = rgb255 218 221 246
     , primary100 = rgb255 234 235 245
+    , gray500 = rgb255 0x2E 0x34 0x36
     , gray300 = rgb255 0xE0 0xE0 0xE0
+    , gray200 = rgb255 243 244 245
     , gray100 = rgb255 243 244 245
     , white = rgb255 0xFF 0xFF 0xFF
+    , green500 = rgb255 17 199 112
     }
 
 

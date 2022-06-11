@@ -2,6 +2,7 @@ module UI.PageView exposing (..)
 
 import Element exposing (..)
 import Element.Background
+import UI.PageViews.Attributes as Attributes
 import UI.PageViews.Documents as DocumentsView
 import UI.PageViews.Indexes as IndexesView
 import UI.PageViews.Search as SearchView
@@ -27,6 +28,7 @@ type Msg
     | TasksViewMsg TasksView.Msg
     | StopWordsViewMsg StopWords.Msg
     | SynonymsViewMsg SynonymsView.Msg
+    | AttributesViewMsg Attributes.Msg
 
 
 
@@ -69,6 +71,9 @@ getCurrentPageView currentPage =
 
         Views.StopWords m ->
             StopWords.view m |> Element.map StopWordsViewMsg
+
+        Attributes m ->
+            Attributes.view m |> Element.map AttributesViewMsg
 
 
 

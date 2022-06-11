@@ -68,7 +68,7 @@ sidebarListItemView title isSelected page =
                   , pointer
                   , Element.mouseOver <| [ Background.color UI.Styles.color.gray300 ]
                   ]
-                , addIf isSelected <| Background.color UI.Styles.color.primary100
+                , addIf isSelected <| Background.color UI.Styles.color.primary200
                 ]
             )
             [ getPageIcon page (getIconStyle isSelected)
@@ -105,6 +105,9 @@ getPageTitle page =
         UI.Pages.StopWords _ ->
             "Stop Words"
 
+        UI.Pages.Attributes _ ->
+            "Attributes"
+
 
 getPageIcon : UI.Pages.Page -> UI.Icons.Style -> Element msg
 getPageIcon page style =
@@ -129,6 +132,9 @@ getPageIcon page style =
 
         UI.Pages.StopWords _ ->
             UI.Icons.buildIcon Block style
+
+        UI.Pages.Attributes _ ->
+            UI.Icons.buildIcon Switches style
 
 
 getIconStyle : Bool -> UI.Icons.Style

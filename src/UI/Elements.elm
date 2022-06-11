@@ -1,7 +1,6 @@
-module UI.Elements exposing (button, chip, iconButton, spacer, textfield)
+module UI.Elements exposing (button, chip, iconButton, spacer, switch, textfield)
 
-import Chart.Attributes exposing (background, opacity)
-import Element exposing (Element, el, fill, padding, paddingEach, pointer, px, spacing, text, width)
+import Element exposing (Element, alpha, el, fill, mouseOver, padding, paddingEach, paddingXY, pointer, px, spacing, text, width)
 import Element.Background as Background
 import Element.Border
 import Element.Events exposing (onClick, onLoseFocus)
@@ -14,6 +13,9 @@ import UI.Styles exposing (Size(..))
 spacer : UI.Styles.Size -> Element msg
 spacer size =
     case size of
+        XS ->
+            Element.el [ Element.width (px 16), Element.height (px 8) ] Element.none
+
         SM ->
             Element.el [ Element.width (px 16), Element.height (px 16) ] Element.none
 
@@ -54,6 +56,55 @@ textfield value placeholder valueChanged loseFocus =
             , label = Input.labelHidden ""
             }
         )
+
+
+switch : Bool -> Element msg
+switch model =
+    Element.el
+        [ Element.inFront (switchHandle model)
+        , pointer
+        ]
+        (switchBody model)
+
+
+switchHandle : Bool -> Element msg
+switchHandle model =
+    let
+        position =
+            if model == True then
+                20
+
+            else
+                4
+    in
+    el
+        [ Background.color UI.Styles.color.white
+        , width (px 24)
+        , Element.height (px 24)
+        , Element.Border.rounded 12
+        , Element.centerY
+        , Element.moveRight position
+        ]
+        Element.none
+
+
+switchBody : Bool -> Element msg
+switchBody model =
+    let
+        background =
+            if model == True then
+                UI.Styles.color.green500
+
+            else
+                UI.Styles.color.gray300
+    in
+    el
+        [ Background.color background
+        , width (px 48)
+        , Element.height (px 32)
+        , Element.Border.rounded 20
+        ]
+        Element.none
 
 
 button : String -> msg -> Element msg
@@ -100,12 +151,11 @@ chip text msg =
             ]
             [ Element.text text
             , el
-                [ --     Background.color UI.Styles.color.white
-                  -- , mouseOver [ Background.color UI.Styles.color.gray100 ]
-                  padding 8
+                [ padding 8
                 , Element.Border.rounded 5
                 , pointer
                 , Element.Events.onClick msg
+                , Element.mouseOver <| [ alpha 0.3 ]
                 ]
                 (buildIcon UI.Icons.Close Outline)
             ]

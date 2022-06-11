@@ -9,6 +9,7 @@ import Http
 import SweetPoll exposing (PollingState)
 import UI.Components.SynonymCard exposing (Msg(..), RequestStatus(..))
 import UI.PageView as PageView exposing (Msg(..))
+import UI.PageViews.Attributes as AttributesPage
 import UI.PageViews.Documents
 import UI.PageViews.Indexes
 import UI.PageViews.Settings as SettingsPage
@@ -69,9 +70,9 @@ type alias Model =
     , token : Maybe String
     , savedToken : Maybe String
     , pages : List Page
-    , indexes : List IndexesRouteResponseListItem
+    , indexes : List IndexesRouteResponseListItem -- Decouple this
     , documents : List String
-    , selectedIndex : Maybe IndexesRouteResponseListItem
+    , selectedIndex : Maybe IndexesRouteResponseListItem -- Decouple this
     , stopWords : List String
     , synonyms : List UI.Components.SynonymCard.Model -- Decouple this
     , pollingQueue : List ( Task, SweetPoll.PollingState String )
@@ -232,6 +233,9 @@ handleApiRequest model apiResponse =
                 Err _ ->
                     ( model, Cmd.none )
 
+        HandleDocumentAttrsResponse r ->
+            Debug.todo ""
+
 
 handlePageViewMessage : Model -> PageView.Msg -> ( Model, Cmd Msg )
 handlePageViewMessage model pageViewMsg =
@@ -259,6 +263,14 @@ handlePageViewMessage model pageViewMsg =
 
         PageView.SynonymsViewMsg msg ->
             handleSynonymsViewMsg model msg
+
+        PageView.AttributesViewMsg msg ->
+            handleAttributesViewMsg model msg
+
+
+handleAttributesViewMsg : Model -> AttributesPage.Msg -> ( Model, Cmd Msg )
+handleAttributesViewMsg model msg =
+    ( model, Cmd.none )
 
 
 handleSynonymsViewMsg : Model -> UI.PageViews.Synonyms.Msg -> ( Model, Cmd Msg )
@@ -395,6 +407,17 @@ handleSidebarSelection model sidebarMsg =
                     ( { model | selectedPage = selectedPage }
                     , Api.Routes.Main.buildRequest
                         (Api.Routes.Main.buildPayload (ListStopWords "suggestions" Api.Routes.Main.stopWordsListItemDecoder))
+                        (Maybe.withDefault
+                            ""
+                            model.savedToken
+                        )
+                        |> Cmd.map ApiRequest
+                    )
+
+                Attributes _ ->
+                    ( { model | selectedPage = selectedPage }
+                    , Api.Routes.Main.buildRequest
+                        (Api.Routes.Main.buildPayload (ListIndexAttributes "suggestions"))
                         (Maybe.withDefault
                             ""
                             model.savedToken
