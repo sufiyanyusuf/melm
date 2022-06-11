@@ -3,14 +3,9 @@ module Api.Routes.Main exposing (..)
 import Api.Helper exposing (RequestMethod(..), getRequestMethodTitle, headers, rootUrl)
 import Dict exposing (Dict)
 import Http
-import Json.Decode exposing (Decoder, field, int, list, string)
+import Json.Decode exposing (Decoder, Value, decodeString, field, int, keyValuePairs, list, string)
 import Json.Encode as Encode
 import SweetPoll
-
-
-type DictValue
-    = String String
-    | Int Int
 
 
 type Msg
@@ -20,7 +15,8 @@ type Msg
     | HandleListStopWordsResponse (Result Http.Error (List String))
     | HandleUpdateSynonymsResponse (Result Http.Error SettingsRouteResponseItem)
     | HandleListSynonymsResponse (Result Http.Error (Dict String (List String))) String
-    | HandleDocumentAttrsResponse (Result Http.Error String)
+    | HandleDocumentAttrsResponse (Result Http.Error String) String
+    | HandleIndexKeysResponse IndexKeys
 
 
 type Route
@@ -59,6 +55,12 @@ type alias IndexesRouteResponseListItem =
 type alias SettingsRouteResponseItem =
     { uid : Int
     , indexUid : String
+    }
+
+
+type alias IndexKeys =
+    { indexUid : String
+    , keys : List String
     }
 
 
@@ -115,7 +117,7 @@ buildRequest payload token =
                 , tracker = Nothing
                 }
 
-        ListIndexAttributes _ ->
+        ListIndexAttributes x ->
             Http.request
                 { method = getRequestMethodTitle payload.method
                 , headers = headers token
@@ -125,6 +127,7 @@ buildRequest payload token =
                 , timeout = Nothing
                 , tracker = Nothing
                 }
+                |> Cmd.map (\a -> a x)
 
         ListStopWords _ d ->
             Http.request
@@ -305,3 +308,26 @@ settingsUpdateDecoder =
             "indexUid"
             string
         )
+
+
+indexKeysDecoder : Decoder IndexKeys
+indexKeysDecoder =
+    Json.Decode.map2 IndexKeys
+        (field
+            "indexUid"
+            string
+        )
+        (field
+            "keys"
+            (Json.Decode.list string)
+        )
+
+
+attrsDecoder : String -> Result Json.Decode.Error (List ( String, String ))
+attrsDecoder val =
+    decodeString (keyValuePairs string) val
+
+
+
+-- getKeys : String -> List String
+-- getKeys model = decodes

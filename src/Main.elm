@@ -1,4 +1,4 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 import Api.Routes.Main exposing (..)
 import Browser
@@ -6,6 +6,7 @@ import Dict exposing (Dict)
 import Element exposing (..)
 import Html exposing (Html)
 import Http
+import Json.Decode exposing (Value)
 import SweetPoll exposing (PollingState)
 import UI.Components.SynonymCard exposing (Msg(..), RequestStatus(..))
 import UI.PageView as PageView exposing (Msg(..))
@@ -44,6 +45,7 @@ type Msg
     | ApiRequest Api.Routes.Main.Msg
     | PollUpdate Task (SweetPoll.Msg String)
     | AddToPollQueue Task
+    | UpdateKeysForIndex IndexKeys
 
 
 
@@ -142,6 +144,10 @@ update msg model =
         AddToPollQueue task ->
             handlePollRequest model task
 
+        UpdateKeysForIndex indexUid ->
+            -- update keys in model for index
+            ( model, Cmd.none )
+
 
 
 -- UPDATE HANDLERS
@@ -233,8 +239,17 @@ handleApiRequest model apiResponse =
                 Err _ ->
                     ( model, Cmd.none )
 
-        HandleDocumentAttrsResponse r ->
-            Debug.todo ""
+        HandleDocumentAttrsResponse r indexUid ->
+            case r of
+                Ok payload ->
+                    ( model, getKeysFromJS [ payload, indexUid ] )
+
+                Err _ ->
+                    ( model, Cmd.none )
+
+        HandleIndexKeysResponse v ->
+            Debug.log "recv & p?"
+                ( model, Cmd.none )
 
 
 handlePageViewMessage : Model -> PageView.Msg -> ( Model, Cmd Msg )
@@ -450,12 +465,27 @@ handlePollRequest model task =
 
 
 
+-- PORTS
+
+
+port receivedKeysFromJs : (IndexKeys -> msg) -> Sub msg
+
+
+port getKeysFromJS : List String -> Cmd msg
+
+
+
 -- SUBSCRIPTIONS
 
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    Sub.batch []
+    Sub.batch [ receivedKeysFromJs UpdateKeysForIndex ]
+
+
+receivedKeysForDocument : IndexKeys -> Msg
+receivedKeysForDocument =
+    UpdateKeysForIndex
 
 
 

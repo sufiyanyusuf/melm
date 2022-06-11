@@ -10,6 +10,16 @@
     var app = Elm.Main.init({
       node: document.getElementById('app')
     });
+
+    app.ports.getKeysFromJS.subscribe(function(data) {
+					// console.log("Get keys for json obj from Elm: ", data);
+          const obj = JSON.parse(data[0]);
+          const payload = { indexUid : data[1], keys : Object.keys(obj[0])};
+          
+          console.log(payload);
+          app.ports.receivedKeysFromJs.send(payload);
+    });
+
     </script>
   </body>
 </html>
