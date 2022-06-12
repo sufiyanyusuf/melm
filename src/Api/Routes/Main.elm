@@ -15,7 +15,6 @@ type Msg
     | HandleListStopWordsResponse (Result Http.Error (List String))
     | HandleUpdateSynonymsResponse (Result Http.Error SettingsRouteResponseItem)
     | HandleListSynonymsResponse (Result Http.Error (Dict String (List String))) String
-    | HandleDocumentAttrsResponse (Result Http.Error String) String
     | HandleIndexKeysResponse IndexKeys
     | HandleDisplayedAttrsResponse (Result Http.Error (List String)) String
     | HandleStatsResponse (Result Http.Error IndexStats) String
@@ -34,7 +33,6 @@ type Route
     | GetTask Int
     | UpdateSynonyms String (Dict String (List String)) (Decoder SettingsRouteResponseItem)
     | ListSynonyms String (Decoder (Dict String (List String)))
-    | ListIndexAttributes String
     | ListDisplayedAttrs String (Decoder (List String))
     | Stats String (Decoder IndexStats)
 
@@ -127,18 +125,6 @@ buildRequest payload token =
                 , timeout = Nothing
                 , tracker = Nothing
                 }
-
-        ListIndexAttributes x ->
-            Http.request
-                { method = getRequestMethodTitle payload.method
-                , headers = headers token
-                , url = payload.endpoint
-                , body = payload.body
-                , expect = Http.expectString HandleDocumentAttrsResponse
-                , timeout = Nothing
-                , tracker = Nothing
-                }
-                |> Cmd.map (\a -> a x)
 
         ListStopWords _ d ->
             Http.request
@@ -268,9 +254,6 @@ buildPayload r =
 
         ListSynonyms i _ ->
             { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/synonyms", body = Http.emptyBody, route = r }
-
-        ListIndexAttributes i ->
-            { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/stats", body = Http.emptyBody, route = r }
 
         ListDisplayedAttrs i _ ->
             { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/displayed-attributes", body = Http.emptyBody, route = r }

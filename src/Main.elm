@@ -1,4 +1,4 @@
-port module Main exposing (..)
+module Main exposing (..)
 
 import Api.Routes.Main exposing (..)
 import Browser
@@ -230,14 +230,6 @@ handleApiRequest model apiResponse =
                       }
                     , Cmd.none
                     )
-
-                Err _ ->
-                    ( model, Cmd.none )
-
-        HandleDocumentAttrsResponse r indexUid ->
-            case r of
-                Ok payload ->
-                    ( model, getKeysFromJS [ payload, indexUid ] )
 
                 Err _ ->
                     ( model, Cmd.none )
@@ -509,21 +501,12 @@ handlePollRequest model task =
 
 
 -- PORTS
-
-
-port receivedKeysFromJs : (IndexKeys -> msg) -> Sub msg
-
-
-port getKeysFromJS : List String -> Cmd msg
-
-
-
 -- SUBSCRIPTIONS
 
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    Sub.batch [ receivedKeysFromJs UpdateKeysForIndex ]
+    Sub.none
 
 
 receivedKeysForDocument : IndexKeys -> Msg
