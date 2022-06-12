@@ -250,7 +250,7 @@ handleApiRequest model apiResponse =
             case r of
                 Ok payload ->
                     let
-                        updatedModel =
+                        updatedViewModel =
                             buildModelFromResponse AttributesPage.Displayed
                                 payload
                                 { displayed = model.displayedAttrs
@@ -260,7 +260,13 @@ handleApiRequest model apiResponse =
                                 , distinct = model.distinctAttrs
                                 }
                     in
-                    ( model, Cmd.none )
+                    ( { model
+                        | displayedAttrs = updatedViewModel.displayed
+                        , pages = updateAttributesViewModel model.pages (Attributes updatedViewModel)
+                        , selectedPage = Attributes updatedViewModel
+                      }
+                    , Cmd.none
+                    )
 
                 Err _ ->
                     ( model, Cmd.none )
@@ -280,11 +286,22 @@ handleApiRequest model apiResponse =
                     in
                     ( { model
                         | indexStats = Just payload
+                        , displayedAttrs = updatedAttributes.displayed
+                        , sortableAttrs = updatedAttributes.sortable
+                        , searchableAttrs = updatedAttributes.searchable
+                        , filterableAttrs = updatedAttributes.filterable
+                        , distinctAttrs = updatedAttributes.distinct
                         , documentKeys = ( indexUid, keys )
                         , pages = updateAttributesViewModel model.pages updatedAttributesPage
                         , selectedPage = updatedAttributesPage
                       }
-                    , Cmd.none
+                    , Api.Routes.Main.buildRequest
+                        (Api.Routes.Main.buildPayload (ListDisplayedAttrs "suggestions" Api.Routes.Main.stringListDecoder))
+                        (Maybe.withDefault
+                            ""
+                            model.savedToken
+                        )
+                        |> Cmd.map ApiRequest
                     )
 
                 Err _ ->
@@ -764,14 +781,6 @@ init _ =
             , documents = []
             , selectedIndex =
                 Nothing
-
-            -- Just
-            --     { uid = "suggestions"
-            --     , name = "suggestions"
-            --     , createdAt = ""
-            --     , updatedAt = ""
-            --     , primaryKey = "id"
-            --     }
             , stopWords = []
             , synonyms = (UI.PageViews.Synonyms.init "suggestions").synonymStates -- need to decouple ui from state
             , pollingQueue = []

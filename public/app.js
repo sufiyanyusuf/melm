@@ -10856,6 +10856,36 @@ var $author$project$Main$UpdateSynonymsTask = F2(
 	function (a, b) {
 		return {$: 'UpdateSynonymsTask', a: a, b: b};
 	});
+var $elm$core$List$any = F2(
+	function (isOkay, list) {
+		any:
+		while (true) {
+			if (!list.b) {
+				return false;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				if (isOkay(x)) {
+					return true;
+				} else {
+					var $temp$isOkay = isOkay,
+						$temp$list = xs;
+					isOkay = $temp$isOkay;
+					list = $temp$list;
+					continue any;
+				}
+			}
+		}
+	});
+var $elm$core$List$member = F2(
+	function (x, xs) {
+		return A2(
+			$elm$core$List$any,
+			function (a) {
+				return _Utils_eq(a, x);
+			},
+			xs);
+	});
 var $author$project$UI$PageViews$Attributes$buildModelFromResponse = F3(
 	function (a, r, m) {
 		if (a.$ === 'Displayed') {
@@ -10863,7 +10893,31 @@ var $author$project$UI$PageViews$Attributes$buildModelFromResponse = F3(
 			return _Utils_eq(
 				r,
 				_List_fromArray(
-					['*'])) ? m : m;
+					['*'])) ? _Utils_update(
+				m,
+				{
+					displayed: A2(
+						$elm$core$List$map,
+						function (x) {
+							return _Utils_update(
+								x,
+								{isOn: true});
+						},
+						m.displayed)
+				}) : _Utils_update(
+				m,
+				{
+					displayed: A2(
+						$elm$core$List$map,
+						function (x) {
+							return A2($elm$core$List$member, x.title, r) ? _Utils_update(
+								x,
+								{isOn: true}) : _Utils_update(
+								x,
+								{isOn: false});
+						},
+						m.displayed)
+				});
 		} else {
 			return m;
 		}
@@ -11770,15 +11824,15 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 301, column: 13},
-						end: {line: 301, column: 23}
+						start: {line: 319, column: 13},
+						end: {line: 319, column: 23}
 					})('branch \'IndexesViewMsg _\' not implemented');
 			case 'SearchViewMsg':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 304, column: 13},
-						end: {line: 304, column: 23}
+						start: {line: 322, column: 13},
+						end: {line: 322, column: 23}
 					})('branch \'SearchViewMsg _\' not implemented');
 			case 'DocumentsViewMsg':
 				var m = pageViewMsg.a;
@@ -11787,8 +11841,8 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 310, column: 13},
-						end: {line: 310, column: 23}
+						start: {line: 328, column: 13},
+						end: {line: 328, column: 23}
 					})('branch \'TasksViewMsg _\' not implemented');
 			case 'StopWordsViewMsg':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -11908,36 +11962,6 @@ var $NoRedInk$elm_sweet_poll$SweetPoll$init = function (config) {
 		model,
 		A2($NoRedInk$elm_sweet_poll$SweetPoll$runPoll, config, model));
 };
-var $elm$core$List$any = F2(
-	function (isOkay, list) {
-		any:
-		while (true) {
-			if (!list.b) {
-				return false;
-			} else {
-				var x = list.a;
-				var xs = list.b;
-				if (isOkay(x)) {
-					return true;
-				} else {
-					var $temp$isOkay = isOkay,
-						$temp$list = xs;
-					isOkay = $temp$isOkay;
-					list = $temp$list;
-					continue any;
-				}
-			}
-		}
-	});
-var $elm$core$List$member = F2(
-	function (x, xs) {
-		return A2(
-			$elm$core$List$any,
-			function (a) {
-				return _Utils_eq(a, x);
-			},
-			xs);
-	});
 var $author$project$Api$Routes$Main$GetTask = function (a) {
 	return {$: 'GetTask', a: a};
 };
@@ -12290,8 +12314,8 @@ var $author$project$Main$handleSidebarSelection = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 441, column: 21},
-						end: {line: 441, column: 31}
+						start: {line: 459, column: 21},
+						end: {line: 459, column: 31}
 					})('branch \'RankingRules\' not implemented');
 			case 'Synonyms':
 				return _Utils_Tuple2(
@@ -12488,12 +12512,23 @@ var $author$project$Main$handleApiRequest = F2(
 				var indexUid = apiResponse.b;
 				if (r.$ === 'Ok') {
 					var payload = r.a;
-					var updatedModel = A3(
+					var updatedViewModel = A3(
 						$author$project$UI$PageViews$Attributes$buildModelFromResponse,
 						$author$project$UI$PageViews$Attributes$Displayed,
 						payload,
 						{displayed: model.displayedAttrs, distinct: model.distinctAttrs, filterable: model.filterableAttrs, searchable: model.searchableAttrs, sortable: model.sortableAttrs});
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								displayedAttrs: updatedViewModel.displayed,
+								pages: A2(
+									$author$project$Main$updateAttributesViewModel,
+									model.pages,
+									$author$project$UI$Pages$Attributes(updatedViewModel)),
+								selectedPage: $author$project$UI$Pages$Attributes(updatedViewModel)
+							}),
+						$elm$core$Platform$Cmd$none);
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
@@ -12509,12 +12544,24 @@ var $author$project$Main$handleApiRequest = F2(
 						_Utils_update(
 							model,
 							{
+								displayedAttrs: updatedAttributes.displayed,
+								distinctAttrs: updatedAttributes.distinct,
 								documentKeys: _Utils_Tuple2(indexUid, keys),
+								filterableAttrs: updatedAttributes.filterable,
 								indexStats: $elm$core$Maybe$Just(payload),
 								pages: A2($author$project$Main$updateAttributesViewModel, model.pages, updatedAttributesPage),
-								selectedPage: updatedAttributesPage
+								searchableAttrs: updatedAttributes.searchable,
+								selectedPage: updatedAttributesPage,
+								sortableAttrs: updatedAttributes.sortable
 							}),
-						$elm$core$Platform$Cmd$none);
+						A2(
+							$elm$core$Platform$Cmd$map,
+							$author$project$Main$ApiRequest,
+							A2(
+								$author$project$Api$Routes$Main$buildRequest,
+								$author$project$Api$Routes$Main$buildPayload(
+									A2($author$project$Api$Routes$Main$ListDisplayedAttrs, 'suggestions', $author$project$Api$Routes$Main$stringListDecoder)),
+								A2($elm$core$Maybe$withDefault, '', model.savedToken))));
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}

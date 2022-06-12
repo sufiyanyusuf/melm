@@ -142,13 +142,21 @@ buildModelFromResponse a r m =
                     m.displayed
             in
             if r == [ "*" ] then
-                -- Turn all on
-                m
+                { m | displayed = List.map (\x -> { x | isOn = True }) m.displayed }
 
             else
-                -- map through list, compare & assign
-                -- List.map (\x -> x) r
-                m
+                { m
+                    | displayed =
+                        List.map
+                            (\x ->
+                                if List.member x.title r then
+                                    { x | isOn = True }
+
+                                else
+                                    { x | isOn = False }
+                            )
+                            m.displayed
+                }
 
         _ ->
             m
