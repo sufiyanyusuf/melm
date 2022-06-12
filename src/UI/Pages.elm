@@ -10,7 +10,6 @@ import UI.PageViews.Synonyms as Synonyms
 
 type Page
     = Settings Settings.Model
-    | Stats
     | Documents Documents.Model
     | Tasks
     | RankingRules
@@ -26,7 +25,6 @@ init indexUid =
     , RankingRules
     , Synonyms (Synonyms.init indexUid)
     , StopWords StopWords.init
-    , Stats
     , Settings Settings.init
     , Attributes Attributes.init
     ]

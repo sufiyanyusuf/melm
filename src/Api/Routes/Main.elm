@@ -3,7 +3,7 @@ module Api.Routes.Main exposing (..)
 import Api.Helper exposing (RequestMethod(..), getRequestMethodTitle, headers, rootUrl)
 import Dict exposing (Dict)
 import Http
-import Json.Decode exposing (Decoder, Value, decodeString, field, int, keyValuePairs, list, string)
+import Json.Decode exposing (Decoder, Value, bool, decodeString, dict, field, int, keyValuePairs, list, string)
 import Json.Encode as Encode
 import SweetPoll
 
@@ -18,6 +18,7 @@ type Msg
     | HandleDocumentAttrsResponse (Result Http.Error String) String
     | HandleIndexKeysResponse IndexKeys
     | HandleDisplayedAttrsResponse (Result Http.Error (List String)) String
+    | HandleStatsResponse (Result Http.Error IndexStats) String
 
 
 type Route
@@ -35,6 +36,7 @@ type Route
     | ListSynonyms String (Decoder (Dict String (List String)))
     | ListIndexAttributes String
     | ListDisplayedAttrs String (Decoder (List String))
+    | Stats String (Decoder IndexStats)
 
 
 type alias Payload =
@@ -63,6 +65,13 @@ type alias SettingsRouteResponseItem =
 type alias IndexKeys =
     { indexUid : String
     , keys : List String
+    }
+
+
+type alias IndexStats =
+    { numberOfDocuments : Int
+    , isIndexing : Bool
+    , fieldDistribution : Dict String Int
     }
 
 
@@ -186,6 +195,18 @@ buildRequest payload token =
                 }
                 |> Cmd.map (\a -> a x)
 
+        Stats x d ->
+            Http.request
+                { method = getRequestMethodTitle payload.method
+                , headers = headers token
+                , url = payload.endpoint
+                , body = payload.body
+                , expect = Http.expectJson HandleStatsResponse d
+                , timeout = Nothing
+                , tracker = Nothing
+                }
+                |> Cmd.map (\a -> a x)
+
 
 buildPayload : Route -> Payload
 buildPayload r =
@@ -253,6 +274,9 @@ buildPayload r =
 
         ListDisplayedAttrs i _ ->
             { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/displayed-attributes", body = Http.emptyBody, route = r }
+
+        Stats i _ ->
+            { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/stats", body = Http.emptyBody, route = r }
 
 
 
@@ -345,6 +369,18 @@ attrsDecoder val =
     decodeString (keyValuePairs string) val
 
 
-
--- getKeys : String -> List String
--- getKeys model = decodes
+statsDecoder : Decoder IndexStats
+statsDecoder =
+    Json.Decode.map3 IndexStats
+        (field
+            "numberOfDocuments"
+            int
+        )
+        (field
+            "isIndexing"
+            bool
+        )
+        (field
+            "fieldDistribution"
+            (Json.Decode.dict int)
+        )

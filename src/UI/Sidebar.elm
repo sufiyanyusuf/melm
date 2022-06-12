@@ -87,9 +87,6 @@ getPageTitle page =
         UI.Pages.Settings _ ->
             "Settings"
 
-        UI.Pages.Stats ->
-            "Stats"
-
         UI.Pages.Documents _ ->
             "Documents"
 
@@ -114,9 +111,6 @@ getPageIcon page style =
     case page of
         UI.Pages.Settings _ ->
             UI.Icons.buildIcon SettingsGear style
-
-        UI.Pages.Stats ->
-            UI.Icons.buildIcon PieChart style
 
         UI.Pages.Documents _ ->
             UI.Icons.buildIcon Documents style

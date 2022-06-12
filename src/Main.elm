@@ -84,6 +84,7 @@ type alias Model =
     , searchableAttrs : List AttributesPage.Attribute
     , filterableAttrs : List AttributesPage.Attribute
     , distinctAttrs : List AttributesPage.Attribute
+    , indexStats : Maybe IndexStats
     }
 
 
@@ -272,6 +273,31 @@ handleApiRequest model apiResponse =
                 Err _ ->
                     ( model, Cmd.none )
 
+        HandleStatsResponse r indexUid ->
+            case r of
+                Ok payload ->
+                    let
+                        keys =
+                            Dict.keys payload.fieldDistribution
+
+                        updatedAttributes =
+                            AttributesPage.buildModelFromAttributes keys
+
+                        updatedAttributesPage =
+                            Attributes updatedAttributes
+                    in
+                    ( { model
+                        | indexStats = Just payload
+                        , documentKeys = ( indexUid, keys )
+                        , pages = updateAttributesViewModel model.pages updatedAttributesPage
+                        , selectedPage = updatedAttributesPage
+                      }
+                    , Cmd.none
+                    )
+
+                Err _ ->
+                    ( model, Cmd.none )
+
 
 handlePageViewMessage : Model -> PageView.Msg -> ( Model, Cmd Msg )
 handlePageViewMessage model pageViewMsg =
@@ -284,9 +310,6 @@ handlePageViewMessage model pageViewMsg =
 
         PageView.SearchViewMsg _ ->
             Debug.todo "branch 'SearchViewMsg _' not implemented"
-
-        PageView.StatsViewMsg _ ->
-            Debug.todo "branch 'StatsViewMsg _' not implemented"
 
         PageView.DocumentsViewMsg m ->
             ( model, Cmd.none )
@@ -408,9 +431,6 @@ handleSidebarSelection model sidebarMsg =
                 Settings _ ->
                     ( { model | selectedPage = selectedPage }, Cmd.none )
 
-                Stats ->
-                    ( { model | selectedPage = selectedPage }, Cmd.none )
-
                 Documents _ ->
                     ( { model | selectedPage = selectedPage }
                     , Api.Routes.Main.buildRequest
@@ -452,13 +472,15 @@ handleSidebarSelection model sidebarMsg =
 
                 Attributes _ ->
                     ( { model | selectedPage = selectedPage }
-                    , Api.Routes.Main.buildRequest
-                        (Api.Routes.Main.buildPayload (ListIndexAttributes "suggestions"))
-                        (Maybe.withDefault
-                            ""
-                            model.savedToken
-                        )
-                        |> Cmd.map ApiRequest
+                    , Cmd.batch
+                        [ Api.Routes.Main.buildRequest
+                            (Api.Routes.Main.buildPayload (Stats "suggestions" statsDecoder))
+                            (Maybe.withDefault
+                                ""
+                                model.savedToken
+                            )
+                            |> Cmd.map ApiRequest
+                        ]
                     )
 
 
@@ -758,13 +780,15 @@ init _ =
             , indexes = []
             , documents = []
             , selectedIndex =
-                Just
-                    { uid = "suggestions"
-                    , name = "suggestions"
-                    , createdAt = ""
-                    , updatedAt = ""
-                    , primaryKey = "id"
-                    }
+                Nothing
+
+            -- Just
+            --     { uid = "suggestions"
+            --     , name = "suggestions"
+            --     , createdAt = ""
+            --     , updatedAt = ""
+            --     , primaryKey = "id"
+            --     }
             , stopWords = []
             , synonyms = (UI.PageViews.Synonyms.init "suggestions").synonymStates -- need to decouple ui from state
             , pollingQueue = []
@@ -774,6 +798,7 @@ init _ =
             , searchableAttrs = []
             , filterableAttrs = []
             , distinctAttrs = []
+            , indexStats = Nothing
             }
     in
     ( model, Cmd.none )

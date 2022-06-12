@@ -7,7 +7,6 @@ import UI.PageViews.Documents as DocumentsView
 import UI.PageViews.Indexes as IndexesView
 import UI.PageViews.Search as SearchView
 import UI.PageViews.Settings as SettingsView
-import UI.PageViews.Stats as StatsView
 import UI.PageViews.StopWords as StopWords
 import UI.PageViews.Synonyms as SynonymsView
 import UI.PageViews.Tasks as TasksView
@@ -23,7 +22,6 @@ type Msg
     = IndexesViewMsg IndexesView.Msg
     | SettingsViewMsg SettingsView.Msg
     | SearchViewMsg SearchView.Msg
-    | StatsViewMsg StatsView.Msg
     | DocumentsViewMsg DocumentsView.Msg
     | TasksViewMsg TasksView.Msg
     | StopWordsViewMsg StopWords.Msg
@@ -53,9 +51,6 @@ getCurrentPageView currentPage =
     case currentPage of
         Views.Settings s ->
             SettingsView.view s |> Element.map SettingsViewMsg
-
-        Views.Stats ->
-            StatsView.view |> Element.map StatsViewMsg
 
         Views.Documents m ->
             DocumentsView.view m |> Element.map DocumentsViewMsg
