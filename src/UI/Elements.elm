@@ -58,11 +58,12 @@ textfield value placeholder valueChanged loseFocus =
         )
 
 
-switch : Bool -> Element msg
-switch model =
+switch : Bool -> msg -> Element msg
+switch model msg =
     Element.el
         [ Element.inFront (switchHandle model)
         , pointer
+        , onClick msg
         ]
         (switchBody model)
 

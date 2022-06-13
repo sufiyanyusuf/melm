@@ -9,6 +9,7 @@ import UI.Styles exposing (Size(..))
 
 type Msg
     = X Bool
+    | Toggle Attribute AttributeType
 
 
 view : Model -> Element Msg
@@ -26,13 +27,13 @@ view model =
             [ spacing 12
             , paddingEach { top = 20, bottom = 0, left = 0, right = 320 }
             ]
-            [ cardView model ]
+            [ cardView model.displayed Displayed ]
         , UI.Elements.spacer UI.Styles.LG
         ]
 
 
-cardView : Model -> Element Msg
-cardView model =
+cardView : List Attribute -> AttributeType -> Element Msg
+cardView model attrType =
     Element.column
         [ Element.Background.color UI.Styles.color.white
         , Element.Border.rounded 12
@@ -42,12 +43,12 @@ cardView model =
         ([ el (UI.Styles.getTypographicStyleFor UI.Styles.H2) (text "Displayed")
          , UI.Elements.spacer MD
          ]
-            ++ List.map (\x -> cardViewRow x) model.displayed
+            ++ List.map (\x -> cardViewRow x attrType) model
         )
 
 
-cardViewRow : Attribute -> Element Msg
-cardViewRow model =
+cardViewRow : Attribute -> AttributeType -> Element Msg
+cardViewRow model attrType =
     Element.column [ width fill ]
         [ UI.Elements.spacer XS
         , Element.row [ width fill ]
@@ -55,7 +56,7 @@ cardViewRow model =
                 (UI.Styles.getTypographicStyleFor UI.Styles.Body)
                 (text model.title)
             , UI.Elements.spacer UI.Styles.FILL
-            , UI.Elements.switch model.isOn
+            , UI.Elements.switch model.isOn (Toggle model attrType)
             ]
         ]
 
@@ -160,3 +161,22 @@ buildModelFromResponse a r m =
 
         _ ->
             m
+
+
+updateAttributes : Model -> List Attribute -> AttributeType -> Model
+updateAttributes model attrs attrType =
+    case attrType of
+        Displayed ->
+            { model | displayed = attrs }
+
+        Sortable ->
+            { model | sortable = attrs }
+
+        Searchabe ->
+            { model | searchable = attrs }
+
+        Filterable ->
+            { model | filterable = attrs }
+
+        Distinct ->
+            { model | distinct = attrs }

@@ -83,7 +83,7 @@ type alias Model =
     , sortableAttrs : List AttributesPage.Attribute
     , searchableAttrs : List AttributesPage.Attribute
     , filterableAttrs : List AttributesPage.Attribute
-    , distinctAttrs : List AttributesPage.Attribute
+    , distinctAttr : List AttributesPage.Attribute --get rid of list, as is singular...
     , indexStats : Maybe IndexStats
     }
 
@@ -253,12 +253,7 @@ handleApiRequest model apiResponse =
                         updatedViewModel =
                             buildModelFromResponse AttributesPage.Displayed
                                 payload
-                                { displayed = model.displayedAttrs
-                                , sortable = model.sortableAttrs
-                                , searchable = model.searchableAttrs
-                                , filterable = model.filterableAttrs
-                                , distinct = model.distinctAttrs
-                                }
+                                (getAttributesViewModel model)
                     in
                     ( { model
                         | displayedAttrs = updatedViewModel.displayed
@@ -290,7 +285,7 @@ handleApiRequest model apiResponse =
                         , sortableAttrs = updatedAttributes.sortable
                         , searchableAttrs = updatedAttributes.searchable
                         , filterableAttrs = updatedAttributes.filterable
-                        , distinctAttrs = updatedAttributes.distinct
+                        , distinctAttr = updatedAttributes.distinct
                         , documentKeys = ( indexUid, keys )
                         , pages = updateAttributesViewModel model.pages updatedAttributesPage
                         , selectedPage = updatedAttributesPage
@@ -338,7 +333,37 @@ handlePageViewMessage model pageViewMsg =
 
 handleAttributesViewMsg : Model -> AttributesPage.Msg -> ( Model, Cmd Msg )
 handleAttributesViewMsg model msg =
-    ( model, Cmd.none )
+    case msg of
+        AttributesPage.X _ ->
+            ( model, Cmd.none )
+
+        AttributesPage.Toggle attr attrType ->
+            case attrType of
+                AttributesPage.Displayed ->
+                    let
+                        updatedDisplayAttrs =
+                            List.map
+                                (\x ->
+                                    if x.title == attr.title then
+                                        { x | isOn = not x.isOn }
+
+                                    else
+                                        x
+                                )
+                                model.displayedAttrs
+
+                        updatedModel =
+                            { model | displayedAttrs = updatedDisplayAttrs }
+                    in
+                    ( { updatedModel
+                        | pages = updateAttributesViewModel model.pages (Attributes (getAttributesViewModel updatedModel))
+                        , selectedPage = Attributes (getAttributesViewModel updatedModel)
+                      }
+                    , Cmd.none
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
 
 
 handleSynonymsViewMsg : Model -> UI.PageViews.Synonyms.Msg -> ( Model, Cmd Msg )
@@ -562,6 +587,16 @@ getSynonymsViewModel model indexUid =
     { synonymStates = model.synonyms, indexUid = indexUid }
 
 
+getAttributesViewModel : Model -> AttributesPage.Model
+getAttributesViewModel model =
+    { displayed = model.displayedAttrs
+    , sortable = model.sortableAttrs
+    , searchable = model.searchableAttrs
+    , filterable = model.filterableAttrs
+    , distinct = model.distinctAttr
+    }
+
+
 
 -- VIEW MODEL SETTERS
 
@@ -780,7 +815,13 @@ init _ =
             , indexes = []
             , documents = []
             , selectedIndex =
-                Nothing
+                Just
+                    { uid = "suggestions"
+                    , name = "Suggestions"
+                    , createdAt = ""
+                    , updatedAt = ""
+                    , primaryKey = "id"
+                    }
             , stopWords = []
             , synonyms = (UI.PageViews.Synonyms.init "suggestions").synonymStates -- need to decouple ui from state
             , pollingQueue = []
@@ -789,7 +830,7 @@ init _ =
             , sortableAttrs = []
             , searchableAttrs = []
             , filterableAttrs = []
-            , distinctAttrs = []
+            , distinctAttr = []
             , indexStats = Nothing
             }
     in
