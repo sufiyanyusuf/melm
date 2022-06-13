@@ -188,7 +188,14 @@ syncIndicator status valueChanged =
                     (text "")
 
             Success ->
-                Element.none
+                el
+                    [ Background.color UI.Styles.color.primary200
+                    , width (px 8)
+                    , Element.height (px 8)
+                    , Element.Border.rounded 12
+                    , Element.centerY
+                    ]
+                    (text "")
 
             Failed ->
                 el

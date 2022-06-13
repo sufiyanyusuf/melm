@@ -20065,7 +20065,19 @@ var $author$project$UI$Elements$syncIndicator = F2(
 							]),
 						$mdgriffith$elm_ui$Element$text(''));
 				case 'Success':
-					return $mdgriffith$elm_ui$Element$none;
+					return A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.primary200),
+								$mdgriffith$elm_ui$Element$width(
+								$mdgriffith$elm_ui$Element$px(8)),
+								$mdgriffith$elm_ui$Element$height(
+								$mdgriffith$elm_ui$Element$px(8)),
+								$mdgriffith$elm_ui$Element$Border$rounded(12),
+								$mdgriffith$elm_ui$Element$centerY
+							]),
+						$mdgriffith$elm_ui$Element$text(''));
 				default:
 					return A2(
 						$mdgriffith$elm_ui$Element$el,
