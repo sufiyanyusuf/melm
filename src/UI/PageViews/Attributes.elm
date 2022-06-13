@@ -3,13 +3,16 @@ module UI.PageViews.Attributes exposing (..)
 import Element exposing (..)
 import Element.Background
 import Element.Border
-import UI.Elements
+import Request exposing (..)
+import UI.Elements exposing (syncIndicator)
+import UI.PageViews.Settings exposing (Msg(..))
 import UI.Styles exposing (Size(..))
 
 
 type Msg
     = X Bool
     | Toggle Attribute AttributeType
+    | Save
 
 
 view : Model -> Element Msg
@@ -29,6 +32,8 @@ view model =
             ]
             [ cardView model.displayed Displayed ]
         , UI.Elements.spacer UI.Styles.LG
+        , toolbarView model
+        , UI.Elements.spacer UI.Styles.MD
         ]
 
 
@@ -55,21 +60,35 @@ cardViewRow model attrType =
             [ el
                 (UI.Styles.getTypographicStyleFor UI.Styles.Body)
                 (text model.title)
+            , UI.Elements.spacer UI.Styles.XS
+            , syncIndicator model.requestStatus (model.saved /= model.enabled)
             , UI.Elements.spacer UI.Styles.FILL
-            , UI.Elements.switch model.isOn (Toggle model attrType)
+            , UI.Elements.switch model.enabled (Toggle model attrType)
             ]
+        ]
+
+
+toolbarView : Model -> Element Msg
+toolbarView _ =
+    Element.row
+        [ Element.width Element.shrink
+        ]
+        [ UI.Elements.button "Save" Save
+        , UI.Elements.spacer UI.Styles.SM
         ]
 
 
 type alias Attribute =
     { title : String
-    , isOn : Bool
+    , enabled : Bool
+    , saved : Bool
+    , requestStatus : RequestStatus
     }
 
 
 init : Model
 init =
-    buildModelFromAttributes [ "attr a", "attr b", "attr c" ]
+    buildMockModelFromAttributes [ "attr a", "attr b", "attr c" ]
 
 
 type alias Model =
@@ -89,13 +108,15 @@ type AttributeType
     | Distinct
 
 
-buildModelFromAttributes : List String -> Model
-buildModelFromAttributes l =
+buildMockModelFromAttributes : List String -> Model
+buildMockModelFromAttributes l =
     { displayed =
         List.map
             (\x ->
                 { title = x
-                , isOn = True
+                , enabled = True
+                , saved = True
+                , requestStatus = NoRequest
                 }
             )
             l
@@ -103,7 +124,9 @@ buildModelFromAttributes l =
         List.map
             (\x ->
                 { title = x
-                , isOn = True
+                , enabled = True
+                , saved = True
+                , requestStatus = NoRequest
                 }
             )
             l
@@ -111,7 +134,9 @@ buildModelFromAttributes l =
         List.map
             (\x ->
                 { title = x
-                , isOn = True
+                , enabled = True
+                , saved = True
+                , requestStatus = NoRequest
                 }
             )
             l
@@ -119,7 +144,9 @@ buildModelFromAttributes l =
         List.map
             (\x ->
                 { title = x
-                , isOn = True
+                , enabled = True
+                , saved = True
+                , requestStatus = NoRequest
                 }
             )
             l
@@ -127,7 +154,9 @@ buildModelFromAttributes l =
         List.map
             (\x ->
                 { title = x
-                , isOn = False
+                , enabled = False
+                , saved = True
+                , requestStatus = NoRequest
                 }
             )
             l
@@ -138,12 +167,8 @@ buildModelFromResponse : AttributeType -> List String -> Model -> Model
 buildModelFromResponse a r m =
     case a of
         Displayed ->
-            let
-                displayedAttrs =
-                    m.displayed
-            in
             if r == [ "*" ] then
-                { m | displayed = List.map (\x -> { x | isOn = True }) m.displayed }
+                { m | displayed = List.map (\x -> { x | enabled = True }) m.displayed }
 
             else
                 { m
@@ -151,10 +176,10 @@ buildModelFromResponse a r m =
                         List.map
                             (\x ->
                                 if List.member x.title r then
-                                    { x | isOn = True }
+                                    { x | enabled = True, saved = True }
 
                                 else
-                                    { x | isOn = False }
+                                    { x | enabled = False, saved = False }
                             )
                             m.displayed
                 }
@@ -180,3 +205,21 @@ updateAttributes model attrs attrType =
 
         Distinct ->
             { model | distinct = attrs }
+
+
+updateSyncStatusState : List Attribute -> RequestStatus -> List Attribute
+updateSyncStatusState model status =
+    List.map
+        (\c ->
+            if c.saved /= c.enabled then
+                case status of
+                    Success ->
+                        { c | requestStatus = status, saved = c.enabled }
+
+                    _ ->
+                        { c | requestStatus = status }
+
+            else
+                c
+        )
+        model

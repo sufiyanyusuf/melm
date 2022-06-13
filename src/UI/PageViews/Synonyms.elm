@@ -2,6 +2,7 @@ module UI.PageViews.Synonyms exposing (..)
 
 import Api.Routes.Main exposing (..)
 import Element exposing (..)
+import Request exposing (..)
 import UI.Components.SynonymCard as SynonymCard exposing (Msg(..))
 import UI.Elements
 import UI.Styles
@@ -98,7 +99,7 @@ toolbarView _ =
         ]
 
 
-updateSyncStatusState : List SynonymCard.Model -> SynonymCard.RequestStatus -> List SynonymCard.Model
+updateSyncStatusState : List SynonymCard.Model -> RequestStatus -> List SynonymCard.Model
 updateSyncStatusState model status =
     List.map
         (\c ->

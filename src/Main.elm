@@ -6,9 +6,9 @@ import Dict exposing (Dict)
 import Element exposing (..)
 import Html exposing (Html)
 import Http
-import Json.Decode exposing (Value)
+import Request exposing (..)
 import SweetPoll exposing (PollingState)
-import UI.Components.SynonymCard exposing (Msg(..), RequestStatus(..))
+import UI.Components.SynonymCard exposing (Msg(..))
 import UI.PageView as PageView exposing (Msg(..))
 import UI.PageViews.Attributes as AttributesPage exposing (buildModelFromResponse)
 import UI.PageViews.Documents
@@ -54,12 +54,16 @@ type Msg
 
 type Task
     = UpdateSynonymsTask Int String
+    | UpdateAttributeTask Int String
 
 
 getTaskIndexUid : Task -> String
 getTaskIndexUid task =
     case task of
         UpdateSynonymsTask _ uid ->
+            uid
+
+        UpdateAttributeTask _ uid ->
             uid
 
 
@@ -128,7 +132,7 @@ update msg model =
         UpdateKeysForIndex p ->
             let
                 updatedAttributes =
-                    AttributesPage.buildModelFromAttributes p.keys
+                    AttributesPage.buildMockModelFromAttributes p.keys
             in
             let
                 updatedAttributesPage =
@@ -266,6 +270,14 @@ handleApiRequest model apiResponse =
                 Err _ ->
                     ( model, Cmd.none )
 
+        HandleUpdateDisplayedAttrsResponse r ->
+            case r of
+                Ok payload ->
+                    update (AddToPollQueue (UpdateAttributeTask payload.uid payload.indexUid)) model
+
+                Err _ ->
+                    ( model, Cmd.none )
+
         HandleStatsResponse r indexUid ->
             case r of
                 Ok payload ->
@@ -274,7 +286,7 @@ handleApiRequest model apiResponse =
                             Dict.keys payload.fieldDistribution
 
                         updatedAttributes =
-                            AttributesPage.buildModelFromAttributes keys
+                            AttributesPage.buildMockModelFromAttributes keys
 
                         updatedAttributesPage =
                             Attributes updatedAttributes
@@ -345,7 +357,7 @@ handleAttributesViewMsg model msg =
                             List.map
                                 (\x ->
                                     if x.title == attr.title then
-                                        { x | isOn = not x.isOn }
+                                        { x | enabled = not x.enabled }
 
                                     else
                                         x
@@ -364,6 +376,28 @@ handleAttributesViewMsg model msg =
 
                 _ ->
                     ( model, Cmd.none )
+
+        AttributesPage.Save ->
+            ( model
+            , Api.Routes.Main.buildRequest
+                (Api.Routes.Main.buildPayload
+                    (UpdateDisplayedAttrs "suggestions"
+                        (List.filter (\x -> x.enabled == True) model.displayedAttrs
+                            |> List.map (\x -> x.title)
+                        )
+                        Api.Routes.Main.settingsUpdateDecoder
+                    )
+                )
+                (Maybe.withDefault
+                    ""
+                    model.savedToken
+                )
+                |> Cmd.map ApiRequest
+            )
+
+
+
+-- ( model, Cmd.none )
 
 
 handleSynonymsViewMsg : Model -> UI.PageViews.Synonyms.Msg -> ( Model, Cmd Msg )
@@ -540,6 +574,17 @@ handlePollRequest model task =
                 , pollCmd |> Cmd.map (PollUpdate task)
                 )
 
+            UpdateAttributeTask taskId _ ->
+                let
+                    ( pollState, pollCmd ) =
+                        SweetPoll.init (taskConfigBuilder taskId)
+                in
+                ( { model
+                    | pollingQueue = model.pollingQueue ++ [ ( task, pollState ) ]
+                  }
+                , pollCmd |> Cmd.map (PollUpdate task)
+                )
+
 
 
 -- PORTS
@@ -673,24 +718,31 @@ updateAttributesViewModel pages updatedPage =
 
 handlePollUpdate : Model -> SweetPoll.Msg String -> Task -> ( Model, Cmd Msg )
 handlePollUpdate model message task =
-    case task of
-        UpdateSynonymsTask taskId _ ->
-            let
-                config =
-                    taskConfigBuilder taskId
+    let
+        taskId =
+            case task of
+                UpdateSynonymsTask t _ ->
+                    t
 
-                item =
-                    List.filter (\( a, _ ) -> a == task) model.pollingQueue
-                        |> List.head
-            in
-            case item of
-                Just ( id, pollingState ) ->
-                    case SweetPoll.update config message pollingState of
-                        { newState, newData, error, cmd } ->
-                            handlePollSignal model newState newData error cmd id
+                UpdateAttributeTask t _ ->
+                    t
+    in
+    let
+        config =
+            taskConfigBuilder taskId
 
-                Nothing ->
-                    ( model, Cmd.none )
+        item =
+            List.filter (\( a, _ ) -> a == task) model.pollingQueue
+                |> List.head
+    in
+    case item of
+        Just ( id, pollingState ) ->
+            case SweetPoll.update config message pollingState of
+                { newState, newData, error, cmd } ->
+                    handlePollSignal model newState newData error cmd id
+
+        Nothing ->
+            ( model, Cmd.none )
 
 
 handlePollSignal :
@@ -723,49 +775,81 @@ handlePollSignal model newState newData error cmd task =
                             )
 
                         "processing" ->
-                            let
-                                updatedSynonyms =
-                                    UI.PageViews.Synonyms.updateSyncStatusState model.synonyms Fired
+                            case task of
+                                UpdateSynonymsTask _ _ ->
+                                    let
+                                        updatedSynonyms =
+                                            UI.PageViews.Synonyms.updateSyncStatusState model.synonyms Fired
 
-                                updatedSynonymsPageViewModel =
-                                    { synonymStates = updatedSynonyms, indexUid = getTaskIndexUid task }
-                            in
-                            ( { model
-                                | pollingQueue =
-                                    List.map
-                                        (updatePollState task newState)
-                                        model.pollingQueue
-                                , synonyms = updatedSynonyms
-                                , pages = updateSynonymsViewModel model.pages (Synonyms updatedSynonymsPageViewModel)
-                                , selectedPage = Synonyms updatedSynonymsPageViewModel
-                              }
-                            , cmd |> Cmd.map (PollUpdate task)
-                            )
+                                        updatedSynonymsPageViewModel =
+                                            { synonymStates = updatedSynonyms, indexUid = getTaskIndexUid task }
+                                    in
+                                    ( { model
+                                        | pollingQueue =
+                                            List.map
+                                                (updatePollState task newState)
+                                                model.pollingQueue
+                                        , synonyms = updatedSynonyms
+                                        , pages = updateSynonymsViewModel model.pages (Synonyms updatedSynonymsPageViewModel)
+                                        , selectedPage = Synonyms updatedSynonymsPageViewModel
+                                      }
+                                    , cmd |> Cmd.map (PollUpdate task)
+                                    )
+
+                                UpdateAttributeTask _ _ ->
+                                    ( model, Cmd.none )
 
                         "succeeded" ->
-                            let
-                                updatedSynonyms =
-                                    UI.PageViews.Synonyms.updateSyncStatusState model.synonyms Success
+                            case task of
+                                UpdateSynonymsTask _ _ ->
+                                    let
+                                        updatedSynonyms =
+                                            UI.PageViews.Synonyms.updateSyncStatusState model.synonyms Success
 
-                                updatedSynonymsPageViewModel =
-                                    { synonymStates = updatedSynonyms, indexUid = getTaskIndexUid task }
-                            in
-                            ( { model
-                                | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue
-                                , synonyms = updatedSynonyms
-                                , pages = updateSynonymsViewModel model.pages (Synonyms updatedSynonymsPageViewModel)
-                                , selectedPage = Synonyms updatedSynonymsPageViewModel
-                              }
-                            , Cmd.none
-                            )
+                                        updatedSynonymsPageViewModel =
+                                            { synonymStates = updatedSynonyms, indexUid = getTaskIndexUid task }
+                                    in
+                                    ( { model
+                                        | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue
+                                        , synonyms = updatedSynonyms
+                                        , pages = updateSynonymsViewModel model.pages (Synonyms updatedSynonymsPageViewModel)
+                                        , selectedPage = Synonyms updatedSynonymsPageViewModel
+                                      }
+                                    , Cmd.none
+                                    )
+
+                                UpdateAttributeTask _ _ ->
+                                    let
+                                        updatedDisplayAttrs =
+                                            AttributesPage.updateSyncStatusState model.displayedAttrs Success
+
+                                        updatedModel =
+                                            { model | displayedAttrs = updatedDisplayAttrs }
+                                    in
+                                    ( { updatedModel
+                                        | pages = updateAttributesViewModel model.pages (Attributes (getAttributesViewModel updatedModel))
+                                        , selectedPage = Attributes (getAttributesViewModel updatedModel)
+                                      }
+                                    , Cmd.none
+                                    )
 
                         "failed" ->
-                            ( { model
-                                | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue
-                                , synonyms = UI.PageViews.Synonyms.updateSyncStatusState model.synonyms Failed
-                              }
-                            , Cmd.none
-                            )
+                            case task of
+                                UpdateSynonymsTask _ _ ->
+                                    ( { model
+                                        | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue
+                                        , synonyms = UI.PageViews.Synonyms.updateSyncStatusState model.synonyms Failed
+                                      }
+                                    , Cmd.none
+                                    )
+
+                                UpdateAttributeTask _ _ ->
+                                    ( { model
+                                        | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue
+                                        , displayedAttrs = AttributesPage.updateSyncStatusState model.displayedAttrs Failed
+                                      }
+                                    , Cmd.none
+                                    )
 
                         _ ->
                             ( model, Cmd.none )
@@ -795,7 +879,7 @@ buildSynonymsViewModelFromApiResponse d indexId =
                 { index = index
                 , synonymKey = title
                 , synonymsValue = List.foldl (\x a -> x ++ "," ++ a) "" values |> String.dropRight 1
-                , requestStatus = UI.Components.SynonymCard.NoRequest
+                , requestStatus = NoRequest
                 , synonymList = values
                 , taskId = Nothing
                 , indexId = indexId

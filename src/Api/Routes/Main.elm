@@ -17,6 +17,7 @@ type Msg
     | HandleListSynonymsResponse (Result Http.Error (Dict String (List String))) String
     | HandleIndexKeysResponse IndexKeys
     | HandleDisplayedAttrsResponse (Result Http.Error (List String)) String
+    | HandleUpdateDisplayedAttrsResponse (Result Http.Error SettingsRouteResponseItem)
     | HandleStatsResponse (Result Http.Error IndexStats) String
 
 
@@ -34,6 +35,7 @@ type Route
     | UpdateSynonyms String (Dict String (List String)) (Decoder SettingsRouteResponseItem)
     | ListSynonyms String (Decoder (Dict String (List String)))
     | ListDisplayedAttrs String (Decoder (List String))
+    | UpdateDisplayedAttrs String (List String) (Decoder SettingsRouteResponseItem)
     | Stats String (Decoder IndexStats)
 
 
@@ -181,6 +183,17 @@ buildRequest payload token =
                 }
                 |> Cmd.map (\a -> a x)
 
+        UpdateDisplayedAttrs _ _ d ->
+            Http.request
+                { method = getRequestMethodTitle payload.method
+                , headers = headers token
+                , url = payload.endpoint
+                , body = payload.body
+                , expect = Http.expectJson HandleUpdateDisplayedAttrsResponse d
+                , timeout = Nothing
+                , tracker = Nothing
+                }
+
         Stats x d ->
             Http.request
                 { method = getRequestMethodTitle payload.method
@@ -257,6 +270,13 @@ buildPayload r =
 
         ListDisplayedAttrs i _ ->
             { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/displayed-attributes", body = Http.emptyBody, route = r }
+
+        UpdateDisplayedAttrs i attrs _ ->
+            let
+                body =
+                    Encode.list Encode.string attrs
+            in
+            { method = POST, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/displayed-attributes", body = Http.jsonBody body, route = r }
 
         Stats i _ ->
             { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/stats", body = Http.emptyBody, route = r }

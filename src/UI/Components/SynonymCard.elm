@@ -3,6 +3,7 @@ module UI.Components.SynonymCard exposing (..)
 import Element exposing (..)
 import Element.Background
 import Element.Border exposing (rounded)
+import Request exposing (..)
 import Svg.Attributes exposing (radius)
 import UI.Elements
 import UI.Icons exposing (Icon(..), Style(..))
@@ -55,17 +56,16 @@ update msg model =
             ( model, Cmd.none )
 
 
-type Request
-    = Create
-    | Update
-    | Delete
 
-
-type RequestStatus
-    = NoRequest
-    | Fired
-    | Success
-    | Failed
+-- type Request
+--     = Create
+--     | Update
+--     | Delete
+-- type RequestStatus
+--     = NoRequest
+--     | Fired
+--     | Success
+--     | Failed
 
 
 view : Model -> Element Msg

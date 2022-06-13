@@ -1,11 +1,11 @@
-module UI.Elements exposing (button, chip, iconButton, spacer, switch, textfield)
+module UI.Elements exposing (button, chip, iconButton, spacer, switch, syncIndicator, textfield)
 
-import Element exposing (Element, alpha, el, fill, mouseOver, padding, paddingEach, paddingXY, pointer, px, spacing, text, width)
+import Element exposing (Element, alpha, el, fill, padding, paddingEach, pointer, px, spacing, text, width)
 import Element.Background as Background
 import Element.Border
 import Element.Events exposing (onClick, onLoseFocus)
 import Element.Input as Input
-import Svg.Attributes exposing (fillOpacity)
+import Request exposing (RequestStatus(..))
 import UI.Icons exposing (Icon, Style(..), buildIcon)
 import UI.Styles exposing (Size(..))
 
@@ -14,7 +14,7 @@ spacer : UI.Styles.Size -> Element msg
 spacer size =
     case size of
         XS ->
-            Element.el [ Element.width (px 16), Element.height (px 8) ] Element.none
+            Element.el [ Element.width (px 8), Element.height (px 8) ] Element.none
 
         SM ->
             Element.el [ Element.width (px 16), Element.height (px 16) ] Element.none
@@ -161,3 +161,44 @@ chip text msg =
                 (buildIcon UI.Icons.Close Outline)
             ]
         )
+
+
+syncIndicator : RequestStatus -> Bool -> Element msg
+syncIndicator status valueChanged =
+    if valueChanged then
+        case status of
+            NoRequest ->
+                el
+                    [ Background.color UI.Styles.color.primary200
+                    , width (px 8)
+                    , Element.height (px 8)
+                    , Element.Border.rounded 12
+                    , Element.centerY
+                    ]
+                    (text "")
+
+            Fired ->
+                el
+                    [ Background.color UI.Styles.color.primary500
+                    , width (px 8)
+                    , Element.height (px 8)
+                    , Element.Border.rounded 12
+                    , Element.centerY
+                    ]
+                    (text "")
+
+            Success ->
+                Element.none
+
+            Failed ->
+                el
+                    [ Background.color UI.Styles.color.green500
+                    , width (px 8)
+                    , Element.height (px 8)
+                    , Element.Border.rounded 12
+                    , Element.centerY
+                    ]
+                    (text "")
+
+    else
+        Element.none
