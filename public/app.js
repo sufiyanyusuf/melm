@@ -10751,7 +10751,6 @@ var $author$project$UI$PageViews$Synonyms$init = function (indexUid) {
 var $author$project$UI$Pages$Attributes = function (a) {
 	return {$: 'Attributes', a: a};
 };
-var $author$project$UI$Pages$RankingRules = {$: 'RankingRules'};
 var $author$project$UI$Pages$Settings = function (a) {
 	return {$: 'Settings', a: a};
 };
@@ -10761,7 +10760,6 @@ var $author$project$UI$Pages$StopWords = function (a) {
 var $author$project$UI$Pages$Synonyms = function (a) {
 	return {$: 'Synonyms', a: a};
 };
-var $author$project$UI$Pages$Tasks = {$: 'Tasks'};
 var $author$project$UI$PageViews$Attributes$buildMockModelFromAttributes = function (l) {
 	return {
 		displayed: A2(
@@ -10802,17 +10800,14 @@ var $author$project$UI$PageViews$Attributes$init = $author$project$UI$PageViews$
 var $author$project$UI$PageViews$Settings$init = {title: 'Settings', tokenValue: ''};
 var $author$project$UI$PageViews$StopWords$init = {indexUid: '', words: _List_Nil};
 var $author$project$UI$Pages$init = function (indexUid) {
-	return _List_fromArray(
-		[
-			$author$project$UI$Pages$Documents($author$project$UI$PageViews$Documents$init),
-			$author$project$UI$Pages$Tasks,
-			$author$project$UI$Pages$RankingRules,
-			$author$project$UI$Pages$Synonyms(
-			$author$project$UI$PageViews$Synonyms$init(indexUid)),
-			$author$project$UI$Pages$StopWords($author$project$UI$PageViews$StopWords$init),
-			$author$project$UI$Pages$Settings($author$project$UI$PageViews$Settings$init),
-			$author$project$UI$Pages$Attributes($author$project$UI$PageViews$Attributes$init)
-		]);
+	return {
+		attributes: $author$project$UI$Pages$Attributes($author$project$UI$PageViews$Attributes$init),
+		documents: $author$project$UI$Pages$Documents($author$project$UI$PageViews$Documents$init),
+		settings: $author$project$UI$Pages$Settings($author$project$UI$PageViews$Settings$init),
+		stopWords: $author$project$UI$Pages$StopWords($author$project$UI$PageViews$StopWords$init),
+		synonyms: $author$project$UI$Pages$Synonyms(
+			$author$project$UI$PageViews$Synonyms$init(indexUid))
+	};
 };
 var $author$project$Main$init = function (_v0) {
 	var model = {
@@ -11985,16 +11980,9 @@ var $author$project$Api$Routes$Main$settingsUpdateDecoder = A3(
 	A2($elm$json$Json$Decode$field, 'indexUid', $elm$json$Json$Decode$string));
 var $author$project$Main$updateAttributesViewModel = F2(
 	function (pages, updatedPage) {
-		return A2(
-			$elm$core$List$map,
-			function (p) {
-				if (p.$ === 'Attributes') {
-					return updatedPage;
-				} else {
-					return p;
-				}
-			},
-			pages);
+		return _Utils_update(
+			pages,
+			{attributes: updatedPage});
 	});
 var $author$project$Main$handleAttributesViewMsg = F2(
 	function (model, msg) {
@@ -12276,16 +12264,9 @@ var $author$project$Main$getSettingsViewModel = function (model) {
 };
 var $author$project$Main$updateSettingsViewModel = F2(
 	function (pages, updatedPage) {
-		return A2(
-			$elm$core$List$map,
-			function (p) {
-				if (p.$ === 'Settings') {
-					return updatedPage;
-				} else {
-					return p;
-				}
-			},
-			pages);
+		return _Utils_update(
+			pages,
+			{settings: updatedPage});
 	});
 var $author$project$Main$handleSettingsViewMsg = F2(
 	function (model, msg) {
@@ -12322,16 +12303,9 @@ var $author$project$UI$PageViews$StopWords$createNew = function (s) {
 };
 var $author$project$Main$updateStopWordsViewModel = F2(
 	function (pages, updatedPage) {
-		return A2(
-			$elm$core$List$map,
-			function (p) {
-				if (p.$ === 'StopWords') {
-					return updatedPage;
-				} else {
-					return p;
-				}
-			},
-			pages);
+		return _Utils_update(
+			pages,
+			{stopWords: updatedPage});
 	});
 var $author$project$Main$handleStopWordsViewMsg = F2(
 	function (model, msg) {
@@ -12475,16 +12449,9 @@ var $author$project$UI$PageViews$Synonyms$update = F2(
 	});
 var $author$project$Main$updateSynonymsViewModel = F2(
 	function (pages, updatedPage) {
-		return A2(
-			$elm$core$List$map,
-			function (p) {
-				if (p.$ === 'Synonyms') {
-					return updatedPage;
-				} else {
-					return p;
-				}
-			},
-			pages);
+		return _Utils_update(
+			pages,
+			{synonyms: updatedPage});
 	});
 var $author$project$Main$handleSynonymsViewMsg = F2(
 	function (model, msg) {
@@ -13290,16 +13257,9 @@ var $elm$json$Json$Decode$maybe = function (decoder) {
 var $author$project$Api$Routes$Main$stringDecoder = $elm$json$Json$Decode$maybe($elm$json$Json$Decode$string);
 var $author$project$Main$updateDocumentsViewModel = F2(
 	function (pages, updatedPage) {
-		return A2(
-			$elm$core$List$map,
-			function (p) {
-				if (p.$ === 'Documents') {
-					return updatedPage;
-				} else {
-					return p;
-				}
-			},
-			pages);
+		return _Utils_update(
+			pages,
+			{documents: updatedPage});
 	});
 var $author$project$Main$handleApiRequest = F2(
 	function (model, apiResponse) {
@@ -13714,8 +13674,15 @@ var $mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
 	return {$: 'Fill', a: a};
 };
 var $mdgriffith$elm_ui$Element$fill = $mdgriffith$elm_ui$Internal$Model$Fill(1);
+var $author$project$UI$Pages$getPageList = function (model) {
+	return _List_fromArray(
+		[model.documents, model.settings, model.synonyms, model.stopWords, model.attributes]);
+};
 var $author$project$Main$getSidebarViewModel = function (model) {
-	return {pages: model.pages, selectedPage: model.selectedPage};
+	return {
+		pages: $author$project$UI$Pages$getPageList(model.pages),
+		selectedPage: model.selectedPage
+	};
 };
 var $mdgriffith$elm_ui$Internal$Model$Height = function (a) {
 	return {$: 'Height', a: a};

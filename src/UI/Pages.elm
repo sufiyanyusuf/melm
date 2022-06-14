@@ -18,13 +18,25 @@ type Page
     | Attributes Attributes.Model
 
 
-init : String -> List Page
+type alias Model =
+    { documents : Page
+    , settings : Page
+    , synonyms : Page
+    , stopWords : Page
+    , attributes : Page
+    }
+
+
+init : String -> Model
 init indexUid =
-    [ Documents Documents.init
-    , Tasks
-    , RankingRules
-    , Synonyms (Synonyms.init indexUid)
-    , StopWords StopWords.init
-    , Settings Settings.init
-    , Attributes Attributes.init
-    ]
+    { documents = Documents Documents.init
+    , settings = Settings Settings.init
+    , synonyms = Synonyms (Synonyms.init indexUid)
+    , stopWords = StopWords StopWords.init
+    , attributes = Attributes Attributes.init
+    }
+
+
+getPageList : Model -> List Page
+getPageList model =
+    [ model.documents, model.settings, model.synonyms, model.stopWords, model.attributes ]

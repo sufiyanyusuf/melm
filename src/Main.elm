@@ -75,7 +75,7 @@ type alias Model =
     { selectedPage : Views.Page
     , token : Maybe String
     , savedToken : Maybe String
-    , pages : List Page
+    , pages : Views.Model
     , indexes : List IndexesRouteResponseListItem -- Decouple this
     , documents : List String
     , documentKeys : ( String, List String )
@@ -953,7 +953,7 @@ receivedKeysForDocument =
 
 getSidebarViewModel : Model -> Sidebar.Model
 getSidebarViewModel model =
-    { pages = model.pages
+    { pages = Views.getPageList model.pages
     , selectedPage = model.selectedPage
     }
 
@@ -994,74 +994,29 @@ getAttributesViewModel model =
 -- VIEW MODEL SETTERS
 
 
-updateSettingsViewModel : List Page -> Page -> List Page
+updateSettingsViewModel : Views.Model -> Page -> Views.Model
 updateSettingsViewModel pages updatedPage =
-    pages
-        |> List.map
-            (\p ->
-                case p of
-                    Settings _ ->
-                        updatedPage
-
-                    _ ->
-                        p
-            )
+    { pages | settings = updatedPage }
 
 
-updateDocumentsViewModel : List Page -> Page -> List Page
+updateDocumentsViewModel : Views.Model -> Page -> Views.Model
 updateDocumentsViewModel pages updatedPage =
-    pages
-        |> List.map
-            (\p ->
-                case p of
-                    Documents _ ->
-                        updatedPage
-
-                    _ ->
-                        p
-            )
+    { pages | documents = updatedPage }
 
 
-updateStopWordsViewModel : List Page -> Page -> List Page
+updateStopWordsViewModel : Views.Model -> Page -> Views.Model
 updateStopWordsViewModel pages updatedPage =
-    pages
-        |> List.map
-            (\p ->
-                case p of
-                    StopWords _ ->
-                        updatedPage
-
-                    _ ->
-                        p
-            )
+    { pages | stopWords = updatedPage }
 
 
-updateSynonymsViewModel : List Page -> Page -> List Page
+updateSynonymsViewModel : Views.Model -> Page -> Views.Model
 updateSynonymsViewModel pages updatedPage =
-    pages
-        |> List.map
-            (\p ->
-                case p of
-                    Synonyms _ ->
-                        updatedPage
-
-                    _ ->
-                        p
-            )
+    { pages | synonyms = updatedPage }
 
 
-updateAttributesViewModel : List Page -> Page -> List Page
+updateAttributesViewModel : Views.Model -> Page -> Views.Model
 updateAttributesViewModel pages updatedPage =
-    pages
-        |> List.map
-            (\p ->
-                case p of
-                    Attributes _ ->
-                        updatedPage
-
-                    _ ->
-                        p
-            )
+    { pages | attributes = updatedPage }
 
 
 handlePollUpdate : Model -> SweetPoll.Msg String -> Task -> ( Model, Cmd Msg )
