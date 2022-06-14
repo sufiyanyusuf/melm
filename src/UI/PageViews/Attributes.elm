@@ -27,10 +27,15 @@ view model =
             (text "Attributes")
         , UI.Elements.spacer UI.Styles.LG
         , Element.wrappedRow
-            [ spacing 12
-            , paddingEach { top = 20, bottom = 0, left = 0, right = 320 }
+            [ spacing 20
+            , paddingEach { top = 20, bottom = 0, left = 0, right = 240 }
             ]
-            [ cardView model.displayed Displayed ]
+            [ cardView model.displayed Displayed
+            , cardView model.searchable Searchable
+            , cardView model.filterable Filterable
+            , cardView model.sortable Sortable
+            , cardView model.distinct Distinct
+            ]
         , UI.Elements.spacer UI.Styles.LG
         , toolbarView model
         , UI.Elements.spacer UI.Styles.MD
@@ -39,13 +44,31 @@ view model =
 
 cardView : List Attribute -> AttributeType -> Element Msg
 cardView model attrType =
+    let
+        title =
+            case attrType of
+                Displayed ->
+                    "Displayed"
+
+                Sortable ->
+                    "Sortable"
+
+                Searchable ->
+                    "Searchable"
+
+                Filterable ->
+                    "Filterable"
+
+                Distinct ->
+                    "Distinct"
+    in
     Element.column
         [ Element.Background.color UI.Styles.color.white
         , Element.Border.rounded 12
         , padding 24
         , Element.width (px 320)
         ]
-        ([ el (UI.Styles.getTypographicStyleFor UI.Styles.H2) (text "Displayed")
+        ([ el (UI.Styles.getTypographicStyleFor UI.Styles.H2) (text title)
          , UI.Elements.spacer MD
          ]
             ++ List.map (\x -> cardViewRow x attrType) model
@@ -103,9 +126,129 @@ type alias Model =
 type AttributeType
     = Displayed
     | Sortable
-    | Searchabe
+    | Searchable
     | Filterable
     | Distinct
+
+
+buildModelFromResponse : AttributeType -> List String -> Model -> Model
+buildModelFromResponse a r m =
+    case a of
+        Displayed ->
+            if r == [ "*" ] then
+                { m | displayed = List.map (\x -> { x | enabled = True }) m.displayed }
+
+            else
+                { m
+                    | displayed =
+                        List.map
+                            (\x ->
+                                if List.member x.title r then
+                                    { x | enabled = True, saved = True }
+
+                                else
+                                    { x | enabled = False, saved = False }
+                            )
+                            m.displayed
+                }
+
+        Sortable ->
+            if r == [ "*" ] then
+                { m | sortable = List.map (\x -> { x | enabled = True }) m.sortable }
+
+            else
+                { m
+                    | sortable =
+                        List.map
+                            (\x ->
+                                if List.member x.title r then
+                                    { x | enabled = True, saved = True }
+
+                                else
+                                    { x | enabled = False, saved = False }
+                            )
+                            m.sortable
+                }
+
+        Searchable ->
+            if r == [ "*" ] then
+                { m | searchable = List.map (\x -> { x | enabled = True }) m.searchable }
+
+            else
+                { m
+                    | searchable =
+                        List.map
+                            (\x ->
+                                if List.member x.title r then
+                                    { x | enabled = True, saved = True }
+
+                                else
+                                    { x | enabled = False, saved = False }
+                            )
+                            m.searchable
+                }
+
+        Filterable ->
+            if r == [ "*" ] then
+                { m | filterable = List.map (\x -> { x | enabled = True }) m.filterable }
+
+            else
+                { m
+                    | filterable =
+                        List.map
+                            (\x ->
+                                if List.member x.title r then
+                                    { x | enabled = True, saved = True }
+
+                                else
+                                    { x | enabled = False, saved = False }
+                            )
+                            m.filterable
+                }
+
+        _ ->
+            m
+
+
+updateAttributes : Model -> List Attribute -> AttributeType -> Model
+updateAttributes model attrs attrType =
+    case attrType of
+        Displayed ->
+            { model | displayed = attrs }
+
+        Sortable ->
+            { model | sortable = attrs }
+
+        Searchable ->
+            { model | searchable = attrs }
+
+        Filterable ->
+            { model | filterable = attrs }
+
+        Distinct ->
+            { model | distinct = attrs }
+
+
+updateSyncStatusState : List Attribute -> RequestStatus -> List Attribute
+updateSyncStatusState model status =
+    List.map
+        (\c ->
+            if c.saved /= c.enabled then
+                case status of
+                    Success ->
+                        { c | requestStatus = status, saved = c.enabled }
+
+                    _ ->
+                        { c | requestStatus = status }
+
+            else
+                c
+        )
+        model
+
+
+
+-- MOCK
 
 
 buildMockModelFromAttributes : List String -> Model
@@ -161,65 +304,3 @@ buildMockModelFromAttributes l =
             )
             l
     }
-
-
-buildModelFromResponse : AttributeType -> List String -> Model -> Model
-buildModelFromResponse a r m =
-    case a of
-        Displayed ->
-            if r == [ "*" ] then
-                { m | displayed = List.map (\x -> { x | enabled = True }) m.displayed }
-
-            else
-                { m
-                    | displayed =
-                        List.map
-                            (\x ->
-                                if List.member x.title r then
-                                    { x | enabled = True, saved = True }
-
-                                else
-                                    { x | enabled = False, saved = False }
-                            )
-                            m.displayed
-                }
-
-        _ ->
-            m
-
-
-updateAttributes : Model -> List Attribute -> AttributeType -> Model
-updateAttributes model attrs attrType =
-    case attrType of
-        Displayed ->
-            { model | displayed = attrs }
-
-        Sortable ->
-            { model | sortable = attrs }
-
-        Searchabe ->
-            { model | searchable = attrs }
-
-        Filterable ->
-            { model | filterable = attrs }
-
-        Distinct ->
-            { model | distinct = attrs }
-
-
-updateSyncStatusState : List Attribute -> RequestStatus -> List Attribute
-updateSyncStatusState model status =
-    List.map
-        (\c ->
-            if c.saved /= c.enabled then
-                case status of
-                    Success ->
-                        { c | requestStatus = status, saved = c.enabled }
-
-                    _ ->
-                        { c | requestStatus = status }
-
-            else
-                c
-        )
-        model

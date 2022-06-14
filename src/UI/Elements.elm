@@ -47,8 +47,6 @@ textfield value placeholder valueChanged loseFocus =
             , width fill
             , padding 12
             , onLoseFocus loseFocus
-
-            -- , Element.mouseOver <| [ Background.color UI.Styles.color.lightGrey ]
             ]
             { text = value
             , placeholder = Just (Input.placeholder [] (Element.text placeholder))

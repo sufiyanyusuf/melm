@@ -17,7 +17,15 @@ type Msg
     | HandleListSynonymsResponse (Result Http.Error (Dict String (List String))) String
     | HandleIndexKeysResponse IndexKeys
     | HandleDisplayedAttrsResponse (Result Http.Error (List String)) String
+    | HandleSearchableAttrsResponse (Result Http.Error (List String)) String
+    | HandleSortableAttrsResponse (Result Http.Error (List String)) String
+    | HandleFilterableAttrsResponse (Result Http.Error (List String)) String
+    | HandleDistinctAttrResponse (Result Http.Error String) String
     | HandleUpdateDisplayedAttrsResponse (Result Http.Error SettingsRouteResponseItem)
+    | HandleUpdateFilterableAttrsResponse (Result Http.Error SettingsRouteResponseItem)
+    | HandleUpdateSortableAttrsResponse (Result Http.Error SettingsRouteResponseItem)
+    | HandleUpdateSearchableAttrsResponse (Result Http.Error SettingsRouteResponseItem)
+    | HandleUpdateDistinctAttrResponse (Result Http.Error SettingsRouteResponseItem)
     | HandleStatsResponse (Result Http.Error IndexStats) String
 
 
@@ -35,7 +43,15 @@ type Route
     | UpdateSynonyms String (Dict String (List String)) (Decoder SettingsRouteResponseItem)
     | ListSynonyms String (Decoder (Dict String (List String)))
     | ListDisplayedAttrs String (Decoder (List String))
+    | ListSearchableAttrs String (Decoder (List String))
+    | ListSortableAttrs String (Decoder (List String))
+    | ListFilterableAttrs String (Decoder (List String))
+    | ListDistinctAttr String (Decoder String)
     | UpdateDisplayedAttrs String (List String) (Decoder SettingsRouteResponseItem)
+    | UpdateSearchableAttrs String (List String) (Decoder SettingsRouteResponseItem)
+    | UpdateSortableAttrs String (List String) (Decoder SettingsRouteResponseItem)
+    | UpdateFilterableAttrs String (List String) (Decoder SettingsRouteResponseItem)
+    | UpdateDistinctAttr String String (Decoder SettingsRouteResponseItem)
     | Stats String (Decoder IndexStats)
 
 
@@ -183,6 +199,54 @@ buildRequest payload token =
                 }
                 |> Cmd.map (\a -> a x)
 
+        ListSearchableAttrs x d ->
+            Http.request
+                { method = getRequestMethodTitle payload.method
+                , headers = headers token
+                , url = payload.endpoint
+                , body = payload.body
+                , expect = Http.expectJson HandleSearchableAttrsResponse d
+                , timeout = Nothing
+                , tracker = Nothing
+                }
+                |> Cmd.map (\a -> a x)
+
+        ListFilterableAttrs x d ->
+            Http.request
+                { method = getRequestMethodTitle payload.method
+                , headers = headers token
+                , url = payload.endpoint
+                , body = payload.body
+                , expect = Http.expectJson HandleFilterableAttrsResponse d
+                , timeout = Nothing
+                , tracker = Nothing
+                }
+                |> Cmd.map (\a -> a x)
+
+        ListSortableAttrs x d ->
+            Http.request
+                { method = getRequestMethodTitle payload.method
+                , headers = headers token
+                , url = payload.endpoint
+                , body = payload.body
+                , expect = Http.expectJson HandleSortableAttrsResponse d
+                , timeout = Nothing
+                , tracker = Nothing
+                }
+                |> Cmd.map (\a -> a x)
+
+        ListDistinctAttr x d ->
+            Http.request
+                { method = getRequestMethodTitle payload.method
+                , headers = headers token
+                , url = payload.endpoint
+                , body = payload.body
+                , expect = Http.expectJson HandleDistinctAttrResponse d
+                , timeout = Nothing
+                , tracker = Nothing
+                }
+                |> Cmd.map (\a -> a x)
+
         UpdateDisplayedAttrs _ _ d ->
             Http.request
                 { method = getRequestMethodTitle payload.method
@@ -190,6 +254,50 @@ buildRequest payload token =
                 , url = payload.endpoint
                 , body = payload.body
                 , expect = Http.expectJson HandleUpdateDisplayedAttrsResponse d
+                , timeout = Nothing
+                , tracker = Nothing
+                }
+
+        UpdateFilterableAttrs _ _ d ->
+            Http.request
+                { method = getRequestMethodTitle payload.method
+                , headers = headers token
+                , url = payload.endpoint
+                , body = payload.body
+                , expect = Http.expectJson HandleUpdateFilterableAttrsResponse d
+                , timeout = Nothing
+                , tracker = Nothing
+                }
+
+        UpdateSearchableAttrs _ _ d ->
+            Http.request
+                { method = getRequestMethodTitle payload.method
+                , headers = headers token
+                , url = payload.endpoint
+                , body = payload.body
+                , expect = Http.expectJson HandleUpdateSearchableAttrsResponse d
+                , timeout = Nothing
+                , tracker = Nothing
+                }
+
+        UpdateSortableAttrs _ _ d ->
+            Http.request
+                { method = getRequestMethodTitle payload.method
+                , headers = headers token
+                , url = payload.endpoint
+                , body = payload.body
+                , expect = Http.expectJson HandleUpdateSortableAttrsResponse d
+                , timeout = Nothing
+                , tracker = Nothing
+                }
+
+        UpdateDistinctAttr _ _ d ->
+            Http.request
+                { method = getRequestMethodTitle payload.method
+                , headers = headers token
+                , url = payload.endpoint
+                , body = payload.body
+                , expect = Http.expectJson HandleUpdateDistinctAttrResponse d
                 , timeout = Nothing
                 , tracker = Nothing
                 }
@@ -271,12 +379,52 @@ buildPayload r =
         ListDisplayedAttrs i _ ->
             { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/displayed-attributes", body = Http.emptyBody, route = r }
 
+        ListSearchableAttrs i _ ->
+            { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/searchable-attributes", body = Http.emptyBody, route = r }
+
+        ListSortableAttrs i _ ->
+            { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/sortable-attributes", body = Http.emptyBody, route = r }
+
+        ListFilterableAttrs i _ ->
+            { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/filterable-attributes", body = Http.emptyBody, route = r }
+
+        ListDistinctAttr i _ ->
+            { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/distinct-attribute", body = Http.emptyBody, route = r }
+
         UpdateDisplayedAttrs i attrs _ ->
             let
                 body =
                     Encode.list Encode.string attrs
             in
             { method = POST, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/displayed-attributes", body = Http.jsonBody body, route = r }
+
+        UpdateFilterableAttrs i attrs _ ->
+            let
+                body =
+                    Encode.list Encode.string attrs
+            in
+            { method = POST, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/filterable-attributes", body = Http.jsonBody body, route = r }
+
+        UpdateSortableAttrs i attrs _ ->
+            let
+                body =
+                    Encode.list Encode.string attrs
+            in
+            { method = POST, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/sortable-attributes", body = Http.jsonBody body, route = r }
+
+        UpdateSearchableAttrs i attrs _ ->
+            let
+                body =
+                    Encode.list Encode.string attrs
+            in
+            { method = POST, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/searchable-attributes", body = Http.jsonBody body, route = r }
+
+        UpdateDistinctAttr i attrs _ ->
+            let
+                body =
+                    Encode.string attrs
+            in
+            { method = POST, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/distinct-attribute", body = Http.jsonBody body, route = r }
 
         Stats i _ ->
             { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/stats", body = Http.emptyBody, route = r }
@@ -334,10 +482,10 @@ taskConfigBuilder id =
     in
     { url = payload.endpoint
     , decoder = field "status" string
-    , delay = 0.5
-    , samesBeforeDelay = 5
+    , delay = 10
+    , samesBeforeDelay = 8
     , delayMultiplier = 2
-    , maxDelay = 40
+    , maxDelay = 1000
     }
 
 
