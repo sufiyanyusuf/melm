@@ -206,8 +206,26 @@ buildModelFromResponse a r m =
                             m.filterable
                 }
 
-        _ ->
-            m
+        Distinct ->
+            { m
+                | distinct =
+                    List.map
+                        (\x ->
+                            if List.member x.title r then
+                                { x | enabled = True, saved = True }
+
+                            else
+                                { x | enabled = False, saved = False }
+                        )
+                        m.distinct
+            }
+
+
+getDistinctAttr : List Attribute -> Maybe String
+getDistinctAttr m =
+    List.filter (\x -> x.enabled == True) m
+        |> List.map (\x -> x.title)
+        |> List.head
 
 
 updateAttributes : Model -> List Attribute -> AttributeType -> Model
@@ -298,7 +316,7 @@ buildMockModelFromAttributes l =
             (\x ->
                 { title = x
                 , enabled = False
-                , saved = True
+                , saved = False
                 , requestStatus = NoRequest
                 }
             )

@@ -10773,7 +10773,7 @@ var $author$project$UI$PageViews$Attributes$buildMockModelFromAttributes = funct
 		distinct: A2(
 			$elm$core$List$map,
 			function (x) {
-				return {enabled: false, requestStatus: $author$project$Request$NoRequest, saved: true, title: x};
+				return {enabled: false, requestStatus: $author$project$Request$NoRequest, saved: false, title: x};
 			},
 			l),
 		filterable: A2(
@@ -10854,6 +10854,10 @@ var $author$project$UI$PageViews$Attributes$Filterable = {$: 'Filterable'};
 var $author$project$Api$Routes$Main$ListDisplayedAttrs = F2(
 	function (a, b) {
 		return {$: 'ListDisplayedAttrs', a: a, b: b};
+	});
+var $author$project$Api$Routes$Main$ListDistinctAttr = F2(
+	function (a, b) {
+		return {$: 'ListDistinctAttr', a: a, b: b};
 	});
 var $author$project$Api$Routes$Main$ListFilterableAttrs = F2(
 	function (a, b) {
@@ -11027,7 +11031,20 @@ var $author$project$UI$PageViews$Attributes$buildModelFromResponse = F3(
 							m.filterable)
 					});
 			default:
-				return m;
+				return _Utils_update(
+					m,
+					{
+						distinct: A2(
+							$elm$core$List$map,
+							function (x) {
+								return A2($elm$core$List$member, x.title, r) ? _Utils_update(
+									x,
+									{enabled: true, saved: true}) : _Utils_update(
+									x,
+									{enabled: false, saved: false});
+							},
+							m.distinct)
+					});
 		}
 	});
 var $author$project$Api$Helper$DELETE = {$: 'DELETE'};
@@ -11888,6 +11905,10 @@ var $author$project$Api$Routes$Main$UpdateDisplayedAttrs = F3(
 	function (a, b, c) {
 		return {$: 'UpdateDisplayedAttrs', a: a, b: b, c: c};
 	});
+var $author$project$Api$Routes$Main$UpdateDistinctAttr = F3(
+	function (a, b, c) {
+		return {$: 'UpdateDistinctAttr', a: a, b: b, c: c};
+	});
 var $author$project$Api$Routes$Main$UpdateFilterableAttrs = F3(
 	function (a, b, c) {
 		return {$: 'UpdateFilterableAttrs', a: a, b: b, c: c};
@@ -11911,6 +11932,29 @@ var $elm$core$List$filter = F2(
 			_List_Nil,
 			list);
 	});
+var $elm$core$List$head = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(x);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $author$project$UI$PageViews$Attributes$getDistinctAttr = function (m) {
+	return $elm$core$List$head(
+		A2(
+			$elm$core$List$map,
+			function (x) {
+				return x.title;
+			},
+			A2(
+				$elm$core$List$filter,
+				function (x) {
+					return x.enabled;
+				},
+				m)));
+};
 var $author$project$Api$Routes$Main$SettingsRouteResponseItem = F2(
 	function (uid, indexUid) {
 		return {indexUid: indexUid, uid: uid};
@@ -12048,9 +12092,11 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 							function (x) {
 								return _Utils_eq(x.title, attr.title) ? _Utils_update(
 									x,
-									{enabled: !x.enabled}) : x;
+									{enabled: !x.enabled}) : _Utils_update(
+									x,
+									{enabled: false});
 							},
-							model.displayedAttrs);
+							model.distinctAttr);
 						var updatedModel = _Utils_update(
 							model,
 							{distinctAttr: updatedDistinctAttr});
@@ -12183,7 +12229,23 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 													},
 													model.displayedAttrs)),
 											$author$project$Api$Routes$Main$settingsUpdateDecoder)),
-									A2($elm$core$Maybe$withDefault, '', model.savedToken)))
+									A2($elm$core$Maybe$withDefault, '', model.savedToken))),
+								function () {
+								var _v2 = $author$project$UI$PageViews$Attributes$getDistinctAttr(model.distinctAttr);
+								if (_v2.$ === 'Just') {
+									var da = _v2.a;
+									return A2(
+										$elm$core$Platform$Cmd$map,
+										$author$project$Main$ApiRequest,
+										A2(
+											$author$project$Api$Routes$Main$buildRequest,
+											$author$project$Api$Routes$Main$buildPayload(
+												A3($author$project$Api$Routes$Main$UpdateDistinctAttr, 'suggestions', da, $author$project$Api$Routes$Main$settingsUpdateDecoder)),
+											A2($elm$core$Maybe$withDefault, '', model.savedToken)));
+								} else {
+									return $elm$core$Platform$Cmd$none;
+								}
+							}()
 							])));
 		}
 	});
@@ -12439,15 +12501,15 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 442, column: 13},
-						end: {line: 442, column: 23}
+						start: {line: 471, column: 13},
+						end: {line: 471, column: 23}
 					})('branch \'IndexesViewMsg _\' not implemented');
 			case 'SearchViewMsg':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 445, column: 13},
-						end: {line: 445, column: 23}
+						start: {line: 474, column: 13},
+						end: {line: 474, column: 23}
 					})('branch \'SearchViewMsg _\' not implemented');
 			case 'DocumentsViewMsg':
 				var m = pageViewMsg.a;
@@ -12456,8 +12518,8 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 451, column: 13},
-						end: {line: 451, column: 23}
+						start: {line: 480, column: 13},
+						end: {line: 480, column: 23}
 					})('branch \'TasksViewMsg _\' not implemented');
 			case 'StopWordsViewMsg':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -12954,15 +13016,6 @@ var $author$project$Main$handlePollSignal = F6(
 			}
 		}
 	});
-var $elm$core$List$head = function (list) {
-	if (list.b) {
-		var x = list.a;
-		var xs = list.b;
-		return $elm$core$Maybe$Just(x);
-	} else {
-		return $elm$core$Maybe$Nothing;
-	}
-};
 var $NoRedInk$elm_sweet_poll$SweetPoll$update = F3(
 	function (config, action, _v0) {
 		var model = _v0.a;
@@ -13061,6 +13114,7 @@ var $author$project$Api$Routes$Main$Stats = F2(
 	function (a, b) {
 		return {$: 'Stats', a: a, b: b};
 	});
+var $author$project$Api$Routes$Main$maybeStringListDecoder = $elm$json$Json$Decode$list($elm$json$Json$Decode$string);
 var $author$project$Api$Routes$Main$IndexStats = F3(
 	function (numberOfDocuments, isIndexing, fieldDistribution) {
 		return {fieldDistribution: fieldDistribution, isIndexing: isIndexing, numberOfDocuments: numberOfDocuments};
@@ -13075,7 +13129,6 @@ var $author$project$Api$Routes$Main$statsDecoder = A4(
 		$elm$json$Json$Decode$field,
 		'fieldDistribution',
 		$elm$json$Json$Decode$dict($elm$json$Json$Decode$int)));
-var $author$project$Api$Routes$Main$stringListDecoder = $elm$json$Json$Decode$list($elm$json$Json$Decode$string);
 var $author$project$Api$Routes$Main$synonymsListDecoder = $elm$json$Json$Decode$dict(
 	$elm$json$Json$Decode$list($elm$json$Json$Decode$string));
 var $author$project$Main$handleSidebarSelection = F2(
@@ -13115,8 +13168,8 @@ var $author$project$Main$handleSidebarSelection = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 781, column: 21},
-						end: {line: 781, column: 31}
+						start: {line: 827, column: 21},
+						end: {line: 827, column: 31}
 					})('branch \'RankingRules\' not implemented');
 			case 'Synonyms':
 				return _Utils_Tuple2(
@@ -13142,27 +13195,33 @@ var $author$project$Main$handleSidebarSelection = F2(
 						A2(
 							$author$project$Api$Routes$Main$buildRequest,
 							$author$project$Api$Routes$Main$buildPayload(
-								A2($author$project$Api$Routes$Main$ListStopWords, 'suggestions', $author$project$Api$Routes$Main$stringListDecoder)),
+								A2($author$project$Api$Routes$Main$ListStopWords, 'suggestions', $author$project$Api$Routes$Main$maybeStringListDecoder)),
 							A2($elm$core$Maybe$withDefault, '', model.savedToken))));
 			default:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{selectedPage: selectedPage}),
-					$elm$core$Platform$Cmd$batch(
-						_List_fromArray(
-							[
-								A2(
-								$elm$core$Platform$Cmd$map,
-								$author$project$Main$ApiRequest,
-								A2(
-									$author$project$Api$Routes$Main$buildRequest,
-									$author$project$Api$Routes$Main$buildPayload(
-										A2($author$project$Api$Routes$Main$Stats, 'suggestions', $author$project$Api$Routes$Main$statsDecoder)),
-									A2($elm$core$Maybe$withDefault, '', model.savedToken)))
-							])));
+					A2(
+						$elm$core$Platform$Cmd$map,
+						$author$project$Main$ApiRequest,
+						A2(
+							$author$project$Api$Routes$Main$buildRequest,
+							$author$project$Api$Routes$Main$buildPayload(
+								A2($author$project$Api$Routes$Main$Stats, 'suggestions', $author$project$Api$Routes$Main$statsDecoder)),
+							A2($elm$core$Maybe$withDefault, '', model.savedToken))));
 		}
 	});
+var $elm$json$Json$Decode$oneOf = _Json_oneOf;
+var $elm$json$Json$Decode$maybe = function (decoder) {
+	return $elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, decoder),
+				$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing)
+			]));
+};
+var $author$project$Api$Routes$Main$stringDecoder = $elm$json$Json$Decode$maybe($elm$json$Json$Decode$string);
 var $author$project$Main$updateDocumentsViewModel = F2(
 	function (pages, updatedPage) {
 		return A2(
@@ -13293,7 +13352,7 @@ var $author$project$Main$handleApiRequest = F2(
 						A2(
 							$author$project$Api$Routes$Main$buildRequest,
 							$author$project$Api$Routes$Main$buildPayload(
-								A2($author$project$Api$Routes$Main$ListDisplayedAttrs, 'suggestions', $author$project$Api$Routes$Main$stringListDecoder)),
+								A2($author$project$Api$Routes$Main$ListDisplayedAttrs, 'suggestions', $author$project$Api$Routes$Main$maybeStringListDecoder)),
 							A2($elm$core$Maybe$withDefault, '', model.savedToken))));
 			case 'HandleDisplayedAttrsResponse':
 				var r = apiResponse.a;
@@ -13398,7 +13457,34 @@ var $author$project$Main$handleApiRequest = F2(
 			case 'HandleDistinctAttrResponse':
 				var r = apiResponse.a;
 				var indexUid = apiResponse.b;
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				if (r.$ === 'Ok') {
+					var payload = r.a;
+					if (payload.$ === 'Just') {
+						var p = payload.a;
+						var updatedViewModel = A3(
+							$author$project$UI$PageViews$Attributes$buildModelFromResponse,
+							$author$project$UI$PageViews$Attributes$Distinct,
+							_List_fromArray(
+								[p]),
+							$author$project$Main$getAttributesViewModel(model));
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									distinctAttr: updatedViewModel.distinct,
+									pages: A2(
+										$author$project$Main$updateAttributesViewModel,
+										model.pages,
+										$author$project$UI$Pages$Attributes(updatedViewModel)),
+									selectedPage: $author$project$UI$Pages$Attributes(updatedViewModel)
+								}),
+							$elm$core$Platform$Cmd$none);
+					} else {
+						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					}
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
 			case 'HandleUpdateDisplayedAttrsResponse':
 				var r = apiResponse.a;
 				if (r.$ === 'Ok') {
@@ -13490,7 +13576,7 @@ var $author$project$Main$handleApiRequest = F2(
 									A2(
 										$author$project$Api$Routes$Main$buildRequest,
 										$author$project$Api$Routes$Main$buildPayload(
-											A2($author$project$Api$Routes$Main$ListDisplayedAttrs, 'suggestions', $author$project$Api$Routes$Main$stringListDecoder)),
+											A2($author$project$Api$Routes$Main$ListDisplayedAttrs, 'suggestions', $author$project$Api$Routes$Main$maybeStringListDecoder)),
 										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
 									A2(
 									$elm$core$Platform$Cmd$map,
@@ -13498,7 +13584,7 @@ var $author$project$Main$handleApiRequest = F2(
 									A2(
 										$author$project$Api$Routes$Main$buildRequest,
 										$author$project$Api$Routes$Main$buildPayload(
-											A2($author$project$Api$Routes$Main$ListFilterableAttrs, 'suggestions', $author$project$Api$Routes$Main$stringListDecoder)),
+											A2($author$project$Api$Routes$Main$ListFilterableAttrs, 'suggestions', $author$project$Api$Routes$Main$maybeStringListDecoder)),
 										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
 									A2(
 									$elm$core$Platform$Cmd$map,
@@ -13506,7 +13592,7 @@ var $author$project$Main$handleApiRequest = F2(
 									A2(
 										$author$project$Api$Routes$Main$buildRequest,
 										$author$project$Api$Routes$Main$buildPayload(
-											A2($author$project$Api$Routes$Main$ListSortableAttrs, 'suggestions', $author$project$Api$Routes$Main$stringListDecoder)),
+											A2($author$project$Api$Routes$Main$ListSortableAttrs, 'suggestions', $author$project$Api$Routes$Main$maybeStringListDecoder)),
 										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
 									A2(
 									$elm$core$Platform$Cmd$map,
@@ -13514,7 +13600,15 @@ var $author$project$Main$handleApiRequest = F2(
 									A2(
 										$author$project$Api$Routes$Main$buildRequest,
 										$author$project$Api$Routes$Main$buildPayload(
-											A2($author$project$Api$Routes$Main$ListSearchableAttrs, 'suggestions', $author$project$Api$Routes$Main$stringListDecoder)),
+											A2($author$project$Api$Routes$Main$ListSearchableAttrs, 'suggestions', $author$project$Api$Routes$Main$maybeStringListDecoder)),
+										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
+									A2(
+									$elm$core$Platform$Cmd$map,
+									$author$project$Main$ApiRequest,
+									A2(
+										$author$project$Api$Routes$Main$buildRequest,
+										$author$project$Api$Routes$Main$buildPayload(
+											A2($author$project$Api$Routes$Main$ListDistinctAttr, 'suggestions', $author$project$Api$Routes$Main$stringDecoder)),
 										A2($elm$core$Maybe$withDefault, '', model.savedToken)))
 								])));
 				} else {
@@ -21454,15 +21548,6 @@ var $ThinkAlexandria$elm_pretty_print_json$Json$Print$listToDoc = F2(
 					A2($the_sett$elm_pretty_printer$Pretty$join, $ThinkAlexandria$elm_pretty_print_json$Json$Print$commaLine, list))),
 			$ThinkAlexandria$elm_pretty_print_json$Json$Print$closeBracket);
 	});
-var $elm$json$Json$Decode$oneOf = _Json_oneOf;
-var $elm$json$Json$Decode$maybe = function (decoder) {
-	return $elm$json$Json$Decode$oneOf(
-		_List_fromArray(
-			[
-				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, decoder),
-				$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing)
-			]));
-};
 var $ThinkAlexandria$elm_pretty_print_json$Json$Print$nullToDoc = function (maybeDoc) {
 	if (maybeDoc.$ === 'Just') {
 		var doc = maybeDoc.a;
@@ -23248,4 +23333,4 @@ var $author$project$Main$view = function (model) {
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Api.Routes.Main.IndexKeys":{"args":[],"type":"{ indexUid : String.String, keys : List.List String.String }"},"Api.Routes.Main.IndexStats":{"args":[],"type":"{ numberOfDocuments : Basics.Int, isIndexing : Basics.Bool, fieldDistribution : Dict.Dict String.String Basics.Int }"},"Api.Routes.Main.IndexesRouteResponseListItem":{"args":[],"type":"{ uid : String.String, name : String.String, createdAt : String.String, updatedAt : String.String, primaryKey : String.String }"},"Api.Routes.Main.SettingsRouteResponseItem":{"args":[],"type":"{ uid : Basics.Int, indexUid : String.String }"},"UI.PageViews.Attributes.Attribute":{"args":[],"type":"{ title : String.String, enabled : Basics.Bool, saved : Basics.Bool, requestStatus : Request.RequestStatus }"},"UI.Components.SynonymCard.Model":{"args":[],"type":"{ index : Basics.Int, synonymKey : String.String, synonymsValue : String.String, synonymList : List.List String.String, saved : Maybe.Maybe ( String.String, List.List String.String ), requestStatus : Request.RequestStatus, taskId : Maybe.Maybe Basics.Int, indexId : String.String }"},"UI.PageViews.Attributes.Model":{"args":[],"type":"{ displayed : List.List UI.PageViews.Attributes.Attribute, sortable : List.List UI.PageViews.Attributes.Attribute, searchable : List.List UI.PageViews.Attributes.Attribute, filterable : List.List UI.PageViews.Attributes.Attribute, distinct : List.List UI.PageViews.Attributes.Attribute }"},"UI.PageViews.Documents.Model":{"args":[],"type":"{ documents : List.List String.String }"},"UI.PageViews.Settings.Model":{"args":[],"type":"{ tokenValue : String.String, title : String.String }"},"UI.PageViews.StopWords.Model":{"args":[],"type":"{ words : List.List String.String }"},"UI.PageViews.Synonyms.Model":{"args":[],"type":"{ synonymStates : List.List UI.Components.SynonymCard.Model, indexUid : String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"],"ApiRequest":["Api.Routes.Main.Msg"],"PollUpdate":["Main.Task","SweetPoll.Msg String.String"],"AddToPollQueue":["Main.Task"],"UpdateKeysForIndex":["Api.Routes.Main.IndexKeys"]}},"List.List":{"args":["a"],"tags":{}},"Api.Routes.Main.Msg":{"args":[],"tags":{"HandleListResponse":["Result.Result Http.Error (List.List Api.Routes.Main.IndexesRouteResponseListItem)"],"HandleShowResponse":["Result.Result Http.Error Api.Routes.Main.IndexesRouteResponseListItem"],"HandleDocumentsResponse":["Result.Result Http.Error String.String"],"HandleListStopWordsResponse":["Result.Result Http.Error (List.List String.String)"],"HandleUpdateSynonymsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleListSynonymsResponse":["Result.Result Http.Error (Dict.Dict String.String (List.List String.String))","String.String"],"HandleIndexKeysResponse":["Api.Routes.Main.IndexKeys"],"HandleDisplayedAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleSearchableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleSortableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleFilterableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleDistinctAttrResponse":["Result.Result Http.Error String.String","String.String"],"HandleUpdateDisplayedAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateFilterableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateSortableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateSearchableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateDistinctAttrResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleStatsResponse":["Result.Result Http.Error Api.Routes.Main.IndexStats","String.String"]}},"SweetPoll.Msg":{"args":["data"],"tags":{"PollResult":["Result.Result Http.Error data"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.PageViews.Indexes.Msg"],"SettingsViewMsg":["UI.PageViews.Settings.Msg"],"SearchViewMsg":["UI.PageViews.Search.Msg"],"DocumentsViewMsg":["UI.PageViews.Documents.Msg"],"TasksViewMsg":["UI.PageViews.Tasks.Msg"],"StopWordsViewMsg":["UI.PageViews.StopWords.Msg"],"SynonymsViewMsg":["UI.PageViews.Synonyms.Msg"],"AttributesViewMsg":["UI.PageViews.Attributes.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"]}},"String.String":{"args":[],"tags":{"String":[]}},"Main.Task":{"args":[],"tags":{"UpdateSynonymsTask":["Basics.Int","String.String"],"UpdateAttributeTask":["Basics.Int","String.String","UI.PageViews.Attributes.AttributeType"]}},"UI.PageViews.Attributes.AttributeType":{"args":[],"tags":{"Displayed":[],"Sortable":[],"Searchable":[],"Filterable":[],"Distinct":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"UI.PageViews.Attributes.Msg":{"args":[],"tags":{"X":["Basics.Bool"],"Toggle":["UI.PageViews.Attributes.Attribute","UI.PageViews.Attributes.AttributeType"],"Save":[]}},"UI.PageViews.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Search.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Settings.Msg":{"args":[],"tags":{"KeyValueChanged":["String.String"],"SaveKeyValue":[],"None":[]}},"UI.PageViews.StopWords.Msg":{"args":[],"tags":{"NewStopWord":["String.String"],"Remove":["Basics.Int"],"None":[]}},"UI.PageViews.Synonyms.Msg":{"args":[],"tags":{"CardViewMsg":["UI.Components.SynonymCard.Msg"],"Sync":[],"New":[]}},"UI.PageViews.Tasks.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Page":{"args":[],"tags":{"Settings":["UI.PageViews.Settings.Model"],"Documents":["UI.PageViews.Documents.Model"],"Tasks":[],"RankingRules":[],"Synonyms":["UI.PageViews.Synonyms.Model"],"StopWords":["UI.PageViews.StopWords.Model"],"Attributes":["UI.PageViews.Attributes.Model"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"UI.Components.SynonymCard.Msg":{"args":[],"tags":{"UpdatedTitle":["Basics.Int","String.String"],"UpdatedList":["Basics.Int","String.String"],"Remove":["Basics.Int"],"RetrySave":["Basics.Int"],"Save":["Basics.Int"],"Reset":[],"DoneEditing":[]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}},"Request.RequestStatus":{"args":[],"tags":{"NoRequest":[],"Fired":[],"Success":[],"Failed":[]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Api.Routes.Main.IndexKeys":{"args":[],"type":"{ indexUid : String.String, keys : List.List String.String }"},"Api.Routes.Main.IndexStats":{"args":[],"type":"{ numberOfDocuments : Basics.Int, isIndexing : Basics.Bool, fieldDistribution : Dict.Dict String.String Basics.Int }"},"Api.Routes.Main.IndexesRouteResponseListItem":{"args":[],"type":"{ uid : String.String, name : String.String, createdAt : String.String, updatedAt : String.String, primaryKey : String.String }"},"Api.Routes.Main.SettingsRouteResponseItem":{"args":[],"type":"{ uid : Basics.Int, indexUid : String.String }"},"UI.PageViews.Attributes.Attribute":{"args":[],"type":"{ title : String.String, enabled : Basics.Bool, saved : Basics.Bool, requestStatus : Request.RequestStatus }"},"UI.Components.SynonymCard.Model":{"args":[],"type":"{ index : Basics.Int, synonymKey : String.String, synonymsValue : String.String, synonymList : List.List String.String, saved : Maybe.Maybe ( String.String, List.List String.String ), requestStatus : Request.RequestStatus, taskId : Maybe.Maybe Basics.Int, indexId : String.String }"},"UI.PageViews.Attributes.Model":{"args":[],"type":"{ displayed : List.List UI.PageViews.Attributes.Attribute, sortable : List.List UI.PageViews.Attributes.Attribute, searchable : List.List UI.PageViews.Attributes.Attribute, filterable : List.List UI.PageViews.Attributes.Attribute, distinct : List.List UI.PageViews.Attributes.Attribute }"},"UI.PageViews.Documents.Model":{"args":[],"type":"{ documents : List.List String.String }"},"UI.PageViews.Settings.Model":{"args":[],"type":"{ tokenValue : String.String, title : String.String }"},"UI.PageViews.StopWords.Model":{"args":[],"type":"{ words : List.List String.String }"},"UI.PageViews.Synonyms.Model":{"args":[],"type":"{ synonymStates : List.List UI.Components.SynonymCard.Model, indexUid : String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"],"ApiRequest":["Api.Routes.Main.Msg"],"PollUpdate":["Main.Task","SweetPoll.Msg String.String"],"AddToPollQueue":["Main.Task"],"UpdateKeysForIndex":["Api.Routes.Main.IndexKeys"]}},"List.List":{"args":["a"],"tags":{}},"Api.Routes.Main.Msg":{"args":[],"tags":{"HandleListResponse":["Result.Result Http.Error (List.List Api.Routes.Main.IndexesRouteResponseListItem)"],"HandleShowResponse":["Result.Result Http.Error Api.Routes.Main.IndexesRouteResponseListItem"],"HandleDocumentsResponse":["Result.Result Http.Error String.String"],"HandleListStopWordsResponse":["Result.Result Http.Error (List.List String.String)"],"HandleUpdateSynonymsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleListSynonymsResponse":["Result.Result Http.Error (Dict.Dict String.String (List.List String.String))","String.String"],"HandleIndexKeysResponse":["Api.Routes.Main.IndexKeys"],"HandleDisplayedAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleSearchableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleSortableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleFilterableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleDistinctAttrResponse":["Result.Result Http.Error (Maybe.Maybe String.String)","String.String"],"HandleUpdateDisplayedAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateFilterableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateSortableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateSearchableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateDistinctAttrResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleStatsResponse":["Result.Result Http.Error Api.Routes.Main.IndexStats","String.String"]}},"SweetPoll.Msg":{"args":["data"],"tags":{"PollResult":["Result.Result Http.Error data"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.PageViews.Indexes.Msg"],"SettingsViewMsg":["UI.PageViews.Settings.Msg"],"SearchViewMsg":["UI.PageViews.Search.Msg"],"DocumentsViewMsg":["UI.PageViews.Documents.Msg"],"TasksViewMsg":["UI.PageViews.Tasks.Msg"],"StopWordsViewMsg":["UI.PageViews.StopWords.Msg"],"SynonymsViewMsg":["UI.PageViews.Synonyms.Msg"],"AttributesViewMsg":["UI.PageViews.Attributes.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"]}},"String.String":{"args":[],"tags":{"String":[]}},"Main.Task":{"args":[],"tags":{"UpdateSynonymsTask":["Basics.Int","String.String"],"UpdateAttributeTask":["Basics.Int","String.String","UI.PageViews.Attributes.AttributeType"]}},"UI.PageViews.Attributes.AttributeType":{"args":[],"tags":{"Displayed":[],"Sortable":[],"Searchable":[],"Filterable":[],"Distinct":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"UI.PageViews.Attributes.Msg":{"args":[],"tags":{"X":["Basics.Bool"],"Toggle":["UI.PageViews.Attributes.Attribute","UI.PageViews.Attributes.AttributeType"],"Save":[]}},"UI.PageViews.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Search.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Settings.Msg":{"args":[],"tags":{"KeyValueChanged":["String.String"],"SaveKeyValue":[],"None":[]}},"UI.PageViews.StopWords.Msg":{"args":[],"tags":{"NewStopWord":["String.String"],"Remove":["Basics.Int"],"None":[]}},"UI.PageViews.Synonyms.Msg":{"args":[],"tags":{"CardViewMsg":["UI.Components.SynonymCard.Msg"],"Sync":[],"New":[]}},"UI.PageViews.Tasks.Msg":{"args":[],"tags":{"X":[]}},"UI.Pages.Page":{"args":[],"tags":{"Settings":["UI.PageViews.Settings.Model"],"Documents":["UI.PageViews.Documents.Model"],"Tasks":[],"RankingRules":[],"Synonyms":["UI.PageViews.Synonyms.Model"],"StopWords":["UI.PageViews.StopWords.Model"],"Attributes":["UI.PageViews.Attributes.Model"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"UI.Components.SynonymCard.Msg":{"args":[],"tags":{"UpdatedTitle":["Basics.Int","String.String"],"UpdatedList":["Basics.Int","String.String"],"Remove":["Basics.Int"],"RetrySave":["Basics.Int"],"Save":["Basics.Int"],"Reset":[],"DoneEditing":[]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}},"Request.RequestStatus":{"args":[],"tags":{"NoRequest":[],"Fired":[],"Success":[],"Failed":[]}}}}})}});}(this));

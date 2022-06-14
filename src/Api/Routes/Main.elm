@@ -20,7 +20,7 @@ type Msg
     | HandleSearchableAttrsResponse (Result Http.Error (List String)) String
     | HandleSortableAttrsResponse (Result Http.Error (List String)) String
     | HandleFilterableAttrsResponse (Result Http.Error (List String)) String
-    | HandleDistinctAttrResponse (Result Http.Error String) String
+    | HandleDistinctAttrResponse (Result Http.Error (Maybe String)) String
     | HandleUpdateDisplayedAttrsResponse (Result Http.Error SettingsRouteResponseItem)
     | HandleUpdateFilterableAttrsResponse (Result Http.Error SettingsRouteResponseItem)
     | HandleUpdateSortableAttrsResponse (Result Http.Error SettingsRouteResponseItem)
@@ -46,7 +46,7 @@ type Route
     | ListSearchableAttrs String (Decoder (List String))
     | ListSortableAttrs String (Decoder (List String))
     | ListFilterableAttrs String (Decoder (List String))
-    | ListDistinctAttr String (Decoder String)
+    | ListDistinctAttr String (Decoder (Maybe String))
     | UpdateDisplayedAttrs String (List String) (Decoder SettingsRouteResponseItem)
     | UpdateSearchableAttrs String (List String) (Decoder SettingsRouteResponseItem)
     | UpdateSortableAttrs String (List String) (Decoder SettingsRouteResponseItem)
@@ -469,9 +469,14 @@ indexesRouteResponseListItemDecoder =
         )
 
 
-stringListDecoder : Decoder (List String)
-stringListDecoder =
+maybeStringListDecoder : Decoder (List String)
+maybeStringListDecoder =
     Json.Decode.list string
+
+
+stringDecoder : Decoder (Maybe String)
+stringDecoder =
+    Json.Decode.maybe string
 
 
 taskConfigBuilder : Int -> SweetPoll.Config String

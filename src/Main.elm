@@ -241,7 +241,7 @@ handleApiRequest model apiResponse =
             -- fire mult commands
             ( model
             , Api.Routes.Main.buildRequest
-                (Api.Routes.Main.buildPayload (ListDisplayedAttrs "suggestions" Api.Routes.Main.stringListDecoder))
+                (Api.Routes.Main.buildPayload (ListDisplayedAttrs "suggestions" Api.Routes.Main.maybeStringListDecoder))
                 (Maybe.withDefault
                     ""
                     model.savedToken
@@ -330,7 +330,29 @@ handleApiRequest model apiResponse =
                     ( model, Cmd.none )
 
         HandleDistinctAttrResponse r indexUid ->
-            ( model, Cmd.none )
+            case r of
+                Ok payload ->
+                    case payload of
+                        Just p ->
+                            let
+                                updatedViewModel =
+                                    buildModelFromResponse AttributesPage.Distinct
+                                        [ p ]
+                                        (getAttributesViewModel model)
+                            in
+                            ( { model
+                                | distinctAttr = updatedViewModel.distinct
+                                , pages = updateAttributesViewModel model.pages (Attributes updatedViewModel)
+                                , selectedPage = Attributes updatedViewModel
+                              }
+                            , Cmd.none
+                            )
+
+                        Nothing ->
+                            ( model, Cmd.none )
+
+                Err _ ->
+                    ( model, Cmd.none )
 
         HandleUpdateDisplayedAttrsResponse r ->
             case r of
@@ -398,28 +420,35 @@ handleApiRequest model apiResponse =
                       }
                     , Cmd.batch
                         [ Api.Routes.Main.buildRequest
-                            (Api.Routes.Main.buildPayload (ListDisplayedAttrs "suggestions" Api.Routes.Main.stringListDecoder))
+                            (Api.Routes.Main.buildPayload (ListDisplayedAttrs "suggestions" Api.Routes.Main.maybeStringListDecoder))
                             (Maybe.withDefault
                                 ""
                                 model.savedToken
                             )
                             |> Cmd.map ApiRequest
                         , Api.Routes.Main.buildRequest
-                            (Api.Routes.Main.buildPayload (ListFilterableAttrs "suggestions" Api.Routes.Main.stringListDecoder))
+                            (Api.Routes.Main.buildPayload (ListFilterableAttrs "suggestions" Api.Routes.Main.maybeStringListDecoder))
                             (Maybe.withDefault
                                 ""
                                 model.savedToken
                             )
                             |> Cmd.map ApiRequest
                         , Api.Routes.Main.buildRequest
-                            (Api.Routes.Main.buildPayload (ListSortableAttrs "suggestions" Api.Routes.Main.stringListDecoder))
+                            (Api.Routes.Main.buildPayload (ListSortableAttrs "suggestions" Api.Routes.Main.maybeStringListDecoder))
                             (Maybe.withDefault
                                 ""
                                 model.savedToken
                             )
                             |> Cmd.map ApiRequest
                         , Api.Routes.Main.buildRequest
-                            (Api.Routes.Main.buildPayload (ListSearchableAttrs "suggestions" Api.Routes.Main.stringListDecoder))
+                            (Api.Routes.Main.buildPayload (ListSearchableAttrs "suggestions" Api.Routes.Main.maybeStringListDecoder))
+                            (Maybe.withDefault
+                                ""
+                                model.savedToken
+                            )
+                            |> Cmd.map ApiRequest
+                        , Api.Routes.Main.buildRequest
+                            (Api.Routes.Main.buildPayload (ListDistinctAttr "suggestions" Api.Routes.Main.stringDecoder))
                             (Maybe.withDefault
                                 ""
                                 model.savedToken
@@ -569,9 +598,9 @@ handleAttributesViewMsg model msg =
                                         { x | enabled = not x.enabled }
 
                                     else
-                                        x
+                                        { x | enabled = False }
                                 )
-                                model.displayedAttrs
+                                model.distinctAttr
 
                         updatedModel =
                             { model | distinctAttr = updatedDistinctAttr }
@@ -656,6 +685,23 @@ handleAttributesViewMsg model msg =
                         model.savedToken
                     )
                     |> Cmd.map ApiRequest
+                , case AttributesPage.getDistinctAttr model.distinctAttr of
+                    Just da ->
+                        Api.Routes.Main.buildRequest
+                            (Api.Routes.Main.buildPayload
+                                (UpdateDistinctAttr "suggestions"
+                                    da
+                                    Api.Routes.Main.settingsUpdateDecoder
+                                )
+                            )
+                            (Maybe.withDefault
+                                ""
+                                model.savedToken
+                            )
+                            |> Cmd.map ApiRequest
+
+                    Nothing ->
+                        Cmd.none
                 ]
             )
 
@@ -794,7 +840,7 @@ handleSidebarSelection model sidebarMsg =
                 StopWords _ ->
                     ( { model | selectedPage = selectedPage }
                     , Api.Routes.Main.buildRequest
-                        (Api.Routes.Main.buildPayload (ListStopWords "suggestions" Api.Routes.Main.stringListDecoder))
+                        (Api.Routes.Main.buildPayload (ListStopWords "suggestions" Api.Routes.Main.maybeStringListDecoder))
                         (Maybe.withDefault
                             ""
                             model.savedToken
@@ -804,15 +850,13 @@ handleSidebarSelection model sidebarMsg =
 
                 Attributes _ ->
                     ( { model | selectedPage = selectedPage }
-                    , Cmd.batch
-                        [ Api.Routes.Main.buildRequest
-                            (Api.Routes.Main.buildPayload (Stats "suggestions" statsDecoder))
-                            (Maybe.withDefault
-                                ""
-                                model.savedToken
-                            )
-                            |> Cmd.map ApiRequest
-                        ]
+                    , Api.Routes.Main.buildRequest
+                        (Api.Routes.Main.buildPayload (Stats "suggestions" statsDecoder))
+                        (Maybe.withDefault
+                            ""
+                            model.savedToken
+                        )
+                        |> Cmd.map ApiRequest
                     )
 
 
