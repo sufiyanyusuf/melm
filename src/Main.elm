@@ -7,7 +7,6 @@ import Element exposing (..)
 import Html exposing (Html)
 import Http
 import Request exposing (..)
-import String exposing (words)
 import SweetPoll exposing (PollingState)
 import UI.Components.SynonymCard exposing (Msg(..))
 import UI.PageView as PageView exposing (Msg(..))
@@ -191,15 +190,15 @@ handleApiRequest model apiResponse =
                 Err _ ->
                     ( model, Cmd.none )
 
-        HandleListStopWordsResponse r ->
+        HandleListStopWordsResponse r i ->
             case r of
                 Ok payload ->
                     let
                         stopWordsViewModel =
-                            StopWordsPage.buildModelFromResponse payload model.stopWords
+                            StopWordsPage.buildModelFromResponse payload model.stopWords i
 
                         stopWordsPageViewModel =
-                            StopWords { words = stopWordsViewModel.words }
+                            StopWords { words = stopWordsViewModel.words, indexUid = i }
 
                         updatedModelValue =
                             { model
@@ -478,7 +477,7 @@ handlePageViewMessage model pageViewMsg =
         PageView.SearchViewMsg _ ->
             Debug.todo "branch 'SearchViewMsg _' not implemented"
 
-        PageView.DocumentsViewMsg m ->
+        PageView.DocumentsViewMsg _ ->
             ( model, Cmd.none )
 
         PageView.TasksViewMsg _ ->
@@ -772,13 +771,13 @@ handleSynonymsViewMsg model msg =
 handleStopWordsViewMsg : Model -> StopWordsPage.Msg -> ( Model, Cmd Msg )
 handleStopWordsViewMsg model msg =
     case msg of
-        StopWordsPage.NewStopWord w ->
+        StopWordsPage.NewStopWord w i ->
             let
                 updatedStopWordsList =
                     model.stopWords ++ [ StopWordsPage.createNew w ]
 
                 updatedStopWordsPageModel =
-                    StopWords { words = updatedStopWordsList }
+                    StopWords { words = updatedStopWordsList, indexUid = i }
 
                 updatedModelValue =
                     { model
@@ -796,6 +795,10 @@ handleStopWordsViewMsg model msg =
             ( model, Cmd.none )
 
         _ ->
+            -- let
+            --     ( _, _ ) =
+            --         StopWordsPage.update msg { words = model.stopWords, indexUid = "" }
+            -- in
             ( model, Cmd.none )
 
 
@@ -965,9 +968,11 @@ getIndexesViewModel model =
     { indexes = model.indexes }
 
 
-getStopWordsViewModel : Model -> StopWordsPage.Model
-getStopWordsViewModel model =
-    { words = model.stopWords }
+getStopWordsViewModel : Model -> String -> StopWordsPage.Model
+getStopWordsViewModel model i =
+    { words = model.stopWords
+    , indexUid = i
+    }
 
 
 getSynonymsViewModel : Model -> String -> UI.PageViews.Synonyms.Model

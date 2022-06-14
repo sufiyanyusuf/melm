@@ -3,6 +3,7 @@ module UI.Components.SynonymCard exposing (..)
 import Element exposing (..)
 import Element.Background
 import Element.Border exposing (rounded)
+import Parser exposing (Step(..))
 import Request exposing (..)
 import Svg.Attributes exposing (radius)
 import UI.Elements
@@ -76,8 +77,8 @@ view model =
         , Element.Border.rounded 8
         , Element.width fill
         ]
-        [ UI.Elements.textfield model.synonymKey "Tomato" (UpdatedTitle model.index) DoneEditing
-        , UI.Elements.textfield model.synonymsValue "Tomayto, Tomaato, Tomaeto" (UpdatedList model.index) DoneEditing
+        [ UI.Elements.textfield model.synonymKey "Tomato" (UpdatedTitle model.index) DoneEditing DoneEditing
+        , UI.Elements.textfield model.synonymsValue "Tomayto, Tomaato, Tomaeto" (UpdatedList model.index) DoneEditing DoneEditing
         , loadingView model
         , failedView model
         ]

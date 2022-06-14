@@ -7,11 +7,22 @@ import UI.Styles
 
 
 type Msg
-    = NewStopWord String
-    | ValueUpdated String
+    = NewStopWord String String
+    | NewValueUpdated String String
     | Remove Int
     | Sync
     | None
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        NewValueUpdated s i ->
+            Debug.log i
+                ( model, Cmd.none )
+
+        _ ->
+            ( model, Cmd.none )
 
 
 type alias StopWord =
@@ -23,12 +34,13 @@ type alias StopWord =
 
 type alias Model =
     { words : List StopWord
+    , indexUid : String
     }
 
 
 init : Model
 init =
-    { words = [] }
+    { words = [], indexUid = "" }
 
 
 view : Model -> Element Msg
@@ -44,7 +56,7 @@ view model =
             (UI.Styles.getTypographicStyleFor UI.Styles.H1)
             (text "Stop Words")
         , UI.Elements.spacer UI.Styles.XL
-        , UI.Elements.textfield "" "Add a word" ValueUpdated None
+        , UI.Elements.textfield "" "Add a word" (NewValueUpdated model.indexUid) None None
         , UI.Elements.spacer UI.Styles.SM
         , Element.wrappedRow
             [ spacing 12
@@ -59,8 +71,8 @@ createNew s =
     { title = s, requestStatus = NoRequest, saved = False }
 
 
-buildModelFromResponse : List String -> List StopWord -> Model
-buildModelFromResponse r m =
+buildModelFromResponse : List String -> List StopWord -> String -> Model
+buildModelFromResponse r m i =
     { words =
         List.map
             (\x ->
@@ -70,4 +82,5 @@ buildModelFromResponse r m =
                 }
             )
             r
+    , indexUid = i
     }

@@ -28,23 +28,3 @@ init indexUid =
     , Settings Settings.init
     , Attributes Attributes.init
     ]
-
-
-
--- pageTitle : Page -> String
--- pageTitle page =
---     case page of
---         Indexes ->
---             "Indexes"
---         Settings _ ->
---             "Settings"
---         Search ->
---             "Search"
---         Stats ->
---             "Stats"
---         Documents ->
---             "Documents"
---         Keys ->
---             "Keys"
---         Tasks ->
---             "Tasks"

@@ -12,7 +12,7 @@ type Msg
     = HandleListResponse (Result Http.Error (List IndexesRouteResponseListItem))
     | HandleShowResponse (Result Http.Error IndexesRouteResponseListItem)
     | HandleDocumentsResponse (Result Http.Error String)
-    | HandleListStopWordsResponse (Result Http.Error (List String))
+    | HandleListStopWordsResponse (Result Http.Error (List String)) String
     | HandleUpdateSynonymsResponse (Result Http.Error SettingsRouteResponseItem)
     | HandleListSynonymsResponse (Result Http.Error (Dict String (List String))) String
     | HandleIndexKeysResponse IndexKeys
@@ -144,7 +144,7 @@ buildRequest payload token =
                 , tracker = Nothing
                 }
 
-        ListStopWords _ d ->
+        ListStopWords x d ->
             Http.request
                 { method = getRequestMethodTitle payload.method
                 , headers = headers token
@@ -154,6 +154,7 @@ buildRequest payload token =
                 , timeout = Nothing
                 , tracker = Nothing
                 }
+                |> Cmd.map (\a -> a x)
 
         UpdateStopWords _ _ ->
             Debug.todo "branch 'UpdateStopWords _' not implemented"

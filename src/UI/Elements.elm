@@ -5,6 +5,8 @@ import Element.Background as Background
 import Element.Border
 import Element.Events exposing (onClick, onLoseFocus)
 import Element.Input as Input
+import Html.Events
+import Json.Decode as Decode
 import Request exposing (RequestStatus(..))
 import UI.Icons exposing (Icon, Style(..), buildIcon)
 import UI.Styles exposing (Size(..))
@@ -32,11 +34,11 @@ spacer size =
             Element.el [ Element.width fill, Element.height fill ] Element.none
 
 
-textfield : String -> String -> (String -> msg) -> msg -> Element msg
-textfield value placeholder valueChanged loseFocus =
+textfield : String -> String -> (String -> msg) -> msg -> msg -> Element msg
+textfield value placeholder valueChanged loseFocus returnKeyMsg =
     el
         (UI.Styles.getTypographicStyleFor UI.Styles.Body
-            ++ [ Element.width fill ]
+            ++ [ Element.width fill, onEnter returnKeyMsg ]
         )
         (Input.text
             [ spacing 8
@@ -53,6 +55,23 @@ textfield value placeholder valueChanged loseFocus =
             , onChange = valueChanged
             , label = Input.labelHidden ""
             }
+        )
+
+
+onEnter : msg -> Element.Attribute msg
+onEnter msg =
+    Element.htmlAttribute
+        (Html.Events.on "keyup"
+            (Decode.field "key" Decode.string
+                |> Decode.andThen
+                    (\key ->
+                        if key == "Enter" then
+                            Decode.succeed msg
+
+                        else
+                            Decode.fail "Not the enter key"
+                    )
+            )
         )
 
 
