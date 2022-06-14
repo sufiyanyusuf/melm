@@ -1,5 +1,6 @@
 module UI.PageViews.Attributes exposing (..)
 
+import Chart.Attributes exposing (borderWidth)
 import Element exposing (..)
 import Element.Background
 import Element.Border

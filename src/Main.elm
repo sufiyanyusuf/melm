@@ -7,6 +7,7 @@ import Element exposing (..)
 import Html exposing (Html)
 import Http
 import Request exposing (..)
+import String exposing (words)
 import SweetPoll exposing (PollingState)
 import UI.Components.SynonymCard exposing (Msg(..))
 import UI.PageView as PageView exposing (Msg(..))
@@ -14,7 +15,7 @@ import UI.PageViews.Attributes as AttributesPage exposing (buildModelFromRespons
 import UI.PageViews.Documents
 import UI.PageViews.Indexes
 import UI.PageViews.Settings as SettingsPage
-import UI.PageViews.StopWords
+import UI.PageViews.StopWords as StopWordsPage
 import UI.PageViews.Synonyms exposing (Msg(..))
 import UI.Pages as Views exposing (Page(..))
 import UI.Sidebar as Sidebar
@@ -80,7 +81,7 @@ type alias Model =
     , documents : List String
     , documentKeys : ( String, List String )
     , selectedIndex : Maybe IndexesRouteResponseListItem -- Decouple this
-    , stopWords : List String
+    , stopWords : List StopWordsPage.StopWord
     , synonyms : List UI.Components.SynonymCard.Model -- Decouple this
     , pollingQueue : List ( Task, SweetPoll.PollingState String )
     , displayedAttrs : List AttributesPage.Attribute
@@ -194,16 +195,20 @@ handleApiRequest model apiResponse =
             case r of
                 Ok payload ->
                     let
-                        updatedStopWordsPage =
-                            StopWords { words = payload }
+                        stopWordsViewModel =
+                            StopWordsPage.buildModelFromResponse payload model.stopWords
+
+                        stopWordsPageViewModel =
+                            StopWords { words = stopWordsViewModel.words }
+
+                        updatedModelValue =
+                            { model
+                                | stopWords = stopWordsViewModel.words
+                                , pages = updateStopWordsViewModel model.pages stopWordsPageViewModel
+                                , selectedPage = stopWordsPageViewModel
+                            }
                     in
-                    ( { model
-                        | stopWords = payload
-                        , pages = updateStopWordsViewModel model.pages updatedStopWordsPage
-                        , selectedPage = updatedStopWordsPage
-                      }
-                    , Cmd.none
-                    )
+                    ( updatedModelValue, Cmd.none )
 
                 Err _ ->
                     ( model, Cmd.none )
@@ -479,8 +484,8 @@ handlePageViewMessage model pageViewMsg =
         PageView.TasksViewMsg _ ->
             Debug.todo "branch 'TasksViewMsg _' not implemented"
 
-        PageView.StopWordsViewMsg _ ->
-            ( model, Cmd.none )
+        PageView.StopWordsViewMsg m ->
+            handleStopWordsViewMsg model m
 
         PageView.SynonymsViewMsg msg ->
             handleSynonymsViewMsg model msg
@@ -764,6 +769,36 @@ handleSynonymsViewMsg model msg =
             ( model, Cmd.none )
 
 
+handleStopWordsViewMsg : Model -> StopWordsPage.Msg -> ( Model, Cmd Msg )
+handleStopWordsViewMsg model msg =
+    case msg of
+        StopWordsPage.NewStopWord w ->
+            let
+                updatedStopWordsList =
+                    model.stopWords ++ [ StopWordsPage.createNew w ]
+
+                updatedStopWordsPageModel =
+                    StopWords { words = updatedStopWordsList }
+
+                updatedModelValue =
+                    { model
+                        | stopWords = updatedStopWordsList
+                        , pages = updateStopWordsViewModel model.pages updatedStopWordsPageModel
+                        , selectedPage = updatedStopWordsPageModel
+                    }
+            in
+            ( updatedModelValue, Cmd.none )
+
+        StopWordsPage.Remove i ->
+            ( model, Cmd.none )
+
+        StopWordsPage.Sync ->
+            ( model, Cmd.none )
+
+        _ ->
+            ( model, Cmd.none )
+
+
 handleSettingsViewMsg : Model -> SettingsPage.Msg -> ( Model, Cmd Msg )
 handleSettingsViewMsg model msg =
     case msg of
@@ -930,7 +965,7 @@ getIndexesViewModel model =
     { indexes = model.indexes }
 
 
-getStopWordsViewModel : Model -> UI.PageViews.StopWords.Model
+getStopWordsViewModel : Model -> StopWordsPage.Model
 getStopWordsViewModel model =
     { words = model.stopWords }
 
