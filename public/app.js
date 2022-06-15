@@ -10786,7 +10786,7 @@ var $author$project$UI$PageViews$Attributes$init = $author$project$UI$PageViews$
 		['attr a', 'attr b', 'attr c']));
 var $author$project$UI$PageViews$Documents$init = {documents: _List_Nil};
 var $author$project$UI$PageViews$Settings$init = {title: 'Settings', tokenValue: ''};
-var $author$project$UI$PageViews$StopWords$init = {indexUid: '', words: _List_Nil};
+var $author$project$UI$PageViews$StopWords$init = {newValue: '', words: _List_Nil};
 var $author$project$UI$Pages$init = function (indexUid) {
 	return {
 		attributes: $author$project$UI$PageViews$Attributes$init,
@@ -10830,9 +10830,6 @@ var $author$project$Main$AddToPollQueue = function (a) {
 var $author$project$Main$ApiRequest = function (a) {
 	return {$: 'ApiRequest', a: a};
 };
-var $author$project$UI$Pages$Attributes = function (a) {
-	return {$: 'Attributes', a: a};
-};
 var $author$project$UI$PageViews$Attributes$Displayed = {$: 'Displayed'};
 var $author$project$UI$PageViews$Attributes$Distinct = {$: 'Distinct'};
 var $author$project$UI$PageViews$Attributes$Filterable = {$: 'Filterable'};
@@ -10861,9 +10858,6 @@ var $author$project$UI$PageViews$Documents$Model = function (documents) {
 };
 var $author$project$UI$PageViews$Attributes$Searchable = {$: 'Searchable'};
 var $author$project$UI$PageViews$Attributes$Sortable = {$: 'Sortable'};
-var $author$project$UI$Pages$StopWords = function (a) {
-	return {$: 'StopWords', a: a};
-};
 var $author$project$Main$UpdateAttributeTask = F3(
 	function (a, b, c) {
 		return {$: 'UpdateAttributeTask', a: a, b: b, c: c};
@@ -11038,10 +11032,10 @@ var $author$project$UI$PageViews$Attributes$buildModelFromResponse = F3(
 					});
 		}
 	});
-var $author$project$UI$PageViews$StopWords$buildModelFromResponse = F3(
-	function (r, m, i) {
+var $author$project$UI$PageViews$StopWords$buildModelFromResponse = F2(
+	function (r, m) {
 		return {
-			indexUid: i,
+			newValue: m.newValue,
 			words: A2(
 				$elm$core$List$map,
 				function (x) {
@@ -11974,6 +11968,9 @@ var $author$project$Api$Routes$Main$settingsUpdateDecoder = A3(
 	$author$project$Api$Routes$Main$SettingsRouteResponseItem,
 	A2($elm$json$Json$Decode$field, 'uid', $elm$json$Json$Decode$int),
 	A2($elm$json$Json$Decode$field, 'indexUid', $elm$json$Json$Decode$string));
+var $author$project$UI$Pages$Attributes = function (a) {
+	return {$: 'Attributes', a: a};
+};
 var $author$project$Main$updateAttributesViewModel = F2(
 	function (pages, updatedPage) {
 		return _Utils_update(
@@ -12240,14 +12237,14 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 							])));
 		}
 	});
-var $author$project$UI$Pages$Settings = function (a) {
-	return {$: 'Settings', a: a};
-};
 var $author$project$Main$getSettingsViewModel = function (model) {
 	return {
 		title: 'Settings',
 		tokenValue: A2($elm$core$Maybe$withDefault, '', model.token)
 	};
+};
+var $author$project$UI$Pages$Settings = function (a) {
+	return {$: 'Settings', a: a};
 };
 var $author$project$Main$updateSettingsViewModel = F2(
 	function (pages, updatedPage) {
@@ -12269,7 +12266,6 @@ var $author$project$Main$handleSettingsViewMsg = F2(
 						token: $elm$core$Maybe$Just(t)
 					});
 				var updatedSettingsPageViewModel = $author$project$Main$getSettingsViewModel(updatedTokenValue);
-				var updatedSettingsPage = $author$project$UI$Pages$Settings(updatedSettingsPageViewModel);
 				var updatedModelValue = _Utils_update(
 					model,
 					{
@@ -12287,8 +12283,15 @@ var $author$project$Main$handleSettingsViewMsg = F2(
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
+var $author$project$UI$PageViews$StopWords$Model = F2(
+	function (words, newValue) {
+		return {newValue: newValue, words: words};
+	});
 var $author$project$UI$PageViews$StopWords$createNew = function (s) {
 	return {requestStatus: $author$project$Request$NoRequest, saved: false, title: s};
+};
+var $author$project$UI$Pages$StopWords = function (a) {
+	return {$: 'StopWords', a: a};
 };
 var $author$project$Main$updateStopWordsViewModel = F2(
 	function (pages, updatedPage) {
@@ -12304,14 +12307,13 @@ var $author$project$Main$handleStopWordsViewMsg = F2(
 		switch (msg.$) {
 			case 'NewStopWord':
 				var w = msg.a;
-				var i = msg.b;
 				var updatedStopWordsList = _Utils_ap(
 					model.stopWords,
 					_List_fromArray(
 						[
 							$author$project$UI$PageViews$StopWords$createNew(w)
 						]));
-				var updatedStopWordsViewModel = {indexUid: i, words: updatedStopWordsList};
+				var updatedStopWordsViewModel = A2($author$project$UI$PageViews$StopWords$Model, updatedStopWordsList, model.pages.stopWords.newValue);
 				var updatedModelValue = _Utils_update(
 					model,
 					{
@@ -12320,7 +12322,6 @@ var $author$project$Main$handleStopWordsViewMsg = F2(
 					});
 				return _Utils_Tuple2(updatedModelValue, $elm$core$Platform$Cmd$none);
 			case 'Remove':
-				var i = msg.a;
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'Sync':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -12522,15 +12523,15 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 483, column: 13},
-						end: {line: 483, column: 23}
+						start: {line: 453, column: 13},
+						end: {line: 453, column: 23}
 					})('branch \'IndexesViewMsg _\' not implemented');
 			case 'SearchViewMsg':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 486, column: 13},
-						end: {line: 486, column: 23}
+						start: {line: 456, column: 13},
+						end: {line: 456, column: 23}
 					})('branch \'SearchViewMsg _\' not implemented');
 			case 'DocumentsViewMsg':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -13140,7 +13141,6 @@ var $author$project$Main$handleSidebarSelection = F2(
 			case 'Settings':
 				return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
 			case 'Documents':
-				var d = p.a;
 				return _Utils_Tuple2(
 					updatedModel,
 					A2(
@@ -13236,7 +13236,6 @@ var $author$project$Main$handleApiRequest = F2(
 								1,
 								A2($elm$core$String$dropLeft, 1, payload))));
 					var documentsPageViewModel = $author$project$UI$PageViews$Documents$Model(documents);
-					var updatedDocumentsPage = $author$project$UI$Pages$Documents(documentsPageViewModel);
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -13250,18 +13249,15 @@ var $author$project$Main$handleApiRequest = F2(
 				}
 			case 'HandleListStopWordsResponse':
 				var r = apiResponse.a;
-				var i = apiResponse.b;
 				if (r.$ === 'Ok') {
 					var payload = r.a;
-					var stopWordsViewModel = A3($author$project$UI$PageViews$StopWords$buildModelFromResponse, payload, model.stopWords, i);
+					var stopWordsViewModel = A2($author$project$UI$PageViews$StopWords$buildModelFromResponse, payload, model.pages.stopWords);
 					var updatedModelValue = _Utils_update(
 						model,
 						{
 							pages: A2($author$project$Main$updateStopWordsViewModel, model.pages, stopWordsViewModel),
 							stopWords: stopWordsViewModel.words
 						});
-					var stopWordsPageViewModel = $author$project$UI$Pages$StopWords(
-						{indexUid: i, words: stopWordsViewModel.words});
 					return _Utils_Tuple2(updatedModelValue, $elm$core$Platform$Cmd$none);
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -13297,7 +13293,6 @@ var $author$project$Main$handleApiRequest = F2(
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
 			case 'HandleIndexKeysResponse':
-				var v = apiResponse.a;
 				return _Utils_Tuple2(
 					model,
 					A2(
@@ -13310,7 +13305,6 @@ var $author$project$Main$handleApiRequest = F2(
 							A2($elm$core$Maybe$withDefault, '', model.savedToken))));
 			case 'HandleDisplayedAttrsResponse':
 				var r = apiResponse.a;
-				var indexUid = apiResponse.b;
 				if (r.$ === 'Ok') {
 					var payload = r.a;
 					var updatedViewModel = A3(
@@ -13331,7 +13325,6 @@ var $author$project$Main$handleApiRequest = F2(
 				}
 			case 'HandleSortableAttrsResponse':
 				var r = apiResponse.a;
-				var indexUid = apiResponse.b;
 				if (r.$ === 'Ok') {
 					var payload = r.a;
 					var updatedViewModel = A3(
@@ -13352,7 +13345,6 @@ var $author$project$Main$handleApiRequest = F2(
 				}
 			case 'HandleFilterableAttrsResponse':
 				var r = apiResponse.a;
-				var indexUid = apiResponse.b;
 				if (r.$ === 'Ok') {
 					var payload = r.a;
 					var updatedViewModel = A3(
@@ -13373,7 +13365,6 @@ var $author$project$Main$handleApiRequest = F2(
 				}
 			case 'HandleSearchableAttrsResponse':
 				var r = apiResponse.a;
-				var indexUid = apiResponse.b;
 				if (r.$ === 'Ok') {
 					var payload = r.a;
 					var updatedViewModel = A3(
@@ -13394,7 +13385,6 @@ var $author$project$Main$handleApiRequest = F2(
 				}
 			case 'HandleDistinctAttrResponse':
 				var r = apiResponse.a;
-				var indexUid = apiResponse.b;
 				if (r.$ === 'Ok') {
 					var payload = r.a;
 					if (payload.$ === 'Just') {
@@ -13486,7 +13476,6 @@ var $author$project$Main$handleApiRequest = F2(
 					var payload = r.a;
 					var keys = $elm$core$Dict$keys(payload.fieldDistribution);
 					var updatedAttributesPageViewModel = $author$project$UI$PageViews$Attributes$buildMockModelFromAttributes(keys);
-					var updatedAttributesPage = $author$project$UI$Pages$Attributes(updatedAttributesPageViewModel);
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -22866,10 +22855,9 @@ var $author$project$UI$PageViews$Settings$view = function (model) {
 				A2($author$project$UI$Elements$button, 'Save Token', $author$project$UI$PageViews$Settings$SaveKeyValue)
 			]));
 };
-var $author$project$UI$PageViews$StopWords$NewValueUpdated = F2(
-	function (a, b) {
-		return {$: 'NewValueUpdated', a: a, b: b};
-	});
+var $author$project$UI$PageViews$StopWords$NewValueUpdated = function (a) {
+	return {$: 'NewValueUpdated', a: a};
+};
 var $author$project$UI$PageViews$StopWords$None = {$: 'None'};
 var $author$project$UI$PageViews$StopWords$Remove = function (a) {
 	return {$: 'Remove', a: a};
@@ -22936,13 +22924,7 @@ var $author$project$UI$PageViews$StopWords$view = function (model) {
 				$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H1),
 				$mdgriffith$elm_ui$Element$text('Stop Words')),
 				$author$project$UI$Elements$spacer($author$project$UI$Styles$XL),
-				A5(
-				$author$project$UI$Elements$textfield,
-				'',
-				'Add a word',
-				$author$project$UI$PageViews$StopWords$NewValueUpdated(model.indexUid),
-				$author$project$UI$PageViews$StopWords$None,
-				$author$project$UI$PageViews$StopWords$None),
+				A5($author$project$UI$Elements$textfield, '', 'Add a word', $author$project$UI$PageViews$StopWords$NewValueUpdated, $author$project$UI$PageViews$StopWords$None, $author$project$UI$PageViews$StopWords$None),
 				$author$project$UI$Elements$spacer($author$project$UI$Styles$SM),
 				A2(
 				$mdgriffith$elm_ui$Element$wrappedRow,
@@ -23280,4 +23262,4 @@ var $author$project$Main$view = function (model) {
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Api.Routes.Main.IndexKeys":{"args":[],"type":"{ indexUid : String.String, keys : List.List String.String }"},"Api.Routes.Main.IndexStats":{"args":[],"type":"{ numberOfDocuments : Basics.Int, isIndexing : Basics.Bool, fieldDistribution : Dict.Dict String.String Basics.Int }"},"Api.Routes.Main.IndexesRouteResponseListItem":{"args":[],"type":"{ uid : String.String, name : String.String, createdAt : String.String, updatedAt : String.String, primaryKey : String.String }"},"Api.Routes.Main.SettingsRouteResponseItem":{"args":[],"type":"{ uid : Basics.Int, indexUid : String.String }"},"UI.PageViews.Attributes.Attribute":{"args":[],"type":"{ title : String.String, enabled : Basics.Bool, saved : Basics.Bool, requestStatus : Request.RequestStatus }"},"UI.Components.SynonymCard.Model":{"args":[],"type":"{ index : Basics.Int, synonymKey : String.String, synonymsValue : String.String, synonymList : List.List String.String, saved : Maybe.Maybe ( String.String, List.List String.String ), requestStatus : Request.RequestStatus, taskId : Maybe.Maybe Basics.Int, indexId : String.String }"},"UI.PageViews.Attributes.Model":{"args":[],"type":"{ displayed : List.List UI.PageViews.Attributes.Attribute, sortable : List.List UI.PageViews.Attributes.Attribute, searchable : List.List UI.PageViews.Attributes.Attribute, filterable : List.List UI.PageViews.Attributes.Attribute, distinct : List.List UI.PageViews.Attributes.Attribute }"},"UI.PageViews.Documents.Model":{"args":[],"type":"{ documents : List.List String.String }"},"UI.PageViews.Settings.Model":{"args":[],"type":"{ tokenValue : String.String, title : String.String }"},"UI.PageViews.StopWords.Model":{"args":[],"type":"{ words : List.List UI.PageViews.StopWords.StopWord, indexUid : String.String }"},"UI.PageViews.Synonyms.Model":{"args":[],"type":"{ synonymStates : List.List UI.Components.SynonymCard.Model, indexUid : String.String }"},"UI.PageViews.StopWords.StopWord":{"args":[],"type":"{ title : String.String, requestStatus : Request.RequestStatus, saved : Basics.Bool }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"],"ApiRequest":["Api.Routes.Main.Msg"],"PollUpdate":["Main.Task","SweetPoll.Msg String.String"],"AddToPollQueue":["Main.Task"],"UpdateKeysForIndex":["Api.Routes.Main.IndexKeys"]}},"List.List":{"args":["a"],"tags":{}},"Api.Routes.Main.Msg":{"args":[],"tags":{"HandleListResponse":["Result.Result Http.Error (List.List Api.Routes.Main.IndexesRouteResponseListItem)"],"HandleShowResponse":["Result.Result Http.Error Api.Routes.Main.IndexesRouteResponseListItem"],"HandleDocumentsResponse":["Result.Result Http.Error String.String"],"HandleListStopWordsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleUpdateSynonymsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleListSynonymsResponse":["Result.Result Http.Error (Dict.Dict String.String (List.List String.String))","String.String"],"HandleIndexKeysResponse":["Api.Routes.Main.IndexKeys"],"HandleDisplayedAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleSearchableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleSortableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleFilterableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleDistinctAttrResponse":["Result.Result Http.Error (Maybe.Maybe String.String)","String.String"],"HandleUpdateDisplayedAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateFilterableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateSortableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateSearchableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateDistinctAttrResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleStatsResponse":["Result.Result Http.Error Api.Routes.Main.IndexStats","String.String"]}},"SweetPoll.Msg":{"args":["data"],"tags":{"PollResult":["Result.Result Http.Error data"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.PageViews.Indexes.Msg"],"SettingsViewMsg":["UI.PageViews.Settings.Msg"],"SearchViewMsg":["UI.PageViews.Search.Msg"],"DocumentsViewMsg":["UI.PageViews.Documents.Msg"],"StopWordsViewMsg":["UI.PageViews.StopWords.Msg"],"SynonymsViewMsg":["UI.PageViews.Synonyms.Msg"],"AttributesViewMsg":["UI.PageViews.Attributes.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"]}},"String.String":{"args":[],"tags":{"String":[]}},"Main.Task":{"args":[],"tags":{"UpdateSynonymsTask":["Basics.Int","String.String"],"UpdateAttributeTask":["Basics.Int","String.String","UI.PageViews.Attributes.AttributeType"]}},"UI.PageViews.Attributes.AttributeType":{"args":[],"tags":{"Displayed":[],"Sortable":[],"Searchable":[],"Filterable":[],"Distinct":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"UI.PageViews.Attributes.Msg":{"args":[],"tags":{"X":["Basics.Bool"],"Toggle":["UI.PageViews.Attributes.Attribute","UI.PageViews.Attributes.AttributeType"],"Save":[]}},"UI.PageViews.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Search.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Settings.Msg":{"args":[],"tags":{"KeyValueChanged":["String.String"],"SaveKeyValue":[],"None":[]}},"UI.PageViews.StopWords.Msg":{"args":[],"tags":{"NewStopWord":["String.String","String.String"],"NewValueUpdated":["String.String","String.String"],"Remove":["Basics.Int"],"Sync":[],"None":[]}},"UI.PageViews.Synonyms.Msg":{"args":[],"tags":{"CardViewMsg":["UI.Components.SynonymCard.Msg"],"Sync":[],"New":[]}},"UI.Pages.Page":{"args":[],"tags":{"Settings":["UI.PageViews.Settings.Model"],"Documents":["UI.PageViews.Documents.Model"],"Synonyms":["UI.PageViews.Synonyms.Model"],"StopWords":["UI.PageViews.StopWords.Model"],"Attributes":["UI.PageViews.Attributes.Model"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"UI.Components.SynonymCard.Msg":{"args":[],"tags":{"UpdatedTitle":["Basics.Int","String.String"],"UpdatedList":["Basics.Int","String.String"],"Remove":["Basics.Int"],"RetrySave":["Basics.Int"],"Save":["Basics.Int"],"Reset":[],"DoneEditing":[]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}},"Request.RequestStatus":{"args":[],"tags":{"NoRequest":[],"Fired":[],"Success":[],"Failed":[]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Api.Routes.Main.IndexKeys":{"args":[],"type":"{ indexUid : String.String, keys : List.List String.String }"},"Api.Routes.Main.IndexStats":{"args":[],"type":"{ numberOfDocuments : Basics.Int, isIndexing : Basics.Bool, fieldDistribution : Dict.Dict String.String Basics.Int }"},"Api.Routes.Main.IndexesRouteResponseListItem":{"args":[],"type":"{ uid : String.String, name : String.String, createdAt : String.String, updatedAt : String.String, primaryKey : String.String }"},"Api.Routes.Main.SettingsRouteResponseItem":{"args":[],"type":"{ uid : Basics.Int, indexUid : String.String }"},"UI.PageViews.Attributes.Attribute":{"args":[],"type":"{ title : String.String, enabled : Basics.Bool, saved : Basics.Bool, requestStatus : Request.RequestStatus }"},"UI.Components.SynonymCard.Model":{"args":[],"type":"{ index : Basics.Int, synonymKey : String.String, synonymsValue : String.String, synonymList : List.List String.String, saved : Maybe.Maybe ( String.String, List.List String.String ), requestStatus : Request.RequestStatus, taskId : Maybe.Maybe Basics.Int, indexId : String.String }"},"UI.PageViews.Attributes.Model":{"args":[],"type":"{ displayed : List.List UI.PageViews.Attributes.Attribute, sortable : List.List UI.PageViews.Attributes.Attribute, searchable : List.List UI.PageViews.Attributes.Attribute, filterable : List.List UI.PageViews.Attributes.Attribute, distinct : List.List UI.PageViews.Attributes.Attribute }"},"UI.PageViews.Documents.Model":{"args":[],"type":"{ documents : List.List String.String }"},"UI.PageViews.Settings.Model":{"args":[],"type":"{ tokenValue : String.String, title : String.String }"},"UI.PageViews.StopWords.Model":{"args":[],"type":"{ words : List.List UI.PageViews.StopWords.StopWord, newValue : String.String }"},"UI.PageViews.Synonyms.Model":{"args":[],"type":"{ synonymStates : List.List UI.Components.SynonymCard.Model, indexUid : String.String }"},"UI.PageViews.StopWords.StopWord":{"args":[],"type":"{ title : String.String, requestStatus : Request.RequestStatus, saved : Basics.Bool }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"],"ApiRequest":["Api.Routes.Main.Msg"],"PollUpdate":["Main.Task","SweetPoll.Msg String.String"],"AddToPollQueue":["Main.Task"],"UpdateKeysForIndex":["Api.Routes.Main.IndexKeys"]}},"List.List":{"args":["a"],"tags":{}},"Api.Routes.Main.Msg":{"args":[],"tags":{"HandleListResponse":["Result.Result Http.Error (List.List Api.Routes.Main.IndexesRouteResponseListItem)"],"HandleShowResponse":["Result.Result Http.Error Api.Routes.Main.IndexesRouteResponseListItem"],"HandleDocumentsResponse":["Result.Result Http.Error String.String"],"HandleListStopWordsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleUpdateSynonymsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleListSynonymsResponse":["Result.Result Http.Error (Dict.Dict String.String (List.List String.String))","String.String"],"HandleIndexKeysResponse":["Api.Routes.Main.IndexKeys"],"HandleDisplayedAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleSearchableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleSortableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleFilterableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleDistinctAttrResponse":["Result.Result Http.Error (Maybe.Maybe String.String)","String.String"],"HandleUpdateDisplayedAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateFilterableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateSortableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateSearchableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateDistinctAttrResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleStatsResponse":["Result.Result Http.Error Api.Routes.Main.IndexStats","String.String"]}},"SweetPoll.Msg":{"args":["data"],"tags":{"PollResult":["Result.Result Http.Error data"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.PageViews.Indexes.Msg"],"SettingsViewMsg":["UI.PageViews.Settings.Msg"],"SearchViewMsg":["UI.PageViews.Search.Msg"],"DocumentsViewMsg":["UI.PageViews.Documents.Msg"],"StopWordsViewMsg":["UI.PageViews.StopWords.Msg"],"SynonymsViewMsg":["UI.PageViews.Synonyms.Msg"],"AttributesViewMsg":["UI.PageViews.Attributes.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"]}},"String.String":{"args":[],"tags":{"String":[]}},"Main.Task":{"args":[],"tags":{"UpdateSynonymsTask":["Basics.Int","String.String"],"UpdateAttributeTask":["Basics.Int","String.String","UI.PageViews.Attributes.AttributeType"]}},"UI.PageViews.Attributes.AttributeType":{"args":[],"tags":{"Displayed":[],"Sortable":[],"Searchable":[],"Filterable":[],"Distinct":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"UI.PageViews.Attributes.Msg":{"args":[],"tags":{"X":["Basics.Bool"],"Toggle":["UI.PageViews.Attributes.Attribute","UI.PageViews.Attributes.AttributeType"],"Save":[]}},"UI.PageViews.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Search.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Settings.Msg":{"args":[],"tags":{"KeyValueChanged":["String.String"],"SaveKeyValue":[],"None":[]}},"UI.PageViews.StopWords.Msg":{"args":[],"tags":{"NewStopWord":["String.String"],"NewValueUpdated":["String.String"],"Remove":["Basics.Int"],"Sync":[],"None":[]}},"UI.PageViews.Synonyms.Msg":{"args":[],"tags":{"CardViewMsg":["UI.Components.SynonymCard.Msg"],"Sync":[],"New":[]}},"UI.Pages.Page":{"args":[],"tags":{"Settings":["UI.PageViews.Settings.Model"],"Documents":["UI.PageViews.Documents.Model"],"Synonyms":["UI.PageViews.Synonyms.Model"],"StopWords":["UI.PageViews.StopWords.Model"],"Attributes":["UI.PageViews.Attributes.Model"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"UI.Components.SynonymCard.Msg":{"args":[],"tags":{"UpdatedTitle":["Basics.Int","String.String"],"UpdatedList":["Basics.Int","String.String"],"Remove":["Basics.Int"],"RetrySave":["Basics.Int"],"Save":["Basics.Int"],"Reset":[],"DoneEditing":[]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}},"Request.RequestStatus":{"args":[],"tags":{"NoRequest":[],"Fired":[],"Success":[],"Failed":[]}}}}})}});}(this));

@@ -3,7 +3,7 @@ module Api.Routes.Main exposing (..)
 import Api.Helper exposing (RequestMethod(..), getRequestMethodTitle, headers, rootUrl)
 import Dict exposing (Dict)
 import Http
-import Json.Decode exposing (Decoder, bool, decodeString, dict, field, int, keyValuePairs, list, string)
+import Json.Decode exposing (Decoder, bool, decodeString, field, int, keyValuePairs, list, string)
 import Json.Encode as Encode
 import SweetPoll
 

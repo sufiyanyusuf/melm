@@ -172,9 +172,6 @@ handleApiRequest model apiResponse =
 
                         documentsPageViewModel =
                             DocumentsPage.Model documents
-
-                        updatedDocumentsPage =
-                            Documents documentsPageViewModel
                     in
                     ( { model
                         | documents = documents
@@ -186,15 +183,12 @@ handleApiRequest model apiResponse =
                 Err _ ->
                     ( model, Cmd.none )
 
-        HandleListStopWordsResponse r i ->
+        HandleListStopWordsResponse r _ ->
             case r of
                 Ok payload ->
                     let
                         stopWordsViewModel =
-                            StopWordsPage.buildModelFromResponse payload model.stopWords i
-
-                        stopWordsPageViewModel =
-                            StopWords { words = stopWordsViewModel.words, indexUid = i }
+                            StopWordsPage.buildModelFromResponse payload model.pages.stopWords
 
                         updatedModelValue =
                             { model
@@ -235,8 +229,7 @@ handleApiRequest model apiResponse =
                 Err _ ->
                     ( model, Cmd.none )
 
-        HandleIndexKeysResponse v ->
-            -- fire mult commands
+        HandleIndexKeysResponse _ ->
             ( model
             , Api.Routes.Main.buildRequest
                 (Api.Routes.Main.buildPayload (ListDisplayedAttrs "suggestions" Api.Routes.Main.maybeStringListDecoder))
@@ -247,7 +240,7 @@ handleApiRequest model apiResponse =
                 |> Cmd.map ApiRequest
             )
 
-        HandleDisplayedAttrsResponse r indexUid ->
+        HandleDisplayedAttrsResponse r _ ->
             case r of
                 Ok payload ->
                     let
@@ -266,7 +259,7 @@ handleApiRequest model apiResponse =
                 Err _ ->
                     ( model, Cmd.none )
 
-        HandleSortableAttrsResponse r indexUid ->
+        HandleSortableAttrsResponse r _ ->
             case r of
                 Ok payload ->
                     let
@@ -285,7 +278,7 @@ handleApiRequest model apiResponse =
                 Err _ ->
                     ( model, Cmd.none )
 
-        HandleFilterableAttrsResponse r indexUid ->
+        HandleFilterableAttrsResponse r _ ->
             case r of
                 Ok payload ->
                     let
@@ -304,7 +297,7 @@ handleApiRequest model apiResponse =
                 Err _ ->
                     ( model, Cmd.none )
 
-        HandleSearchableAttrsResponse r indexUid ->
+        HandleSearchableAttrsResponse r _ ->
             case r of
                 Ok payload ->
                     let
@@ -323,7 +316,7 @@ handleApiRequest model apiResponse =
                 Err _ ->
                     ( model, Cmd.none )
 
-        HandleDistinctAttrResponse r indexUid ->
+        HandleDistinctAttrResponse r _ ->
             case r of
                 Ok payload ->
                     case payload of
@@ -396,9 +389,6 @@ handleApiRequest model apiResponse =
 
                         updatedAttributesPageViewModel =
                             AttributesPage.buildMockModelFromAttributes keys
-
-                        updatedAttributesPage =
-                            Attributes updatedAttributesPageViewModel
                     in
                     ( { model
                         | indexStats = Just payload
@@ -749,13 +739,13 @@ handleSynonymsViewMsg model msg =
 handleStopWordsViewMsg : Model -> StopWordsPage.Msg -> ( Model, Cmd Msg )
 handleStopWordsViewMsg model msg =
     case msg of
-        StopWordsPage.NewStopWord w i ->
+        StopWordsPage.NewStopWord w ->
             let
                 updatedStopWordsList =
                     model.stopWords ++ [ StopWordsPage.createNew w ]
 
                 updatedStopWordsViewModel =
-                    { words = updatedStopWordsList, indexUid = i }
+                    StopWordsPage.Model updatedStopWordsList model.pages.stopWords.newValue
 
                 updatedModelValue =
                     { model
@@ -765,7 +755,7 @@ handleStopWordsViewMsg model msg =
             in
             ( updatedModelValue, Cmd.none )
 
-        StopWordsPage.Remove i ->
+        StopWordsPage.Remove _ ->
             ( model, Cmd.none )
 
         StopWordsPage.Sync ->
@@ -785,9 +775,6 @@ handleSettingsViewMsg model msg =
 
                 updatedSettingsPageViewModel =
                     getSettingsViewModel updatedTokenValue
-
-                updatedSettingsPage =
-                    Settings updatedSettingsPageViewModel
 
                 updatedModelValue =
                     { model
@@ -829,7 +816,7 @@ handleSidebarSelection model sidebarMsg =
                 Settings _ ->
                     ( updatedModel, Cmd.none )
 
-                Documents d ->
+                Documents _ ->
                     ( updatedModel
                     , Api.Routes.Main.buildRequest
                         (Api.Routes.Main.buildPayload (ListDocuments "suggestions"))
@@ -942,13 +929,6 @@ getSettingsViewModel model =
 getIndexesViewModel : Model -> IndexesPage.Model
 getIndexesViewModel model =
     { indexes = model.indexes }
-
-
-getStopWordsViewModel : Model -> String -> StopWordsPage.Model
-getStopWordsViewModel model i =
-    { words = model.stopWords
-    , indexUid = i
-    }
 
 
 getSynonymsViewModel : Model -> String -> SynonymsPage.Model
