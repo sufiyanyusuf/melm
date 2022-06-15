@@ -55,6 +55,7 @@ type Msg
 type Task
     = UpdateSynonymsTask Int String
     | UpdateAttributeTask Int String AttributesPage.AttributeType
+    | UpdateStopWordsTask Int String
 
 
 getTaskIndexUid : Task -> String
@@ -65,6 +66,22 @@ getTaskIndexUid task =
 
         UpdateAttributeTask _ uid _ ->
             uid
+
+        UpdateStopWordsTask _ uid ->
+            uid
+
+
+getTaskId : Task -> Int
+getTaskId t =
+    case t of
+        UpdateSynonymsTask tid _ ->
+            tid
+
+        UpdateAttributeTask tid _ _ ->
+            tid
+
+        UpdateStopWordsTask tid _ ->
+            tid
 
 
 
@@ -240,7 +257,7 @@ handleApiRequest model apiResponse =
                 |> Cmd.map ApiRequest
             )
 
-        HandleDisplayedAttrsResponse r _ ->
+        HandleListDisplayedAttrsResponse r _ ->
             case r of
                 Ok payload ->
                     let
@@ -259,7 +276,7 @@ handleApiRequest model apiResponse =
                 Err _ ->
                     ( model, Cmd.none )
 
-        HandleSortableAttrsResponse r _ ->
+        HandleListSortableAttrsResponse r _ ->
             case r of
                 Ok payload ->
                     let
@@ -278,7 +295,7 @@ handleApiRequest model apiResponse =
                 Err _ ->
                     ( model, Cmd.none )
 
-        HandleFilterableAttrsResponse r _ ->
+        HandleListFilterableAttrsResponse r _ ->
             case r of
                 Ok payload ->
                     let
@@ -297,7 +314,7 @@ handleApiRequest model apiResponse =
                 Err _ ->
                     ( model, Cmd.none )
 
-        HandleSearchableAttrsResponse r _ ->
+        HandleListSearchableAttrsResponse r _ ->
             case r of
                 Ok payload ->
                     let
@@ -316,7 +333,7 @@ handleApiRequest model apiResponse =
                 Err _ ->
                     ( model, Cmd.none )
 
-        HandleDistinctAttrResponse r _ ->
+        HandleListDistinctAttrResponse r _ ->
             case r of
                 Ok payload ->
                     case payload of
@@ -376,6 +393,14 @@ handleApiRequest model apiResponse =
             case r of
                 Ok payload ->
                     update (AddToPollQueue (UpdateAttributeTask payload.uid payload.indexUid AttributesPage.Distinct)) model
+
+                Err _ ->
+                    ( model, Cmd.none )
+
+        HandleUpdateStopWordsResponse r ->
+            case r of
+                Ok payload ->
+                    update (AddToPollQueue (UpdateStopWordsTask payload.uid payload.indexUid)) model
 
                 Err _ ->
                     ( model, Cmd.none )
@@ -740,7 +765,20 @@ handleStopWordsViewMsg : Model -> StopWordsPage.Msg -> ( Model, Cmd Msg )
 handleStopWordsViewMsg model msg =
     case msg of
         StopWordsPage.Sync ->
-            ( model, Cmd.none )
+            ( model
+            , Api.Routes.Main.buildRequest
+                (Api.Routes.Main.buildPayload
+                    (UpdateStopWords "suggestions"
+                        (List.map (\x -> x.title) model.pages.stopWords.words)
+                        Api.Routes.Main.settingsUpdateDecoder
+                    )
+                )
+                (Maybe.withDefault
+                    ""
+                    model.savedToken
+                )
+                |> Cmd.map ApiRequest
+            )
 
         _ ->
             let
@@ -856,28 +894,18 @@ handlePollRequest model task =
         ( model, Cmd.none )
 
     else
-        case task of
-            UpdateSynonymsTask taskId _ ->
-                let
-                    ( pollState, pollCmd ) =
-                        SweetPoll.init (taskConfigBuilder taskId)
-                in
-                ( { model
-                    | pollingQueue = model.pollingQueue ++ [ ( task, pollState ) ]
-                  }
-                , pollCmd |> Cmd.map (PollUpdate task)
-                )
+        let
+            taskId =
+                getTaskId task
 
-            UpdateAttributeTask taskId _ _ ->
-                let
-                    ( pollState, pollCmd ) =
-                        SweetPoll.init (taskConfigBuilder taskId)
-                in
-                ( { model
-                    | pollingQueue = model.pollingQueue ++ [ ( task, pollState ) ]
-                  }
-                , pollCmd |> Cmd.map (PollUpdate task)
-                )
+            ( pollState, pollCmd ) =
+                SweetPoll.init (taskConfigBuilder taskId)
+        in
+        ( { model
+            | pollingQueue = model.pollingQueue ++ [ ( task, pollState ) ]
+          }
+        , pollCmd |> Cmd.map (PollUpdate task)
+        )
 
 
 
@@ -964,12 +992,7 @@ handlePollUpdate : Model -> SweetPoll.Msg String -> Task -> ( Model, Cmd Msg )
 handlePollUpdate model message task =
     let
         taskId =
-            case task of
-                UpdateSynonymsTask t _ ->
-                    t
-
-                UpdateAttributeTask t _ _ ->
-                    t
+            getTaskId task
     in
     let
         config =
@@ -1049,6 +1072,22 @@ handlePollSignal model newState newData error cmd task =
                                     , cmd |> Cmd.map (PollUpdate task)
                                     )
 
+                                UpdateStopWordsTask _ _ ->
+                                    let
+                                        updatedStopWordsViewModel =
+                                            StopWordsPage.updateSyncStatusState model.pages.stopWords Fired
+                                    in
+                                    ( { model
+                                        | pollingQueue =
+                                            List.map
+                                                (updatePollState task newState)
+                                                model.pollingQueue
+                                        , stopWords = updatedStopWordsViewModel.words
+                                        , pages = updateStopWordsViewModel model.pages updatedStopWordsViewModel
+                                      }
+                                    , cmd |> Cmd.map (PollUpdate task)
+                                    )
+
                         "succeeded" ->
                             case task of
                                 UpdateSynonymsTask _ _ ->
@@ -1063,6 +1102,19 @@ handlePollSignal model newState newData error cmd task =
                                         | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue
                                         , synonyms = updatedSynonyms
                                         , pages = updateSynonymsViewModel model.pages updatedSynonymsPageViewModel
+                                      }
+                                    , Cmd.none
+                                    )
+
+                                UpdateStopWordsTask _ _ ->
+                                    let
+                                        updatedStopWordsViewModel =
+                                            StopWordsPage.updateSyncStatusState model.pages.stopWords Success
+                                    in
+                                    ( { model
+                                        | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue
+                                        , stopWords = updatedStopWordsViewModel.words
+                                        , pages = updateStopWordsViewModel model.pages updatedStopWordsViewModel
                                       }
                                     , Cmd.none
                                     )
@@ -1153,6 +1205,19 @@ handlePollSignal model newState newData error cmd task =
                                     ( { model
                                         | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue
                                         , displayedAttrs = AttributesPage.updateSyncStatusState model.displayedAttrs Failed
+                                      }
+                                    , Cmd.none
+                                    )
+
+                                UpdateStopWordsTask _ _ ->
+                                    let
+                                        updatedStopWordsViewModel =
+                                            StopWordsPage.updateSyncStatusState model.pages.stopWords Failed
+                                    in
+                                    ( { model
+                                        | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue
+                                        , stopWords = updatedStopWordsViewModel.words
+                                        , pages = updateStopWordsViewModel model.pages updatedStopWordsViewModel
                                       }
                                     , Cmd.none
                                     )

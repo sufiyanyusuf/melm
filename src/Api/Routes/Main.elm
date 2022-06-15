@@ -16,16 +16,17 @@ type Msg
     | HandleUpdateSynonymsResponse (Result Http.Error SettingsRouteResponseItem)
     | HandleListSynonymsResponse (Result Http.Error (Dict String (List String))) String
     | HandleIndexKeysResponse IndexKeys
-    | HandleDisplayedAttrsResponse (Result Http.Error (List String)) String
-    | HandleSearchableAttrsResponse (Result Http.Error (List String)) String
-    | HandleSortableAttrsResponse (Result Http.Error (List String)) String
-    | HandleFilterableAttrsResponse (Result Http.Error (List String)) String
-    | HandleDistinctAttrResponse (Result Http.Error (Maybe String)) String
+    | HandleListDisplayedAttrsResponse (Result Http.Error (List String)) String
+    | HandleListSearchableAttrsResponse (Result Http.Error (List String)) String
+    | HandleListSortableAttrsResponse (Result Http.Error (List String)) String
+    | HandleListFilterableAttrsResponse (Result Http.Error (List String)) String
+    | HandleListDistinctAttrResponse (Result Http.Error (Maybe String)) String
     | HandleUpdateDisplayedAttrsResponse (Result Http.Error SettingsRouteResponseItem)
     | HandleUpdateFilterableAttrsResponse (Result Http.Error SettingsRouteResponseItem)
     | HandleUpdateSortableAttrsResponse (Result Http.Error SettingsRouteResponseItem)
     | HandleUpdateSearchableAttrsResponse (Result Http.Error SettingsRouteResponseItem)
     | HandleUpdateDistinctAttrResponse (Result Http.Error SettingsRouteResponseItem)
+    | HandleUpdateStopWordsResponse (Result Http.Error SettingsRouteResponseItem)
     | HandleStatsResponse (Result Http.Error IndexStats) String
 
 
@@ -37,7 +38,6 @@ type Route
     | DeleteIndex String
     | ListDocuments String
     | ListStopWords String (Decoder (List String))
-    | UpdateStopWords String (List String)
     | ResetStopWords String
     | GetTask Int
     | UpdateSynonyms String (Dict String (List String)) (Decoder SettingsRouteResponseItem)
@@ -52,6 +52,7 @@ type Route
     | UpdateSortableAttrs String (List String) (Decoder SettingsRouteResponseItem)
     | UpdateFilterableAttrs String (List String) (Decoder SettingsRouteResponseItem)
     | UpdateDistinctAttr String String (Decoder SettingsRouteResponseItem)
+    | UpdateStopWords String (List String) (Decoder SettingsRouteResponseItem)
     | Stats String (Decoder IndexStats)
 
 
@@ -156,8 +157,16 @@ buildRequest payload token =
                 }
                 |> Cmd.map (\a -> a x)
 
-        UpdateStopWords _ _ ->
-            Debug.todo "branch 'UpdateStopWords _' not implemented"
+        UpdateStopWords _ _ d ->
+            Http.request
+                { method = getRequestMethodTitle payload.method
+                , headers = headers token
+                , url = payload.endpoint
+                , body = payload.body
+                , expect = Http.expectJson HandleUpdateStopWordsResponse d
+                , timeout = Nothing
+                , tracker = Nothing
+                }
 
         ResetStopWords _ ->
             Debug.todo "branch 'ResetStopWords' not implemented"
@@ -194,7 +203,7 @@ buildRequest payload token =
                 , headers = headers token
                 , url = payload.endpoint
                 , body = payload.body
-                , expect = Http.expectJson HandleDisplayedAttrsResponse d
+                , expect = Http.expectJson HandleListDisplayedAttrsResponse d
                 , timeout = Nothing
                 , tracker = Nothing
                 }
@@ -206,7 +215,7 @@ buildRequest payload token =
                 , headers = headers token
                 , url = payload.endpoint
                 , body = payload.body
-                , expect = Http.expectJson HandleSearchableAttrsResponse d
+                , expect = Http.expectJson HandleListSearchableAttrsResponse d
                 , timeout = Nothing
                 , tracker = Nothing
                 }
@@ -218,7 +227,7 @@ buildRequest payload token =
                 , headers = headers token
                 , url = payload.endpoint
                 , body = payload.body
-                , expect = Http.expectJson HandleFilterableAttrsResponse d
+                , expect = Http.expectJson HandleListFilterableAttrsResponse d
                 , timeout = Nothing
                 , tracker = Nothing
                 }
@@ -230,7 +239,7 @@ buildRequest payload token =
                 , headers = headers token
                 , url = payload.endpoint
                 , body = payload.body
-                , expect = Http.expectJson HandleSortableAttrsResponse d
+                , expect = Http.expectJson HandleListSortableAttrsResponse d
                 , timeout = Nothing
                 , tracker = Nothing
                 }
@@ -242,7 +251,7 @@ buildRequest payload token =
                 , headers = headers token
                 , url = payload.endpoint
                 , body = payload.body
-                , expect = Http.expectJson HandleDistinctAttrResponse d
+                , expect = Http.expectJson HandleListDistinctAttrResponse d
                 , timeout = Nothing
                 , tracker = Nothing
                 }
@@ -358,8 +367,12 @@ buildPayload r =
         ListStopWords i _ ->
             { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/stop-words", body = Http.emptyBody, route = r }
 
-        UpdateStopWords _ _ ->
-            Debug.todo "branch 'UpdateStopWords _' not implemented"
+        UpdateStopWords i w _ ->
+            let
+                body =
+                    Encode.list Encode.string w
+            in
+            { method = POST, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/stop-words", body = Http.jsonBody body, route = r }
 
         ResetStopWords i ->
             { method = DELETE, endpoint = rootUrl ++ "/indexes/" ++ i ++ "/settings/stop-words", body = Http.emptyBody, route = r }

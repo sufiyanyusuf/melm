@@ -21,6 +21,13 @@ type alias Model =
     }
 
 
+type alias StopWord =
+    { title : String
+    , requestStatus : RequestStatus
+    , saved : Bool
+    }
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -35,13 +42,6 @@ update msg model =
 
         _ ->
             ( model, Cmd.none )
-
-
-type alias StopWord =
-    { title : String
-    , requestStatus : RequestStatus
-    , saved : Bool
-    }
 
 
 init : Model
@@ -95,7 +95,13 @@ addNewWord m =
         m
 
     else
-        { m | words = m.words ++ [ createNew m.newValue ], newValue = "" }
+        let
+            nw =
+                m.words
+                    ++ [ createNew m.newValue ]
+                    |> List.sortBy .title
+        in
+        { m | words = nw, newValue = "" }
 
 
 buildModelFromResponse : List String -> Model -> Model
@@ -121,3 +127,51 @@ toolbarView _ =
         ]
         [ UI.Elements.button "Save" Sync
         ]
+
+
+
+-- updateSyncStatusState : List StopWord -> RequestStatus -> List StopWord
+-- updateSyncStatusState w status =
+--     -- update model with req status for non saved
+--     List.map
+--         (\c ->
+--             if c.saved == False then
+--                 { c | requestStatus = status }
+--             else
+--                 c
+--         )
+--         w
+
+
+updateSyncStatusState : Model -> RequestStatus -> Model
+updateSyncStatusState model status =
+    case status of
+        Success ->
+            let
+                words =
+                    List.map
+                        (\c ->
+                            if c.saved == False then
+                                { c | requestStatus = status, saved = True }
+
+                            else
+                                c
+                        )
+                        model.words
+            in
+            { model | words = words }
+
+        _ ->
+            let
+                words =
+                    List.map
+                        (\c ->
+                            if c.saved == False then
+                                { c | requestStatus = status }
+
+                            else
+                                c
+                        )
+                        model.words
+            in
+            { model | words = words }
