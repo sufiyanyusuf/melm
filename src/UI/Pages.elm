@@ -17,24 +17,26 @@ type Page
 
 
 type alias Model =
-    { documents : Page
-    , settings : Page
-    , synonyms : Page
-    , stopWords : Page
-    , attributes : Page
+    { documents : Documents.Model
+    , settings : Settings.Model
+    , synonyms : Synonyms.Model
+    , stopWords : StopWords.Model
+    , attributes : Attributes.Model
+    , selectedPage : Page
     }
 
 
 init : String -> Model
 init indexUid =
-    { documents = Documents Documents.init
-    , settings = Settings Settings.init
-    , synonyms = Synonyms (Synonyms.init indexUid)
-    , stopWords = StopWords StopWords.init
-    , attributes = Attributes Attributes.init
+    { documents = Documents.init
+    , settings = Settings.init
+    , synonyms = Synonyms.init indexUid
+    , stopWords = StopWords.init
+    , attributes = Attributes.init
+    , selectedPage = Documents Documents.init
     }
 
 
 getPageList : Model -> List Page
 getPageList model =
-    [ model.documents, model.settings, model.synonyms, model.stopWords, model.attributes ]
+    [ Documents model.documents, Settings model.settings, Synonyms model.synonyms, StopWords model.stopWords, Attributes model.attributes ]

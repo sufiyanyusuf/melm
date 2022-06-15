@@ -11,11 +11,11 @@ import SweetPoll exposing (PollingState)
 import UI.Components.SynonymCard exposing (Msg(..))
 import UI.PageView as PageView exposing (Msg(..))
 import UI.PageViews.Attributes as AttributesPage exposing (buildModelFromResponse)
-import UI.PageViews.Documents
-import UI.PageViews.Indexes
+import UI.PageViews.Documents as DocumentsPage
+import UI.PageViews.Indexes as IndexesPage
 import UI.PageViews.Settings as SettingsPage
 import UI.PageViews.StopWords as StopWordsPage
-import UI.PageViews.Synonyms exposing (Msg(..))
+import UI.PageViews.Synonyms as SynonymsPage exposing (Msg(..))
 import UI.Pages as Views exposing (Page(..))
 import UI.Sidebar as Sidebar
 import UI.Styles exposing (..)
@@ -72,8 +72,7 @@ getTaskIndexUid task =
 
 
 type alias Model =
-    { selectedPage : Views.Page
-    , token : Maybe String
+    { token : Maybe String
     , savedToken : Maybe String
     , pages : Views.Model
     , indexes : List IndexesRouteResponseListItem -- Decouple this
@@ -102,7 +101,7 @@ view model =
         (Element.row
             [ width fill, height fill ]
             [ Sidebar.sidebarView (getSidebarViewModel model) |> Element.map SidebarMsg
-            , PageView.view model.selectedPage |> Element.map PageViewMsg
+            , PageView.view model.pages.selectedPage |> Element.map PageViewMsg
             ]
         )
 
@@ -133,15 +132,13 @@ update msg model =
             let
                 updatedAttributes =
                     AttributesPage.buildMockModelFromAttributes p.keys
-
-                updatedAttributesPage =
-                    Attributes updatedAttributes
             in
             -- update keys in model for index
             ( { model
                 | documentKeys = ( p.indexUid, p.keys )
-                , pages = updateAttributesViewModel model.pages updatedAttributesPage
-                , selectedPage = updatedAttributesPage
+                , pages = updateAttributesViewModel model.pages updatedAttributes
+
+                -- , selectedPage = Attributes updatedAttributes
               }
             , Cmd.none
             )
@@ -174,15 +171,18 @@ handleApiRequest model apiResponse =
                                 |> String.dropRight 1
                                 |> String.split "},"
                                 |> List.map (\p -> p ++ "}")
-                    in
-                    let
+
+                        documentsPageViewModel =
+                            DocumentsPage.Model documents
+
                         updatedDocumentsPage =
-                            Documents { documents = documents }
+                            Documents documentsPageViewModel
                     in
                     ( { model
                         | documents = documents
-                        , pages = updateDocumentsViewModel model.pages updatedDocumentsPage
-                        , selectedPage = updatedDocumentsPage
+                        , pages = updateDocumentsViewModel model.pages documentsPageViewModel
+
+                        -- , selectedPage = updatedDocumentsPage
                       }
                     , Cmd.none
                     )
@@ -203,8 +203,9 @@ handleApiRequest model apiResponse =
                         updatedModelValue =
                             { model
                                 | stopWords = stopWordsViewModel.words
-                                , pages = updateStopWordsViewModel model.pages stopWordsPageViewModel
-                                , selectedPage = stopWordsPageViewModel
+                                , pages = updateStopWordsViewModel model.pages stopWordsViewModel
+
+                                -- , selectedPage = stopWordsPageViewModel
                             }
                     in
                     ( updatedModelValue, Cmd.none )
@@ -227,13 +228,14 @@ handleApiRequest model apiResponse =
                         synonyms =
                             buildSynonymsViewModelFromApiResponse payload indexUid
 
-                        updatedSynonymsPage =
-                            Synonyms { synonymStates = synonyms, indexUid = indexUid }
+                        updatedSynonymsViewModel =
+                            { synonymStates = synonyms, indexUid = indexUid }
                     in
                     ( { model
                         | synonyms = synonyms
-                        , pages = updateSynonymsViewModel model.pages updatedSynonymsPage
-                        , selectedPage = updatedSynonymsPage
+                        , pages = updateSynonymsViewModel model.pages updatedSynonymsViewModel
+
+                        -- , selectedPage = Synonyms updatedSynonymsViewModel
                       }
                     , Cmd.none
                     )
@@ -264,8 +266,9 @@ handleApiRequest model apiResponse =
                     in
                     ( { model
                         | displayedAttrs = updatedViewModel.displayed
-                        , pages = updateAttributesViewModel model.pages (Attributes updatedViewModel)
-                        , selectedPage = Attributes updatedViewModel
+                        , pages = updateAttributesViewModel model.pages updatedViewModel
+
+                        -- , selectedPage = Attributes updatedViewModel
                       }
                     , Cmd.none
                     )
@@ -284,8 +287,9 @@ handleApiRequest model apiResponse =
                     in
                     ( { model
                         | sortableAttrs = updatedViewModel.sortable
-                        , pages = updateAttributesViewModel model.pages (Attributes updatedViewModel)
-                        , selectedPage = Attributes updatedViewModel
+                        , pages = updateAttributesViewModel model.pages updatedViewModel
+
+                        -- , selectedPage = Attributes updatedViewModel
                       }
                     , Cmd.none
                     )
@@ -304,8 +308,9 @@ handleApiRequest model apiResponse =
                     in
                     ( { model
                         | filterableAttrs = updatedViewModel.filterable
-                        , pages = updateAttributesViewModel model.pages (Attributes updatedViewModel)
-                        , selectedPage = Attributes updatedViewModel
+                        , pages = updateAttributesViewModel model.pages updatedViewModel
+
+                        -- , selectedPage = Attributes updatedViewModel
                       }
                     , Cmd.none
                     )
@@ -324,8 +329,9 @@ handleApiRequest model apiResponse =
                     in
                     ( { model
                         | searchableAttrs = updatedViewModel.searchable
-                        , pages = updateAttributesViewModel model.pages (Attributes updatedViewModel)
-                        , selectedPage = Attributes updatedViewModel
+                        , pages = updateAttributesViewModel model.pages updatedViewModel
+
+                        -- , selectedPage = Attributes updatedViewModel
                       }
                     , Cmd.none
                     )
@@ -346,8 +352,9 @@ handleApiRequest model apiResponse =
                             in
                             ( { model
                                 | distinctAttr = updatedViewModel.distinct
-                                , pages = updateAttributesViewModel model.pages (Attributes updatedViewModel)
-                                , selectedPage = Attributes updatedViewModel
+                                , pages = updateAttributesViewModel model.pages updatedViewModel
+
+                                -- , selectedPage = Attributes updatedViewModel
                               }
                             , Cmd.none
                             )
@@ -405,22 +412,23 @@ handleApiRequest model apiResponse =
                         keys =
                             Dict.keys payload.fieldDistribution
 
-                        updatedAttributes =
+                        updatedAttributesPageViewModel =
                             AttributesPage.buildMockModelFromAttributes keys
 
                         updatedAttributesPage =
-                            Attributes updatedAttributes
+                            Attributes updatedAttributesPageViewModel
                     in
                     ( { model
                         | indexStats = Just payload
-                        , displayedAttrs = updatedAttributes.displayed
-                        , sortableAttrs = updatedAttributes.sortable
-                        , searchableAttrs = updatedAttributes.searchable
-                        , filterableAttrs = updatedAttributes.filterable
-                        , distinctAttr = updatedAttributes.distinct
+                        , displayedAttrs = updatedAttributesPageViewModel.displayed
+                        , sortableAttrs = updatedAttributesPageViewModel.sortable
+                        , searchableAttrs = updatedAttributesPageViewModel.searchable
+                        , filterableAttrs = updatedAttributesPageViewModel.filterable
+                        , distinctAttr = updatedAttributesPageViewModel.distinct
                         , documentKeys = ( indexUid, keys )
-                        , pages = updateAttributesViewModel model.pages updatedAttributesPage
-                        , selectedPage = updatedAttributesPage
+                        , pages = updateAttributesViewModel model.pages updatedAttributesPageViewModel
+
+                        -- , selectedPage = updatedAttributesPage
                       }
                     , Cmd.batch
                         [ Api.Routes.Main.buildRequest
@@ -515,8 +523,9 @@ handleAttributesViewMsg model msg =
                             { model | displayedAttrs = updatedDisplayAttrs }
                     in
                     ( { updatedModel
-                        | pages = updateAttributesViewModel model.pages (Attributes (getAttributesViewModel updatedModel))
-                        , selectedPage = Attributes (getAttributesViewModel updatedModel)
+                        | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
+
+                        -- , selectedPage = Attributes (getAttributesViewModel updatedModel)
                       }
                     , Cmd.none
                     )
@@ -538,8 +547,9 @@ handleAttributesViewMsg model msg =
                             { model | searchableAttrs = updatedSearchableAttrs }
                     in
                     ( { updatedModel
-                        | pages = updateAttributesViewModel model.pages (Attributes (getAttributesViewModel updatedModel))
-                        , selectedPage = Attributes (getAttributesViewModel updatedModel)
+                        | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
+
+                        -- , selectedPage = Attributes (getAttributesViewModel updatedModel)
                       }
                     , Cmd.none
                     )
@@ -561,8 +571,9 @@ handleAttributesViewMsg model msg =
                             { model | sortableAttrs = updatedSortableAttrs }
                     in
                     ( { updatedModel
-                        | pages = updateAttributesViewModel model.pages (Attributes (getAttributesViewModel updatedModel))
-                        , selectedPage = Attributes (getAttributesViewModel updatedModel)
+                        | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
+
+                        -- , selectedPage = Attributes (getAttributesViewModel updatedModel)
                       }
                     , Cmd.none
                     )
@@ -584,8 +595,9 @@ handleAttributesViewMsg model msg =
                             { model | filterableAttrs = updatedFilterableAttrs }
                     in
                     ( { updatedModel
-                        | pages = updateAttributesViewModel model.pages (Attributes (getAttributesViewModel updatedModel))
-                        , selectedPage = Attributes (getAttributesViewModel updatedModel)
+                        | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
+
+                        -- , selectedPage = Attributes (getAttributesViewModel updatedModel)
                       }
                     , Cmd.none
                     )
@@ -607,8 +619,9 @@ handleAttributesViewMsg model msg =
                             { model | distinctAttr = updatedDistinctAttr }
                     in
                     ( { updatedModel
-                        | pages = updateAttributesViewModel model.pages (Attributes (getAttributesViewModel updatedModel))
-                        , selectedPage = Attributes (getAttributesViewModel updatedModel)
+                        | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
+
+                        -- , selectedPage = Attributes (getAttributesViewModel updatedModel)
                       }
                     , Cmd.none
                     )
@@ -711,7 +724,7 @@ handleAttributesViewMsg model msg =
 -- ( model, Cmd.none )
 
 
-handleSynonymsViewMsg : Model -> UI.PageViews.Synonyms.Msg -> ( Model, Cmd Msg )
+handleSynonymsViewMsg : Model -> SynonymsPage.Msg -> ( Model, Cmd Msg )
 handleSynonymsViewMsg model msg =
     case model.selectedIndex of
         Just i ->
@@ -721,7 +734,7 @@ handleSynonymsViewMsg model msg =
                         Sync ->
                             let
                                 ( updatedSynonymsViewModel, _ ) =
-                                    UI.PageViews.Synonyms.update msg (getSynonymsViewModel model i.uid)
+                                    SynonymsPage.update msg (getSynonymsViewModel model i.uid)
 
                                 currentSynonyms =
                                     List.map
@@ -730,8 +743,9 @@ handleSynonymsViewMsg model msg =
                                         |> List.filter (\( k, v ) -> k /= "" && v /= [])
                             in
                             ( { model
-                                | pages = updateSynonymsViewModel model.pages (Synonyms updatedSynonymsViewModel)
-                                , selectedPage = Synonyms updatedSynonymsViewModel
+                                | pages = updateSynonymsViewModel model.pages updatedSynonymsViewModel
+
+                                -- , selectedPage = Synonyms updatedSynonymsViewModel
                                 , synonyms = updatedSynonymsViewModel.synonymStates
                               }
                             , Api.Routes.Main.buildRequest
@@ -751,11 +765,12 @@ handleSynonymsViewMsg model msg =
                         _ ->
                             let
                                 ( updatedSynonymsViewModel, _ ) =
-                                    UI.PageViews.Synonyms.update msg (getSynonymsViewModel model i.uid)
+                                    SynonymsPage.update msg (getSynonymsViewModel model i.uid)
                             in
                             ( { model
-                                | pages = updateSynonymsViewModel model.pages (Synonyms updatedSynonymsViewModel)
-                                , selectedPage = Synonyms updatedSynonymsViewModel
+                                | pages = updateSynonymsViewModel model.pages updatedSynonymsViewModel
+
+                                -- , selectedPage = Synonyms updatedSynonymsViewModel
                                 , synonyms = updatedSynonymsViewModel.synonymStates
                               }
                             , Cmd.none
@@ -773,14 +788,15 @@ handleStopWordsViewMsg model msg =
                 updatedStopWordsList =
                     model.stopWords ++ [ StopWordsPage.createNew w ]
 
-                updatedStopWordsPageModel =
-                    StopWords { words = updatedStopWordsList, indexUid = i }
+                updatedStopWordsViewModel =
+                    { words = updatedStopWordsList, indexUid = i }
 
                 updatedModelValue =
                     { model
                         | stopWords = updatedStopWordsList
-                        , pages = updateStopWordsViewModel model.pages updatedStopWordsPageModel
-                        , selectedPage = updatedStopWordsPageModel
+                        , pages = updateStopWordsViewModel model.pages updatedStopWordsViewModel
+
+                        -- , selectedPage = StopWords updatedStopWordsViewModel
                     }
             in
             ( updatedModelValue, Cmd.none )
@@ -806,17 +822,19 @@ handleSettingsViewMsg model msg =
             let
                 updatedTokenValue =
                     { model | token = Just t }
-            in
-            let
+
+                updatedSettingsPageViewModel =
+                    getSettingsViewModel updatedTokenValue
+
                 updatedSettingsPage =
-                    Settings (getSettingsViewModel updatedTokenValue)
-            in
-            let
+                    Settings updatedSettingsPageViewModel
+
                 updatedModelValue =
                     { model
                         | token = updatedTokenValue.token
-                        , pages = updateSettingsViewModel model.pages updatedSettingsPage
-                        , selectedPage = updatedSettingsPage
+                        , pages = updateSettingsViewModel model.pages updatedSettingsPageViewModel
+
+                        -- , selectedPage = updatedSettingsPage
                     }
             in
             ( updatedModelValue
@@ -837,15 +855,24 @@ handleSidebarSelection model sidebarMsg =
             case sidebarMsg of
                 Sidebar.SelectPage p ->
                     p
+
+        pages =
+            model.pages
+
+        updatedPages =
+            { pages | selectedPage = selectedPage }
+
+        updatedModel =
+            { model | pages = updatedPages }
     in
     case sidebarMsg of
         Sidebar.SelectPage p ->
             case p of
                 Settings _ ->
-                    ( { model | selectedPage = selectedPage }, Cmd.none )
+                    ( updatedModel, Cmd.none )
 
-                Documents _ ->
-                    ( { model | selectedPage = selectedPage }
+                Documents d ->
+                    ( updatedModel
                     , Api.Routes.Main.buildRequest
                         (Api.Routes.Main.buildPayload (ListDocuments "suggestions"))
                         (Maybe.withDefault
@@ -856,7 +883,7 @@ handleSidebarSelection model sidebarMsg =
                     )
 
                 Synonyms _ ->
-                    ( { model | selectedPage = selectedPage }
+                    ( updatedModel
                     , Api.Routes.Main.buildRequest
                         (Api.Routes.Main.buildPayload (ListSynonyms "suggestions" Api.Routes.Main.synonymsListDecoder))
                         (Maybe.withDefault
@@ -867,7 +894,7 @@ handleSidebarSelection model sidebarMsg =
                     )
 
                 StopWords _ ->
-                    ( { model | selectedPage = selectedPage }
+                    ( updatedModel
                     , Api.Routes.Main.buildRequest
                         (Api.Routes.Main.buildPayload (ListStopWords "suggestions" Api.Routes.Main.maybeStringListDecoder))
                         (Maybe.withDefault
@@ -878,7 +905,7 @@ handleSidebarSelection model sidebarMsg =
                     )
 
                 Attributes _ ->
-                    ( { model | selectedPage = selectedPage }
+                    ( updatedModel
                     , Api.Routes.Main.buildRequest
                         (Api.Routes.Main.buildPayload (Stats "suggestions" statsDecoder))
                         (Maybe.withDefault
@@ -945,7 +972,7 @@ receivedKeysForDocument =
 getSidebarViewModel : Model -> Sidebar.Model
 getSidebarViewModel model =
     { pages = Views.getPageList model.pages
-    , selectedPage = model.selectedPage
+    , selectedPage = model.pages.selectedPage
     }
 
 
@@ -954,7 +981,7 @@ getSettingsViewModel model =
     { tokenValue = Maybe.withDefault "" model.token, title = "Settings" }
 
 
-getIndexesViewModel : Model -> UI.PageViews.Indexes.Model
+getIndexesViewModel : Model -> IndexesPage.Model
 getIndexesViewModel model =
     { indexes = model.indexes }
 
@@ -966,7 +993,7 @@ getStopWordsViewModel model i =
     }
 
 
-getSynonymsViewModel : Model -> String -> UI.PageViews.Synonyms.Model
+getSynonymsViewModel : Model -> String -> SynonymsPage.Model
 getSynonymsViewModel model indexUid =
     { synonymStates = model.synonyms, indexUid = indexUid }
 
@@ -985,29 +1012,29 @@ getAttributesViewModel model =
 -- VIEW MODEL SETTERS
 
 
-updateSettingsViewModel : Views.Model -> Page -> Views.Model
+updateSettingsViewModel : Views.Model -> SettingsPage.Model -> Views.Model
 updateSettingsViewModel pages updatedPage =
-    { pages | settings = updatedPage }
+    { pages | settings = updatedPage, selectedPage = Settings updatedPage }
 
 
-updateDocumentsViewModel : Views.Model -> Page -> Views.Model
+updateDocumentsViewModel : Views.Model -> DocumentsPage.Model -> Views.Model
 updateDocumentsViewModel pages updatedPage =
-    { pages | documents = updatedPage }
+    { pages | documents = updatedPage, selectedPage = Documents updatedPage }
 
 
-updateStopWordsViewModel : Views.Model -> Page -> Views.Model
+updateStopWordsViewModel : Views.Model -> StopWordsPage.Model -> Views.Model
 updateStopWordsViewModel pages updatedPage =
-    { pages | stopWords = updatedPage }
+    { pages | stopWords = updatedPage, selectedPage = StopWords updatedPage }
 
 
-updateSynonymsViewModel : Views.Model -> Page -> Views.Model
+updateSynonymsViewModel : Views.Model -> SynonymsPage.Model -> Views.Model
 updateSynonymsViewModel pages updatedPage =
-    { pages | synonyms = updatedPage }
+    { pages | synonyms = updatedPage, selectedPage = Synonyms updatedPage }
 
 
-updateAttributesViewModel : Views.Model -> Page -> Views.Model
+updateAttributesViewModel : Views.Model -> AttributesPage.Model -> Views.Model
 updateAttributesViewModel pages updatedPage =
-    { pages | attributes = updatedPage }
+    { pages | attributes = updatedPage, selectedPage = Attributes updatedPage }
 
 
 handlePollUpdate : Model -> SweetPoll.Msg String -> Task -> ( Model, Cmd Msg )
@@ -1073,7 +1100,7 @@ handlePollSignal model newState newData error cmd task =
                                 UpdateSynonymsTask _ _ ->
                                     let
                                         updatedSynonyms =
-                                            UI.PageViews.Synonyms.updateSyncStatusState model.synonyms Fired
+                                            SynonymsPage.updateSyncStatusState model.synonyms Fired
 
                                         updatedSynonymsPageViewModel =
                                             { synonymStates = updatedSynonyms, indexUid = getTaskIndexUid task }
@@ -1084,8 +1111,9 @@ handlePollSignal model newState newData error cmd task =
                                                 (updatePollState task newState)
                                                 model.pollingQueue
                                         , synonyms = updatedSynonyms
-                                        , pages = updateSynonymsViewModel model.pages (Synonyms updatedSynonymsPageViewModel)
-                                        , selectedPage = Synonyms updatedSynonymsPageViewModel
+                                        , pages = updateSynonymsViewModel model.pages updatedSynonymsPageViewModel
+
+                                        -- , selectedPage = Synonyms updatedSynonymsPageViewModel
                                       }
                                     , cmd |> Cmd.map (PollUpdate task)
                                     )
@@ -1105,7 +1133,7 @@ handlePollSignal model newState newData error cmd task =
                                 UpdateSynonymsTask _ _ ->
                                     let
                                         updatedSynonyms =
-                                            UI.PageViews.Synonyms.updateSyncStatusState model.synonyms Success
+                                            SynonymsPage.updateSyncStatusState model.synonyms Success
 
                                         updatedSynonymsPageViewModel =
                                             { synonymStates = updatedSynonyms, indexUid = getTaskIndexUid task }
@@ -1113,8 +1141,9 @@ handlePollSignal model newState newData error cmd task =
                                     ( { model
                                         | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue
                                         , synonyms = updatedSynonyms
-                                        , pages = updateSynonymsViewModel model.pages (Synonyms updatedSynonymsPageViewModel)
-                                        , selectedPage = Synonyms updatedSynonymsPageViewModel
+                                        , pages = updateSynonymsViewModel model.pages updatedSynonymsPageViewModel
+
+                                        -- , selectedPage = Synonyms updatedSynonymsPageViewModel
                                       }
                                     , Cmd.none
                                     )
@@ -1130,8 +1159,9 @@ handlePollSignal model newState newData error cmd task =
                                                     { model | displayedAttrs = updatedDisplayAttrs }
                                             in
                                             ( { updatedModel
-                                                | pages = updateAttributesViewModel model.pages (Attributes (getAttributesViewModel updatedModel))
-                                                , selectedPage = Attributes (getAttributesViewModel updatedModel)
+                                                | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
+
+                                                -- , selectedPage = Attributes (getAttributesViewModel updatedModel)
                                               }
                                             , Cmd.none
                                             )
@@ -1145,8 +1175,9 @@ handlePollSignal model newState newData error cmd task =
                                                     { model | searchableAttrs = updatedSearchableAttrs }
                                             in
                                             ( { updatedModel
-                                                | pages = updateAttributesViewModel model.pages (Attributes (getAttributesViewModel updatedModel))
-                                                , selectedPage = Attributes (getAttributesViewModel updatedModel)
+                                                | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
+
+                                                -- , selectedPage = Attributes (getAttributesViewModel updatedModel)
                                               }
                                             , Cmd.none
                                             )
@@ -1160,8 +1191,9 @@ handlePollSignal model newState newData error cmd task =
                                                     { model | sortableAttrs = updatedSortableAttrs }
                                             in
                                             ( { updatedModel
-                                                | pages = updateAttributesViewModel model.pages (Attributes (getAttributesViewModel updatedModel))
-                                                , selectedPage = Attributes (getAttributesViewModel updatedModel)
+                                                | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
+
+                                                -- , selectedPage = Attributes (getAttributesViewModel updatedModel)
                                               }
                                             , Cmd.none
                                             )
@@ -1175,8 +1207,9 @@ handlePollSignal model newState newData error cmd task =
                                                     { model | filterableAttrs = updatedFilterableAttrs }
                                             in
                                             ( { updatedModel
-                                                | pages = updateAttributesViewModel model.pages (Attributes (getAttributesViewModel updatedModel))
-                                                , selectedPage = Attributes (getAttributesViewModel updatedModel)
+                                                | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
+
+                                                -- , selectedPage = Attributes (getAttributesViewModel updatedModel)
                                               }
                                             , Cmd.none
                                             )
@@ -1190,8 +1223,9 @@ handlePollSignal model newState newData error cmd task =
                                                     { model | distinctAttr = updatedDistinctAttr }
                                             in
                                             ( { updatedModel
-                                                | pages = updateAttributesViewModel model.pages (Attributes (getAttributesViewModel updatedModel))
-                                                , selectedPage = Attributes (getAttributesViewModel updatedModel)
+                                                | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
+
+                                                -- , selectedPage = Attributes (getAttributesViewModel updatedModel)
                                               }
                                             , Cmd.none
                                             )
@@ -1201,7 +1235,7 @@ handlePollSignal model newState newData error cmd task =
                                 UpdateSynonymsTask _ _ ->
                                     ( { model
                                         | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue
-                                        , synonyms = UI.PageViews.Synonyms.updateSyncStatusState model.synonyms Failed
+                                        , synonyms = SynonymsPage.updateSyncStatusState model.synonyms Failed
                                       }
                                     , Cmd.none
                                     )
@@ -1255,8 +1289,7 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     let
         model =
-            { selectedPage = Views.Documents UI.PageViews.Documents.init
-            , token = Nothing
+            { token = Nothing
             , savedToken = Nothing
             , pages = Views.init "suggestions"
             , indexes = []
@@ -1270,7 +1303,7 @@ init _ =
                     , primaryKey = "id"
                     }
             , stopWords = []
-            , synonyms = (UI.PageViews.Synonyms.init "suggestions").synonymStates -- need to decouple ui from state
+            , synonyms = (SynonymsPage.init "suggestions").synonymStates -- need to decouple ui from state
             , pollingQueue = []
             , documentKeys = ( "suggestions", [] )
             , displayedAttrs = []

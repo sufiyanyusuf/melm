@@ -10729,10 +10729,6 @@ var $elm$core$Basics$never = function (_v0) {
 	}
 };
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$UI$Pages$Documents = function (a) {
-	return {$: 'Documents', a: a};
-};
-var $author$project$UI$PageViews$Documents$init = {documents: _List_Nil};
 var $author$project$Request$NoRequest = {$: 'NoRequest'};
 var $author$project$UI$Components$SynonymCard$init = F2(
 	function (index, indexUid) {
@@ -10748,17 +10744,8 @@ var $author$project$UI$PageViews$Synonyms$init = function (indexUid) {
 			])
 	};
 };
-var $author$project$UI$Pages$Attributes = function (a) {
-	return {$: 'Attributes', a: a};
-};
-var $author$project$UI$Pages$Settings = function (a) {
-	return {$: 'Settings', a: a};
-};
-var $author$project$UI$Pages$StopWords = function (a) {
-	return {$: 'StopWords', a: a};
-};
-var $author$project$UI$Pages$Synonyms = function (a) {
-	return {$: 'Synonyms', a: a};
+var $author$project$UI$Pages$Documents = function (a) {
+	return {$: 'Documents', a: a};
 };
 var $author$project$UI$PageViews$Attributes$buildMockModelFromAttributes = function (l) {
 	return {
@@ -10797,16 +10784,17 @@ var $author$project$UI$PageViews$Attributes$buildMockModelFromAttributes = funct
 var $author$project$UI$PageViews$Attributes$init = $author$project$UI$PageViews$Attributes$buildMockModelFromAttributes(
 	_List_fromArray(
 		['attr a', 'attr b', 'attr c']));
+var $author$project$UI$PageViews$Documents$init = {documents: _List_Nil};
 var $author$project$UI$PageViews$Settings$init = {title: 'Settings', tokenValue: ''};
 var $author$project$UI$PageViews$StopWords$init = {indexUid: '', words: _List_Nil};
 var $author$project$UI$Pages$init = function (indexUid) {
 	return {
-		attributes: $author$project$UI$Pages$Attributes($author$project$UI$PageViews$Attributes$init),
-		documents: $author$project$UI$Pages$Documents($author$project$UI$PageViews$Documents$init),
-		settings: $author$project$UI$Pages$Settings($author$project$UI$PageViews$Settings$init),
-		stopWords: $author$project$UI$Pages$StopWords($author$project$UI$PageViews$StopWords$init),
-		synonyms: $author$project$UI$Pages$Synonyms(
-			$author$project$UI$PageViews$Synonyms$init(indexUid))
+		attributes: $author$project$UI$PageViews$Attributes$init,
+		documents: $author$project$UI$PageViews$Documents$init,
+		selectedPage: $author$project$UI$Pages$Documents($author$project$UI$PageViews$Documents$init),
+		settings: $author$project$UI$PageViews$Settings$init,
+		stopWords: $author$project$UI$PageViews$StopWords$init,
+		synonyms: $author$project$UI$PageViews$Synonyms$init(indexUid)
 	};
 };
 var $author$project$Main$init = function (_v0) {
@@ -10824,7 +10812,6 @@ var $author$project$Main$init = function (_v0) {
 		searchableAttrs: _List_Nil,
 		selectedIndex: $elm$core$Maybe$Just(
 			{createdAt: '', name: 'Suggestions', primaryKey: 'id', uid: 'suggestions', updatedAt: ''}),
-		selectedPage: $author$project$UI$Pages$Documents($author$project$UI$PageViews$Documents$init),
 		sortableAttrs: _List_Nil,
 		stopWords: _List_Nil,
 		synonyms: $author$project$UI$PageViews$Synonyms$init('suggestions').synonymStates,
@@ -10842,6 +10829,9 @@ var $author$project$Main$AddToPollQueue = function (a) {
 };
 var $author$project$Main$ApiRequest = function (a) {
 	return {$: 'ApiRequest', a: a};
+};
+var $author$project$UI$Pages$Attributes = function (a) {
+	return {$: 'Attributes', a: a};
 };
 var $author$project$UI$PageViews$Attributes$Displayed = {$: 'Displayed'};
 var $author$project$UI$PageViews$Attributes$Distinct = {$: 'Distinct'};
@@ -10866,8 +10856,14 @@ var $author$project$Api$Routes$Main$ListSortableAttrs = F2(
 	function (a, b) {
 		return {$: 'ListSortableAttrs', a: a, b: b};
 	});
+var $author$project$UI$PageViews$Documents$Model = function (documents) {
+	return {documents: documents};
+};
 var $author$project$UI$PageViews$Attributes$Searchable = {$: 'Searchable'};
 var $author$project$UI$PageViews$Attributes$Sortable = {$: 'Sortable'};
+var $author$project$UI$Pages$StopWords = function (a) {
+	return {$: 'StopWords', a: a};
+};
 var $author$project$Main$UpdateAttributeTask = F3(
 	function (a, b, c) {
 		return {$: 'UpdateAttributeTask', a: a, b: b, c: c};
@@ -11982,7 +11978,10 @@ var $author$project$Main$updateAttributesViewModel = F2(
 	function (pages, updatedPage) {
 		return _Utils_update(
 			pages,
-			{attributes: updatedPage});
+			{
+				attributes: updatedPage,
+				selectedPage: $author$project$UI$Pages$Attributes(updatedPage)
+			});
 	});
 var $author$project$Main$handleAttributesViewMsg = F2(
 	function (model, msg) {
@@ -12012,9 +12011,6 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 									pages: A2(
 										$author$project$Main$updateAttributesViewModel,
 										model.pages,
-										$author$project$UI$Pages$Attributes(
-											$author$project$Main$getAttributesViewModel(updatedModel))),
-									selectedPage: $author$project$UI$Pages$Attributes(
 										$author$project$Main$getAttributesViewModel(updatedModel))
 								}),
 							$elm$core$Platform$Cmd$none);
@@ -12037,9 +12033,6 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 									pages: A2(
 										$author$project$Main$updateAttributesViewModel,
 										model.pages,
-										$author$project$UI$Pages$Attributes(
-											$author$project$Main$getAttributesViewModel(updatedModel))),
-									selectedPage: $author$project$UI$Pages$Attributes(
 										$author$project$Main$getAttributesViewModel(updatedModel))
 								}),
 							$elm$core$Platform$Cmd$none);
@@ -12062,9 +12055,6 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 									pages: A2(
 										$author$project$Main$updateAttributesViewModel,
 										model.pages,
-										$author$project$UI$Pages$Attributes(
-											$author$project$Main$getAttributesViewModel(updatedModel))),
-									selectedPage: $author$project$UI$Pages$Attributes(
 										$author$project$Main$getAttributesViewModel(updatedModel))
 								}),
 							$elm$core$Platform$Cmd$none);
@@ -12087,9 +12077,6 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 									pages: A2(
 										$author$project$Main$updateAttributesViewModel,
 										model.pages,
-										$author$project$UI$Pages$Attributes(
-											$author$project$Main$getAttributesViewModel(updatedModel))),
-									selectedPage: $author$project$UI$Pages$Attributes(
 										$author$project$Main$getAttributesViewModel(updatedModel))
 								}),
 							$elm$core$Platform$Cmd$none);
@@ -12114,9 +12101,6 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 									pages: A2(
 										$author$project$Main$updateAttributesViewModel,
 										model.pages,
-										$author$project$UI$Pages$Attributes(
-											$author$project$Main$getAttributesViewModel(updatedModel))),
-									selectedPage: $author$project$UI$Pages$Attributes(
 										$author$project$Main$getAttributesViewModel(updatedModel))
 								}),
 							$elm$core$Platform$Cmd$none);
@@ -12256,6 +12240,9 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 							])));
 		}
 	});
+var $author$project$UI$Pages$Settings = function (a) {
+	return {$: 'Settings', a: a};
+};
 var $author$project$Main$getSettingsViewModel = function (model) {
 	return {
 		title: 'Settings',
@@ -12266,7 +12253,10 @@ var $author$project$Main$updateSettingsViewModel = F2(
 	function (pages, updatedPage) {
 		return _Utils_update(
 			pages,
-			{settings: updatedPage});
+			{
+				selectedPage: $author$project$UI$Pages$Settings(updatedPage),
+				settings: updatedPage
+			});
 	});
 var $author$project$Main$handleSettingsViewMsg = F2(
 	function (model, msg) {
@@ -12278,13 +12268,12 @@ var $author$project$Main$handleSettingsViewMsg = F2(
 					{
 						token: $elm$core$Maybe$Just(t)
 					});
-				var updatedSettingsPage = $author$project$UI$Pages$Settings(
-					$author$project$Main$getSettingsViewModel(updatedTokenValue));
+				var updatedSettingsPageViewModel = $author$project$Main$getSettingsViewModel(updatedTokenValue);
+				var updatedSettingsPage = $author$project$UI$Pages$Settings(updatedSettingsPageViewModel);
 				var updatedModelValue = _Utils_update(
 					model,
 					{
-						pages: A2($author$project$Main$updateSettingsViewModel, model.pages, updatedSettingsPage),
-						selectedPage: updatedSettingsPage,
+						pages: A2($author$project$Main$updateSettingsViewModel, model.pages, updatedSettingsPageViewModel),
 						token: updatedTokenValue.token
 					});
 				return _Utils_Tuple2(updatedModelValue, $elm$core$Platform$Cmd$none);
@@ -12305,7 +12294,10 @@ var $author$project$Main$updateStopWordsViewModel = F2(
 	function (pages, updatedPage) {
 		return _Utils_update(
 			pages,
-			{stopWords: updatedPage});
+			{
+				selectedPage: $author$project$UI$Pages$StopWords(updatedPage),
+				stopWords: updatedPage
+			});
 	});
 var $author$project$Main$handleStopWordsViewMsg = F2(
 	function (model, msg) {
@@ -12319,13 +12311,11 @@ var $author$project$Main$handleStopWordsViewMsg = F2(
 						[
 							$author$project$UI$PageViews$StopWords$createNew(w)
 						]));
-				var updatedStopWordsPageModel = $author$project$UI$Pages$StopWords(
-					{indexUid: i, words: updatedStopWordsList});
+				var updatedStopWordsViewModel = {indexUid: i, words: updatedStopWordsList};
 				var updatedModelValue = _Utils_update(
 					model,
 					{
-						pages: A2($author$project$Main$updateStopWordsViewModel, model.pages, updatedStopWordsPageModel),
-						selectedPage: updatedStopWordsPageModel,
+						pages: A2($author$project$Main$updateStopWordsViewModel, model.pages, updatedStopWordsViewModel),
 						stopWords: updatedStopWordsList
 					});
 				return _Utils_Tuple2(updatedModelValue, $elm$core$Platform$Cmd$none);
@@ -12447,11 +12437,17 @@ var $author$project$UI$PageViews$Synonyms$update = F2(
 					$elm$core$Platform$Cmd$none);
 		}
 	});
+var $author$project$UI$Pages$Synonyms = function (a) {
+	return {$: 'Synonyms', a: a};
+};
 var $author$project$Main$updateSynonymsViewModel = F2(
 	function (pages, updatedPage) {
 		return _Utils_update(
 			pages,
-			{synonyms: updatedPage});
+			{
+				selectedPage: $author$project$UI$Pages$Synonyms(updatedPage),
+				synonyms: updatedPage
+			});
 	});
 var $author$project$Main$handleSynonymsViewMsg = F2(
 	function (model, msg) {
@@ -12482,11 +12478,7 @@ var $author$project$Main$handleSynonymsViewMsg = F2(
 					_Utils_update(
 						model,
 						{
-							pages: A2(
-								$author$project$Main$updateSynonymsViewModel,
-								model.pages,
-								$author$project$UI$Pages$Synonyms(updatedSynonymsViewModel)),
-							selectedPage: $author$project$UI$Pages$Synonyms(updatedSynonymsViewModel),
+							pages: A2($author$project$Main$updateSynonymsViewModel, model.pages, updatedSynonymsViewModel),
 							synonyms: updatedSynonymsViewModel.synonymStates
 						}),
 					A2(
@@ -12511,11 +12503,7 @@ var $author$project$Main$handleSynonymsViewMsg = F2(
 					_Utils_update(
 						model,
 						{
-							pages: A2(
-								$author$project$Main$updateSynonymsViewModel,
-								model.pages,
-								$author$project$UI$Pages$Synonyms(updatedSynonymsViewModel)),
-							selectedPage: $author$project$UI$Pages$Synonyms(updatedSynonymsViewModel),
+							pages: A2($author$project$Main$updateSynonymsViewModel, model.pages, updatedSynonymsViewModel),
 							synonyms: updatedSynonymsViewModel.synonymStates
 						}),
 					$elm$core$Platform$Cmd$none);
@@ -12534,15 +12522,15 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 475, column: 13},
-						end: {line: 475, column: 23}
+						start: {line: 483, column: 13},
+						end: {line: 483, column: 23}
 					})('branch \'IndexesViewMsg _\' not implemented');
 			case 'SearchViewMsg':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 478, column: 13},
-						end: {line: 478, column: 23}
+						start: {line: 486, column: 13},
+						end: {line: 486, column: 23}
 					})('branch \'SearchViewMsg _\' not implemented');
 			case 'DocumentsViewMsg':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -12839,15 +12827,11 @@ var $author$project$Main$handlePollSignal = F6(
 								_Utils_update(
 									model,
 									{
-										pages: A2(
-											$author$project$Main$updateSynonymsViewModel,
-											model.pages,
-											$author$project$UI$Pages$Synonyms(updatedSynonymsPageViewModel)),
+										pages: A2($author$project$Main$updateSynonymsViewModel, model.pages, updatedSynonymsPageViewModel),
 										pollingQueue: A2(
 											$elm$core$List$map,
 											A2($author$project$Main$updatePollState, task, newState),
 											model.pollingQueue),
-										selectedPage: $author$project$UI$Pages$Synonyms(updatedSynonymsPageViewModel),
 										synonyms: updatedSynonyms
 									}),
 								A2(
@@ -12880,10 +12864,7 @@ var $author$project$Main$handlePollSignal = F6(
 								_Utils_update(
 									model,
 									{
-										pages: A2(
-											$author$project$Main$updateSynonymsViewModel,
-											model.pages,
-											$author$project$UI$Pages$Synonyms(updatedSynonymsPageViewModel)),
+										pages: A2($author$project$Main$updateSynonymsViewModel, model.pages, updatedSynonymsPageViewModel),
 										pollingQueue: A2(
 											$elm$core$List$filter,
 											function (_v5) {
@@ -12891,7 +12872,6 @@ var $author$project$Main$handlePollSignal = F6(
 												return !_Utils_eq(x, task);
 											},
 											model.pollingQueue),
-										selectedPage: $author$project$UI$Pages$Synonyms(updatedSynonymsPageViewModel),
 										synonyms: updatedSynonyms
 									}),
 								$elm$core$Platform$Cmd$none);
@@ -12910,9 +12890,6 @@ var $author$project$Main$handlePollSignal = F6(
 												pages: A2(
 													$author$project$Main$updateAttributesViewModel,
 													model.pages,
-													$author$project$UI$Pages$Attributes(
-														$author$project$Main$getAttributesViewModel(updatedModel))),
-												selectedPage: $author$project$UI$Pages$Attributes(
 													$author$project$Main$getAttributesViewModel(updatedModel))
 											}),
 										$elm$core$Platform$Cmd$none);
@@ -12928,9 +12905,6 @@ var $author$project$Main$handlePollSignal = F6(
 												pages: A2(
 													$author$project$Main$updateAttributesViewModel,
 													model.pages,
-													$author$project$UI$Pages$Attributes(
-														$author$project$Main$getAttributesViewModel(updatedModel))),
-												selectedPage: $author$project$UI$Pages$Attributes(
 													$author$project$Main$getAttributesViewModel(updatedModel))
 											}),
 										$elm$core$Platform$Cmd$none);
@@ -12946,9 +12920,6 @@ var $author$project$Main$handlePollSignal = F6(
 												pages: A2(
 													$author$project$Main$updateAttributesViewModel,
 													model.pages,
-													$author$project$UI$Pages$Attributes(
-														$author$project$Main$getAttributesViewModel(updatedModel))),
-												selectedPage: $author$project$UI$Pages$Attributes(
 													$author$project$Main$getAttributesViewModel(updatedModel))
 											}),
 										$elm$core$Platform$Cmd$none);
@@ -12964,9 +12935,6 @@ var $author$project$Main$handlePollSignal = F6(
 												pages: A2(
 													$author$project$Main$updateAttributesViewModel,
 													model.pages,
-													$author$project$UI$Pages$Attributes(
-														$author$project$Main$getAttributesViewModel(updatedModel))),
-												selectedPage: $author$project$UI$Pages$Attributes(
 													$author$project$Main$getAttributesViewModel(updatedModel))
 											}),
 										$elm$core$Platform$Cmd$none);
@@ -12982,9 +12950,6 @@ var $author$project$Main$handlePollSignal = F6(
 												pages: A2(
 													$author$project$Main$updateAttributesViewModel,
 													model.pages,
-													$author$project$UI$Pages$Attributes(
-														$author$project$Main$getAttributesViewModel(updatedModel))),
-												selectedPage: $author$project$UI$Pages$Attributes(
 													$author$project$Main$getAttributesViewModel(updatedModel))
 											}),
 										$elm$core$Platform$Cmd$none);
@@ -13163,19 +13128,21 @@ var $author$project$Main$handleSidebarSelection = F2(
 			var p = sidebarMsg.a;
 			return p;
 		}();
+		var pages = model.pages;
+		var updatedPages = _Utils_update(
+			pages,
+			{selectedPage: selectedPage});
+		var updatedModel = _Utils_update(
+			model,
+			{pages: updatedPages});
 		var p = sidebarMsg.a;
 		switch (p.$) {
 			case 'Settings':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{selectedPage: selectedPage}),
-					$elm$core$Platform$Cmd$none);
+				return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
 			case 'Documents':
+				var d = p.a;
 				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{selectedPage: selectedPage}),
+					updatedModel,
 					A2(
 						$elm$core$Platform$Cmd$map,
 						$author$project$Main$ApiRequest,
@@ -13186,9 +13153,7 @@ var $author$project$Main$handleSidebarSelection = F2(
 							A2($elm$core$Maybe$withDefault, '', model.savedToken))));
 			case 'Synonyms':
 				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{selectedPage: selectedPage}),
+					updatedModel,
 					A2(
 						$elm$core$Platform$Cmd$map,
 						$author$project$Main$ApiRequest,
@@ -13199,9 +13164,7 @@ var $author$project$Main$handleSidebarSelection = F2(
 							A2($elm$core$Maybe$withDefault, '', model.savedToken))));
 			case 'StopWords':
 				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{selectedPage: selectedPage}),
+					updatedModel,
 					A2(
 						$elm$core$Platform$Cmd$map,
 						$author$project$Main$ApiRequest,
@@ -13212,9 +13175,7 @@ var $author$project$Main$handleSidebarSelection = F2(
 							A2($elm$core$Maybe$withDefault, '', model.savedToken))));
 			default:
 				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{selectedPage: selectedPage}),
+					updatedModel,
 					A2(
 						$elm$core$Platform$Cmd$map,
 						$author$project$Main$ApiRequest,
@@ -13239,7 +13200,10 @@ var $author$project$Main$updateDocumentsViewModel = F2(
 	function (pages, updatedPage) {
 		return _Utils_update(
 			pages,
-			{documents: updatedPage});
+			{
+				documents: updatedPage,
+				selectedPage: $author$project$UI$Pages$Documents(updatedPage)
+			});
 	});
 var $author$project$Main$handleApiRequest = F2(
 	function (model, apiResponse) {
@@ -13271,15 +13235,14 @@ var $author$project$Main$handleApiRequest = F2(
 								$elm$core$String$dropRight,
 								1,
 								A2($elm$core$String$dropLeft, 1, payload))));
-					var updatedDocumentsPage = $author$project$UI$Pages$Documents(
-						{documents: documents});
+					var documentsPageViewModel = $author$project$UI$PageViews$Documents$Model(documents);
+					var updatedDocumentsPage = $author$project$UI$Pages$Documents(documentsPageViewModel);
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
 								documents: documents,
-								pages: A2($author$project$Main$updateDocumentsViewModel, model.pages, updatedDocumentsPage),
-								selectedPage: updatedDocumentsPage
+								pages: A2($author$project$Main$updateDocumentsViewModel, model.pages, documentsPageViewModel)
 							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
@@ -13291,15 +13254,14 @@ var $author$project$Main$handleApiRequest = F2(
 				if (r.$ === 'Ok') {
 					var payload = r.a;
 					var stopWordsViewModel = A3($author$project$UI$PageViews$StopWords$buildModelFromResponse, payload, model.stopWords, i);
-					var stopWordsPageViewModel = $author$project$UI$Pages$StopWords(
-						{indexUid: i, words: stopWordsViewModel.words});
 					var updatedModelValue = _Utils_update(
 						model,
 						{
-							pages: A2($author$project$Main$updateStopWordsViewModel, model.pages, stopWordsPageViewModel),
-							selectedPage: stopWordsPageViewModel,
+							pages: A2($author$project$Main$updateStopWordsViewModel, model.pages, stopWordsViewModel),
 							stopWords: stopWordsViewModel.words
 						});
+					var stopWordsPageViewModel = $author$project$UI$Pages$StopWords(
+						{indexUid: i, words: stopWordsViewModel.words});
 					return _Utils_Tuple2(updatedModelValue, $elm$core$Platform$Cmd$none);
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -13322,14 +13284,12 @@ var $author$project$Main$handleApiRequest = F2(
 				if (r.$ === 'Ok') {
 					var payload = r.a;
 					var synonyms = A2($author$project$Main$buildSynonymsViewModelFromApiResponse, payload, indexUid);
-					var updatedSynonymsPage = $author$project$UI$Pages$Synonyms(
-						{indexUid: indexUid, synonymStates: synonyms});
+					var updatedSynonymsViewModel = {indexUid: indexUid, synonymStates: synonyms};
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								pages: A2($author$project$Main$updateSynonymsViewModel, model.pages, updatedSynonymsPage),
-								selectedPage: updatedSynonymsPage,
+								pages: A2($author$project$Main$updateSynonymsViewModel, model.pages, updatedSynonymsViewModel),
 								synonyms: synonyms
 							}),
 						$elm$core$Platform$Cmd$none);
@@ -13363,11 +13323,7 @@ var $author$project$Main$handleApiRequest = F2(
 							model,
 							{
 								displayedAttrs: updatedViewModel.displayed,
-								pages: A2(
-									$author$project$Main$updateAttributesViewModel,
-									model.pages,
-									$author$project$UI$Pages$Attributes(updatedViewModel)),
-								selectedPage: $author$project$UI$Pages$Attributes(updatedViewModel)
+								pages: A2($author$project$Main$updateAttributesViewModel, model.pages, updatedViewModel)
 							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
@@ -13387,11 +13343,7 @@ var $author$project$Main$handleApiRequest = F2(
 						_Utils_update(
 							model,
 							{
-								pages: A2(
-									$author$project$Main$updateAttributesViewModel,
-									model.pages,
-									$author$project$UI$Pages$Attributes(updatedViewModel)),
-								selectedPage: $author$project$UI$Pages$Attributes(updatedViewModel),
+								pages: A2($author$project$Main$updateAttributesViewModel, model.pages, updatedViewModel),
 								sortableAttrs: updatedViewModel.sortable
 							}),
 						$elm$core$Platform$Cmd$none);
@@ -13413,11 +13365,7 @@ var $author$project$Main$handleApiRequest = F2(
 							model,
 							{
 								filterableAttrs: updatedViewModel.filterable,
-								pages: A2(
-									$author$project$Main$updateAttributesViewModel,
-									model.pages,
-									$author$project$UI$Pages$Attributes(updatedViewModel)),
-								selectedPage: $author$project$UI$Pages$Attributes(updatedViewModel)
+								pages: A2($author$project$Main$updateAttributesViewModel, model.pages, updatedViewModel)
 							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
@@ -13437,12 +13385,8 @@ var $author$project$Main$handleApiRequest = F2(
 						_Utils_update(
 							model,
 							{
-								pages: A2(
-									$author$project$Main$updateAttributesViewModel,
-									model.pages,
-									$author$project$UI$Pages$Attributes(updatedViewModel)),
-								searchableAttrs: updatedViewModel.searchable,
-								selectedPage: $author$project$UI$Pages$Attributes(updatedViewModel)
+								pages: A2($author$project$Main$updateAttributesViewModel, model.pages, updatedViewModel),
+								searchableAttrs: updatedViewModel.searchable
 							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
@@ -13466,11 +13410,7 @@ var $author$project$Main$handleApiRequest = F2(
 								model,
 								{
 									distinctAttr: updatedViewModel.distinct,
-									pages: A2(
-										$author$project$Main$updateAttributesViewModel,
-										model.pages,
-										$author$project$UI$Pages$Attributes(updatedViewModel)),
-									selectedPage: $author$project$UI$Pages$Attributes(updatedViewModel)
+									pages: A2($author$project$Main$updateAttributesViewModel, model.pages, updatedViewModel)
 								}),
 							$elm$core$Platform$Cmd$none);
 					} else {
@@ -13545,21 +13485,20 @@ var $author$project$Main$handleApiRequest = F2(
 				if (r.$ === 'Ok') {
 					var payload = r.a;
 					var keys = $elm$core$Dict$keys(payload.fieldDistribution);
-					var updatedAttributes = $author$project$UI$PageViews$Attributes$buildMockModelFromAttributes(keys);
-					var updatedAttributesPage = $author$project$UI$Pages$Attributes(updatedAttributes);
+					var updatedAttributesPageViewModel = $author$project$UI$PageViews$Attributes$buildMockModelFromAttributes(keys);
+					var updatedAttributesPage = $author$project$UI$Pages$Attributes(updatedAttributesPageViewModel);
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								displayedAttrs: updatedAttributes.displayed,
-								distinctAttr: updatedAttributes.distinct,
+								displayedAttrs: updatedAttributesPageViewModel.displayed,
+								distinctAttr: updatedAttributesPageViewModel.distinct,
 								documentKeys: _Utils_Tuple2(indexUid, keys),
-								filterableAttrs: updatedAttributes.filterable,
+								filterableAttrs: updatedAttributesPageViewModel.filterable,
 								indexStats: $elm$core$Maybe$Just(payload),
-								pages: A2($author$project$Main$updateAttributesViewModel, model.pages, updatedAttributesPage),
-								searchableAttrs: updatedAttributes.searchable,
-								selectedPage: updatedAttributesPage,
-								sortableAttrs: updatedAttributes.sortable
+								pages: A2($author$project$Main$updateAttributesViewModel, model.pages, updatedAttributesPageViewModel),
+								searchableAttrs: updatedAttributesPageViewModel.searchable,
+								sortableAttrs: updatedAttributesPageViewModel.sortable
 							}),
 						$elm$core$Platform$Cmd$batch(
 							_List_fromArray(
@@ -13632,14 +13571,12 @@ var $author$project$Main$update = F2(
 			default:
 				var p = msg.a;
 				var updatedAttributes = $author$project$UI$PageViews$Attributes$buildMockModelFromAttributes(p.keys);
-				var updatedAttributesPage = $author$project$UI$Pages$Attributes(updatedAttributes);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
 							documentKeys: _Utils_Tuple2(p.indexUid, p.keys),
-							pages: A2($author$project$Main$updateAttributesViewModel, model.pages, updatedAttributesPage),
-							selectedPage: updatedAttributesPage
+							pages: A2($author$project$Main$updateAttributesViewModel, model.pages, updatedAttributes)
 						}),
 					$elm$core$Platform$Cmd$none);
 		}
@@ -13656,12 +13593,18 @@ var $mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
 var $mdgriffith$elm_ui$Element$fill = $mdgriffith$elm_ui$Internal$Model$Fill(1);
 var $author$project$UI$Pages$getPageList = function (model) {
 	return _List_fromArray(
-		[model.documents, model.settings, model.synonyms, model.stopWords, model.attributes]);
+		[
+			$author$project$UI$Pages$Documents(model.documents),
+			$author$project$UI$Pages$Settings(model.settings),
+			$author$project$UI$Pages$Synonyms(model.synonyms),
+			$author$project$UI$Pages$StopWords(model.stopWords),
+			$author$project$UI$Pages$Attributes(model.attributes)
+		]);
 };
 var $author$project$Main$getSidebarViewModel = function (model) {
 	return {
 		pages: $author$project$UI$Pages$getPageList(model.pages),
-		selectedPage: model.selectedPage
+		selectedPage: model.pages.selectedPage
 	};
 };
 var $mdgriffith$elm_ui$Internal$Model$Height = function (a) {
@@ -23331,7 +23274,7 @@ var $author$project$Main$view = function (model) {
 					A2(
 					$mdgriffith$elm_ui$Element$map,
 					$author$project$Main$PageViewMsg,
-					$author$project$UI$PageView$view(model.selectedPage))
+					$author$project$UI$PageView$view(model.pages.selectedPage))
 				])));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
