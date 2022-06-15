@@ -7,7 +7,7 @@ import Element.Background as Background
 import Element.Border exposing (rounded)
 import Element.Events
 import Element.Input exposing (OptionState(..))
-import UI.Icons exposing (Icon(..), Style(..))
+import UI.Icons exposing (Icon(..), Style(..), buildIcon)
 import UI.Pages
 import UI.Styles
 
@@ -18,6 +18,7 @@ import UI.Styles
 
 type Msg
     = SelectPage UI.Pages.Page
+    | ShowIndices
 
 
 
@@ -34,21 +35,57 @@ type alias Model =
 
 sidebarView : Model -> Element Msg
 sidebarView model =
-    Element.table
+    Element.column
         [ width (px 240)
-        , height fill
         , padding 12
         , scrollbarY
         ]
-        { data = model.pages
-        , columns =
-            [ { header = Element.none
-              , width = fill
-              , view =
-                    \page -> sidebarListItemView (getPageTitle page) (model.selectedPage == page) page
-              }
+        [ dropDown "Suggestions" []
+        , Element.table
+            [ width fill
+            , height fill
             ]
-        }
+            { data = model.pages
+            , columns =
+                [ { header = Element.none
+                  , width = fill
+                  , view =
+                        \page -> sidebarListItemView (getPageTitle page) (model.selectedPage == page) page
+                  }
+                ]
+            }
+        ]
+
+
+dropDown : String -> List String -> Element Msg
+dropDown v l =
+    el
+        [ width fill ]
+        (row
+            (List.concat
+                [ [ Element.Events.onClick ShowIndices
+                  , width
+                        (fill
+                            |> minimum 200
+                            |> maximum 320
+                        )
+                  , padding 8
+                  , rounded 4
+                  , pointer
+                  , Element.mouseOver <| [ Background.color UI.Styles.color.gray300 ]
+                  ]
+
+                -- , addIf isSelected <| Background.color UI.Styles.color.primary200
+                ]
+            )
+            [ buildIcon UI.Icons.Pin Outline
+            , paragraph [ paddingEach { top = 0, left = 8, bottom = 0, right = 0 } ]
+                [ el
+                    (UI.Styles.getTypographicStyleFor UI.Styles.Body)
+                    (text v)
+                ]
+            ]
+        )
 
 
 sidebarListItemView : String -> Bool -> UI.Pages.Page -> Element Msg

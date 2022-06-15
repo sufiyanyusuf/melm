@@ -96,7 +96,8 @@ type alias Model =
     , documents : List String
     , documentKeys : ( String, List String )
     , selectedIndex : Maybe IndexesRouteResponseListItem -- Decouple this
-    , stopWords : List StopWordsPage.StopWord
+
+    -- , stopWords : List StopWordsPage.StopWord
     , synonyms : List UI.Components.SynonymCard.Model -- Decouple this
     , pollingQueue : List ( Task, SweetPoll.PollingState String )
     , displayedAttrs : List AttributesPage.Attribute
@@ -209,8 +210,8 @@ handleApiRequest model apiResponse =
 
                         updatedModelValue =
                             { model
-                                | stopWords = stopWordsViewModel.words
-                                , pages = updateStopWordsViewModel model.pages stopWordsViewModel
+                              -- | stopWords = stopWordsViewModel.words
+                                | pages = updateStopWordsViewModel model.pages stopWordsViewModel
                             }
                     in
                     ( updatedModelValue, Cmd.none )
@@ -818,23 +819,18 @@ handleSettingsViewMsg model msg =
 
 handleSidebarSelection : Model -> Sidebar.Msg -> ( Model, Cmd Msg )
 handleSidebarSelection model sidebarMsg =
-    let
-        selectedPage =
-            case sidebarMsg of
-                Sidebar.SelectPage p ->
-                    p
-
-        pages =
-            model.pages
-
-        updatedPages =
-            { pages | selectedPage = selectedPage }
-
-        updatedModel =
-            { model | pages = updatedPages }
-    in
     case sidebarMsg of
         Sidebar.SelectPage p ->
+            let
+                pages =
+                    model.pages
+
+                updatedPages =
+                    { pages | selectedPage = p }
+
+                updatedModel =
+                    { model | pages = updatedPages }
+            in
             case p of
                 Settings _ ->
                     ( updatedModel, Cmd.none )
@@ -882,6 +878,9 @@ handleSidebarSelection model sidebarMsg =
                         )
                         |> Cmd.map ApiRequest
                     )
+
+        _ ->
+            ( model, Cmd.none )
 
 
 handlePollRequest : Model -> Task -> ( Model, Cmd Msg )
@@ -1082,7 +1081,8 @@ handlePollSignal model newState newData error cmd task =
                                             List.map
                                                 (updatePollState task newState)
                                                 model.pollingQueue
-                                        , stopWords = updatedStopWordsViewModel.words
+
+                                        -- , stopWords = updatedStopWordsViewModel.words
                                         , pages = updateStopWordsViewModel model.pages updatedStopWordsViewModel
                                       }
                                     , cmd |> Cmd.map (PollUpdate task)
@@ -1113,7 +1113,8 @@ handlePollSignal model newState newData error cmd task =
                                     in
                                     ( { model
                                         | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue
-                                        , stopWords = updatedStopWordsViewModel.words
+
+                                        -- , stopWords = updatedStopWordsViewModel.words
                                         , pages = updateStopWordsViewModel model.pages updatedStopWordsViewModel
                                       }
                                     , Cmd.none
@@ -1216,7 +1217,8 @@ handlePollSignal model newState newData error cmd task =
                                     in
                                     ( { model
                                         | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue
-                                        , stopWords = updatedStopWordsViewModel.words
+
+                                        -- , stopWords = updatedStopWordsViewModel.words
                                         , pages = updateStopWordsViewModel model.pages updatedStopWordsViewModel
                                       }
                                     , Cmd.none
@@ -1276,7 +1278,8 @@ init _ =
                     , updatedAt = ""
                     , primaryKey = "id"
                     }
-            , stopWords = []
+
+            -- , stopWords = []
             , synonyms = (SynonymsPage.init "suggestions").synonymStates -- need to decouple ui from state
             , pollingQueue = []
             , documentKeys = ( "suggestions", [] )
