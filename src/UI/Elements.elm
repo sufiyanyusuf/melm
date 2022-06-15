@@ -1,15 +1,15 @@
-module UI.Elements exposing (button, chip, iconButton, spacer, switch, syncIndicator, textfield)
+module UI.Elements exposing (button, chip, dropDown, iconButton, spacer, switch, syncIndicator, textfield)
 
-import Element exposing (Element, alpha, el, fill, padding, paddingEach, pointer, px, spacing, text, width)
+import Element exposing (..)
 import Element.Background as Background
-import Element.Border
+import Element.Border exposing (rounded)
 import Element.Events exposing (onClick, onLoseFocus)
-import Element.Input as Input
+import Element.Input as Input exposing (OptionState(..))
 import Expect exposing (true)
 import Html.Events
 import Json.Decode as Decode
 import Request exposing (RequestStatus(..))
-import UI.Icons exposing (Icon, Style(..), buildIcon)
+import UI.Icons exposing (Icon(..), Style(..), buildIcon)
 import UI.Styles exposing (Size(..))
 
 
@@ -228,3 +228,60 @@ syncIndicator status valueChanged =
 
     else
         Element.none
+
+
+dropDown : String -> List String -> msg -> msg -> Element msg
+dropDown v l clickDropdownButton selectItem =
+    column
+        [ padding 8
+        , moveDown 8
+
+        -- , moveRight 8
+        , Element.Border.shadow
+            { offset = ( 0, 0 )
+            , size = 0
+            , blur = 15
+            , color = Element.rgba255 186 189 182 0.6
+            }
+        , Background.color UI.Styles.color.white
+        , Element.Border.rounded 8
+        , Element.scrollbarY
+        , Element.height
+            (shrink
+                |> minimum 120
+                |> maximum 320
+            )
+        , Element.width fill
+        ]
+        [ dropDownButton v clickDropdownButton, dropDownBody l selectItem ]
+
+
+dropDownButton : String -> msg -> Element msg
+dropDownButton t msg =
+    Element.row
+        (List.concat
+            [ [ Element.Events.onClick msg
+              , width fill
+              , padding 8
+              , rounded 4
+              , pointer
+              , Element.mouseOver <| [ Background.color UI.Styles.color.gray300 ]
+              ]
+
+            -- , addIf isSelected <| Background.color UI.Styles.color.primary200
+            ]
+        )
+        [ paragraph [ paddingEach { top = 0, left = 8, bottom = 0, right = 0 } ]
+            [ el
+                (UI.Styles.getTypographicStyleFor UI.Styles.Body)
+                (text t)
+            ]
+        ]
+
+
+dropDownBody : List String -> msg -> Element msg
+dropDownBody l msg =
+    Element.column
+        [ width fill
+        ]
+        (List.map (\x -> dropDownButton x msg) l)
