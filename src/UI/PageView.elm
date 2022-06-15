@@ -23,7 +23,6 @@ type Msg
     | SettingsViewMsg SettingsView.Msg
     | SearchViewMsg SearchView.Msg
     | DocumentsViewMsg DocumentsView.Msg
-    | TasksViewMsg TasksView.Msg
     | StopWordsViewMsg StopWords.Msg
     | SynonymsViewMsg SynonymsView.Msg
     | AttributesViewMsg Attributes.Msg
@@ -54,12 +53,6 @@ getCurrentPageView currentPage =
 
         Views.Documents m ->
             DocumentsView.view m |> Element.map DocumentsViewMsg
-
-        Views.Tasks ->
-            TasksView.view |> Element.map TasksViewMsg
-
-        Views.RankingRules ->
-            Debug.todo "branch 'RankingRules' not implemented"
 
         Views.Synonyms s ->
             SynonymsView.view s |> Element.map SynonymsViewMsg

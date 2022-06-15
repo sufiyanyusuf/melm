@@ -480,9 +480,6 @@ handlePageViewMessage model pageViewMsg =
         PageView.DocumentsViewMsg _ ->
             ( model, Cmd.none )
 
-        PageView.TasksViewMsg _ ->
-            Debug.todo "branch 'TasksViewMsg _' not implemented"
-
         PageView.StopWordsViewMsg m ->
             handleStopWordsViewMsg model m
 
@@ -857,12 +854,6 @@ handleSidebarSelection model sidebarMsg =
                         )
                         |> Cmd.map ApiRequest
                     )
-
-                Tasks ->
-                    ( { model | selectedPage = selectedPage }, Cmd.none )
-
-                RankingRules ->
-                    Debug.todo "branch 'RankingRules' not implemented"
 
                 Synonyms _ ->
                     ( { model | selectedPage = selectedPage }

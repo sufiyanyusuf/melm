@@ -90,12 +90,6 @@ getPageTitle page =
         UI.Pages.Documents _ ->
             "Documents"
 
-        UI.Pages.Tasks ->
-            "Tasks"
-
-        UI.Pages.RankingRules ->
-            "Ranking Rules"
-
         UI.Pages.Synonyms _ ->
             "Synonyms"
 
@@ -114,12 +108,6 @@ getPageIcon page style =
 
         UI.Pages.Documents _ ->
             UI.Icons.buildIcon Documents style
-
-        UI.Pages.Tasks ->
-            UI.Icons.buildIcon Checkmark style
-
-        UI.Pages.RankingRules ->
-            UI.Icons.buildIcon ArrowUpDown style
 
         UI.Pages.Synonyms _ ->
             UI.Icons.buildIcon Dictionary style

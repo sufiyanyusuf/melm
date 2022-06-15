@@ -11,8 +11,6 @@ import UI.PageViews.Synonyms as Synonyms
 type Page
     = Settings Settings.Model
     | Documents Documents.Model
-    | Tasks
-    | RankingRules
     | Synonyms Synonyms.Model
     | StopWords StopWords.Model
     | Attributes Attributes.Model
