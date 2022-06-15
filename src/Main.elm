@@ -137,8 +137,6 @@ update msg model =
             ( { model
                 | documentKeys = ( p.indexUid, p.keys )
                 , pages = updateAttributesViewModel model.pages updatedAttributes
-
-                -- , selectedPage = Attributes updatedAttributes
               }
             , Cmd.none
             )
@@ -181,8 +179,6 @@ handleApiRequest model apiResponse =
                     ( { model
                         | documents = documents
                         , pages = updateDocumentsViewModel model.pages documentsPageViewModel
-
-                        -- , selectedPage = updatedDocumentsPage
                       }
                     , Cmd.none
                     )
@@ -204,8 +200,6 @@ handleApiRequest model apiResponse =
                             { model
                                 | stopWords = stopWordsViewModel.words
                                 , pages = updateStopWordsViewModel model.pages stopWordsViewModel
-
-                                -- , selectedPage = stopWordsPageViewModel
                             }
                     in
                     ( updatedModelValue, Cmd.none )
@@ -234,8 +228,6 @@ handleApiRequest model apiResponse =
                     ( { model
                         | synonyms = synonyms
                         , pages = updateSynonymsViewModel model.pages updatedSynonymsViewModel
-
-                        -- , selectedPage = Synonyms updatedSynonymsViewModel
                       }
                     , Cmd.none
                     )
@@ -267,8 +259,6 @@ handleApiRequest model apiResponse =
                     ( { model
                         | displayedAttrs = updatedViewModel.displayed
                         , pages = updateAttributesViewModel model.pages updatedViewModel
-
-                        -- , selectedPage = Attributes updatedViewModel
                       }
                     , Cmd.none
                     )
@@ -288,8 +278,6 @@ handleApiRequest model apiResponse =
                     ( { model
                         | sortableAttrs = updatedViewModel.sortable
                         , pages = updateAttributesViewModel model.pages updatedViewModel
-
-                        -- , selectedPage = Attributes updatedViewModel
                       }
                     , Cmd.none
                     )
@@ -309,8 +297,6 @@ handleApiRequest model apiResponse =
                     ( { model
                         | filterableAttrs = updatedViewModel.filterable
                         , pages = updateAttributesViewModel model.pages updatedViewModel
-
-                        -- , selectedPage = Attributes updatedViewModel
                       }
                     , Cmd.none
                     )
@@ -330,8 +316,6 @@ handleApiRequest model apiResponse =
                     ( { model
                         | searchableAttrs = updatedViewModel.searchable
                         , pages = updateAttributesViewModel model.pages updatedViewModel
-
-                        -- , selectedPage = Attributes updatedViewModel
                       }
                     , Cmd.none
                     )
@@ -353,8 +337,6 @@ handleApiRequest model apiResponse =
                             ( { model
                                 | distinctAttr = updatedViewModel.distinct
                                 , pages = updateAttributesViewModel model.pages updatedViewModel
-
-                                -- , selectedPage = Attributes updatedViewModel
                               }
                             , Cmd.none
                             )
@@ -427,8 +409,6 @@ handleApiRequest model apiResponse =
                         , distinctAttr = updatedAttributesPageViewModel.distinct
                         , documentKeys = ( indexUid, keys )
                         , pages = updateAttributesViewModel model.pages updatedAttributesPageViewModel
-
-                        -- , selectedPage = updatedAttributesPage
                       }
                     , Cmd.batch
                         [ Api.Routes.Main.buildRequest
@@ -524,8 +504,6 @@ handleAttributesViewMsg model msg =
                     in
                     ( { updatedModel
                         | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
-
-                        -- , selectedPage = Attributes (getAttributesViewModel updatedModel)
                       }
                     , Cmd.none
                     )
@@ -548,8 +526,6 @@ handleAttributesViewMsg model msg =
                     in
                     ( { updatedModel
                         | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
-
-                        -- , selectedPage = Attributes (getAttributesViewModel updatedModel)
                       }
                     , Cmd.none
                     )
@@ -572,8 +548,6 @@ handleAttributesViewMsg model msg =
                     in
                     ( { updatedModel
                         | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
-
-                        -- , selectedPage = Attributes (getAttributesViewModel updatedModel)
                       }
                     , Cmd.none
                     )
@@ -596,8 +570,6 @@ handleAttributesViewMsg model msg =
                     in
                     ( { updatedModel
                         | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
-
-                        -- , selectedPage = Attributes (getAttributesViewModel updatedModel)
                       }
                     , Cmd.none
                     )
@@ -620,8 +592,6 @@ handleAttributesViewMsg model msg =
                     in
                     ( { updatedModel
                         | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
-
-                        -- , selectedPage = Attributes (getAttributesViewModel updatedModel)
                       }
                     , Cmd.none
                     )
@@ -744,8 +714,6 @@ handleSynonymsViewMsg model msg =
                             in
                             ( { model
                                 | pages = updateSynonymsViewModel model.pages updatedSynonymsViewModel
-
-                                -- , selectedPage = Synonyms updatedSynonymsViewModel
                                 , synonyms = updatedSynonymsViewModel.synonymStates
                               }
                             , Api.Routes.Main.buildRequest
@@ -769,8 +737,6 @@ handleSynonymsViewMsg model msg =
                             in
                             ( { model
                                 | pages = updateSynonymsViewModel model.pages updatedSynonymsViewModel
-
-                                -- , selectedPage = Synonyms updatedSynonymsViewModel
                                 , synonyms = updatedSynonymsViewModel.synonymStates
                               }
                             , Cmd.none
@@ -795,8 +761,6 @@ handleStopWordsViewMsg model msg =
                     { model
                         | stopWords = updatedStopWordsList
                         , pages = updateStopWordsViewModel model.pages updatedStopWordsViewModel
-
-                        -- , selectedPage = StopWords updatedStopWordsViewModel
                     }
             in
             ( updatedModelValue, Cmd.none )
@@ -808,10 +772,6 @@ handleStopWordsViewMsg model msg =
             ( model, Cmd.none )
 
         _ ->
-            -- let
-            --     ( _, _ ) =
-            --         StopWordsPage.update msg { words = model.stopWords, indexUid = "" }
-            -- in
             ( model, Cmd.none )
 
 
@@ -833,8 +793,6 @@ handleSettingsViewMsg model msg =
                     { model
                         | token = updatedTokenValue.token
                         , pages = updateSettingsViewModel model.pages updatedSettingsPageViewModel
-
-                        -- , selectedPage = updatedSettingsPage
                     }
             in
             ( updatedModelValue
@@ -1112,8 +1070,6 @@ handlePollSignal model newState newData error cmd task =
                                                 model.pollingQueue
                                         , synonyms = updatedSynonyms
                                         , pages = updateSynonymsViewModel model.pages updatedSynonymsPageViewModel
-
-                                        -- , selectedPage = Synonyms updatedSynonymsPageViewModel
                                       }
                                     , cmd |> Cmd.map (PollUpdate task)
                                     )
@@ -1142,8 +1098,6 @@ handlePollSignal model newState newData error cmd task =
                                         | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue
                                         , synonyms = updatedSynonyms
                                         , pages = updateSynonymsViewModel model.pages updatedSynonymsPageViewModel
-
-                                        -- , selectedPage = Synonyms updatedSynonymsPageViewModel
                                       }
                                     , Cmd.none
                                     )
@@ -1160,8 +1114,6 @@ handlePollSignal model newState newData error cmd task =
                                             in
                                             ( { updatedModel
                                                 | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
-
-                                                -- , selectedPage = Attributes (getAttributesViewModel updatedModel)
                                               }
                                             , Cmd.none
                                             )
@@ -1176,8 +1128,6 @@ handlePollSignal model newState newData error cmd task =
                                             in
                                             ( { updatedModel
                                                 | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
-
-                                                -- , selectedPage = Attributes (getAttributesViewModel updatedModel)
                                               }
                                             , Cmd.none
                                             )
@@ -1192,8 +1142,6 @@ handlePollSignal model newState newData error cmd task =
                                             in
                                             ( { updatedModel
                                                 | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
-
-                                                -- , selectedPage = Attributes (getAttributesViewModel updatedModel)
                                               }
                                             , Cmd.none
                                             )
@@ -1208,8 +1156,6 @@ handlePollSignal model newState newData error cmd task =
                                             in
                                             ( { updatedModel
                                                 | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
-
-                                                -- , selectedPage = Attributes (getAttributesViewModel updatedModel)
                                               }
                                             , Cmd.none
                                             )
@@ -1224,8 +1170,6 @@ handlePollSignal model newState newData error cmd task =
                                             in
                                             ( { updatedModel
                                                 | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
-
-                                                -- , selectedPage = Attributes (getAttributesViewModel updatedModel)
                                               }
                                             , Cmd.none
                                             )
