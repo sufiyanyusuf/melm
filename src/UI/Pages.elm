@@ -39,4 +39,4 @@ init indexUid =
 
 getPageList : Model -> List Page
 getPageList model =
-    [ Documents model.documents, Settings model.settings, Synonyms model.synonyms, StopWords model.stopWords, Attributes model.attributes ]
+    [ Documents model.documents, Synonyms model.synonyms, StopWords model.stopWords, Attributes model.attributes, Settings model.settings ]

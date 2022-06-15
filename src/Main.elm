@@ -739,30 +739,15 @@ handleSynonymsViewMsg model msg =
 handleStopWordsViewMsg : Model -> StopWordsPage.Msg -> ( Model, Cmd Msg )
 handleStopWordsViewMsg model msg =
     case msg of
-        StopWordsPage.NewStopWord w ->
-            let
-                updatedStopWordsList =
-                    model.stopWords ++ [ StopWordsPage.createNew w ]
-
-                updatedStopWordsViewModel =
-                    StopWordsPage.Model updatedStopWordsList model.pages.stopWords.newValue
-
-                updatedModelValue =
-                    { model
-                        | stopWords = updatedStopWordsList
-                        , pages = updateStopWordsViewModel model.pages updatedStopWordsViewModel
-                    }
-            in
-            ( updatedModelValue, Cmd.none )
-
-        StopWordsPage.Remove _ ->
-            ( model, Cmd.none )
-
         StopWordsPage.Sync ->
             ( model, Cmd.none )
 
         _ ->
-            ( model, Cmd.none )
+            let
+                ( m, _ ) =
+                    StopWordsPage.update msg model.pages.stopWords
+            in
+            ( { model | pages = updateStopWordsViewModel model.pages m }, Cmd.none )
 
 
 handleSettingsViewMsg : Model -> SettingsPage.Msg -> ( Model, Cmd Msg )

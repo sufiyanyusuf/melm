@@ -5,6 +5,7 @@ import Element.Background as Background
 import Element.Border
 import Element.Events exposing (onClick, onLoseFocus)
 import Element.Input as Input
+import Expect exposing (true)
 import Html.Events
 import Json.Decode as Decode
 import Request exposing (RequestStatus(..))
@@ -154,8 +155,8 @@ iconButton icon msg =
         (buildIcon icon Outline)
 
 
-chip : String -> msg -> Element msg
-chip text msg =
+chip : String -> RequestStatus -> Bool -> msg -> Element msg
+chip text requestStatus saved msg =
     el
         (UI.Styles.getTypographicStyleFor UI.Styles.Body)
         (Element.row
@@ -167,7 +168,8 @@ chip text msg =
             , Element.Border.width 1
             , spacing 4
             ]
-            [ Element.text text
+            [ syncIndicator requestStatus (not saved)
+            , Element.text text
             , el
                 [ padding 8
                 , Element.Border.rounded 5
