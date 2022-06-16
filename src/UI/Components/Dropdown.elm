@@ -2,34 +2,38 @@ module UI.Components.Dropdown exposing (Model, Msg(..), init, update, view)
 
 import Element exposing (..)
 import Element.Background as Background
-import Element.Border exposing (rounded, solid)
-import Element.Events exposing (onClick, onLoseFocus)
-import Element.Input as Input exposing (OptionState(..))
+import Element.Border exposing (rounded)
+import Element.Events
 import Request exposing (RequestStatus(..))
-import UI.Icons exposing (Icon(..), Style(..), buildIcon)
+import UI.Icons exposing (Icon(..), Style(..))
 import UI.Styles exposing (Size(..))
 import Utils exposing (addIf)
 
 
 type Msg
     = TriggerClicked
-    | Select
+    | Select Item
+
+
+type alias Item =
+    { title : String, id : String }
 
 
 type alias Model =
-    { selectedValue : String
+    { selectedValue : Maybe Item
     , expanded : Bool
-    , options : List String
+    , options : List Item
     }
 
 
 init : Model
 init =
-    Model "Suggestions"
+    Model
+        Nothing
         False
-        [ "Index 1"
-        , "Index 2"
-        , "Index 3"
+        [ { id = "mock"
+          , title = "mock"
+          }
         ]
 
 
@@ -39,8 +43,8 @@ update msg model =
         TriggerClicked ->
             ( { model | expanded = not model.expanded }, Cmd.none )
 
-        _ ->
-            ( { model | expanded = not model.expanded }, Cmd.none )
+        Select item ->
+            ( { model | expanded = not model.expanded, selectedValue = Just item }, Cmd.none )
 
 
 view : Model -> Element Msg
@@ -58,15 +62,24 @@ view model =
         , spacing 2
         ]
         [ dropDownButton model.selectedValue model.expanded TriggerClicked
-        , dropDownMenu model.expanded model.options Select
+        , dropDownMenu model.expanded model.options
         ]
 
 
-dropDownButton : String -> Bool -> msg -> Element msg
-dropDownButton t expanded msg =
+dropDownButton : Maybe Item -> Bool -> msg -> Element msg
+dropDownButton item expanded selectedItem =
+    let
+        t =
+            case item of
+                Just i ->
+                    text i.title
+
+                Nothing ->
+                    text "Select an index"
+    in
     Element.row
         (List.concat
-            [ [ Element.Events.onClick msg
+            [ [ Element.Events.onClick selectedItem
               , width fill
               , paddingXY 4 10
               , rounded 4
@@ -82,13 +95,13 @@ dropDownButton t expanded msg =
         [ paragraph [ paddingEach { top = 0, left = 8, bottom = 0, right = 0 } ]
             [ el
                 (UI.Styles.getTypographicStyleFor UI.Styles.Body)
-                (text t)
+                t
             ]
         ]
 
 
-dropDownMenu : Bool -> List String -> msg -> Element msg
-dropDownMenu visible l msg =
+dropDownMenu : Bool -> List Item -> Element Msg
+dropDownMenu visible items =
     if visible then
         Element.column
             [ width fill
@@ -101,19 +114,19 @@ dropDownMenu visible l msg =
                 , color = UI.Styles.color.gray300
                 }
             ]
-            (List.map (\x -> dropDownMenuListItem x msg) l)
+            (List.map (\item -> dropDownMenuListItem item) items)
 
     else
         Element.none
 
 
-dropDownMenuListItem : String -> msg -> Element msg
-dropDownMenuListItem t msg =
+dropDownMenuListItem : Item -> Element Msg
+dropDownMenuListItem item =
     Element.row
         (List.concat
-            [ [ Element.Events.onClick msg
+            [ [ Element.Events.onClick (Select item)
               , width fill
-              , padding 8
+              , paddingEach { top = 8, bottom = 10, left = 8, right = 8 }
               , rounded 4
               , pointer
               , Element.mouseOver <| [ Background.color UI.Styles.color.gray300 ]
@@ -125,6 +138,6 @@ dropDownMenuListItem t msg =
         [ paragraph [ paddingEach { top = 0, left = 8, bottom = 0, right = 0 } ]
             [ el
                 (UI.Styles.getTypographicStyleFor UI.Styles.Body)
-                (text t)
+                (text item.title)
             ]
         ]

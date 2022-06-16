@@ -9,7 +9,7 @@ import SweetPoll
 
 
 type Msg
-    = HandleListResponse (Result Http.Error (List IndexesRouteResponseListItem))
+    = HandleListIndexesResponse (Result Http.Error (List IndexesRouteResponseListItem))
     | HandleShowResponse (Result Http.Error IndexesRouteResponseListItem)
     | HandleDocumentsResponse (Result Http.Error String)
     | HandleListStopWordsResponse (Result Http.Error (List String)) String
@@ -109,7 +109,7 @@ buildRequest payload token =
                 , headers = headers token
                 , url = payload.endpoint
                 , body = payload.body
-                , expect = Http.expectJson HandleListResponse d
+                , expect = Http.expectJson HandleListIndexesResponse d
                 , timeout = Nothing
                 , tracker = Nothing
                 }

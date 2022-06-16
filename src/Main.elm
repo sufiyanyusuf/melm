@@ -12,7 +12,6 @@ import UI.Components.SynonymCard exposing (Msg(..))
 import UI.PageView as PageView exposing (Msg(..))
 import UI.PageViews.Attributes as AttributesPage exposing (buildModelFromResponse)
 import UI.PageViews.Documents as DocumentsPage
-import UI.PageViews.Indexes as IndexesPage
 import UI.PageViews.Settings as SettingsPage
 import UI.PageViews.StopWords as StopWordsPage
 import UI.PageViews.Synonyms as SynonymsPage exposing (Msg(..))
@@ -88,10 +87,10 @@ type alias Model =
     { token : Maybe String
     , savedToken : Maybe String
     , pages : Views.Model
-    , indexes : List IndexesRouteResponseListItem -- Decouple this
     , documents : List String
     , documentKeys : ( String, List String )
-    , selectedIndex : Maybe IndexesRouteResponseListItem -- Decouple this
+
+    -- , selectedIndex : Maybe IndexesRouteResponseListItem -- Decouple this
     , synonyms : List UI.Components.SynonymCard.Model -- Decouple this
     , pollingQueue : List ( Task, SweetPoll.PollingState String )
     , displayedAttrs : List AttributesPage.Attribute
@@ -162,12 +161,24 @@ update msg model =
 handleApiRequest : Model -> Api.Routes.Main.Msg -> ( Model, Cmd Msg )
 handleApiRequest model apiResponse =
     case apiResponse of
-        HandleListResponse r ->
-            ( model, Cmd.none )
+        HandleListIndexesResponse r ->
+            case r of
+                Ok payload ->
+                    let
+                        d =
+                            model.sidebarModel.dropDown
+
+                        s =
+                            model.sidebarModel
+                    in
+                    ( { model | sidebarModel = { s | dropDown = { d | options = List.map (\x -> { id = x.uid, title = x.name }) payload } } }, Cmd.none )
+
+                Err _ ->
+                    ( model, Cmd.none )
 
         HandleShowResponse r ->
             case r of
-                Ok payload ->
+                Ok _ ->
                     ( model, Cmd.none )
 
                 Err _ ->
@@ -701,60 +712,51 @@ handleAttributesViewMsg model msg =
             )
 
 
-
--- ( model, Cmd.none )
-
-
 handleSynonymsViewMsg : Model -> SynonymsPage.Msg -> ( Model, Cmd Msg )
 handleSynonymsViewMsg model msg =
-    case model.selectedIndex of
-        Just i ->
-            case msg of
-                m ->
-                    case m of
-                        Sync ->
-                            let
-                                ( updatedSynonymsViewModel, _ ) =
-                                    SynonymsPage.update msg (getSynonymsViewModel model i.uid)
+    case msg of
+        m ->
+            case m of
+                Sync ->
+                    let
+                        ( updatedSynonymsViewModel, _ ) =
+                            SynonymsPage.update msg (getSynonymsViewModel model model.pages.synonyms.indexUid)
 
-                                currentSynonyms =
-                                    List.map
-                                        (\s -> ( s.synonymKey, s.synonymList ))
-                                        model.synonyms
-                                        |> List.filter (\( k, v ) -> k /= "" && v /= [])
-                            in
-                            ( { model
-                                | pages = updateSynonymsViewModel model.pages updatedSynonymsViewModel
-                                , synonyms = updatedSynonymsViewModel.synonymStates
-                              }
-                            , Api.Routes.Main.buildRequest
-                                (Api.Routes.Main.buildPayload
-                                    (UpdateSynonyms i.uid
-                                        (Dict.fromList currentSynonyms)
-                                        Api.Routes.Main.settingsUpdateDecoder
-                                    )
-                                )
-                                (Maybe.withDefault
-                                    ""
-                                    model.savedToken
-                                )
-                                |> Cmd.map ApiRequest
+                        currentSynonyms =
+                            List.map
+                                (\s -> ( s.synonymKey, s.synonymList ))
+                                model.synonyms
+                                |> List.filter (\( k, v ) -> k /= "" && v /= [])
+                    in
+                    ( { model
+                        | pages = updateSynonymsViewModel model.pages updatedSynonymsViewModel
+                        , synonyms = updatedSynonymsViewModel.synonymStates
+                      }
+                    , Api.Routes.Main.buildRequest
+                        (Api.Routes.Main.buildPayload
+                            (UpdateSynonyms model.pages.synonyms.indexUid
+                                (Dict.fromList currentSynonyms)
+                                Api.Routes.Main.settingsUpdateDecoder
                             )
+                        )
+                        (Maybe.withDefault
+                            ""
+                            model.savedToken
+                        )
+                        |> Cmd.map ApiRequest
+                    )
 
-                        _ ->
-                            let
-                                ( updatedSynonymsViewModel, _ ) =
-                                    SynonymsPage.update msg (getSynonymsViewModel model i.uid)
-                            in
-                            ( { model
-                                | pages = updateSynonymsViewModel model.pages updatedSynonymsViewModel
-                                , synonyms = updatedSynonymsViewModel.synonymStates
-                              }
-                            , Cmd.none
-                            )
-
-        Nothing ->
-            ( model, Cmd.none )
+                _ ->
+                    let
+                        ( updatedSynonymsViewModel, _ ) =
+                            SynonymsPage.update msg (getSynonymsViewModel model model.pages.synonyms.indexUid)
+                    in
+                    ( { model
+                        | pages = updateSynonymsViewModel model.pages updatedSynonymsViewModel
+                        , synonyms = updatedSynonymsViewModel.synonymStates
+                      }
+                    , Cmd.none
+                    )
 
 
 handleStopWordsViewMsg : Model -> StopWordsPage.Msg -> ( Model, Cmd Msg )
@@ -936,11 +938,6 @@ getSidebarViewModel model =
 getSettingsViewModel : Model -> SettingsPage.Model
 getSettingsViewModel model =
     { tokenValue = Maybe.withDefault "" model.token, title = "Settings" }
-
-
-getIndexesViewModel : Model -> IndexesPage.Model
-getIndexesViewModel model =
-    { indexes = model.indexes }
 
 
 getSynonymsViewModel : Model -> String -> SynonymsPage.Model
@@ -1268,19 +1265,8 @@ init _ =
             { token = Nothing
             , savedToken = Nothing
             , pages = Views.init "suggestions"
-            , indexes = []
             , documents = []
-            , selectedIndex =
-                Just
-                    { uid = "suggestions"
-                    , name = "Suggestions"
-                    , createdAt = ""
-                    , updatedAt = ""
-                    , primaryKey = "id"
-                    }
-
-            -- , stopWords = []
-            , synonyms = (SynonymsPage.init "suggestions").synonymStates -- need to decouple ui from state
+            , synonyms = (SynonymsPage.init "suggestions").synonymStates
             , pollingQueue = []
             , documentKeys = ( "suggestions", [] )
             , displayedAttrs = []
@@ -1292,11 +1278,12 @@ init _ =
             , sidebarModel = Sidebar.init
             }
     in
-    ( model, Cmd.none )
-
-
-
--- { pages = Views.getPageList model.pages
---                 , selectedPage = model.pages.selectedPage
---                 , dropDown = UI.Components.Dropdown.init
---                 }
+    ( model
+    , Api.Routes.Main.buildRequest
+        (Api.Routes.Main.buildPayload (ListIndexes Api.Routes.Main.indexesRouteResponseListDecoder))
+        (Maybe.withDefault
+            ""
+            model.savedToken
+        )
+        |> Cmd.map ApiRequest
+    )
