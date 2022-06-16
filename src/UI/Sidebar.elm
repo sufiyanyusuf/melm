@@ -10,6 +10,7 @@ import UI.Icons exposing (Icon(..), Style(..))
 import UI.PageViews.Documents as Documents
 import UI.Pages
 import UI.Styles
+import Utils exposing (addIf)
 
 
 
@@ -162,12 +163,3 @@ getIconStyle isSelected =
 
     else
         Outline
-
-
-addIf : Bool -> Attribute msg -> List (Attribute msg)
-addIf isNeed attr =
-    if isNeed then
-        [ attr ]
-
-    else
-        []

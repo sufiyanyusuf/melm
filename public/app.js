@@ -13308,7 +13308,11 @@ var $author$project$UI$Components$Dropdown$update = F2(
 					{expanded: !model.expanded}),
 				$elm$core$Platform$Cmd$none);
 		} else {
-			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			return _Utils_Tuple2(
+				_Utils_update(
+					model,
+					{expanded: !model.expanded}),
+				$elm$core$Platform$Cmd$none);
 		}
 	});
 var $author$project$UI$Sidebar$update = F2(
@@ -19605,7 +19609,7 @@ var $author$project$UI$Styles$Body = {$: 'Body'};
 var $author$project$UI$Sidebar$SelectPage = function (a) {
 	return {$: 'SelectPage', a: a};
 };
-var $author$project$UI$Sidebar$addIf = F2(
+var $author$project$Utils$addIf = F2(
 	function (isNeed, attr) {
 		return isNeed ? _List_fromArray(
 			[attr]) : _List_Nil;
@@ -20620,7 +20624,7 @@ var $author$project$UI$Sidebar$sidebarListItemView = F3(
 									]))
 							]),
 							A2(
-							$author$project$UI$Sidebar$addIf,
+							$author$project$Utils$addIf,
 							isSelected,
 							$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.primary200))
 						])),
@@ -20872,7 +20876,83 @@ var $mdgriffith$elm_ui$Element$table = F2(
 	});
 var $author$project$UI$Components$Dropdown$Select = {$: 'Select'};
 var $author$project$UI$Components$Dropdown$TriggerClicked = {$: 'TriggerClicked'};
-var $author$project$UI$Components$Dropdown$dropDownButton = F2(
+var $mdgriffith$elm_ui$Internal$Flag$borderColor = $mdgriffith$elm_ui$Internal$Flag$flag(28);
+var $mdgriffith$elm_ui$Element$Border$color = function (clr) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$borderColor,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$Colored,
+			'bc-' + $mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
+			'border-color',
+			clr));
+};
+var $mdgriffith$elm_ui$Internal$Model$BorderWidth = F5(
+	function (a, b, c, d, e) {
+		return {$: 'BorderWidth', a: a, b: b, c: c, d: d, e: e};
+	});
+var $mdgriffith$elm_ui$Element$Border$width = function (v) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$borderWidth,
+		A5(
+			$mdgriffith$elm_ui$Internal$Model$BorderWidth,
+			'b-' + $elm$core$String$fromInt(v),
+			v,
+			v,
+			v,
+			v));
+};
+var $author$project$UI$Components$Dropdown$dropDownButton = F3(
+	function (t, expanded, msg) {
+		return A2(
+			$mdgriffith$elm_ui$Element$row,
+			$elm$core$List$concat(
+				_List_fromArray(
+					[
+						_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$Events$onClick(msg),
+							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+							A2($mdgriffith$elm_ui$Element$paddingXY, 4, 10),
+							$mdgriffith$elm_ui$Element$Border$rounded(4),
+							$mdgriffith$elm_ui$Element$pointer,
+							$mdgriffith$elm_ui$Element$mouseOver(
+							_List_fromArray(
+								[
+									$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.gray300)
+								])),
+							$mdgriffith$elm_ui$Element$Border$width(1),
+							$mdgriffith$elm_ui$Element$Border$color($author$project$UI$Styles$color.gray300)
+						]),
+						A2(
+						$author$project$Utils$addIf,
+						expanded,
+						$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.gray300)),
+						A2(
+						$author$project$Utils$addIf,
+						expanded,
+						$mdgriffith$elm_ui$Element$Border$color($author$project$UI$Styles$color.white))
+					])),
+			_List_fromArray(
+				[
+					A2(
+					$mdgriffith$elm_ui$Element$paragraph,
+					_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$paddingEach(
+							{bottom: 0, left: 8, right: 0, top: 0})
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$mdgriffith$elm_ui$Element$el,
+							$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$Body),
+							$mdgriffith$elm_ui$Element$text(t))
+						]))
+				]));
+	});
+var $author$project$UI$Components$Dropdown$dropDownMenuListItem = F2(
 	function (t, msg) {
 		return A2(
 			$mdgriffith$elm_ui$Element$row,
@@ -20911,35 +20991,6 @@ var $author$project$UI$Components$Dropdown$dropDownButton = F2(
 						]))
 				]));
 	});
-var $author$project$UI$Components$Dropdown$dropDownBody = F3(
-	function (visible, l, msg) {
-		return visible ? A2(
-			$mdgriffith$elm_ui$Element$column,
-			_List_fromArray(
-				[
-					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
-				]),
-			A2(
-				$elm$core$List$map,
-				function (x) {
-					return A2($author$project$UI$Components$Dropdown$dropDownButton, x, msg);
-				},
-				l)) : $mdgriffith$elm_ui$Element$none;
-	});
-var $mdgriffith$elm_ui$Internal$Model$MoveY = function (a) {
-	return {$: 'MoveY', a: a};
-};
-var $mdgriffith$elm_ui$Internal$Flag$moveY = $mdgriffith$elm_ui$Internal$Flag$flag(26);
-var $mdgriffith$elm_ui$Element$moveDown = function (y) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$TransformComponent,
-		$mdgriffith$elm_ui$Internal$Flag$moveY,
-		$mdgriffith$elm_ui$Internal$Model$MoveY(y));
-};
-var $mdgriffith$elm_ui$Element$rgba255 = F4(
-	function (red, green, blue, a) {
-		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, a);
-	});
 var $mdgriffith$elm_ui$Internal$Model$boxShadowClass = function (shadow) {
 	return $elm$core$String$concat(
 		_List_fromArray(
@@ -20964,31 +21015,58 @@ var $mdgriffith$elm_ui$Element$Border$shadow = function (almostShade) {
 			'box-shadow',
 			$mdgriffith$elm_ui$Internal$Model$formatBoxShadow(shade)));
 };
+var $author$project$UI$Components$Dropdown$dropDownMenu = F3(
+	function (visible, l, msg) {
+		return visible ? A2(
+			$mdgriffith$elm_ui$Element$column,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+					$mdgriffith$elm_ui$Element$Border$rounded(6),
+					$mdgriffith$elm_ui$Element$padding(4),
+					$mdgriffith$elm_ui$Element$Border$shadow(
+					{
+						blur: 15,
+						color: $author$project$UI$Styles$color.gray300,
+						offset: _Utils_Tuple2(0, 0),
+						size: 0
+					})
+				]),
+			A2(
+				$elm$core$List$map,
+				function (x) {
+					return A2($author$project$UI$Components$Dropdown$dropDownMenuListItem, x, msg);
+				},
+				l)) : $mdgriffith$elm_ui$Element$none;
+	});
+var $mdgriffith$elm_ui$Internal$Model$MoveY = function (a) {
+	return {$: 'MoveY', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Flag$moveY = $mdgriffith$elm_ui$Internal$Flag$flag(26);
+var $mdgriffith$elm_ui$Element$moveDown = function (y) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$TransformComponent,
+		$mdgriffith$elm_ui$Internal$Flag$moveY,
+		$mdgriffith$elm_ui$Internal$Model$MoveY(y));
+};
 var $author$project$UI$Components$Dropdown$view = function (model) {
 	return A2(
 		$mdgriffith$elm_ui$Element$column,
 		_List_fromArray(
 			[
-				$mdgriffith$elm_ui$Element$padding(8),
+				$mdgriffith$elm_ui$Element$padding(12),
 				$mdgriffith$elm_ui$Element$moveDown(8),
-				$mdgriffith$elm_ui$Element$Border$shadow(
-				{
-					blur: 15,
-					color: A4($mdgriffith$elm_ui$Element$rgba255, 186, 189, 182, 0.6),
-					offset: _Utils_Tuple2(0, 0),
-					size: 0
-				}),
 				$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.white),
-				$mdgriffith$elm_ui$Element$Border$rounded(8),
 				$mdgriffith$elm_ui$Element$scrollbarY,
 				$mdgriffith$elm_ui$Element$height(
 				A2($mdgriffith$elm_ui$Element$maximum, 320, $mdgriffith$elm_ui$Element$shrink)),
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+				$mdgriffith$elm_ui$Element$spacing(2)
 			]),
 		_List_fromArray(
 			[
-				A2($author$project$UI$Components$Dropdown$dropDownButton, model.selectedValue, $author$project$UI$Components$Dropdown$TriggerClicked),
-				A3($author$project$UI$Components$Dropdown$dropDownBody, model.expanded, model.options, $author$project$UI$Components$Dropdown$Select)
+				A3($author$project$UI$Components$Dropdown$dropDownButton, model.selectedValue, model.expanded, $author$project$UI$Components$Dropdown$TriggerClicked),
+				A3($author$project$UI$Components$Dropdown$dropDownMenu, model.expanded, model.options, $author$project$UI$Components$Dropdown$Select)
 			]));
 };
 var $author$project$UI$Sidebar$sidebarView = function (model) {
@@ -22329,17 +22407,6 @@ var $author$project$UI$PageViews$Settings$KeyValueChanged = function (a) {
 var $author$project$UI$PageViews$Settings$None = {$: 'None'};
 var $author$project$UI$PageViews$Settings$SaveKeyValue = {$: 'SaveKeyValue'};
 var $author$project$UI$Styles$XL = {$: 'XL'};
-var $mdgriffith$elm_ui$Internal$Flag$borderColor = $mdgriffith$elm_ui$Internal$Flag$flag(28);
-var $mdgriffith$elm_ui$Element$Border$color = function (clr) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$borderColor,
-		A3(
-			$mdgriffith$elm_ui$Internal$Model$Colored,
-			'bc-' + $mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
-			'border-color',
-			clr));
-};
 var $mdgriffith$elm_ui$Element$Input$HiddenLabel = function (a) {
 	return {$: 'HiddenLabel', a: a};
 };
@@ -22499,22 +22566,6 @@ var $mdgriffith$elm_ui$Element$rgb = F3(
 var $mdgriffith$elm_ui$Element$Input$darkGrey = A3($mdgriffith$elm_ui$Element$rgb, 186 / 255, 189 / 255, 182 / 255);
 var $mdgriffith$elm_ui$Element$Input$defaultTextPadding = A2($mdgriffith$elm_ui$Element$paddingXY, 12, 12);
 var $mdgriffith$elm_ui$Element$Input$white = A3($mdgriffith$elm_ui$Element$rgb, 1, 1, 1);
-var $mdgriffith$elm_ui$Internal$Model$BorderWidth = F5(
-	function (a, b, c, d, e) {
-		return {$: 'BorderWidth', a: a, b: b, c: c, d: d, e: e};
-	});
-var $mdgriffith$elm_ui$Element$Border$width = function (v) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$borderWidth,
-		A5(
-			$mdgriffith$elm_ui$Internal$Model$BorderWidth,
-			'b-' + $elm$core$String$fromInt(v),
-			v,
-			v,
-			v,
-			v));
-};
 var $mdgriffith$elm_ui$Element$Input$defaultTextBoxStyle = _List_fromArray(
 	[
 		$mdgriffith$elm_ui$Element$Input$defaultTextPadding,
