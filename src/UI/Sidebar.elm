@@ -1,12 +1,13 @@
-module UI.Sidebar exposing (Model, Msg(..), sidebarView)
+module UI.Sidebar exposing (Model, Msg(..), init, sidebarView, update)
 
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border exposing (rounded)
 import Element.Events
 import Element.Input exposing (OptionState(..))
-import UI.Elements
+import UI.Components.Dropdown as Dropdown
 import UI.Icons exposing (Icon(..), Style(..))
+import UI.PageViews.Documents as Documents
 import UI.Pages
 import UI.Styles
 
@@ -19,6 +20,7 @@ type Msg
     = SelectPage UI.Pages.Page
     | ShowIndices
     | SelectIndex
+    | DropdownMsg Dropdown.Msg
 
 
 
@@ -26,7 +28,32 @@ type Msg
 
 
 type alias Model =
-    { pages : List UI.Pages.Page, selectedPage : UI.Pages.Page }
+    { pages : List UI.Pages.Page, selectedPage : UI.Pages.Page, dropDown : Dropdown.Model }
+
+
+init : Model
+init =
+    Model [ UI.Pages.Documents Documents.init ]
+        (UI.Pages.Documents Documents.init)
+        Dropdown.init
+
+
+
+-- Update
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        DropdownMsg m ->
+            let
+                ( d, _ ) =
+                    Dropdown.update m model.dropDown
+            in
+            ( { model | dropDown = d }, Cmd.none )
+
+        _ ->
+            ( model, Cmd.none )
 
 
 
@@ -40,14 +67,7 @@ sidebarView model =
         , height fill
         , padding 12
         , Element.inFront
-            (UI.Elements.dropDown "Suggestions"
-                [ "Index 1"
-                , "Index 2"
-                , "Index 3"
-                ]
-                ShowIndices
-                SelectIndex
-            )
+            (Dropdown.view model.dropDown |> Element.map DropdownMsg)
         , scrollbarY
         ]
         [ Element.table

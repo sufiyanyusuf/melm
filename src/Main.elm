@@ -48,10 +48,6 @@ type Msg
     | UpdateKeysForIndex IndexKeys
 
 
-
--- Task id, indexUid
-
-
 type Task
     = UpdateSynonymsTask Int String
     | UpdateAttributeTask Int String AttributesPage.AttributeType
@@ -96,8 +92,6 @@ type alias Model =
     , documents : List String
     , documentKeys : ( String, List String )
     , selectedIndex : Maybe IndexesRouteResponseListItem -- Decouple this
-
-    -- , stopWords : List StopWordsPage.StopWord
     , synonyms : List UI.Components.SynonymCard.Model -- Decouple this
     , pollingQueue : List ( Task, SweetPoll.PollingState String )
     , displayedAttrs : List AttributesPage.Attribute
@@ -106,6 +100,7 @@ type alias Model =
     , filterableAttrs : List AttributesPage.Attribute
     , distinctAttr : List AttributesPage.Attribute --get rid of list, as is singular...
     , indexStats : Maybe IndexStats
+    , sidebarModel : Sidebar.Model
     }
 
 
@@ -794,15 +789,15 @@ handleSettingsViewMsg model msg =
     case msg of
         SettingsPage.KeyValueChanged t ->
             let
-                updatedTokenValue =
+                updatedModel =
                     { model | token = Just t }
 
                 updatedSettingsPageViewModel =
-                    getSettingsViewModel updatedTokenValue
+                    getSettingsViewModel updatedModel
 
                 updatedModelValue =
                     { model
-                        | token = updatedTokenValue.token
+                        | token = updatedModel.token
                         , pages = updateSettingsViewModel model.pages updatedSettingsPageViewModel
                     }
             in
@@ -880,7 +875,11 @@ handleSidebarSelection model sidebarMsg =
                     )
 
         _ ->
-            ( model, Cmd.none )
+            let
+                ( updatedModel, _ ) =
+                    Sidebar.update sidebarMsg model.sidebarModel
+            in
+            ( { model | sidebarModel = updatedModel }, Cmd.none )
 
 
 handlePollRequest : Model -> Task -> ( Model, Cmd Msg )
@@ -930,6 +929,7 @@ getSidebarViewModel : Model -> Sidebar.Model
 getSidebarViewModel model =
     { pages = Views.getPageList model.pages
     , selectedPage = model.pages.selectedPage
+    , dropDown = model.sidebarModel.dropDown
     }
 
 
@@ -1289,6 +1289,14 @@ init _ =
             , filterableAttrs = []
             , distinctAttr = []
             , indexStats = Nothing
+            , sidebarModel = Sidebar.init
             }
     in
     ( model, Cmd.none )
+
+
+
+-- { pages = Views.getPageList model.pages
+--                 , selectedPage = model.pages.selectedPage
+--                 , dropDown = UI.Components.Dropdown.init
+--                 }
