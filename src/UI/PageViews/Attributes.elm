@@ -10,6 +10,15 @@ import UI.PageViews.Settings exposing (Msg(..))
 import UI.Styles exposing (Size(..))
 
 
+type alias Model =
+    { displayed : List Attribute
+    , sortable : List Attribute
+    , searchable : List Attribute
+    , filterable : List Attribute
+    , distinct : List Attribute
+    }
+
+
 type Msg
     = X Bool
     | Toggle Attribute AttributeType
@@ -113,15 +122,6 @@ type alias Attribute =
 init : Model
 init =
     buildMockModelFromAttributes [ "attr a", "attr b", "attr c" ]
-
-
-type alias Model =
-    { displayed : List Attribute
-    , sortable : List Attribute
-    , searchable : List Attribute
-    , filterable : List Attribute
-    , distinct : List Attribute
-    }
 
 
 type AttributeType

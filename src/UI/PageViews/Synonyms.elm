@@ -43,7 +43,7 @@ type alias Model =
 
 init : String -> Model
 init indexUid =
-    { synonymStates = [ SynonymCard.init 0 indexUid, SynonymCard.init 1 indexUid ], indexUid = indexUid }
+    { synonymStates = [], indexUid = indexUid }
 
 
 addNew : Model -> ( Model, Cmd Msg )

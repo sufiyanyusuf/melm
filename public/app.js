@@ -11581,24 +11581,13 @@ var $author$project$Api$Routes$Main$indexesRouteResponseListItemDecoder = A6(
 	A2($elm$json$Json$Decode$field, 'updatedAt', $elm$json$Json$Decode$string),
 	A2($elm$json$Json$Decode$field, 'primaryKey', $elm$json$Json$Decode$string));
 var $author$project$Api$Routes$Main$indexesRouteResponseListDecoder = $elm$json$Json$Decode$list($author$project$Api$Routes$Main$indexesRouteResponseListItemDecoder);
-var $author$project$Request$NoRequest = {$: 'NoRequest'};
-var $author$project$UI$Components$SynonymCard$init = F2(
-	function (index, indexUid) {
-		return {index: index, indexId: indexUid, requestStatus: $author$project$Request$NoRequest, saved: $elm$core$Maybe$Nothing, synonymKey: '', synonymList: _List_Nil, synonymsValue: '', taskId: $elm$core$Maybe$Nothing};
-	});
 var $author$project$UI$PageViews$Synonyms$init = function (indexUid) {
-	return {
-		indexUid: indexUid,
-		synonymStates: _List_fromArray(
-			[
-				A2($author$project$UI$Components$SynonymCard$init, 0, indexUid),
-				A2($author$project$UI$Components$SynonymCard$init, 1, indexUid)
-			])
-	};
+	return {indexUid: indexUid, synonymStates: _List_Nil};
 };
 var $author$project$UI$Pages$Documents = function (a) {
 	return {$: 'Documents', a: a};
 };
+var $author$project$Request$NoRequest = {$: 'NoRequest'};
 var $author$project$UI$PageViews$Attributes$buildMockModelFromAttributes = function (l) {
 	return {
 		displayed: A2(
@@ -11677,17 +11666,17 @@ var $author$project$Main$init = function (_v0) {
 	var model = {
 		displayedAttrs: _List_Nil,
 		distinctAttr: _List_Nil,
-		documentKeys: _Utils_Tuple2('suggestions', _List_Nil),
+		documentKeys: _Utils_Tuple2('', _List_Nil),
 		documents: _List_Nil,
 		filterableAttrs: _List_Nil,
 		indexStats: $elm$core$Maybe$Nothing,
-		pages: $author$project$UI$Pages$init('suggestions'),
+		pages: $author$project$UI$Pages$init(''),
 		pollingQueue: _List_Nil,
 		savedToken: $elm$core$Maybe$Nothing,
 		searchableAttrs: _List_Nil,
 		sidebarModel: $author$project$UI$Sidebar$init,
 		sortableAttrs: _List_Nil,
-		synonyms: $author$project$UI$PageViews$Synonyms$init('suggestions').synonymStates,
+		synonyms: $author$project$UI$PageViews$Synonyms$init('').synonymStates,
 		token: $elm$core$Maybe$Nothing
 	};
 	return _Utils_Tuple2(
@@ -11998,6 +11987,15 @@ var $elm$core$List$filter = F2(
 			_List_Nil,
 			list);
 	});
+var $author$project$Main$getCurrentlySelectedIndexId = function (model) {
+	var _v0 = model.sidebarModel.dropDown.selectedValue;
+	if (_v0.$ === 'Just') {
+		var i = _v0.a;
+		return $elm$core$Maybe$Just(i.title);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
 var $elm$core$List$head = function (list) {
 	if (list.b) {
 		var x = list.a;
@@ -12165,138 +12163,144 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 							$elm$core$Platform$Cmd$none);
 				}
 			default:
-				return _Utils_Tuple2(
-					model,
-					$elm$core$Platform$Cmd$batch(
-						_List_fromArray(
-							[
-								A2(
-								$elm$core$Platform$Cmd$map,
-								$author$project$Main$ApiRequest,
-								A2(
-									$author$project$Api$Routes$Main$buildRequest,
-									$author$project$Api$Routes$Main$buildPayload(
-										A3(
-											$author$project$Api$Routes$Main$UpdateDisplayedAttrs,
-											'suggestions',
-											A2(
-												$elm$core$List$map,
-												function (x) {
-													return x.title;
-												},
+				var _v2 = $author$project$Main$getCurrentlySelectedIndexId(model);
+				if (_v2.$ === 'Just') {
+					var uid = _v2.a;
+					return _Utils_Tuple2(
+						model,
+						$elm$core$Platform$Cmd$batch(
+							_List_fromArray(
+								[
+									A2(
+									$elm$core$Platform$Cmd$map,
+									$author$project$Main$ApiRequest,
+									A2(
+										$author$project$Api$Routes$Main$buildRequest,
+										$author$project$Api$Routes$Main$buildPayload(
+											A3(
+												$author$project$Api$Routes$Main$UpdateDisplayedAttrs,
+												uid,
 												A2(
-													$elm$core$List$filter,
+													$elm$core$List$map,
 													function (x) {
-														return x.enabled;
+														return x.title;
 													},
-													model.displayedAttrs)),
-											$author$project$Api$Routes$Main$settingsUpdateDecoder)),
-									A2($elm$core$Maybe$withDefault, '', model.savedToken))),
-								A2(
-								$elm$core$Platform$Cmd$map,
-								$author$project$Main$ApiRequest,
-								A2(
-									$author$project$Api$Routes$Main$buildRequest,
-									$author$project$Api$Routes$Main$buildPayload(
-										A3(
-											$author$project$Api$Routes$Main$UpdateFilterableAttrs,
-											'suggestions',
-											A2(
-												$elm$core$List$map,
-												function (x) {
-													return x.title;
-												},
+													A2(
+														$elm$core$List$filter,
+														function (x) {
+															return x.enabled;
+														},
+														model.displayedAttrs)),
+												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
+										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
+									A2(
+									$elm$core$Platform$Cmd$map,
+									$author$project$Main$ApiRequest,
+									A2(
+										$author$project$Api$Routes$Main$buildRequest,
+										$author$project$Api$Routes$Main$buildPayload(
+											A3(
+												$author$project$Api$Routes$Main$UpdateFilterableAttrs,
+												uid,
 												A2(
-													$elm$core$List$filter,
+													$elm$core$List$map,
 													function (x) {
-														return x.enabled;
+														return x.title;
 													},
-													model.filterableAttrs)),
-											$author$project$Api$Routes$Main$settingsUpdateDecoder)),
-									A2($elm$core$Maybe$withDefault, '', model.savedToken))),
-								A2(
-								$elm$core$Platform$Cmd$map,
-								$author$project$Main$ApiRequest,
-								A2(
-									$author$project$Api$Routes$Main$buildRequest,
-									$author$project$Api$Routes$Main$buildPayload(
-										A3(
-											$author$project$Api$Routes$Main$UpdateSearchableAttrs,
-											'suggestions',
-											A2(
-												$elm$core$List$map,
-												function (x) {
-													return x.title;
-												},
+													A2(
+														$elm$core$List$filter,
+														function (x) {
+															return x.enabled;
+														},
+														model.filterableAttrs)),
+												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
+										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
+									A2(
+									$elm$core$Platform$Cmd$map,
+									$author$project$Main$ApiRequest,
+									A2(
+										$author$project$Api$Routes$Main$buildRequest,
+										$author$project$Api$Routes$Main$buildPayload(
+											A3(
+												$author$project$Api$Routes$Main$UpdateSearchableAttrs,
+												uid,
 												A2(
-													$elm$core$List$filter,
+													$elm$core$List$map,
 													function (x) {
-														return x.enabled;
+														return x.title;
 													},
-													model.searchableAttrs)),
-											$author$project$Api$Routes$Main$settingsUpdateDecoder)),
-									A2($elm$core$Maybe$withDefault, '', model.savedToken))),
-								A2(
-								$elm$core$Platform$Cmd$map,
-								$author$project$Main$ApiRequest,
-								A2(
-									$author$project$Api$Routes$Main$buildRequest,
-									$author$project$Api$Routes$Main$buildPayload(
-										A3(
-											$author$project$Api$Routes$Main$UpdateSortableAttrs,
-											'suggestions',
-											A2(
-												$elm$core$List$map,
-												function (x) {
-													return x.title;
-												},
+													A2(
+														$elm$core$List$filter,
+														function (x) {
+															return x.enabled;
+														},
+														model.searchableAttrs)),
+												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
+										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
+									A2(
+									$elm$core$Platform$Cmd$map,
+									$author$project$Main$ApiRequest,
+									A2(
+										$author$project$Api$Routes$Main$buildRequest,
+										$author$project$Api$Routes$Main$buildPayload(
+											A3(
+												$author$project$Api$Routes$Main$UpdateSortableAttrs,
+												uid,
 												A2(
-													$elm$core$List$filter,
+													$elm$core$List$map,
 													function (x) {
-														return x.enabled;
+														return x.title;
 													},
-													model.sortableAttrs)),
-											$author$project$Api$Routes$Main$settingsUpdateDecoder)),
-									A2($elm$core$Maybe$withDefault, '', model.savedToken))),
-								A2(
-								$elm$core$Platform$Cmd$map,
-								$author$project$Main$ApiRequest,
-								A2(
-									$author$project$Api$Routes$Main$buildRequest,
-									$author$project$Api$Routes$Main$buildPayload(
-										A3(
-											$author$project$Api$Routes$Main$UpdateDisplayedAttrs,
-											'suggestions',
-											A2(
-												$elm$core$List$map,
-												function (x) {
-													return x.title;
-												},
+													A2(
+														$elm$core$List$filter,
+														function (x) {
+															return x.enabled;
+														},
+														model.sortableAttrs)),
+												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
+										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
+									A2(
+									$elm$core$Platform$Cmd$map,
+									$author$project$Main$ApiRequest,
+									A2(
+										$author$project$Api$Routes$Main$buildRequest,
+										$author$project$Api$Routes$Main$buildPayload(
+											A3(
+												$author$project$Api$Routes$Main$UpdateDisplayedAttrs,
+												uid,
 												A2(
-													$elm$core$List$filter,
+													$elm$core$List$map,
 													function (x) {
-														return x.enabled;
+														return x.title;
 													},
-													model.displayedAttrs)),
-											$author$project$Api$Routes$Main$settingsUpdateDecoder)),
-									A2($elm$core$Maybe$withDefault, '', model.savedToken))),
-								function () {
-								var _v2 = $author$project$UI$PageViews$Attributes$getDistinctAttr(model.distinctAttr);
-								if (_v2.$ === 'Just') {
-									var da = _v2.a;
-									return A2(
-										$elm$core$Platform$Cmd$map,
-										$author$project$Main$ApiRequest,
-										A2(
-											$author$project$Api$Routes$Main$buildRequest,
-											$author$project$Api$Routes$Main$buildPayload(
-												A3($author$project$Api$Routes$Main$UpdateDistinctAttr, 'suggestions', da, $author$project$Api$Routes$Main$settingsUpdateDecoder)),
-											A2($elm$core$Maybe$withDefault, '', model.savedToken)));
-								} else {
-									return $elm$core$Platform$Cmd$none;
-								}
-							}()
-							])));
+													A2(
+														$elm$core$List$filter,
+														function (x) {
+															return x.enabled;
+														},
+														model.displayedAttrs)),
+												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
+										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
+									function () {
+									var _v3 = $author$project$UI$PageViews$Attributes$getDistinctAttr(model.distinctAttr);
+									if (_v3.$ === 'Just') {
+										var da = _v3.a;
+										return A2(
+											$elm$core$Platform$Cmd$map,
+											$author$project$Main$ApiRequest,
+											A2(
+												$author$project$Api$Routes$Main$buildRequest,
+												$author$project$Api$Routes$Main$buildPayload(
+													A3($author$project$Api$Routes$Main$UpdateDistinctAttr, uid, da, $author$project$Api$Routes$Main$settingsUpdateDecoder)),
+												A2($elm$core$Maybe$withDefault, '', model.savedToken)));
+									} else {
+										return $elm$core$Platform$Cmd$none;
+									}
+								}()
+								])));
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
 		}
 	});
 var $author$project$Main$getSettingsViewModel = function (model) {
@@ -12434,28 +12438,34 @@ var $author$project$Main$updateStopWordsViewModel = F2(
 var $author$project$Main$handleStopWordsViewMsg = F2(
 	function (model, msg) {
 		if (msg.$ === 'Sync') {
-			return _Utils_Tuple2(
-				model,
-				A2(
-					$elm$core$Platform$Cmd$map,
-					$author$project$Main$ApiRequest,
+			var _v1 = $author$project$Main$getCurrentlySelectedIndexId(model);
+			if (_v1.$ === 'Just') {
+				var uid = _v1.a;
+				return _Utils_Tuple2(
+					model,
 					A2(
-						$author$project$Api$Routes$Main$buildRequest,
-						$author$project$Api$Routes$Main$buildPayload(
-							A3(
-								$author$project$Api$Routes$Main$UpdateStopWords,
-								'suggestions',
-								A2(
-									$elm$core$List$map,
-									function (x) {
-										return x.title;
-									},
-									model.pages.stopWords.words),
-								$author$project$Api$Routes$Main$settingsUpdateDecoder)),
-						A2($elm$core$Maybe$withDefault, '', model.savedToken))));
+						$elm$core$Platform$Cmd$map,
+						$author$project$Main$ApiRequest,
+						A2(
+							$author$project$Api$Routes$Main$buildRequest,
+							$author$project$Api$Routes$Main$buildPayload(
+								A3(
+									$author$project$Api$Routes$Main$UpdateStopWords,
+									uid,
+									A2(
+										$elm$core$List$map,
+										function (x) {
+											return x.title;
+										},
+										model.pages.stopWords.words),
+									$author$project$Api$Routes$Main$settingsUpdateDecoder)),
+							A2($elm$core$Maybe$withDefault, '', model.savedToken))));
+			} else {
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			}
 		} else {
-			var _v1 = A2($author$project$UI$PageViews$StopWords$update, msg, model.pages.stopWords);
-			var m = _v1.a;
+			var _v2 = A2($author$project$UI$PageViews$StopWords$update, msg, model.pages.stopWords);
+			var m = _v2.a;
 			return _Utils_Tuple2(
 				_Utils_update(
 					model,
@@ -12472,6 +12482,10 @@ var $author$project$Api$Routes$Main$UpdateSynonyms = F3(
 var $author$project$Main$getSynonymsViewModel = F2(
 	function (model, indexUid) {
 		return {indexUid: indexUid, synonymStates: model.synonyms};
+	});
+var $author$project$UI$Components$SynonymCard$init = F2(
+	function (index, indexUid) {
+		return {index: index, indexId: indexUid, requestStatus: $author$project$Request$NoRequest, saved: $elm$core$Maybe$Nothing, synonymKey: '', synonymList: _List_Nil, synonymsValue: '', taskId: $elm$core$Maybe$Nothing};
 	});
 var $author$project$UI$PageViews$Synonyms$addNew = function (model) {
 	return _Utils_Tuple2(
@@ -12653,15 +12667,15 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 485, column: 13},
-						end: {line: 485, column: 23}
+						start: {line: 483, column: 13},
+						end: {line: 483, column: 23}
 					})('branch \'IndexesViewMsg _\' not implemented');
 			case 'SearchViewMsg':
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 488, column: 13},
-						end: {line: 488, column: 23}
+						start: {line: 486, column: 13},
+						end: {line: 486, column: 23}
 					})('branch \'SearchViewMsg _\' not implemented');
 			case 'DocumentsViewMsg':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -13367,17 +13381,24 @@ var $author$project$Main$handleSidebarSelection = F2(
 				case 'Settings':
 					return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
 				case 'Documents':
-					return _Utils_Tuple2(
-						updatedModel,
-						A2(
-							$elm$core$Platform$Cmd$map,
-							$author$project$Main$ApiRequest,
+					var _v2 = $author$project$Main$getCurrentlySelectedIndexId(model);
+					if (_v2.$ === 'Just') {
+						var uid = _v2.a;
+						return _Utils_Tuple2(
+							updatedModel,
 							A2(
-								$author$project$Api$Routes$Main$buildRequest,
-								$author$project$Api$Routes$Main$buildPayload(
-									$author$project$Api$Routes$Main$ListDocuments('suggestions')),
-								A2($elm$core$Maybe$withDefault, '', model.savedToken))));
+								$elm$core$Platform$Cmd$map,
+								$author$project$Main$ApiRequest,
+								A2(
+									$author$project$Api$Routes$Main$buildRequest,
+									$author$project$Api$Routes$Main$buildPayload(
+										$author$project$Api$Routes$Main$ListDocuments(uid)),
+									A2($elm$core$Maybe$withDefault, '', model.savedToken))));
+					} else {
+						return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
+					}
 				case 'Synonyms':
+					var m = p.a;
 					return _Utils_Tuple2(
 						updatedModel,
 						A2(
@@ -13386,34 +13407,46 @@ var $author$project$Main$handleSidebarSelection = F2(
 							A2(
 								$author$project$Api$Routes$Main$buildRequest,
 								$author$project$Api$Routes$Main$buildPayload(
-									A2($author$project$Api$Routes$Main$ListSynonyms, 'suggestions', $author$project$Api$Routes$Main$synonymsListDecoder)),
+									A2($author$project$Api$Routes$Main$ListSynonyms, m.indexUid, $author$project$Api$Routes$Main$synonymsListDecoder)),
 								A2($elm$core$Maybe$withDefault, '', model.savedToken))));
 				case 'StopWords':
-					return _Utils_Tuple2(
-						updatedModel,
-						A2(
-							$elm$core$Platform$Cmd$map,
-							$author$project$Main$ApiRequest,
+					var _v3 = $author$project$Main$getCurrentlySelectedIndexId(updatedModel);
+					if (_v3.$ === 'Just') {
+						var indexUid = _v3.a;
+						return _Utils_Tuple2(
+							updatedModel,
 							A2(
-								$author$project$Api$Routes$Main$buildRequest,
-								$author$project$Api$Routes$Main$buildPayload(
-									A2($author$project$Api$Routes$Main$ListStopWords, 'suggestions', $author$project$Api$Routes$Main$maybeStringListDecoder)),
-								A2($elm$core$Maybe$withDefault, '', model.savedToken))));
+								$elm$core$Platform$Cmd$map,
+								$author$project$Main$ApiRequest,
+								A2(
+									$author$project$Api$Routes$Main$buildRequest,
+									$author$project$Api$Routes$Main$buildPayload(
+										A2($author$project$Api$Routes$Main$ListStopWords, indexUid, $author$project$Api$Routes$Main$maybeStringListDecoder)),
+									A2($elm$core$Maybe$withDefault, '', model.savedToken))));
+					} else {
+						return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
+					}
 				default:
-					return _Utils_Tuple2(
-						updatedModel,
-						A2(
-							$elm$core$Platform$Cmd$map,
-							$author$project$Main$ApiRequest,
+					var _v4 = $author$project$Main$getCurrentlySelectedIndexId(updatedModel);
+					if (_v4.$ === 'Just') {
+						var indexUid = _v4.a;
+						return _Utils_Tuple2(
+							updatedModel,
 							A2(
-								$author$project$Api$Routes$Main$buildRequest,
-								$author$project$Api$Routes$Main$buildPayload(
-									A2($author$project$Api$Routes$Main$Stats, 'suggestions', $author$project$Api$Routes$Main$statsDecoder)),
-								A2($elm$core$Maybe$withDefault, '', model.savedToken))));
+								$elm$core$Platform$Cmd$map,
+								$author$project$Main$ApiRequest,
+								A2(
+									$author$project$Api$Routes$Main$buildRequest,
+									$author$project$Api$Routes$Main$buildPayload(
+										A2($author$project$Api$Routes$Main$Stats, indexUid, $author$project$Api$Routes$Main$statsDecoder)),
+									A2($elm$core$Maybe$withDefault, '', model.savedToken))));
+					} else {
+						return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
+					}
 			}
 		} else {
-			var _v2 = A2($author$project$UI$Sidebar$update, sidebarMsg, model.sidebarModel);
-			var updatedModel = _v2.a;
+			var _v5 = A2($author$project$UI$Sidebar$update, sidebarMsg, model.sidebarModel);
+			var updatedModel = _v5.a;
 			return _Utils_Tuple2(
 				_Utils_update(
 					model,
@@ -13440,7 +13473,7 @@ var $author$project$Main$updateDocumentsViewModel = F2(
 				selectedPage: $author$project$UI$Pages$Documents(updatedPage)
 			});
 	});
-var $author$project$Main$handleApiRequest = F2(
+var $author$project$Main$handleApiResponse = F2(
 	function (model, apiResponse) {
 		switch (apiResponse.$) {
 			case 'HandleListIndexesResponse':
@@ -13552,6 +13585,7 @@ var $author$project$Main$handleApiRequest = F2(
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
 			case 'HandleIndexKeysResponse':
+				var r = apiResponse.a;
 				return _Utils_Tuple2(
 					model,
 					A2(
@@ -13560,7 +13594,7 @@ var $author$project$Main$handleApiRequest = F2(
 						A2(
 							$author$project$Api$Routes$Main$buildRequest,
 							$author$project$Api$Routes$Main$buildPayload(
-								A2($author$project$Api$Routes$Main$ListDisplayedAttrs, 'suggestions', $author$project$Api$Routes$Main$maybeStringListDecoder)),
+								A2($author$project$Api$Routes$Main$ListDisplayedAttrs, r.indexUid, $author$project$Api$Routes$Main$maybeStringListDecoder)),
 							A2($elm$core$Maybe$withDefault, '', model.savedToken))));
 			case 'HandleListDisplayedAttrsResponse':
 				var r = apiResponse.a;
@@ -13769,7 +13803,7 @@ var $author$project$Main$handleApiRequest = F2(
 									A2(
 										$author$project$Api$Routes$Main$buildRequest,
 										$author$project$Api$Routes$Main$buildPayload(
-											A2($author$project$Api$Routes$Main$ListDisplayedAttrs, 'suggestions', $author$project$Api$Routes$Main$maybeStringListDecoder)),
+											A2($author$project$Api$Routes$Main$ListDisplayedAttrs, indexUid, $author$project$Api$Routes$Main$maybeStringListDecoder)),
 										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
 									A2(
 									$elm$core$Platform$Cmd$map,
@@ -13777,7 +13811,7 @@ var $author$project$Main$handleApiRequest = F2(
 									A2(
 										$author$project$Api$Routes$Main$buildRequest,
 										$author$project$Api$Routes$Main$buildPayload(
-											A2($author$project$Api$Routes$Main$ListFilterableAttrs, 'suggestions', $author$project$Api$Routes$Main$maybeStringListDecoder)),
+											A2($author$project$Api$Routes$Main$ListFilterableAttrs, indexUid, $author$project$Api$Routes$Main$maybeStringListDecoder)),
 										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
 									A2(
 									$elm$core$Platform$Cmd$map,
@@ -13785,7 +13819,7 @@ var $author$project$Main$handleApiRequest = F2(
 									A2(
 										$author$project$Api$Routes$Main$buildRequest,
 										$author$project$Api$Routes$Main$buildPayload(
-											A2($author$project$Api$Routes$Main$ListSortableAttrs, 'suggestions', $author$project$Api$Routes$Main$maybeStringListDecoder)),
+											A2($author$project$Api$Routes$Main$ListSortableAttrs, indexUid, $author$project$Api$Routes$Main$maybeStringListDecoder)),
 										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
 									A2(
 									$elm$core$Platform$Cmd$map,
@@ -13793,7 +13827,7 @@ var $author$project$Main$handleApiRequest = F2(
 									A2(
 										$author$project$Api$Routes$Main$buildRequest,
 										$author$project$Api$Routes$Main$buildPayload(
-											A2($author$project$Api$Routes$Main$ListSearchableAttrs, 'suggestions', $author$project$Api$Routes$Main$maybeStringListDecoder)),
+											A2($author$project$Api$Routes$Main$ListSearchableAttrs, indexUid, $author$project$Api$Routes$Main$maybeStringListDecoder)),
 										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
 									A2(
 									$elm$core$Platform$Cmd$map,
@@ -13801,7 +13835,7 @@ var $author$project$Main$handleApiRequest = F2(
 									A2(
 										$author$project$Api$Routes$Main$buildRequest,
 										$author$project$Api$Routes$Main$buildPayload(
-											A2($author$project$Api$Routes$Main$ListDistinctAttr, 'suggestions', $author$project$Api$Routes$Main$stringDecoder)),
+											A2($author$project$Api$Routes$Main$ListDistinctAttr, indexUid, $author$project$Api$Routes$Main$stringDecoder)),
 										A2($elm$core$Maybe$withDefault, '', model.savedToken)))
 								])));
 				} else {
@@ -13820,7 +13854,7 @@ var $author$project$Main$update = F2(
 				return A2($author$project$Main$handlePageViewMessage, model, pageViewMsg);
 			case 'ApiRequest':
 				var r = msg.a;
-				return A2($author$project$Main$handleApiRequest, model, r);
+				return A2($author$project$Main$handleApiResponse, model, r);
 			case 'PollUpdate':
 				var taskId = msg.a;
 				var m = msg.b;
