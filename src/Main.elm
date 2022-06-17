@@ -8,6 +8,7 @@ import Html exposing (Html)
 import Http
 import Request exposing (..)
 import SweetPoll exposing (PollingState)
+import UI.Components.Dropdown exposing (Msg(..))
 import UI.Components.SynonymCard exposing (Msg(..))
 import UI.PageView as PageView exposing (Msg(..))
 import UI.PageViews.Attributes as AttributesPage exposing (buildModelFromResponse)
@@ -214,7 +215,6 @@ handleApiResponse model apiResponse =
 
                         updatedModelValue =
                             { model
-                              -- | stopWords = stopWordsViewModel.words
                                 | pages = updateStopWordsViewModel model.pages stopWordsViewModel
                             }
                     in
@@ -231,15 +231,15 @@ handleApiResponse model apiResponse =
                 Err _ ->
                     ( model, Cmd.none )
 
-        HandleListSynonymsResponse r indexUid ->
+        HandleListSynonymsResponse r _ ->
             case r of
                 Ok payload ->
                     let
                         synonyms =
-                            buildSynonymsViewModelFromApiResponse payload indexUid
+                            buildSynonymsViewModelFromApiResponse payload
 
                         updatedSynonymsViewModel =
-                            { synonymStates = synonyms, indexUid = indexUid }
+                            { synonymStates = synonyms }
                     in
                     ( { model
                         | synonyms = synonyms
@@ -723,36 +723,44 @@ handleSynonymsViewMsg model msg =
                 Sync ->
                     let
                         ( updatedSynonymsViewModel, _ ) =
-                            SynonymsPage.update msg (getSynonymsViewModel model model.pages.synonyms.indexUid)
+                            SynonymsPage.update msg (getSynonymsViewModel model)
 
                         currentSynonyms =
                             List.map
                                 (\s -> ( s.synonymKey, s.synonymList ))
                                 model.synonyms
                                 |> List.filter (\( k, v ) -> k /= "" && v /= [])
+
+                        updatedModel =
+                            { model
+                                | pages = updateSynonymsViewModel model.pages updatedSynonymsViewModel
+                                , synonyms = updatedSynonymsViewModel.synonymStates
+                            }
                     in
-                    ( { model
-                        | pages = updateSynonymsViewModel model.pages updatedSynonymsViewModel
-                        , synonyms = updatedSynonymsViewModel.synonymStates
-                      }
-                    , Api.Routes.Main.buildRequest
-                        (Api.Routes.Main.buildPayload
-                            (UpdateSynonyms model.pages.synonyms.indexUid
-                                (Dict.fromList currentSynonyms)
-                                Api.Routes.Main.settingsUpdateDecoder
+                    case getCurrentlySelectedIndexId updatedModel of
+                        Just indexUid ->
+                            ( updatedModel
+                            , Api.Routes.Main.buildRequest
+                                (Api.Routes.Main.buildPayload
+                                    (UpdateSynonyms indexUid
+                                        (Dict.fromList currentSynonyms)
+                                        Api.Routes.Main.settingsUpdateDecoder
+                                    )
+                                )
+                                (Maybe.withDefault
+                                    ""
+                                    model.savedToken
+                                )
+                                |> Cmd.map ApiRequest
                             )
-                        )
-                        (Maybe.withDefault
-                            ""
-                            model.savedToken
-                        )
-                        |> Cmd.map ApiRequest
-                    )
+
+                        Nothing ->
+                            ( updatedModel, Cmd.none )
 
                 _ ->
                     let
                         ( updatedSynonymsViewModel, _ ) =
-                            SynonymsPage.update msg (getSynonymsViewModel model model.pages.synonyms.indexUid)
+                            SynonymsPage.update msg (getSynonymsViewModel model)
                     in
                     ( { model
                         | pages = updateSynonymsViewModel model.pages updatedSynonymsViewModel
@@ -857,15 +865,20 @@ handleSidebarSelection model sidebarMsg =
                             ( updatedModel, Cmd.none )
 
                 Synonyms m ->
-                    ( updatedModel
-                    , Api.Routes.Main.buildRequest
-                        (Api.Routes.Main.buildPayload (ListSynonyms m.indexUid Api.Routes.Main.synonymsListDecoder))
-                        (Maybe.withDefault
-                            ""
-                            model.savedToken
-                        )
-                        |> Cmd.map ApiRequest
-                    )
+                    case getCurrentlySelectedIndexId updatedModel of
+                        Just indexUid ->
+                            ( updatedModel
+                            , Api.Routes.Main.buildRequest
+                                (Api.Routes.Main.buildPayload (ListSynonyms indexUid Api.Routes.Main.synonymsListDecoder))
+                                (Maybe.withDefault
+                                    ""
+                                    model.savedToken
+                                )
+                                |> Cmd.map ApiRequest
+                            )
+
+                        Nothing ->
+                            ( updatedModel, Cmd.none )
 
                 StopWords _ ->
                     case getCurrentlySelectedIndexId updatedModel of
@@ -899,12 +912,25 @@ handleSidebarSelection model sidebarMsg =
                         Nothing ->
                             ( updatedModel, Cmd.none )
 
-        _ ->
-            let
-                ( updatedModel, _ ) =
-                    Sidebar.update sidebarMsg model.sidebarModel
-            in
-            ( { model | sidebarModel = updatedModel }, Cmd.none )
+        Sidebar.DropdownMsg d ->
+            case d of
+                Select i ->
+                    -- update UI
+                    let
+                        ( updatedSidebarModel, _ ) =
+                            Sidebar.update sidebarMsg model.sidebarModel
+
+                        updatedModel =
+                            { model | sidebarModel = updatedSidebarModel }
+                    in
+                    handleSidebarSelection updatedModel (Sidebar.SelectPage updatedModel.pages.selectedPage)
+
+                _ ->
+                    let
+                        ( updatedSidebarModel, _ ) =
+                            Sidebar.update sidebarMsg model.sidebarModel
+                    in
+                    ( { model | sidebarModel = updatedSidebarModel }, Cmd.none )
 
 
 handlePollRequest : Model -> Task -> ( Model, Cmd Msg )
@@ -963,9 +989,9 @@ getSettingsViewModel model =
     { tokenValue = Maybe.withDefault "" model.token, title = "Settings" }
 
 
-getSynonymsViewModel : Model -> String -> SynonymsPage.Model
-getSynonymsViewModel model indexUid =
-    { synonymStates = model.synonyms, indexUid = indexUid }
+getSynonymsViewModel : Model -> SynonymsPage.Model
+getSynonymsViewModel model =
+    { synonymStates = model.synonyms }
 
 
 getAttributesViewModel : Model -> AttributesPage.Model
@@ -1068,7 +1094,7 @@ handlePollSignal model newState newData error cmd task =
                                             SynonymsPage.updateSyncStatusState model.synonyms Fired
 
                                         updatedSynonymsPageViewModel =
-                                            { synonymStates = updatedSynonyms, indexUid = getTaskIndexUid task }
+                                            { synonymStates = updatedSynonyms }
                                     in
                                     ( { model
                                         | pollingQueue =
@@ -1116,7 +1142,7 @@ handlePollSignal model newState newData error cmd task =
                                             SynonymsPage.updateSyncStatusState model.synonyms Success
 
                                         updatedSynonymsPageViewModel =
-                                            { synonymStates = updatedSynonyms, indexUid = getTaskIndexUid task }
+                                            { synonymStates = updatedSynonyms }
                                     in
                                     ( { model
                                         | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue
@@ -1263,8 +1289,8 @@ updatePollState task newState =
             ( t, s )
 
 
-buildSynonymsViewModelFromApiResponse : Dict String (List String) -> String -> List UI.Components.SynonymCard.Model
-buildSynonymsViewModelFromApiResponse d indexId =
+buildSynonymsViewModelFromApiResponse : Dict String (List String) -> List UI.Components.SynonymCard.Model
+buildSynonymsViewModelFromApiResponse d =
     d
         |> Dict.toList
         |> List.indexedMap
@@ -1275,7 +1301,6 @@ buildSynonymsViewModelFromApiResponse d indexId =
                 , requestStatus = NoRequest
                 , synonymList = values
                 , taskId = Nothing
-                , indexId = indexId
                 , saved = Just ( title, values )
                 }
             )
@@ -1299,7 +1324,7 @@ init _ =
             , savedToken = Nothing
             , pages = Views.init ""
             , documents = []
-            , synonyms = (SynonymsPage.init "").synonymStates
+            , synonyms = SynonymsPage.init.synonymStates
             , pollingQueue = []
             , documentKeys = ( "", [] )
             , displayedAttrs = []

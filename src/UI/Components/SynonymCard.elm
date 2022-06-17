@@ -19,7 +19,6 @@ type alias Model =
     , saved : Maybe ( String, List String )
     , requestStatus : RequestStatus
     , taskId : Maybe Int
-    , indexId : String
     }
 
 
@@ -148,8 +147,8 @@ failedView model =
             Element.none
 
 
-init : Int -> String -> Model
-init index indexUid =
+init : Int -> Model
+init index =
     { index = index
     , synonymKey = ""
     , synonymsValue = ""
@@ -157,7 +156,6 @@ init index indexUid =
     , saved = Nothing
     , synonymList = []
     , taskId = Nothing
-    , indexId = indexUid
     }
 
 

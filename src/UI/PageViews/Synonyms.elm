@@ -37,19 +37,18 @@ type Msg
 
 type alias Model =
     { synonymStates : List SynonymCard.Model
-    , indexUid : String
     }
 
 
-init : String -> Model
-init indexUid =
-    { synonymStates = [], indexUid = indexUid }
+init : Model
+init =
+    { synonymStates = [] }
 
 
 addNew : Model -> ( Model, Cmd Msg )
 addNew model =
     ( { model
-        | synonymStates = model.synonymStates ++ [ SynonymCard.init (List.length model.synonymStates) model.indexUid ]
+        | synonymStates = model.synonymStates ++ [ SynonymCard.init (List.length model.synonymStates) ]
       }
     , Cmd.none
     )

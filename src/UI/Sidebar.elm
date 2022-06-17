@@ -19,8 +19,6 @@ import Utils exposing (addIf)
 
 type Msg
     = SelectPage UI.Pages.Page
-    | ShowIndices
-    | SelectIndex
     | DropdownMsg Dropdown.Msg
 
 

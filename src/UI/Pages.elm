@@ -30,7 +30,7 @@ init : String -> Model
 init indexUid =
     { documents = Documents.init
     , settings = Settings.init
-    , synonyms = Synonyms.init indexUid
+    , synonyms = Synonyms.init
     , stopWords = StopWords.init
     , attributes = Attributes.init
     , selectedPage = Documents Documents.init
@@ -39,4 +39,9 @@ init indexUid =
 
 getPageList : Model -> List Page
 getPageList model =
-    [ Documents model.documents, Synonyms model.synonyms, StopWords model.stopWords, Attributes model.attributes, Settings model.settings ]
+    [ Documents model.documents
+    , Synonyms model.synonyms
+    , StopWords model.stopWords
+    , Attributes model.attributes
+    , Settings model.settings
+    ]
