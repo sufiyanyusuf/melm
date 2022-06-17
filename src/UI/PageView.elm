@@ -37,10 +37,8 @@ view currentPage =
     el
         [ height fill
         , width fill
-
-        -- , scrollbarY
-        , paddingEach { top = 40, bottom = 0, left = 120, right = 0 }
         , Element.Background.color UI.Styles.color.gray100
+        , padding 1
         ]
         (getCurrentPageView currentPage)
 

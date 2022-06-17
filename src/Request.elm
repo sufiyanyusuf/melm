@@ -12,3 +12,19 @@ type RequestStatus
     | Fired
     | Success
     | Failed
+
+
+getRequestStatus : RequestStatus -> String
+getRequestStatus r =
+    case r of
+        NoRequest ->
+            ""
+
+        Fired ->
+            "Loading"
+
+        Success ->
+            "Success"
+
+        Failed ->
+            "Failed"

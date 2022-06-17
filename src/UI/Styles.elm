@@ -33,6 +33,7 @@ color :
     , gray100 : Color
     , green500 : Color
     , white : Color
+    , clear : Color
     }
 color =
     { primary500 = rgb255 0x72 0x9F 0xCF
@@ -45,6 +46,7 @@ color =
     , gray100 = rgb255 243 244 245
     , white = rgb255 0xFF 0xFF 0xFF
     , green500 = rgb255 17 199 112
+    , clear = rgba 0 0 0 0
     }
 
 

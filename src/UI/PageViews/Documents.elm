@@ -9,6 +9,8 @@ import Element.Border exposing (rounded)
 import Json.Decode as Decode exposing (Value, decodeString, dict, errorToString, field, int, string)
 import Json.Encode as Encode
 import Json.Print as Print
+import Request exposing (RequestStatus(..))
+import UI.Components.Toolbar
 import UI.Elements
 import UI.Styles
 
@@ -32,18 +34,16 @@ view model =
     Element.column
         [ height fill
         , width fill
-        , scrollbarY
+        , inFront (toolbarView model)
+        , paddingEach { top = 20, bottom = 12, left = 0, right = 0 }
         ]
-        [ el
-            (UI.Styles.getTypographicStyleFor UI.Styles.H1)
-            (text "Documents")
-        , UI.Elements.spacer UI.Styles.SM
+        [ UI.Elements.spacer UI.Styles.SM
         , Element.table
             [ width fill
             , height fill
             , scrollbarY
             , spacing 16
-            , paddingEach { top = 20, bottom = 0, left = 0, right = 120 }
+            , paddingXY 120 40
             ]
             { data = model.documents
             , columns =
@@ -62,6 +62,19 @@ view model =
                 ]
             }
         ]
+
+
+toolbarView : Model -> Element Msg
+toolbarView _ =
+    let
+        toolbarModel =
+            { valueChanged = False
+            , requestStatus = NoRequest
+            , showCreateAction = False
+            , title = "Document"
+            }
+    in
+    UI.Components.Toolbar.toolbarView toolbarModel X X X
 
 
 card : List (Element.Attr () msg) -> List (Element.Attr () msg)

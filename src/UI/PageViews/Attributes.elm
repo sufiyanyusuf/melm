@@ -1,10 +1,10 @@
 module UI.PageViews.Attributes exposing (..)
 
-import Chart.Attributes exposing (borderWidth)
 import Element exposing (..)
 import Element.Background
 import Element.Border
 import Request exposing (..)
+import UI.Components.Toolbar
 import UI.Elements exposing (syncIndicator)
 import UI.PageViews.Settings exposing (Msg(..))
 import UI.Styles exposing (Size(..))
@@ -23,6 +23,7 @@ type Msg
     = X Bool
     | Toggle Attribute AttributeType
     | Save
+    | None
 
 
 view : Model -> Element Msg
@@ -30,26 +31,42 @@ view model =
     Element.column
         [ height fill
         , width fill
-        , scrollbarY
+        , paddingEach { top = 20, bottom = 12, left = 0, right = 0 }
+        , inFront (toolbarView model)
         ]
-        [ el
-            (UI.Styles.getTypographicStyleFor UI.Styles.H1)
-            (text "Attributes")
-        , UI.Elements.spacer UI.Styles.LG
-        , Element.wrappedRow
-            [ spacing 20
-            , paddingEach { top = 20, bottom = 0, left = 0, right = 240 }
+        [ Element.column
+            [ width fill
+            , height fill
+            , scrollbarY
+            , paddingXY 120 40
             ]
-            [ cardView model.displayed Displayed
-            , cardView model.searchable Searchable
-            , cardView model.filterable Filterable
-            , cardView model.sortable Sortable
-            , cardView model.distinct Distinct
+            [ UI.Elements.spacer UI.Styles.LG
+            , Element.wrappedRow
+                [ spacing 20
+                ]
+                [ cardView model.displayed Displayed
+                , cardView model.searchable Searchable
+                , cardView model.filterable Filterable
+                , cardView model.sortable Sortable
+                , cardView model.distinct Distinct
+                ]
+            , UI.Elements.spacer UI.Styles.LG
+            , UI.Elements.spacer UI.Styles.MD
             ]
-        , UI.Elements.spacer UI.Styles.LG
-        , toolbarView model
-        , UI.Elements.spacer UI.Styles.MD
         ]
+
+
+toolbarView : Model -> Element Msg
+toolbarView _ =
+    let
+        toolbarModel =
+            { valueChanged = False
+            , requestStatus = NoRequest
+            , showCreateAction = False
+            , title = "Attributes"
+            }
+    in
+    UI.Components.Toolbar.toolbarView toolbarModel None Save None
 
 
 cardView : List Attribute -> AttributeType -> Element Msg
@@ -101,16 +118,6 @@ cardViewRow model attrType =
         ]
 
 
-toolbarView : Model -> Element Msg
-toolbarView _ =
-    Element.row
-        [ Element.width Element.shrink
-        ]
-        [ UI.Elements.button "Save" Save
-        , UI.Elements.spacer UI.Styles.SM
-        ]
-
-
 type alias Attribute =
     { title : String
     , enabled : Bool
@@ -121,7 +128,7 @@ type alias Attribute =
 
 init : Model
 init =
-    buildMockModelFromAttributes [ "attr a", "attr b", "attr c" ]
+    buildMockModelFromAttributes []
 
 
 type AttributeType

@@ -1,7 +1,9 @@
 module UI.PageViews.StopWords exposing (..)
 
 import Element exposing (..)
+import Element.Font exposing (light)
 import Request exposing (RequestStatus(..))
+import UI.Components.Toolbar
 import UI.Elements
 import UI.Styles
 
@@ -54,24 +56,40 @@ view model =
     Element.column
         [ height fill
         , width fill
-        , scrollbarY
-        , padding 4
-        , paddingEach { top = 0, bottom = 0, left = 0, right = 320 }
+        , paddingEach { top = 20, bottom = 12, left = 0, right = 0 }
+        , inFront (toolbarView model)
         ]
-        [ el
-            (UI.Styles.getTypographicStyleFor UI.Styles.H1)
-            (text "Stop Words")
-        , UI.Elements.spacer UI.Styles.XL
-        , UI.Elements.textfield model.newValue "Add a word" NewValueUpdated None Create
-        , UI.Elements.spacer UI.Styles.SM
-        , Element.wrappedRow
-            [ spacing 12
-            , paddingEach { top = 20, bottom = 0, left = 0, right = 0 }
+        [ Element.column
+            [ width fill
+            , height fill
+            , scrollbarY
+            , paddingXY 120 40
             ]
-            (List.map (\w -> UI.Elements.chip w.title w.requestStatus w.saved (Remove w)) model.words)
-        , UI.Elements.spacer UI.Styles.XL
-        , toolbarView model
+            [ UI.Elements.spacer UI.Styles.XL
+            , UI.Elements.textfield model.newValue "Add a word" NewValueUpdated None Create
+            , UI.Elements.spacer UI.Styles.SM
+            , Element.wrappedRow
+                [ spacing 12
+
+                -- , paddingEach { top = 20, bottom = 0, left = 0, right = 0 }
+                ]
+                (List.map (\w -> UI.Elements.chip w.title w.requestStatus w.saved (Remove w)) model.words)
+            , UI.Elements.spacer UI.Styles.XL
+            ]
         ]
+
+
+toolbarView : Model -> Element Msg
+toolbarView _ =
+    let
+        toolbarModel =
+            { valueChanged = False
+            , requestStatus = NoRequest
+            , showCreateAction = True
+            , title = "Stopwords"
+            }
+    in
+    UI.Components.Toolbar.toolbarView toolbarModel Create Sync None
 
 
 createNew : String -> StopWord
@@ -118,29 +136,6 @@ buildModelFromResponse r m =
     , newValue = m.newValue
     , deletionQueue = m.deletionQueue
     }
-
-
-toolbarView : Model -> Element Msg
-toolbarView _ =
-    Element.row
-        [ Element.width Element.shrink
-        ]
-        [ UI.Elements.button "Save" Sync
-        ]
-
-
-
--- updateSyncStatusState : List StopWord -> RequestStatus -> List StopWord
--- updateSyncStatusState w status =
---     -- update model with req status for non saved
---     List.map
---         (\c ->
---             if c.saved == False then
---                 { c | requestStatus = status }
---             else
---                 c
---         )
---         w
 
 
 updateSyncStatusState : Model -> RequestStatus -> Model

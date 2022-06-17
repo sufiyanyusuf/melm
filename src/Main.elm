@@ -714,6 +714,9 @@ handleAttributesViewMsg model msg =
                 Nothing ->
                     ( model, Cmd.none )
 
+        _ ->
+            ( model, Cmd.none )
+
 
 handleSynonymsViewMsg : Model -> SynonymsPage.Msg -> ( Model, Cmd Msg )
 handleSynonymsViewMsg model msg =

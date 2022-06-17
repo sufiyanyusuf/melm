@@ -1,4 +1,4 @@
-module UI.Elements exposing (button, chip, iconButton, spacer, switch, syncIndicator, textfield)
+module UI.Elements exposing (Theme(..), button, chip, iconButton, spacer, switch, syncIndicator, textfield)
 
 import Element exposing (..)
 import Element.Background as Background
@@ -126,20 +126,49 @@ switchBody model =
         Element.none
 
 
-button : String -> msg -> Element msg
-button model msg =
+type Theme
+    = Light
+    | Clear
+
+
+button : Theme -> String -> msg -> Element msg
+button buttonTheme model msg =
+    let
+        props =
+            getButtonProps buttonTheme
+    in
     el
         (UI.Styles.getTypographicStyleFor UI.Styles.Body)
         (Input.button
-            [ Background.color UI.Styles.color.gray300
-            , padding 14
-            , Element.Border.rounded 4
-            , Element.mouseOver <| [ Background.color UI.Styles.color.gray300 ]
+            [ Background.color props.bgColor
+            , paddingEach { top = 10, right = 12, bottom = 8, left = 12 }
+            , Element.Border.rounded 6
+            , Element.mouseOver <| [ Background.color props.hoverColor ]
             ]
             { onPress = Just msg
             , label = text model
             }
         )
+
+
+getButtonProps : Theme -> ButtonProps
+getButtonProps buttonType =
+    case buttonType of
+        Light ->
+            { bgColor = UI.Styles.color.white
+            , hoverColor = UI.Styles.color.gray300
+            }
+
+        Clear ->
+            { bgColor = UI.Styles.color.clear
+            , hoverColor = UI.Styles.color.gray300
+            }
+
+
+type alias ButtonProps =
+    { bgColor : Color
+    , hoverColor : Color
+    }
 
 
 iconButton : Icon -> msg -> Element msg

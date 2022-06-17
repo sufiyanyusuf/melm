@@ -4,6 +4,7 @@ import Api.Routes.Main exposing (..)
 import Element exposing (..)
 import Request exposing (..)
 import UI.Components.SynonymCard as SynonymCard exposing (Msg(..))
+import UI.Components.Toolbar
 import UI.Elements
 import UI.Styles
 
@@ -13,9 +14,6 @@ update msg model =
     case msg of
         New ->
             addNew model
-
-        Sync ->
-            ( model, Cmd.none )
 
         CardViewMsg m ->
             case m of
@@ -28,11 +26,15 @@ update msg model =
                     in
                     ( { model | synonymStates = synonymCards }, Cmd.none )
 
+        _ ->
+            ( model, Cmd.none )
+
 
 type Msg
     = CardViewMsg SynonymCard.Msg
     | Sync
     | New
+    | NoAction
 
 
 type alias Model =
@@ -60,17 +62,16 @@ view model =
         [ height fill
         , width fill
         , scrollbarY
+        , inFront (toolbarView model)
+        , paddingEach { top = 20, bottom = 12, left = 0, right = 0 }
         ]
-        [ el
-            (UI.Styles.getTypographicStyleFor UI.Styles.H1)
-            (text "Synonyms")
-        , UI.Elements.spacer UI.Styles.LG
+        [ UI.Elements.spacer UI.Styles.LG
         , Element.table
             [ width fill
             , height fill
             , scrollbarY
             , spacing 20
-            , paddingEach { top = 20, bottom = 0, left = 0, right = 120 }
+            , paddingXY 120 40
             ]
             { data = model.synonymStates
             , columns =
@@ -82,20 +83,20 @@ view model =
                 ]
             }
         , UI.Elements.spacer UI.Styles.LG
-        , toolbarView model
-        , UI.Elements.spacer UI.Styles.MD
         ]
 
 
 toolbarView : Model -> Element Msg
 toolbarView _ =
-    Element.row
-        [ Element.width Element.shrink
-        ]
-        [ UI.Elements.button "New" New
-        , UI.Elements.spacer UI.Styles.SM
-        , UI.Elements.button "Save" Sync
-        ]
+    let
+        toolbarModel =
+            { valueChanged = False
+            , requestStatus = NoRequest
+            , showCreateAction = True
+            , title = "Synonyms"
+            }
+    in
+    UI.Components.Toolbar.toolbarView toolbarModel New Sync NoAction
 
 
 updateSyncStatusState : List SynonymCard.Model -> RequestStatus -> List SynonymCard.Model
