@@ -127,7 +127,7 @@ switchBody model =
 
 
 type Theme
-    = Light
+    = Subtle
     | Clear
 
 
@@ -154,7 +154,7 @@ button buttonTheme model msg =
 getButtonProps : Theme -> ButtonProps
 getButtonProps buttonType =
     case buttonType of
-        Light ->
+        Subtle ->
             { bgColor = UI.Styles.color.white
             , hoverColor = UI.Styles.color.gray300
             }

@@ -19,3 +19,12 @@ addElementIf isNeed element =
 
     else
         []
+
+
+addElementsIf : Bool -> List (Element msg) -> List (Element msg)
+addElementsIf isNeed elements =
+    if isNeed then
+        elements
+
+    else
+        []

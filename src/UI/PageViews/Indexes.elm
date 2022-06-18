@@ -36,7 +36,7 @@ view model =
                 (UI.Styles.getTypographicStyleFor UI.Styles.H1)
                 (text "Indexes")
             , spacer FILL
-            , UI.Elements.button UI.Elements.Light "Add" X
+            , UI.Elements.button UI.Elements.Subtle "Add" X
 
             -- , el
             --     (UI.Styles.getTypographicStyleFor UI.Styles.H1)

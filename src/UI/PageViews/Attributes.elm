@@ -19,6 +19,14 @@ type alias Model =
     }
 
 
+type alias Attribute =
+    { title : String
+    , enabled : Bool
+    , saved : Bool
+    , requestStatus : RequestStatus
+    }
+
+
 type Msg
     = X Bool
     | Toggle Attribute AttributeType
@@ -56,12 +64,35 @@ view model =
         ]
 
 
+getAllAttrs : Model -> List Attribute
+getAllAttrs model =
+    List.concat [ model.displayed, model.sortable, model.searchable, model.filterable, model.distinct ]
+
+
+isLoading : Model -> Bool
+isLoading model =
+    (List.map (\x -> x.requestStatus) (getAllAttrs model)
+        |> List.filter (\x -> x == Fired)
+        |> List.length
+    )
+        /= 0
+
+
+getValueChanged : Model -> Bool
+getValueChanged model =
+    (List.map (\x -> ( x.saved, x.enabled )) (getAllAttrs model)
+        |> List.filter (\( s, e ) -> s /= e)
+        |> List.length
+    )
+        /= 0
+
+
 toolbarView : Model -> Element Msg
-toolbarView _ =
+toolbarView model =
     let
         toolbarModel =
-            { valueChanged = False
-            , requestStatus = NoRequest
+            { valueChanged = getValueChanged model
+            , loading = isLoading model
             , showCreateAction = False
             , title = "Attributes"
             }
@@ -116,14 +147,6 @@ cardViewRow model attrType =
             , UI.Elements.switch model.enabled (Toggle model attrType)
             ]
         ]
-
-
-type alias Attribute =
-    { title : String
-    , enabled : Bool
-    , saved : Bool
-    , requestStatus : RequestStatus
-    }
 
 
 init : Model

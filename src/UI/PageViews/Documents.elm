@@ -69,7 +69,7 @@ toolbarView _ =
     let
         toolbarModel =
             { valueChanged = False
-            , requestStatus = NoRequest
+            , loading = False
             , showCreateAction = False
             , title = "Document"
             }

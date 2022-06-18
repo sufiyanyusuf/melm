@@ -1,16 +1,15 @@
 module UI.Components.Toolbar exposing (Model, toolbarView)
 
-import Element exposing (Element, fill, fillPortion, none, padding, paddingXY, shrink, spacing)
+import Element exposing (Element, fill)
 import Element.Background
-import Request exposing (RequestStatus)
 import UI.Elements
 import UI.Styles
-import Utils exposing (addElementIf)
+import Utils exposing (addElementIf, addElementsIf)
 
 
 type alias Model =
     { valueChanged : Bool
-    , requestStatus : RequestStatus
+    , loading : Bool
     , showCreateAction : Bool
     , title : String
     }
@@ -25,13 +24,19 @@ toolbarView model create sync cancel =
         , Element.Background.color UI.Styles.color.gray100
         ]
         (List.concat
-            [ [ Element.el (UI.Styles.getTypographicStyleFor UI.Styles.H3) (Element.text model.title)
+            [ [ Element.el (UI.Styles.getTypographicStyleFor UI.Styles.H3 ++ [ Element.paddingXY 0 20 ]) (Element.text model.title)
               , UI.Elements.spacer UI.Styles.MD
               ]
-            , addElementIf model.showCreateAction <| UI.Elements.button UI.Elements.Light "Add" create
+            , addElementIf model.showCreateAction <| UI.Elements.button UI.Elements.Subtle "Add" create
+            , addElementsIf model.valueChanged <|
+                [ UI.Elements.spacer UI.Styles.FILL
+                , UI.Elements.button UI.Elements.Clear "Save" sync
+                , UI.Elements.button UI.Elements.Clear "Cancel" cancel
+                ]
             ]
-            ++ [ UI.Elements.spacer UI.Styles.FILL
-               , UI.Elements.button UI.Elements.Clear "Save" sync
-               , UI.Elements.button UI.Elements.Clear "Cancel" cancel
-               ]
+         -- , addElementsIf model.valueChanged <|
+         --     [ UI.Elements.spacer UI.Styles.FILL
+         --     , UI.Elements.button UI.Elements.Clear "Save" sync
+         --     , UI.Elements.button UI.Elements.Clear "Cancel" cancel
+         --     ]
         )

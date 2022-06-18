@@ -21505,13 +21505,52 @@ var $author$project$UI$PageViews$Attributes$cardView = F2(
 	});
 var $author$project$UI$PageViews$Attributes$None = {$: 'None'};
 var $author$project$UI$PageViews$Attributes$Save = {$: 'Save'};
+var $author$project$UI$PageViews$Attributes$getAllAttrs = function (model) {
+	return $elm$core$List$concat(
+		_List_fromArray(
+			[model.displayed, model.sortable, model.searchable, model.filterable, model.distinct]));
+};
+var $author$project$UI$PageViews$Attributes$getValueChanged = function (model) {
+	return !(!$elm$core$List$length(
+		A2(
+			$elm$core$List$filter,
+			function (_v0) {
+				var s = _v0.a;
+				var e = _v0.b;
+				return !_Utils_eq(s, e);
+			},
+			A2(
+				$elm$core$List$map,
+				function (x) {
+					return _Utils_Tuple2(x.saved, x.enabled);
+				},
+				$author$project$UI$PageViews$Attributes$getAllAttrs(model)))));
+};
+var $author$project$UI$PageViews$Attributes$isLoading = function (model) {
+	return !(!$elm$core$List$length(
+		A2(
+			$elm$core$List$filter,
+			function (x) {
+				return _Utils_eq(x, $author$project$Request$Fired);
+			},
+			A2(
+				$elm$core$List$map,
+				function (x) {
+					return x.requestStatus;
+				},
+				$author$project$UI$PageViews$Attributes$getAllAttrs(model)))));
+};
 var $author$project$UI$Elements$Clear = {$: 'Clear'};
 var $author$project$UI$Styles$H3 = {$: 'H3'};
-var $author$project$UI$Elements$Light = {$: 'Light'};
+var $author$project$UI$Elements$Subtle = {$: 'Subtle'};
 var $author$project$Utils$addElementIf = F2(
 	function (isNeed, element) {
 		return isNeed ? _List_fromArray(
 			[element]) : _List_Nil;
+	});
+var $author$project$Utils$addElementsIf = F2(
+	function (isNeed, elements) {
+		return isNeed ? elements : _List_Nil;
 	});
 var $mdgriffith$elm_ui$Internal$Model$Top = {$: 'Top'};
 var $mdgriffith$elm_ui$Element$alignTop = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$Top);
@@ -21638,7 +21677,7 @@ var $mdgriffith$elm_ui$Element$Input$button = F2(
 					[label])));
 	});
 var $author$project$UI$Elements$getButtonProps = function (buttonType) {
-	if (buttonType.$ === 'Light') {
+	if (buttonType.$ === 'Subtle') {
 		return {bgColor: $author$project$UI$Styles$color.white, hoverColor: $author$project$UI$Styles$color.gray300};
 	} else {
 		return {bgColor: $author$project$UI$Styles$color.clear, hoverColor: $author$project$UI$Styles$color.gray300};
@@ -21680,32 +21719,44 @@ var $author$project$UI$Components$Toolbar$toolbarView = F4(
 					$mdgriffith$elm_ui$Element$alignTop,
 					$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.gray100)
 				]),
-			_Utils_ap(
-				$elm$core$List$concat(
-					_List_fromArray(
-						[
-							_List_fromArray(
-							[
-								A2(
-								$mdgriffith$elm_ui$Element$el,
-								$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H3),
-								$mdgriffith$elm_ui$Element$text(model.title)),
-								$author$project$UI$Elements$spacer($author$project$UI$Styles$MD)
-							]),
-							A2(
-							$author$project$Utils$addElementIf,
-							model.showCreateAction,
-							A3($author$project$UI$Elements$button, $author$project$UI$Elements$Light, 'Add', create))
-						])),
+			$elm$core$List$concat(
 				_List_fromArray(
 					[
-						$author$project$UI$Elements$spacer($author$project$UI$Styles$FILL),
-						A3($author$project$UI$Elements$button, $author$project$UI$Elements$Clear, 'Save', sync),
-						A3($author$project$UI$Elements$button, $author$project$UI$Elements$Clear, 'Cancel', cancel)
+						_List_fromArray(
+						[
+							A2(
+							$mdgriffith$elm_ui$Element$el,
+							_Utils_ap(
+								$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H3),
+								_List_fromArray(
+									[
+										A2($mdgriffith$elm_ui$Element$paddingXY, 0, 20)
+									])),
+							$mdgriffith$elm_ui$Element$text(model.title)),
+							$author$project$UI$Elements$spacer($author$project$UI$Styles$MD)
+						]),
+						A2(
+						$author$project$Utils$addElementIf,
+						model.showCreateAction,
+						A3($author$project$UI$Elements$button, $author$project$UI$Elements$Subtle, 'Add', create)),
+						A2(
+						$author$project$Utils$addElementsIf,
+						model.valueChanged,
+						_List_fromArray(
+							[
+								$author$project$UI$Elements$spacer($author$project$UI$Styles$FILL),
+								A3($author$project$UI$Elements$button, $author$project$UI$Elements$Clear, 'Save', sync),
+								A3($author$project$UI$Elements$button, $author$project$UI$Elements$Clear, 'Cancel', cancel)
+							]))
 					])));
 	});
-var $author$project$UI$PageViews$Attributes$toolbarView = function (_v0) {
-	var toolbarModel = {requestStatus: $author$project$Request$NoRequest, showCreateAction: false, title: 'Attributes', valueChanged: false};
+var $author$project$UI$PageViews$Attributes$toolbarView = function (model) {
+	var toolbarModel = {
+		loading: $author$project$UI$PageViews$Attributes$isLoading(model),
+		showCreateAction: false,
+		title: 'Attributes',
+		valueChanged: $author$project$UI$PageViews$Attributes$getValueChanged(model)
+	};
 	return A4($author$project$UI$Components$Toolbar$toolbarView, toolbarModel, $author$project$UI$PageViews$Attributes$None, $author$project$UI$PageViews$Attributes$Save, $author$project$UI$PageViews$Attributes$None);
 };
 var $mdgriffith$elm_ui$Internal$Model$Padding = F5(
@@ -22483,7 +22534,7 @@ var $ThinkAlexandria$elm_pretty_print_json$Json$Print$prettyString = F2(
 	});
 var $author$project$UI$PageViews$Documents$X = {$: 'X'};
 var $author$project$UI$PageViews$Documents$toolbarView = function (_v0) {
-	var toolbarModel = {requestStatus: $author$project$Request$NoRequest, showCreateAction: false, title: 'Document', valueChanged: false};
+	var toolbarModel = {loading: false, showCreateAction: false, title: 'Document', valueChanged: false};
 	return A4($author$project$UI$Components$Toolbar$toolbarView, toolbarModel, $author$project$UI$PageViews$Documents$X, $author$project$UI$PageViews$Documents$X, $author$project$UI$PageViews$Documents$X);
 };
 var $elm$core$Result$withDefault = F2(
@@ -23394,7 +23445,7 @@ var $author$project$UI$Elements$textfield = F5(
 				}));
 	});
 var $author$project$UI$PageViews$Settings$toolbarView = function (_v0) {
-	var toolbarModel = {requestStatus: $author$project$Request$NoRequest, showCreateAction: false, title: 'Settings', valueChanged: false};
+	var toolbarModel = {loading: false, showCreateAction: false, title: 'Settings', valueChanged: true};
 	return A4($author$project$UI$Components$Toolbar$toolbarView, toolbarModel, $author$project$UI$PageViews$Settings$None, $author$project$UI$PageViews$Settings$SaveKeyValue, $author$project$UI$PageViews$Settings$None);
 };
 var $author$project$UI$PageViews$Settings$view = function (model) {
@@ -23425,7 +23476,7 @@ var $author$project$UI$PageViews$Settings$view = function (model) {
 						$author$project$UI$Elements$spacer($author$project$UI$Styles$XL),
 						A5($author$project$UI$Elements$textfield, model.tokenValue, 'Token', $author$project$UI$PageViews$Settings$KeyValueChanged, $author$project$UI$PageViews$Settings$None, $author$project$UI$PageViews$Settings$None),
 						$author$project$UI$Elements$spacer($author$project$UI$Styles$SM),
-						A3($author$project$UI$Elements$button, $author$project$UI$Elements$Light, 'Save Token', $author$project$UI$PageViews$Settings$SaveKeyValue)
+						A3($author$project$UI$Elements$button, $author$project$UI$Elements$Subtle, 'Save Token', $author$project$UI$PageViews$Settings$SaveKeyValue)
 					]))
 			]));
 };
@@ -23482,8 +23533,41 @@ var $author$project$UI$Elements$chip = F4(
 					])));
 	});
 var $author$project$UI$PageViews$StopWords$Sync = {$: 'Sync'};
-var $author$project$UI$PageViews$StopWords$toolbarView = function (_v0) {
-	var toolbarModel = {requestStatus: $author$project$Request$NoRequest, showCreateAction: true, title: 'Stopwords', valueChanged: false};
+var $author$project$UI$PageViews$StopWords$getValueChanged = function (model) {
+	return !(!$elm$core$List$length(
+		A2(
+			$elm$core$List$filter,
+			function (x) {
+				return !x;
+			},
+			A2(
+				$elm$core$List$map,
+				function (x) {
+					return x.saved;
+				},
+				model.words))));
+};
+var $author$project$UI$PageViews$StopWords$isLoading = function (model) {
+	return !(!$elm$core$List$length(
+		A2(
+			$elm$core$List$filter,
+			function (x) {
+				return _Utils_eq(x, $author$project$Request$Fired);
+			},
+			A2(
+				$elm$core$List$map,
+				function (x) {
+					return x.requestStatus;
+				},
+				model.words))));
+};
+var $author$project$UI$PageViews$StopWords$toolbarView = function (m) {
+	var toolbarModel = {
+		loading: $author$project$UI$PageViews$StopWords$isLoading(m),
+		showCreateAction: true,
+		title: 'Stopwords',
+		valueChanged: $author$project$UI$PageViews$StopWords$getValueChanged(m)
+	};
 	return A4($author$project$UI$Components$Toolbar$toolbarView, toolbarModel, $author$project$UI$PageViews$StopWords$Create, $author$project$UI$PageViews$StopWords$Sync, $author$project$UI$PageViews$StopWords$None);
 };
 var $author$project$UI$PageViews$StopWords$view = function (model) {
@@ -23541,8 +23625,41 @@ var $author$project$UI$PageViews$Synonyms$CardViewMsg = function (a) {
 var $author$project$UI$PageViews$Synonyms$New = {$: 'New'};
 var $author$project$UI$PageViews$Synonyms$NoAction = {$: 'NoAction'};
 var $author$project$UI$PageViews$Synonyms$Sync = {$: 'Sync'};
-var $author$project$UI$PageViews$Synonyms$toolbarView = function (_v0) {
-	var toolbarModel = {requestStatus: $author$project$Request$NoRequest, showCreateAction: true, title: 'Synonyms', valueChanged: false};
+var $author$project$UI$PageViews$Synonyms$getValueChanged = function (model) {
+	return !(!$elm$core$List$length(
+		A2(
+			$elm$core$List$filter,
+			function (x) {
+				return x;
+			},
+			A2(
+				$elm$core$List$map,
+				function (x) {
+					return $author$project$UI$Components$SynonymCard$valueChanged(x);
+				},
+				model.synonymStates))));
+};
+var $author$project$UI$PageViews$Synonyms$isLoading = function (model) {
+	return !(!$elm$core$List$length(
+		A2(
+			$elm$core$List$filter,
+			function (x) {
+				return _Utils_eq(x, $author$project$Request$Fired);
+			},
+			A2(
+				$elm$core$List$map,
+				function (x) {
+					return x.requestStatus;
+				},
+				model.synonymStates))));
+};
+var $author$project$UI$PageViews$Synonyms$toolbarView = function (m) {
+	var toolbarModel = {
+		loading: $author$project$UI$PageViews$Synonyms$isLoading(m),
+		showCreateAction: true,
+		title: 'Synonyms',
+		valueChanged: $author$project$UI$PageViews$Synonyms$getValueChanged(m)
+	};
 	return A4($author$project$UI$Components$Toolbar$toolbarView, toolbarModel, $author$project$UI$PageViews$Synonyms$New, $author$project$UI$PageViews$Synonyms$Sync, $author$project$UI$PageViews$Synonyms$NoAction);
 };
 var $author$project$UI$Components$SynonymCard$DoneEditing = {$: 'DoneEditing'};

@@ -86,12 +86,30 @@ view model =
         ]
 
 
+isLoading : Model -> Bool
+isLoading model =
+    (List.map (\x -> x.requestStatus) model.synonymStates
+        |> List.filter (\x -> x == Fired)
+        |> List.length
+    )
+        /= 0
+
+
+getValueChanged : Model -> Bool
+getValueChanged model =
+    (List.map (\x -> SynonymCard.valueChanged x) model.synonymStates
+        |> List.filter (\x -> x == True)
+        |> List.length
+    )
+        /= 0
+
+
 toolbarView : Model -> Element Msg
-toolbarView _ =
+toolbarView m =
     let
         toolbarModel =
-            { valueChanged = False
-            , requestStatus = NoRequest
+            { valueChanged = getValueChanged m
+            , loading = isLoading m
             , showCreateAction = True
             , title = "Synonyms"
             }

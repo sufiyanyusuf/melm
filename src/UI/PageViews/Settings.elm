@@ -39,7 +39,7 @@ view model =
             [ Elements.spacer UI.Styles.XL
             , textfield model.tokenValue "Token" KeyValueChanged None None
             , Elements.spacer UI.Styles.SM
-            , button Elements.Light "Save Token" SaveKeyValue
+            , button Elements.Subtle "Save Token" SaveKeyValue
             ]
         ]
 
@@ -48,8 +48,8 @@ toolbarView : Model -> Element Msg
 toolbarView _ =
     let
         toolbarModel =
-            { valueChanged = False
-            , requestStatus = NoRequest
+            { valueChanged = True
+            , loading = False
             , showCreateAction = False
             , title = "Settings"
             }

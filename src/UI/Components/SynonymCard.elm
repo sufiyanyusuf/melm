@@ -90,7 +90,7 @@ valueChangedView model =
             [ Element.width Element.shrink
             , padding 12
             ]
-            [ UI.Elements.button UI.Elements.Light "Cancel" Reset
+            [ UI.Elements.button UI.Elements.Subtle "Cancel" Reset
             ]
 
     else

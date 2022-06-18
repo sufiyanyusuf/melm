@@ -1,7 +1,6 @@
 module UI.PageViews.StopWords exposing (..)
 
 import Element exposing (..)
-import Element.Font exposing (light)
 import Request exposing (RequestStatus(..))
 import UI.Components.Toolbar
 import UI.Elements
@@ -70,8 +69,6 @@ view model =
             , UI.Elements.spacer UI.Styles.SM
             , Element.wrappedRow
                 [ spacing 12
-
-                -- , paddingEach { top = 20, bottom = 0, left = 0, right = 0 }
                 ]
                 (List.map (\w -> UI.Elements.chip w.title w.requestStatus w.saved (Remove w)) model.words)
             , UI.Elements.spacer UI.Styles.XL
@@ -79,12 +76,30 @@ view model =
         ]
 
 
+isLoading : Model -> Bool
+isLoading model =
+    (List.map (\x -> x.requestStatus) model.words
+        |> List.filter (\x -> x == Fired)
+        |> List.length
+    )
+        /= 0
+
+
+getValueChanged : Model -> Bool
+getValueChanged model =
+    (List.map (\x -> x.saved) model.words
+        |> List.filter (\x -> x /= True)
+        |> List.length
+    )
+        /= 0
+
+
 toolbarView : Model -> Element Msg
-toolbarView _ =
+toolbarView m =
     let
         toolbarModel =
-            { valueChanged = False
-            , requestStatus = NoRequest
+            { valueChanged = getValueChanged m
+            , loading = isLoading m
             , showCreateAction = True
             , title = "Stopwords"
             }
