@@ -96,7 +96,7 @@ getTypographicStyleFor style config =
                 [ Font.typeface "Inter"
                 , Font.sansSerif
                 ]
-            , Font.color (color config).gray500
+            , Font.color (color config).gray400
             , Font.letterSpacing -0.6
             ]
 
@@ -107,7 +107,7 @@ getTypographicStyleFor style config =
                 [ Font.typeface "Inter"
                 , Font.sansSerif
                 ]
-            , Font.color (color config).gray500
+            , Font.color (color config).gray400
             , Font.letterSpacing -0.4
             ]
 
@@ -119,7 +119,7 @@ getTypographicStyleFor style config =
                 , Font.sansSerif
                 ]
             , Font.letterSpacing -0.2
-            , Font.color (color config).gray500
+            , Font.color (color config).gray400
             ]
 
         Body ->
@@ -129,7 +129,7 @@ getTypographicStyleFor style config =
                 [ Font.typeface "Inter"
                 , Font.sansSerif
                 ]
-            , Font.color (color config).gray500
+            , Font.color (color config).gray400
             , Font.letterSpacing -0.1
             ]
 
@@ -140,7 +140,7 @@ getTypographicStyleFor style config =
                 [ Font.typeface "Inter"
                 , Font.sansSerif
                 ]
-            , Font.color (color config).gray500
+            , Font.color (color config).gray400
             , Font.letterSpacing -0.1
             ]
 
@@ -151,7 +151,7 @@ getTypographicStyleFor style config =
                 [ Font.typeface "Inter"
                 , Font.monospace
                 ]
-            , Font.color (color config).gray500
+            , Font.color (color config).gray400
             ]
 
         CardTitle ->
@@ -162,5 +162,5 @@ getTypographicStyleFor style config =
                 , Font.sansSerif
                 ]
             , Font.letterSpacing -0.2
-            , Font.color (color config).gray500
+            , Font.color (color config).gray400
             ]

@@ -114,11 +114,11 @@ view model =
     Element.layoutWith
         { options =
             [ focusStyle
-                { borderColor = Just (UI.Styles.color config).primary400
+                { borderColor = Just (UI.Styles.color config).primary300
                 , backgroundColor = Just (UI.Styles.color config).white
                 , shadow =
                     Just
-                        { color = (UI.Styles.color config).primary400
+                        { color = (UI.Styles.color config).primary300
                         , offset = ( 0, 0 )
                         , blur = 0
                         , size = 2

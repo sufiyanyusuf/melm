@@ -29,7 +29,7 @@ toolbarView model create sync cancel config =
                     (Element.text model.title)
               , UI.Elements.spacer UI.Styles.MD
               ]
-            , addElementIf model.showCreateAction <| UI.Elements.button UI.Elements.Subtle "Add" create config
+            , addElementIf model.showCreateAction <| UI.Elements.button UI.Elements.PrimaryLight "Add" create config
             , addElementsIf model.valueChanged <|
                 [ UI.Elements.spacer UI.Styles.FILL
                 , UI.Elements.button UI.Elements.Clear "Save" sync config

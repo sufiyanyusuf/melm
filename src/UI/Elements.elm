@@ -4,6 +4,7 @@ import Element exposing (..)
 import Element.Background as Background
 import Element.Border exposing (rounded)
 import Element.Events exposing (onClick, onLoseFocus)
+import Element.Font
 import Element.Input as Input exposing (OptionState(..))
 import Expect exposing (true)
 import Html.Events exposing (onMouseOver)
@@ -133,7 +134,8 @@ switchBody model config =
 type Theme
     = Subtle
     | Clear
-    | Prominent
+    | PrimaryLight
+    | PrimaryDark
 
 
 button : Theme -> String -> msg -> Config -> Element msg
@@ -149,6 +151,7 @@ button buttonTheme model msg config =
             , paddingEach { top = 8, right = 12, bottom = 8, left = 12 }
             , Element.Border.rounded 6
             , Element.mouseOver <| [ Background.color props.hoverColor ]
+            , Element.Font.color props.textColor
             ]
             { onPress = Just msg
             , label = text model
@@ -162,22 +165,32 @@ getButtonProps buttonType config =
         Subtle ->
             { bgColor = (UI.Styles.color config).white
             , hoverColor = (UI.Styles.color config).gray200
+            , textColor = (UI.Styles.color config).gray500
             }
 
         Clear ->
             { bgColor = (UI.Styles.color config).clear
             , hoverColor = (UI.Styles.color config).gray200
+            , textColor = (UI.Styles.color config).gray500
             }
 
-        Prominent ->
-            { bgColor = (UI.Styles.color config).white
-            , hoverColor = (UI.Styles.color config).gray200
+        PrimaryLight ->
+            { bgColor = (UI.Styles.color config).primary100
+            , hoverColor = (UI.Styles.color config).primary200
+            , textColor = (UI.Styles.color config).primary500
+            }
+
+        PrimaryDark ->
+            { bgColor = (UI.Styles.color config).primary300
+            , hoverColor = (UI.Styles.color config).primary500
+            , textColor = (UI.Styles.color config).white
             }
 
 
 type alias ButtonProps =
     { bgColor : Color
     , hoverColor : Color
+    , textColor : Color
     }
 
 
