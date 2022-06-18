@@ -6,7 +6,7 @@ import Element.Border exposing (rounded)
 import Element.Events exposing (onClick, onLoseFocus)
 import Element.Input as Input exposing (OptionState(..))
 import Expect exposing (true)
-import Html.Events
+import Html.Events exposing (onMouseOver)
 import Json.Decode as Decode
 import Request exposing (RequestStatus(..))
 import UI.Icons exposing (Icon(..), Style(..), buildIcon)
@@ -39,17 +39,21 @@ textfield : String -> String -> (String -> msg) -> msg -> msg -> Config -> Eleme
 textfield value placeholder valueChanged loseFocus returnKeyMsg config =
     el
         (UI.Styles.getTypographicStyleFor UI.Styles.Body config
-            ++ [ Element.width fill, onEnter returnKeyMsg ]
+            ++ [ Element.width fill
+               , onEnter returnKeyMsg
+               ]
         )
         (Input.text
             [ spacing 8
             , Element.Border.width 0
             , Element.Border.rounded 6
-            , Background.color (UI.Styles.color config).gray200
-            , Element.Border.color (UI.Styles.color config).gray300
+            , Background.color (UI.Styles.color config).white
+            , Element.Border.color (UI.Styles.color config).gray200
+            , Element.Border.width 1
             , width fill
             , paddingXY 12 14
             , onLoseFocus loseFocus
+            , Element.mouseOver <| [ Background.color (UI.Styles.color config).gray200 ]
             ]
             { text = value
             , placeholder = Just (Input.placeholder [] (Element.text placeholder))

@@ -111,7 +111,22 @@ view model =
         config =
             getConfig model
     in
-    Element.layout [ width fill, height fill ]
+    Element.layoutWith
+        { options =
+            [ focusStyle
+                { borderColor = Just (UI.Styles.color config).primary400
+                , backgroundColor = Just (UI.Styles.color config).white
+                , shadow =
+                    Just
+                        { color = (UI.Styles.color config).primary400
+                        , offset = ( 0, 0 )
+                        , blur = 0
+                        , size = 2
+                        }
+                }
+            ]
+        }
+        [ width fill, height fill ]
         (Element.row
             [ width fill, height fill ]
             [ Sidebar.sidebarView (getSidebarViewModel model) config |> Element.map SidebarMsg
