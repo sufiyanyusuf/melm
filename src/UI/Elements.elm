@@ -45,10 +45,10 @@ textfield value placeholder valueChanged loseFocus returnKeyMsg config =
             [ spacing 8
             , Element.Border.width 0
             , Element.Border.rounded 6
-            , Background.color (UI.Styles.color config).white
+            , Background.color (UI.Styles.color config).gray200
             , Element.Border.color (UI.Styles.color config).gray300
             , width fill
-            , padding 12
+            , paddingXY 12 14
             , onLoseFocus loseFocus
             ]
             { text = value
@@ -115,7 +115,7 @@ switchBody model config =
                 (UI.Styles.color config).green500
 
             else
-                (UI.Styles.color config).gray300
+                (UI.Styles.color config).gray200
     in
     el
         [ Background.color background
@@ -157,17 +157,17 @@ getButtonProps buttonType config =
     case buttonType of
         Subtle ->
             { bgColor = (UI.Styles.color config).white
-            , hoverColor = (UI.Styles.color config).gray300
+            , hoverColor = (UI.Styles.color config).gray200
             }
 
         Clear ->
             { bgColor = (UI.Styles.color config).clear
-            , hoverColor = (UI.Styles.color config).gray300
+            , hoverColor = (UI.Styles.color config).gray200
             }
 
         Prominent ->
             { bgColor = (UI.Styles.color config).white
-            , hoverColor = (UI.Styles.color config).gray300
+            , hoverColor = (UI.Styles.color config).gray200
             }
 
 
@@ -199,7 +199,7 @@ chip text requestStatus saved msg config =
             , paddingEach { top = 4, left = 12, bottom = 4, right = 4 }
             , Element.Border.rounded 6
             , Element.mouseOver <| [ Background.color (UI.Styles.color config).gray100 ]
-            , Element.Border.color (UI.Styles.color config).gray300
+            , Element.Border.color (UI.Styles.color config).gray200
             , Element.Border.width 1
             , spacing 4
             ]

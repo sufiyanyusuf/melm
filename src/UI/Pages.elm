@@ -26,8 +26,8 @@ type alias Model =
     }
 
 
-init : String -> Model
-init indexUid =
+init : Model
+init =
     { documents = Documents.init
     , settings = Settings.init
     , synonyms = Synonyms.init

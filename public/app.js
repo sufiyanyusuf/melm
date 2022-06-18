@@ -11628,15 +11628,13 @@ var $author$project$UI$PageViews$Documents$init = {documents: _List_Nil};
 var $author$project$UI$Styles$Light = {$: 'Light'};
 var $author$project$UI$PageViews$Settings$init = {colorScheme: $author$project$UI$Styles$Light, savedTokenValue: '', tokenValue: ''};
 var $author$project$UI$PageViews$StopWords$init = {deletionQueue: _List_Nil, newValue: '', words: _List_Nil};
-var $author$project$UI$Pages$init = function (indexUid) {
-	return {
-		attributes: $author$project$UI$PageViews$Attributes$init,
-		documents: $author$project$UI$PageViews$Documents$init,
-		selectedPage: $author$project$UI$Pages$Documents($author$project$UI$PageViews$Documents$init),
-		settings: $author$project$UI$PageViews$Settings$init,
-		stopWords: $author$project$UI$PageViews$StopWords$init,
-		synonyms: $author$project$UI$PageViews$Synonyms$init
-	};
+var $author$project$UI$Pages$init = {
+	attributes: $author$project$UI$PageViews$Attributes$init,
+	documents: $author$project$UI$PageViews$Documents$init,
+	selectedPage: $author$project$UI$Pages$Documents($author$project$UI$PageViews$Documents$init),
+	settings: $author$project$UI$PageViews$Settings$init,
+	stopWords: $author$project$UI$PageViews$StopWords$init,
+	synonyms: $author$project$UI$PageViews$Synonyms$init
 };
 var $author$project$UI$Sidebar$Model = F3(
 	function (pages, selectedPage, dropDown) {
@@ -11670,7 +11668,7 @@ var $author$project$Main$init = function (_v0) {
 		documents: _List_Nil,
 		filterableAttrs: _List_Nil,
 		indexStats: $elm$core$Maybe$Nothing,
-		pages: $author$project$UI$Pages$init(''),
+		pages: $author$project$UI$Pages$init,
 		pollingQueue: _List_Nil,
 		searchableAttrs: _List_Nil,
 		sidebarModel: $author$project$UI$Sidebar$init,
@@ -19600,6 +19598,57 @@ var $mdgriffith$elm_ui$Element$row = F2(
 var $author$project$UI$Sidebar$DropdownMsg = function (a) {
 	return {$: 'DropdownMsg', a: a};
 };
+var $mdgriffith$elm_ui$Element$Background$color = function (clr) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$bgColor,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$Colored,
+			'bg-' + $mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
+			'background-color',
+			clr));
+};
+var $mdgriffith$elm_ui$Element$rgb255 = F3(
+	function (red, green, blue) {
+		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
+	});
+var $mdgriffith$elm_ui$Element$rgba = $mdgriffith$elm_ui$Internal$Model$Rgba;
+var $author$project$UI$Styles$color = function (config) {
+	var _v0 = config.scheme;
+	if (_v0.$ === 'Light') {
+		return {
+			clear: A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0),
+			gray100: A3($mdgriffith$elm_ui$Element$rgb255, 244, 244, 244),
+			gray200: A3($mdgriffith$elm_ui$Element$rgb255, 225, 225, 225),
+			gray300: A3($mdgriffith$elm_ui$Element$rgb255, 128, 128, 128),
+			gray400: A3($mdgriffith$elm_ui$Element$rgb255, 76, 76, 76),
+			gray500: A3($mdgriffith$elm_ui$Element$rgb255, 26, 26, 26),
+			green500: A3($mdgriffith$elm_ui$Element$rgb255, 17, 199, 112),
+			primary100: A3($mdgriffith$elm_ui$Element$rgb255, 211, 216, 255),
+			primary200: A3($mdgriffith$elm_ui$Element$rgb255, 177, 184, 250),
+			primary300: A3($mdgriffith$elm_ui$Element$rgb255, 149, 158, 240),
+			primary400: A3($mdgriffith$elm_ui$Element$rgb255, 78, 91, 207),
+			primary500: A3($mdgriffith$elm_ui$Element$rgb255, 28, 40, 144),
+			white: A3($mdgriffith$elm_ui$Element$rgb255, 255, 255, 255)
+		};
+	} else {
+		return {
+			clear: A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0),
+			gray100: A3($mdgriffith$elm_ui$Element$rgb255, 18, 18, 18),
+			gray200: A3($mdgriffith$elm_ui$Element$rgb255, 41, 41, 41),
+			gray300: A3($mdgriffith$elm_ui$Element$rgb255, 89, 89, 89),
+			gray400: A3($mdgriffith$elm_ui$Element$rgb255, 153, 153, 153),
+			gray500: A3($mdgriffith$elm_ui$Element$rgb255, 229, 229, 229),
+			green500: A3($mdgriffith$elm_ui$Element$rgb255, 17, 199, 112),
+			primary100: A3($mdgriffith$elm_ui$Element$rgb255, 159, 169, 255),
+			primary200: A3($mdgriffith$elm_ui$Element$rgb255, 114, 128, 253),
+			primary300: A3($mdgriffith$elm_ui$Element$rgb255, 60, 75, 211),
+			primary400: A3($mdgriffith$elm_ui$Element$rgb255, 23, 33, 123),
+			primary500: A3($mdgriffith$elm_ui$Element$rgb255, 9, 13, 51),
+			white: A3($mdgriffith$elm_ui$Element$rgb255, 25, 25, 25)
+		};
+	}
+};
 var $mdgriffith$elm_ui$Internal$Model$AsColumn = {$: 'AsColumn'};
 var $mdgriffith$elm_ui$Internal$Model$asColumn = $mdgriffith$elm_ui$Internal$Model$AsColumn;
 var $mdgriffith$elm_ui$Element$column = F2(
@@ -19715,52 +19764,15 @@ var $author$project$Utils$addIf = F2(
 		return isNeed ? _List_fromArray(
 			[attr]) : _List_Nil;
 	});
-var $mdgriffith$elm_ui$Element$Background$color = function (clr) {
+var $mdgriffith$elm_ui$Element$Font$color = function (fontColor) {
 	return A2(
 		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$bgColor,
+		$mdgriffith$elm_ui$Internal$Flag$fontColor,
 		A3(
 			$mdgriffith$elm_ui$Internal$Model$Colored,
-			'bg-' + $mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
-			'background-color',
-			clr));
-};
-var $mdgriffith$elm_ui$Element$rgb255 = F3(
-	function (red, green, blue) {
-		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
-	});
-var $mdgriffith$elm_ui$Element$rgba = $mdgriffith$elm_ui$Internal$Model$Rgba;
-var $author$project$UI$Styles$color = function (config) {
-	var _v0 = config.scheme;
-	if (_v0.$ === 'Light') {
-		return {
-			clear: A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0),
-			gray100: A3($mdgriffith$elm_ui$Element$rgb255, 243, 244, 245),
-			gray200: A3($mdgriffith$elm_ui$Element$rgb255, 243, 244, 245),
-			gray300: A3($mdgriffith$elm_ui$Element$rgb255, 224, 224, 224),
-			gray500: A3($mdgriffith$elm_ui$Element$rgb255, 46, 52, 54),
-			green500: A3($mdgriffith$elm_ui$Element$rgb255, 17, 199, 112),
-			primary100: A3($mdgriffith$elm_ui$Element$rgb255, 234, 235, 245),
-			primary200: A3($mdgriffith$elm_ui$Element$rgb255, 218, 221, 246),
-			primary300: A3($mdgriffith$elm_ui$Element$rgb255, 218, 221, 246),
-			primary500: A3($mdgriffith$elm_ui$Element$rgb255, 114, 159, 207),
-			white: A3($mdgriffith$elm_ui$Element$rgb255, 255, 255, 255)
-		};
-	} else {
-		return {
-			clear: A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0),
-			gray100: A3($mdgriffith$elm_ui$Element$rgb255, 243, 244, 245),
-			gray200: A3($mdgriffith$elm_ui$Element$rgb255, 243, 244, 245),
-			gray300: A3($mdgriffith$elm_ui$Element$rgb255, 224, 224, 224),
-			gray500: A3($mdgriffith$elm_ui$Element$rgb255, 46, 52, 54),
-			green500: A3($mdgriffith$elm_ui$Element$rgb255, 17, 199, 112),
-			primary100: A3($mdgriffith$elm_ui$Element$rgb255, 234, 235, 245),
-			primary200: A3($mdgriffith$elm_ui$Element$rgb255, 218, 221, 246),
-			primary300: A3($mdgriffith$elm_ui$Element$rgb255, 218, 221, 246),
-			primary500: A3($mdgriffith$elm_ui$Element$rgb255, 114, 159, 207),
-			white: A3($mdgriffith$elm_ui$Element$rgb255, 255, 255, 255)
-		};
-	}
+			'fc-' + $mdgriffith$elm_ui$Internal$Model$formatColorClass(fontColor),
+			'color',
+			fontColor));
 };
 var $mdgriffith$elm_ui$Element$el = F2(
 	function (attrs, child) {
@@ -20504,16 +20516,6 @@ var $author$project$UI$Sidebar$getPageIcon = F2(
 	});
 var $mdgriffith$elm_ui$Internal$Flag$fontWeight = $mdgriffith$elm_ui$Internal$Flag$flag(13);
 var $mdgriffith$elm_ui$Element$Font$bold = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$fontWeight, $mdgriffith$elm_ui$Internal$Style$classes.bold);
-var $mdgriffith$elm_ui$Element$Font$color = function (fontColor) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$fontColor,
-		A3(
-			$mdgriffith$elm_ui$Internal$Model$Colored,
-			'fc-' + $mdgriffith$elm_ui$Internal$Model$formatColorClass(fontColor),
-			'color',
-			fontColor));
-};
 var $mdgriffith$elm_ui$Element$Font$family = function (families) {
 	return A2(
 		$mdgriffith$elm_ui$Internal$Model$StyleClass,
@@ -20897,15 +20899,16 @@ var $author$project$UI$Sidebar$sidebarListItemView = F4(
 								$mdgriffith$elm_ui$Element$mouseOver(
 								_List_fromArray(
 									[
-										$mdgriffith$elm_ui$Element$Background$color(
-										$author$project$UI$Styles$color(config).gray300)
+										isSelected ? $mdgriffith$elm_ui$Element$Background$color(
+										$author$project$UI$Styles$color(config).primary200) : $mdgriffith$elm_ui$Element$Background$color(
+										$author$project$UI$Styles$color(config).gray200)
 									]))
 							]),
 							A2(
 							$author$project$Utils$addIf,
 							isSelected,
 							$mdgriffith$elm_ui$Element$Background$color(
-								$author$project$UI$Styles$color(config).primary200))
+								$author$project$UI$Styles$color(config).primary100))
 						])),
 				_List_fromArray(
 					[
@@ -20918,13 +20921,27 @@ var $author$project$UI$Sidebar$sidebarListItemView = F4(
 						_List_fromArray(
 							[
 								$mdgriffith$elm_ui$Element$paddingEach(
-								{bottom: 0, left: 8, right: 0, top: 0})
+								{bottom: 4, left: 8, right: 0, top: 0})
 							]),
 						_List_fromArray(
 							[
 								A2(
 								$mdgriffith$elm_ui$Element$el,
-								A2($author$project$UI$Styles$getTypographicStyleFor, $author$project$UI$Styles$Body, config),
+								$elm$core$List$concat(
+									_List_fromArray(
+										[
+											A2($author$project$UI$Styles$getTypographicStyleFor, $author$project$UI$Styles$Body, config),
+											_List_fromArray(
+											[
+												$mdgriffith$elm_ui$Element$Font$color(
+												$author$project$UI$Styles$color(config).gray500)
+											]),
+											A2(
+											$author$project$Utils$addIf,
+											isSelected,
+											$mdgriffith$elm_ui$Element$Font$color(
+												$author$project$UI$Styles$color(config).primary500))
+										])),
 								$mdgriffith$elm_ui$Element$text(title))
 							]))
 					])));
@@ -21207,17 +21224,19 @@ var $author$project$UI$Components$Dropdown$dropDownButton = F4(
 							_List_fromArray(
 								[
 									$mdgriffith$elm_ui$Element$Background$color(
-									$author$project$UI$Styles$color(config).gray300)
+									$author$project$UI$Styles$color(config).gray100)
 								])),
 							$mdgriffith$elm_ui$Element$Border$width(1),
 							$mdgriffith$elm_ui$Element$Border$color(
-							$author$project$UI$Styles$color(config).gray300)
+							$author$project$UI$Styles$color(config).gray100),
+							$mdgriffith$elm_ui$Element$Background$color(
+							$author$project$UI$Styles$color(config).gray200)
 						]),
 						A2(
 						$author$project$Utils$addIf,
 						expanded,
 						$mdgriffith$elm_ui$Element$Background$color(
-							$author$project$UI$Styles$color(config).gray300)),
+							$author$project$UI$Styles$color(config).gray200)),
 						A2(
 						$author$project$Utils$addIf,
 						expanded,
@@ -21265,7 +21284,7 @@ var $author$project$UI$Components$Dropdown$dropDownMenuListItem = F2(
 							_List_fromArray(
 								[
 									$mdgriffith$elm_ui$Element$Background$color(
-									$author$project$UI$Styles$color(config).gray300)
+									$author$project$UI$Styles$color(config).gray100)
 								]))
 						])
 					])),
@@ -21323,10 +21342,15 @@ var $author$project$UI$Components$Dropdown$dropDownMenu = F3(
 					$mdgriffith$elm_ui$Element$Border$shadow(
 					{
 						blur: 15,
-						color: $author$project$UI$Styles$color(config).gray300,
+						color: $author$project$UI$Styles$color(config).gray100,
 						offset: _Utils_Tuple2(0, 0),
 						size: 0
-					})
+					}),
+					$mdgriffith$elm_ui$Element$Border$width(1),
+					$mdgriffith$elm_ui$Element$Border$color(
+					$author$project$UI$Styles$color(config).gray200),
+					$mdgriffith$elm_ui$Element$Background$color(
+					$author$project$UI$Styles$color(config).white)
 				]),
 			A2(
 				$elm$core$List$map,
@@ -21382,7 +21406,9 @@ var $author$project$UI$Sidebar$sidebarView = F2(
 						$mdgriffith$elm_ui$Element$map,
 						$author$project$UI$Sidebar$DropdownMsg,
 						A2($author$project$UI$Components$Dropdown$view, model.dropDown, config))),
-					$mdgriffith$elm_ui$Element$scrollbarY
+					$mdgriffith$elm_ui$Element$scrollbarY,
+					$mdgriffith$elm_ui$Element$Background$color(
+					$author$project$UI$Styles$color(config).white)
 				]),
 			_List_fromArray(
 				[
@@ -21514,7 +21540,7 @@ var $author$project$UI$Elements$spacer = function (size) {
 };
 var $author$project$UI$Elements$switchBody = F2(
 	function (model, config) {
-		var background = model ? $author$project$UI$Styles$color(config).green500 : $author$project$UI$Styles$color(config).gray300;
+		var background = model ? $author$project$UI$Styles$color(config).green500 : $author$project$UI$Styles$color(config).gray200;
 		return A2(
 			$mdgriffith$elm_ui$Element$el,
 			_List_fromArray(
@@ -21916,17 +21942,17 @@ var $author$project$UI$Elements$getButtonProps = F2(
 			case 'Subtle':
 				return {
 					bgColor: $author$project$UI$Styles$color(config).white,
-					hoverColor: $author$project$UI$Styles$color(config).gray300
+					hoverColor: $author$project$UI$Styles$color(config).gray200
 				};
 			case 'Clear':
 				return {
 					bgColor: $author$project$UI$Styles$color(config).clear,
-					hoverColor: $author$project$UI$Styles$color(config).gray300
+					hoverColor: $author$project$UI$Styles$color(config).gray200
 				};
 			default:
 				return {
 					bgColor: $author$project$UI$Styles$color(config).white,
-					hoverColor: $author$project$UI$Styles$color(config).gray300
+					hoverColor: $author$project$UI$Styles$color(config).gray200
 				};
 		}
 	});
@@ -23791,7 +23817,7 @@ var $author$project$UI$Elements$chip = F5(
 								$author$project$UI$Styles$color(config).gray100)
 							])),
 						$mdgriffith$elm_ui$Element$Border$color(
-						$author$project$UI$Styles$color(config).gray300),
+						$author$project$UI$Styles$color(config).gray200),
 						$mdgriffith$elm_ui$Element$Border$width(1),
 						$mdgriffith$elm_ui$Element$spacing(4)
 					]),
@@ -24101,11 +24127,12 @@ var $author$project$UI$Components$SynonymCard$view = F2(
 			$mdgriffith$elm_ui$Element$column,
 			_List_fromArray(
 				[
-					$mdgriffith$elm_ui$Element$padding(8),
+					$mdgriffith$elm_ui$Element$padding(12),
 					$mdgriffith$elm_ui$Element$Background$color(
 					$author$project$UI$Styles$color(config).white),
-					$mdgriffith$elm_ui$Element$Border$rounded(8),
-					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+					$mdgriffith$elm_ui$Element$Border$rounded(10),
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+					$mdgriffith$elm_ui$Element$spacing(4)
 				]),
 			_List_fromArray(
 				[

@@ -4,6 +4,7 @@ import Element exposing (..)
 import Element.Background as Background
 import Element.Border exposing (rounded)
 import Element.Events
+import Element.Font as Font
 import Element.Input exposing (OptionState(..))
 import UI.Components.Dropdown as Dropdown
 import UI.Icons exposing (Icon(..), Style(..))
@@ -68,6 +69,7 @@ sidebarView model config =
         , Element.inFront
             (Dropdown.view model.dropDown config |> Element.map DropdownMsg)
         , scrollbarY
+        , Background.color (UI.Styles.color config).white
         ]
         [ Element.table
             [ width fill
@@ -101,15 +103,26 @@ sidebarListItemView title isSelected page config =
                   , padding 8
                   , rounded 4
                   , pointer
-                  , Element.mouseOver <| [ Background.color (UI.Styles.color config).gray300 ]
+                  , Element.mouseOver <|
+                        [ if isSelected then
+                            Background.color (UI.Styles.color config).primary200
+
+                          else
+                            Background.color (UI.Styles.color config).gray200
+                        ]
                   ]
-                , addIf isSelected <| Background.color (UI.Styles.color config).primary200
+                , addIf isSelected <| Background.color (UI.Styles.color config).primary100
                 ]
             )
             [ getPageIcon page (getIconStyle isSelected)
-            , paragraph [ paddingEach { top = 0, left = 8, bottom = 0, right = 0 } ]
+            , paragraph [ paddingEach { top = 0, left = 8, bottom = 4, right = 0 } ]
                 [ el
-                    (UI.Styles.getTypographicStyleFor UI.Styles.Body config)
+                    (List.concat
+                        [ UI.Styles.getTypographicStyleFor UI.Styles.Body config
+                        , [ Font.color (UI.Styles.color config).gray500 ]
+                        , addIf isSelected <| Font.color (UI.Styles.color config).primary500
+                        ]
+                    )
                     (text title)
                 ]
             ]

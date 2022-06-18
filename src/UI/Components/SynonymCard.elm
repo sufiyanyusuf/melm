@@ -56,25 +56,14 @@ update msg model =
             ( model, Cmd.none )
 
 
-
--- type Request
---     = Create
---     | Update
---     | Delete
--- type RequestStatus
---     = NoRequest
---     | Fired
---     | Success
---     | Failed
-
-
 view : Model -> Config -> Element Msg
 view model config =
     Element.column
-        [ padding 8
+        [ padding 12
         , Element.Background.color (UI.Styles.color config).white
-        , Element.Border.rounded 8
+        , Element.Border.rounded 10
         , Element.width fill
+        , spacing 4
         ]
         [ UI.Elements.textfield model.synonymKey "Tomato" (UpdatedTitle model.index) DoneEditing DoneEditing config
         , UI.Elements.textfield model.synonymsValue "Tomayto, Tomaato, Tomaeto" (UpdatedList model.index) DoneEditing DoneEditing config

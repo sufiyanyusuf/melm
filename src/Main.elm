@@ -1304,7 +1304,7 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     let
         model =
-            { pages = Views.init ""
+            { pages = Views.init
             , documents = []
             , synonyms = SynonymsPage.init.synonymStates
             , pollingQueue = []

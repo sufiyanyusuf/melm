@@ -124,7 +124,7 @@ cardView model attrType config =
     in
     Element.column
         [ Element.Background.color (UI.Styles.color config).white
-        , Element.Border.rounded 20
+        , Element.Border.rounded 14
         , padding 24
         , Element.width (px 320)
         ]
