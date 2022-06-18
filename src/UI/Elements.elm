@@ -181,9 +181,9 @@ getButtonProps buttonType config =
             }
 
         PrimaryDark ->
-            { bgColor = (UI.Styles.color config).primary300
+            { bgColor = (UI.Styles.color config).primary400
             , hoverColor = (UI.Styles.color config).primary500
-            , textColor = (UI.Styles.color config).white
+            , textColor = (UI.Styles.color config).primary100
             }
 
 
