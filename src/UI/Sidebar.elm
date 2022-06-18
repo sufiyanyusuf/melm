@@ -9,7 +9,7 @@ import UI.Components.Dropdown as Dropdown
 import UI.Icons exposing (Icon(..), Style(..))
 import UI.PageViews.Documents as Documents
 import UI.Pages
-import UI.Styles
+import UI.Styles exposing (Config)
 import Utils exposing (addIf)
 
 
@@ -59,14 +59,14 @@ update msg model =
 -- View
 
 
-sidebarView : Model -> Element Msg
-sidebarView model =
+sidebarView : Model -> Config -> Element Msg
+sidebarView model config =
     Element.column
         [ width (px 240)
         , height fill
         , padding 12
         , Element.inFront
-            (Dropdown.view model.dropDown |> Element.map DropdownMsg)
+            (Dropdown.view model.dropDown config |> Element.map DropdownMsg)
         , scrollbarY
         ]
         [ Element.table
@@ -79,15 +79,15 @@ sidebarView model =
                 [ { header = Element.none
                   , width = fill
                   , view =
-                        \page -> sidebarListItemView (getPageTitle page) (model.selectedPage == page) page
+                        \page -> sidebarListItemView (getPageTitle page) (model.selectedPage == page) page config
                   }
                 ]
             }
         ]
 
 
-sidebarListItemView : String -> Bool -> UI.Pages.Page -> Element Msg
-sidebarListItemView title isSelected page =
+sidebarListItemView : String -> Bool -> UI.Pages.Page -> Config -> Element Msg
+sidebarListItemView title isSelected page config =
     el
         []
         (row
@@ -101,15 +101,15 @@ sidebarListItemView title isSelected page =
                   , padding 8
                   , rounded 4
                   , pointer
-                  , Element.mouseOver <| [ Background.color UI.Styles.color.gray300 ]
+                  , Element.mouseOver <| [ Background.color (UI.Styles.color config).gray300 ]
                   ]
-                , addIf isSelected <| Background.color UI.Styles.color.primary200
+                , addIf isSelected <| Background.color (UI.Styles.color config).primary200
                 ]
             )
             [ getPageIcon page (getIconStyle isSelected)
             , paragraph [ paddingEach { top = 0, left = 8, bottom = 0, right = 0 } ]
                 [ el
-                    (UI.Styles.getTypographicStyleFor UI.Styles.Body)
+                    (UI.Styles.getTypographicStyleFor UI.Styles.Body config)
                     (text title)
                 ]
             ]

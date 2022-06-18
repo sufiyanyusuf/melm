@@ -8,7 +8,7 @@ import Request exposing (..)
 import Svg.Attributes exposing (radius)
 import UI.Elements
 import UI.Icons exposing (Icon(..), Style(..))
-import UI.Styles
+import UI.Styles exposing (Config)
 
 
 type alias Model =
@@ -68,37 +68,37 @@ update msg model =
 --     | Failed
 
 
-view : Model -> Element Msg
-view model =
+view : Model -> Config -> Element Msg
+view model config =
     Element.column
         [ padding 8
-        , Element.Background.color UI.Styles.color.white
+        , Element.Background.color (UI.Styles.color config).white
         , Element.Border.rounded 8
         , Element.width fill
         ]
-        [ UI.Elements.textfield model.synonymKey "Tomato" (UpdatedTitle model.index) DoneEditing DoneEditing
-        , UI.Elements.textfield model.synonymsValue "Tomayto, Tomaato, Tomaeto" (UpdatedList model.index) DoneEditing DoneEditing
-        , loadingView model
-        , failedView model
+        [ UI.Elements.textfield model.synonymKey "Tomato" (UpdatedTitle model.index) DoneEditing DoneEditing config
+        , UI.Elements.textfield model.synonymsValue "Tomayto, Tomaato, Tomaeto" (UpdatedList model.index) DoneEditing DoneEditing config
+        , loadingView model config
+        , failedView model config
         ]
 
 
-valueChangedView : Model -> Element Msg
-valueChangedView model =
+valueChangedView : Model -> Config -> Element Msg
+valueChangedView model config =
     if valueChanged model then
         Element.row
             [ Element.width Element.shrink
             , padding 12
             ]
-            [ UI.Elements.button UI.Elements.Subtle "Cancel" Reset
+            [ UI.Elements.button UI.Elements.Subtle "Cancel" Reset config
             ]
 
     else
         Element.none
 
 
-loadingView : Model -> Element Msg
-loadingView model =
+loadingView : Model -> Config -> Element Msg
+loadingView model config =
     case model.requestStatus of
         Fired ->
             Element.row
@@ -106,14 +106,14 @@ loadingView model =
                 , paddingEach { top = 0, left = 8, bottom = 0, right = 0 }
                 ]
                 [ el
-                    [ Element.Background.color UI.Styles.color.primary200
+                    [ Element.Background.color (UI.Styles.color config).primary200
                     , width (px 12)
                     , height (px 12)
                     , rounded 6
                     ]
                     (text "")
                 , el
-                    (UI.Styles.getTypographicStyleFor UI.Styles.Body ++ [ padding 12 ])
+                    (UI.Styles.getTypographicStyleFor UI.Styles.Body config ++ [ padding 12 ])
                     (text "Syncing")
                 ]
 
@@ -121,25 +121,25 @@ loadingView model =
             Element.none
 
 
-failedView : Model -> Element Msg
-failedView model =
+failedView : Model -> Config -> Element Msg
+failedView model config =
     case model.requestStatus of
         Failed ->
             Element.row
                 ([ padding 8
-                 , Element.Background.color UI.Styles.color.white
+                 , Element.Background.color (UI.Styles.color config).white
                  , Element.Border.rounded 8
                  , Element.width Element.fill
                  ]
-                    ++ UI.Styles.getTypographicStyleFor UI.Styles.Body
+                    ++ UI.Styles.getTypographicStyleFor UI.Styles.Body config
                 )
                 [ Element.el [ Element.width Element.fill, padding 4 ]
                     (text "Failed")
                 , Element.row
                     [ Element.width Element.shrink
                     ]
-                    [ UI.Elements.iconButton Retry (RetrySave model.index)
-                    , UI.Elements.iconButton Trash (Remove model.index)
+                    [ UI.Elements.iconButton Retry (RetrySave model.index) config
+                    , UI.Elements.iconButton Trash (Remove model.index) config
                     ]
                 ]
 

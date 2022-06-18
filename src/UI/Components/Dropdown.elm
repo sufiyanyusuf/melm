@@ -6,7 +6,7 @@ import Element.Border exposing (rounded)
 import Element.Events
 import Request exposing (RequestStatus(..))
 import UI.Icons exposing (Icon(..), Style(..))
-import UI.Styles exposing (Size(..))
+import UI.Styles exposing (Config, Size(..))
 import Utils exposing (addIf)
 
 
@@ -47,12 +47,12 @@ update msg model =
             ( { model | expanded = not model.expanded, selectedValue = Just item }, Cmd.none )
 
 
-view : Model -> Element Msg
-view model =
+view : Model -> Config -> Element Msg
+view model config =
     column
         [ padding 12
         , moveDown 8
-        , Background.color UI.Styles.color.white
+        , Background.color (UI.Styles.color config).white
         , Element.scrollbarY
         , Element.height
             (shrink
@@ -61,13 +61,13 @@ view model =
         , Element.width fill
         , spacing 2
         ]
-        [ dropDownButton model.selectedValue model.expanded TriggerClicked
-        , dropDownMenu model.expanded model.options
+        [ dropDownButton model.selectedValue model.expanded TriggerClicked config
+        , dropDownMenu model.expanded model.options config
         ]
 
 
-dropDownButton : Maybe Item -> Bool -> msg -> Element msg
-dropDownButton item expanded selectedItem =
+dropDownButton : Maybe Item -> Bool -> msg -> Config -> Element msg
+dropDownButton item expanded selectedItem config =
     let
         t =
             case item of
@@ -84,24 +84,24 @@ dropDownButton item expanded selectedItem =
               , paddingXY 4 10
               , rounded 4
               , pointer
-              , Element.mouseOver <| [ Background.color UI.Styles.color.gray300 ]
+              , Element.mouseOver <| [ Background.color (UI.Styles.color config).gray300 ]
               , Element.Border.width 1
-              , Element.Border.color UI.Styles.color.gray300
+              , Element.Border.color (UI.Styles.color config).gray300
               ]
-            , addIf expanded <| Background.color UI.Styles.color.gray300
-            , addIf expanded <| Element.Border.color UI.Styles.color.white
+            , addIf expanded <| Background.color (UI.Styles.color config).gray300
+            , addIf expanded <| Element.Border.color (UI.Styles.color config).white
             ]
         )
         [ paragraph [ paddingEach { top = 0, left = 8, bottom = 0, right = 0 } ]
             [ el
-                (UI.Styles.getTypographicStyleFor UI.Styles.Body)
+                (UI.Styles.getTypographicStyleFor UI.Styles.Body config)
                 t
             ]
         ]
 
 
-dropDownMenu : Bool -> List Item -> Element Msg
-dropDownMenu visible items =
+dropDownMenu : Bool -> List Item -> Config -> Element Msg
+dropDownMenu visible items config =
     if visible then
         Element.column
             [ width fill
@@ -111,17 +111,17 @@ dropDownMenu visible items =
                 { offset = ( 0, 0 )
                 , size = 0
                 , blur = 15
-                , color = UI.Styles.color.gray300
+                , color = (UI.Styles.color config).gray300
                 }
             ]
-            (List.map (\item -> dropDownMenuListItem item) items)
+            (List.map (\item -> dropDownMenuListItem item config) items)
 
     else
         Element.none
 
 
-dropDownMenuListItem : Item -> Element Msg
-dropDownMenuListItem item =
+dropDownMenuListItem : Item -> Config -> Element Msg
+dropDownMenuListItem item config =
     Element.row
         (List.concat
             [ [ Element.Events.onClick (Select item)
@@ -129,7 +129,7 @@ dropDownMenuListItem item =
               , paddingEach { top = 8, bottom = 10, left = 8, right = 8 }
               , rounded 4
               , pointer
-              , Element.mouseOver <| [ Background.color UI.Styles.color.gray300 ]
+              , Element.mouseOver <| [ Background.color (UI.Styles.color config).gray300 ]
               ]
 
             -- , addIf isSelected <| Background.color UI.Styles.color.primary200
@@ -137,7 +137,7 @@ dropDownMenuListItem item =
         )
         [ paragraph [ paddingEach { top = 0, left = 8, bottom = 0, right = 0 } ]
             [ el
-                (UI.Styles.getTypographicStyleFor UI.Styles.Body)
+                (UI.Styles.getTypographicStyleFor UI.Styles.Body config)
                 (text item.title)
             ]
         ]

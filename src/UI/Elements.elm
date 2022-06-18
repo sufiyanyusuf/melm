@@ -10,7 +10,7 @@ import Html.Events
 import Json.Decode as Decode
 import Request exposing (RequestStatus(..))
 import UI.Icons exposing (Icon(..), Style(..), buildIcon)
-import UI.Styles exposing (Size(..))
+import UI.Styles exposing (Config, Size(..))
 
 
 spacer : UI.Styles.Size -> Element msg
@@ -35,18 +35,18 @@ spacer size =
             Element.el [ Element.width fill, Element.height fill ] Element.none
 
 
-textfield : String -> String -> (String -> msg) -> msg -> msg -> Element msg
-textfield value placeholder valueChanged loseFocus returnKeyMsg =
+textfield : String -> String -> (String -> msg) -> msg -> msg -> Config -> Element msg
+textfield value placeholder valueChanged loseFocus returnKeyMsg config =
     el
-        (UI.Styles.getTypographicStyleFor UI.Styles.Body
+        (UI.Styles.getTypographicStyleFor UI.Styles.Body config
             ++ [ Element.width fill, onEnter returnKeyMsg ]
         )
         (Input.text
             [ spacing 8
             , Element.Border.width 0
             , Element.Border.rounded 6
-            , Background.color UI.Styles.color.white
-            , Element.Border.color UI.Styles.color.gray300
+            , Background.color (UI.Styles.color config).white
+            , Element.Border.color (UI.Styles.color config).gray300
             , width fill
             , padding 12
             , onLoseFocus loseFocus
@@ -76,18 +76,18 @@ onEnter msg =
         )
 
 
-switch : Bool -> msg -> Element msg
-switch model msg =
+switch : Bool -> msg -> Config -> Element msg
+switch model msg config =
     Element.el
-        [ Element.inFront (switchHandle model)
+        [ Element.inFront (switchHandle model config)
         , pointer
         , onClick msg
         ]
-        (switchBody model)
+        (switchBody model config)
 
 
-switchHandle : Bool -> Element msg
-switchHandle model =
+switchHandle : Bool -> Config -> Element msg
+switchHandle model config =
     let
         position =
             if model == True then
@@ -97,7 +97,7 @@ switchHandle model =
                 4
     in
     el
-        [ Background.color UI.Styles.color.white
+        [ Background.color (UI.Styles.color config).white
         , width (px 24)
         , Element.height (px 24)
         , Element.Border.rounded 12
@@ -107,15 +107,15 @@ switchHandle model =
         Element.none
 
 
-switchBody : Bool -> Element msg
-switchBody model =
+switchBody : Bool -> Config -> Element msg
+switchBody model config =
     let
         background =
             if model == True then
-                UI.Styles.color.green500
+                (UI.Styles.color config).green500
 
             else
-                UI.Styles.color.gray300
+                (UI.Styles.color config).gray300
     in
     el
         [ Background.color background
@@ -129,19 +129,20 @@ switchBody model =
 type Theme
     = Subtle
     | Clear
+    | Prominent
 
 
-button : Theme -> String -> msg -> Element msg
-button buttonTheme model msg =
+button : Theme -> String -> msg -> Config -> Element msg
+button buttonTheme model msg config =
     let
         props =
-            getButtonProps buttonTheme
+            getButtonProps buttonTheme config
     in
     el
-        (UI.Styles.getTypographicStyleFor UI.Styles.Body)
+        (UI.Styles.getTypographicStyleFor UI.Styles.Body config)
         (Input.button
             [ Background.color props.bgColor
-            , paddingEach { top = 10, right = 12, bottom = 8, left = 12 }
+            , paddingEach { top = 8, right = 12, bottom = 8, left = 12 }
             , Element.Border.rounded 6
             , Element.mouseOver <| [ Background.color props.hoverColor ]
             ]
@@ -151,17 +152,22 @@ button buttonTheme model msg =
         )
 
 
-getButtonProps : Theme -> ButtonProps
-getButtonProps buttonType =
+getButtonProps : Theme -> Config -> ButtonProps
+getButtonProps buttonType config =
     case buttonType of
         Subtle ->
-            { bgColor = UI.Styles.color.white
-            , hoverColor = UI.Styles.color.gray300
+            { bgColor = (UI.Styles.color config).white
+            , hoverColor = (UI.Styles.color config).gray300
             }
 
         Clear ->
-            { bgColor = UI.Styles.color.clear
-            , hoverColor = UI.Styles.color.gray300
+            { bgColor = (UI.Styles.color config).clear
+            , hoverColor = (UI.Styles.color config).gray300
+            }
+
+        Prominent ->
+            { bgColor = (UI.Styles.color config).white
+            , hoverColor = (UI.Styles.color config).gray300
             }
 
 
@@ -171,33 +177,33 @@ type alias ButtonProps =
     }
 
 
-iconButton : Icon -> msg -> Element msg
-iconButton icon msg =
+iconButton : Icon -> msg -> Config -> Element msg
+iconButton icon msg config =
     el
         [ padding 8
         , Element.Border.rounded 6
         , pointer
         , Element.Events.onClick msg
-        , Element.mouseOver [ Background.color UI.Styles.color.gray100 ]
-        , Element.mouseDown [ Background.color UI.Styles.color.gray300 ]
+        , Element.mouseOver [ Background.color (UI.Styles.color config).gray100 ]
+        , Element.mouseDown [ Background.color (UI.Styles.color config).gray300 ]
         ]
         (buildIcon icon Outline)
 
 
-chip : String -> RequestStatus -> Bool -> msg -> Element msg
-chip text requestStatus saved msg =
+chip : String -> RequestStatus -> Bool -> msg -> Config -> Element msg
+chip text requestStatus saved msg config =
     el
-        (UI.Styles.getTypographicStyleFor UI.Styles.Body)
+        (UI.Styles.getTypographicStyleFor UI.Styles.Body config)
         (Element.row
-            [ Background.color UI.Styles.color.white
+            [ Background.color (UI.Styles.color config).white
             , paddingEach { top = 4, left = 12, bottom = 4, right = 4 }
             , Element.Border.rounded 6
-            , Element.mouseOver <| [ Background.color UI.Styles.color.gray100 ]
-            , Element.Border.color UI.Styles.color.gray300
+            , Element.mouseOver <| [ Background.color (UI.Styles.color config).gray100 ]
+            , Element.Border.color (UI.Styles.color config).gray300
             , Element.Border.width 1
             , spacing 4
             ]
-            [ syncIndicator requestStatus (not saved)
+            [ syncIndicator requestStatus (not saved) config
             , Element.text text
             , el
                 [ padding 8
@@ -211,13 +217,13 @@ chip text requestStatus saved msg =
         )
 
 
-syncIndicator : RequestStatus -> Bool -> Element msg
-syncIndicator status valueChanged =
+syncIndicator : RequestStatus -> Bool -> Config -> Element msg
+syncIndicator status valueChanged config =
     if valueChanged then
         case status of
             NoRequest ->
                 el
-                    [ Background.color UI.Styles.color.primary200
+                    [ Background.color (UI.Styles.color config).primary200
                     , width (px 8)
                     , Element.height (px 8)
                     , Element.Border.rounded 12
@@ -227,7 +233,7 @@ syncIndicator status valueChanged =
 
             Fired ->
                 el
-                    [ Background.color UI.Styles.color.primary500
+                    [ Background.color (UI.Styles.color config).primary500
                     , width (px 8)
                     , Element.height (px 8)
                     , Element.Border.rounded 12
@@ -237,7 +243,7 @@ syncIndicator status valueChanged =
 
             Success ->
                 el
-                    [ Background.color UI.Styles.color.primary200
+                    [ Background.color (UI.Styles.color config).primary200
                     , width (px 8)
                     , Element.height (px 8)
                     , Element.Border.rounded 12
@@ -247,7 +253,7 @@ syncIndicator status valueChanged =
 
             Failed ->
                 el
-                    [ Background.color UI.Styles.color.green500
+                    [ Background.color (UI.Styles.color config).green500
                     , width (px 8)
                     , Element.height (px 8)
                     , Element.Border.rounded 12

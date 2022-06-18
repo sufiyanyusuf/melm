@@ -6,7 +6,7 @@ import Element.Background as Background
 import Iso8601
 import Time exposing (Month(..), toDay, toHour, toMinute, toMonth, toSecond, toYear, utc)
 import UI.Elements exposing (spacer)
-import UI.Styles exposing (Size(..))
+import UI.Styles exposing (Config, Size(..))
 
 
 type Msg
@@ -22,8 +22,8 @@ init =
     { indexes = [] }
 
 
-view : Model -> Element Msg
-view model =
+view : Model -> Config -> Element Msg
+view model config =
     Element.column
         [ width fill
         , height fill
@@ -33,14 +33,10 @@ view model =
         [ Element.row
             [ width fill ]
             [ el
-                (UI.Styles.getTypographicStyleFor UI.Styles.H1)
+                (UI.Styles.getTypographicStyleFor UI.Styles.H1 config)
                 (text "Indexes")
             , spacer FILL
-            , UI.Elements.button UI.Elements.Subtle "Add" X
-
-            -- , el
-            --     (UI.Styles.getTypographicStyleFor UI.Styles.H1)
-            --     (text "Indexes")
+            , UI.Elements.button UI.Elements.Subtle "Add" X config
             ]
         , spacer XL
         , spacer XL
@@ -51,67 +47,67 @@ view model =
             ]
             { data = model.indexes
             , columns =
-                [ { header = headerView "UID"
+                [ { header = headerView "UID" config
                   , width = fill
                   , view =
-                        \item -> cellView item.uid
+                        \item -> cellView item.uid config
                   }
-                , { header = headerView "Title"
+                , { header = headerView "Title" config
                   , width = fill
                   , view =
-                        \item -> cellView item.name
+                        \item -> cellView item.name config
                   }
-                , { header = headerView "Primary Key"
+                , { header = headerView "Primary Key" config
                   , width = fill
                   , view =
-                        \item -> cellView item.primaryKey
+                        \item -> cellView item.primaryKey config
                   }
-                , { header = headerView "Created"
+                , { header = headerView "Created" config
                   , width = fill
                   , view =
-                        \item -> cellView (getFormattedTime item.createdAt)
+                        \item -> cellView (getFormattedTime item.createdAt) config
                   }
-                , { header = headerView "Last Updated"
+                , { header = headerView "Last Updated" config
                   , width = fill
                   , view =
-                        \item -> cellView (getFormattedTime item.updatedAt)
+                        \item -> cellView (getFormattedTime item.updatedAt) config
                   }
                 ]
             }
         ]
 
 
-headerView : String -> Element msg
-headerView title =
+headerView : String -> Config -> Element msg
+headerView title config =
     Element.column
         [ width fill
         ]
         [ el
-            (UI.Styles.getTypographicStyleFor UI.Styles.BodyBold)
+            (UI.Styles.getTypographicStyleFor UI.Styles.BodyBold config)
             (text title)
         , spacer SM
         , el
             [ height (px 1)
-            , Background.color UI.Styles.color.gray300
+            , Background.color (UI.Styles.color config).gray300
             , width fill
             ]
             Element.none
         ]
 
 
-cellView : String -> Element msg
-cellView title =
+cellView : String -> Config -> Element msg
+cellView title config =
     Element.column
         [ width fill
         ]
         [ spacer SM
         , el
-            (UI.Styles.getTypographicStyleFor UI.Styles.Body)
+            (UI.Styles.getTypographicStyleFor UI.Styles.Body config)
             (text title)
         , spacer SM
         , el
             [ height (px 1)
-            , Background.color UI.Styles.color.gray300
+            , Background.color (UI.Styles.color config).gray300
             , width fill
             ]
             Element.none

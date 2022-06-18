@@ -5,13 +5,11 @@ import Element.Background
 import UI.PageViews.Attributes as Attributes
 import UI.PageViews.Documents as DocumentsView
 import UI.PageViews.Indexes as IndexesView
-import UI.PageViews.Search as SearchView
 import UI.PageViews.Settings as SettingsView
 import UI.PageViews.StopWords as StopWords
 import UI.PageViews.Synonyms as SynonymsView
-import UI.PageViews.Tasks as TasksView
 import UI.Pages as Views exposing (Page(..))
-import UI.Styles
+import UI.Styles exposing (Config)
 
 
 
@@ -21,7 +19,6 @@ import UI.Styles
 type Msg
     = IndexesViewMsg IndexesView.Msg
     | SettingsViewMsg SettingsView.Msg
-    | SearchViewMsg SearchView.Msg
     | DocumentsViewMsg DocumentsView.Msg
     | StopWordsViewMsg StopWords.Msg
     | SynonymsViewMsg SynonymsView.Msg
@@ -32,34 +29,34 @@ type Msg
 -- View
 
 
-view : Page -> Element Msg
-view currentPage =
+view : Page -> Config -> Element Msg
+view currentPage config =
     el
         [ height fill
         , width fill
-        , Element.Background.color UI.Styles.color.gray100
+        , Element.Background.color (UI.Styles.color config).gray100
         , padding 1
         ]
-        (getCurrentPageView currentPage)
+        (getCurrentPageView currentPage config)
 
 
-getCurrentPageView : Page -> Element Msg
-getCurrentPageView currentPage =
+getCurrentPageView : Page -> Config -> Element Msg
+getCurrentPageView currentPage config =
     case currentPage of
         Views.Settings s ->
-            SettingsView.view s |> Element.map SettingsViewMsg
+            SettingsView.view s config |> Element.map SettingsViewMsg
 
         Views.Documents m ->
-            DocumentsView.view m |> Element.map DocumentsViewMsg
+            DocumentsView.view m config |> Element.map DocumentsViewMsg
 
         Views.Synonyms s ->
-            SynonymsView.view s |> Element.map SynonymsViewMsg
+            SynonymsView.view s config |> Element.map SynonymsViewMsg
 
         Views.StopWords m ->
-            StopWords.view m |> Element.map StopWordsViewMsg
+            StopWords.view m config |> Element.map StopWordsViewMsg
 
         Attributes m ->
-            Attributes.view m |> Element.map AttributesViewMsg
+            Attributes.view m config |> Element.map AttributesViewMsg
 
 
 

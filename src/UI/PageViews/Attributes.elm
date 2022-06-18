@@ -6,8 +6,9 @@ import Element.Border
 import Request exposing (..)
 import UI.Components.Toolbar
 import UI.Elements exposing (syncIndicator)
+import UI.Icons exposing (Icon(..), Style(..))
 import UI.PageViews.Settings exposing (Msg(..))
-import UI.Styles exposing (Size(..))
+import UI.Styles exposing (Config, Size(..))
 
 
 type alias Model =
@@ -35,29 +36,29 @@ type Msg
     | None
 
 
-view : Model -> Element Msg
-view model =
+view : Model -> Config -> Element Msg
+view model config =
     Element.column
         [ height fill
         , width fill
         , paddingEach { top = 20, bottom = 12, left = 0, right = 0 }
-        , inFront (toolbarView model)
+        , inFront (toolbarView model config)
         ]
         [ Element.column
             [ width fill
             , height fill
             , scrollbarY
-            , paddingXY 120 40
+            , paddingXY 120 60
             ]
             [ UI.Elements.spacer UI.Styles.LG
             , Element.wrappedRow
                 [ spacing 20
                 ]
-                [ cardView model.displayed Displayed
-                , cardView model.searchable Searchable
-                , cardView model.filterable Filterable
-                , cardView model.sortable Sortable
-                , cardView model.distinct Distinct
+                [ cardView model.displayed Displayed config
+                , cardView model.searchable Searchable config
+                , cardView model.filterable Filterable config
+                , cardView model.sortable Sortable config
+                , cardView model.distinct Distinct config
                 ]
             , UI.Elements.spacer UI.Styles.LG
             , UI.Elements.spacer UI.Styles.MD
@@ -88,8 +89,8 @@ getValueChanged model =
         /= 0
 
 
-toolbarView : Model -> Element Msg
-toolbarView model =
+toolbarView : Model -> Config -> Element Msg
+toolbarView model config =
     let
         toolbarModel =
             { valueChanged = getValueChanged model
@@ -98,54 +99,56 @@ toolbarView model =
             , title = "Attributes"
             }
     in
-    UI.Components.Toolbar.toolbarView toolbarModel None Save Reset
+    UI.Components.Toolbar.toolbarView toolbarModel None Save Reset config
 
 
-cardView : List Attribute -> AttributeType -> Element Msg
-cardView model attrType =
+cardView : List Attribute -> AttributeType -> Config -> Element Msg
+cardView model attrType config =
     let
-        title =
+        ( title, icon ) =
             case attrType of
                 Displayed ->
-                    "Displayed"
+                    ( "Displayed", UI.Icons.buildIcon UI.Icons.Displayed Outline )
 
                 Sortable ->
-                    "Sortable"
+                    ( "Sortable", UI.Icons.buildIcon UI.Icons.Sortable Outline )
 
                 Searchable ->
-                    "Searchable"
+                    ( "Searchable", UI.Icons.buildIcon UI.Icons.Searchable Outline )
 
                 Filterable ->
-                    "Filterable"
+                    ( "Filterable", UI.Icons.buildIcon UI.Icons.Filterable Outline )
 
                 Distinct ->
-                    "Distinct"
+                    ( "Distinct", UI.Icons.buildIcon UI.Icons.Distinct Outline )
     in
     Element.column
-        [ Element.Background.color UI.Styles.color.white
-        , Element.Border.rounded 12
+        [ Element.Background.color (UI.Styles.color config).white
+        , Element.Border.rounded 20
         , padding 24
         , Element.width (px 320)
         ]
-        ([ el (UI.Styles.getTypographicStyleFor UI.Styles.H2) (text title)
+        ([ icon
+         , UI.Elements.spacer SM
+         , el (UI.Styles.getTypographicStyleFor UI.Styles.CardTitle config) (text title)
          , UI.Elements.spacer MD
          ]
-            ++ List.map (\x -> cardViewRow x attrType) model
+            ++ List.map (\x -> cardViewRow x attrType config) model
         )
 
 
-cardViewRow : Attribute -> AttributeType -> Element Msg
-cardViewRow model attrType =
+cardViewRow : Attribute -> AttributeType -> Config -> Element Msg
+cardViewRow model attrType config =
     Element.column [ width fill ]
         [ UI.Elements.spacer XS
         , Element.row [ width fill ]
             [ el
-                (UI.Styles.getTypographicStyleFor UI.Styles.Body)
+                (UI.Styles.getTypographicStyleFor UI.Styles.Body config)
                 (text model.title)
             , UI.Elements.spacer UI.Styles.XS
-            , syncIndicator model.requestStatus (model.saved /= model.enabled)
+            , syncIndicator model.requestStatus (model.saved /= model.enabled) config
             , UI.Elements.spacer UI.Styles.FILL
-            , UI.Elements.switch model.enabled (Toggle model attrType)
+            , UI.Elements.switch model.enabled (Toggle model attrType) config
             ]
         ]
 

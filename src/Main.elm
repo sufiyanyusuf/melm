@@ -7,6 +7,7 @@ import Element exposing (..)
 import Html exposing (Html)
 import Http
 import Request exposing (..)
+import Svg.Attributes exposing (mode)
 import SweetPoll exposing (PollingState)
 import UI.Components.Dropdown exposing (Msg(..))
 import UI.Components.SynonymCard exposing (Msg(..))
@@ -85,9 +86,7 @@ getTaskId t =
 
 
 type alias Model =
-    { token : Maybe String
-    , savedToken : Maybe String
-    , pages : Views.Model
+    { pages : Views.Model
     , documents : List String
     , documentKeys : ( String, List String )
     , synonyms : List UI.Components.SynonymCard.Model -- Decouple this
@@ -108,13 +107,23 @@ type alias Model =
 
 view : Model -> Html Msg
 view model =
+    let
+        config =
+            getConfig model
+    in
     Element.layout [ width fill, height fill ]
         (Element.row
             [ width fill, height fill ]
-            [ Sidebar.sidebarView (getSidebarViewModel model) |> Element.map SidebarMsg
-            , PageView.view model.pages.selectedPage |> Element.map PageViewMsg
+            [ Sidebar.sidebarView (getSidebarViewModel model) config |> Element.map SidebarMsg
+            , PageView.view model.pages.selectedPage config |> Element.map PageViewMsg
             ]
         )
+
+
+getConfig : Model -> Config
+getConfig model =
+    { scheme = model.pages.settings.colorScheme
+    }
 
 
 
@@ -255,10 +264,7 @@ handleApiResponse model apiResponse =
             ( model
             , Api.Routes.Main.buildRequest
                 (Api.Routes.Main.buildPayload (ListDisplayedAttrs r.indexUid Api.Routes.Main.maybeStringListDecoder))
-                (Maybe.withDefault
-                    ""
-                    model.savedToken
-                )
+                (getSavedToken model)
                 |> Cmd.map ApiRequest
             )
 
@@ -433,38 +439,23 @@ handleApiResponse model apiResponse =
                     , Cmd.batch
                         [ Api.Routes.Main.buildRequest
                             (Api.Routes.Main.buildPayload (ListDisplayedAttrs indexUid Api.Routes.Main.maybeStringListDecoder))
-                            (Maybe.withDefault
-                                ""
-                                model.savedToken
-                            )
+                            (getSavedToken model)
                             |> Cmd.map ApiRequest
                         , Api.Routes.Main.buildRequest
                             (Api.Routes.Main.buildPayload (ListFilterableAttrs indexUid Api.Routes.Main.maybeStringListDecoder))
-                            (Maybe.withDefault
-                                ""
-                                model.savedToken
-                            )
+                            (getSavedToken model)
                             |> Cmd.map ApiRequest
                         , Api.Routes.Main.buildRequest
                             (Api.Routes.Main.buildPayload (ListSortableAttrs indexUid Api.Routes.Main.maybeStringListDecoder))
-                            (Maybe.withDefault
-                                ""
-                                model.savedToken
-                            )
+                            (getSavedToken model)
                             |> Cmd.map ApiRequest
                         , Api.Routes.Main.buildRequest
                             (Api.Routes.Main.buildPayload (ListSearchableAttrs indexUid Api.Routes.Main.maybeStringListDecoder))
-                            (Maybe.withDefault
-                                ""
-                                model.savedToken
-                            )
+                            (getSavedToken model)
                             |> Cmd.map ApiRequest
                         , Api.Routes.Main.buildRequest
                             (Api.Routes.Main.buildPayload (ListDistinctAttr indexUid Api.Routes.Main.stringDecoder))
-                            (Maybe.withDefault
-                                ""
-                                model.savedToken
-                            )
+                            (getSavedToken model)
                             |> Cmd.map ApiRequest
                         ]
                     )
@@ -481,9 +472,6 @@ handlePageViewMessage model pageViewMsg =
 
         PageView.IndexesViewMsg _ ->
             Debug.todo "branch 'IndexesViewMsg _' not implemented"
-
-        PageView.SearchViewMsg _ ->
-            Debug.todo "branch 'SearchViewMsg _' not implemented"
 
         PageView.DocumentsViewMsg _ ->
             ( model, Cmd.none )
@@ -630,10 +618,7 @@ handleAttributesViewMsg model msg =
                                     Api.Routes.Main.settingsUpdateDecoder
                                 )
                             )
-                            (Maybe.withDefault
-                                ""
-                                model.savedToken
-                            )
+                            (getSavedToken model)
                             |> Cmd.map ApiRequest
                         , Api.Routes.Main.buildRequest
                             (Api.Routes.Main.buildPayload
@@ -644,10 +629,7 @@ handleAttributesViewMsg model msg =
                                     Api.Routes.Main.settingsUpdateDecoder
                                 )
                             )
-                            (Maybe.withDefault
-                                ""
-                                model.savedToken
-                            )
+                            (getSavedToken model)
                             |> Cmd.map ApiRequest
                         , Api.Routes.Main.buildRequest
                             (Api.Routes.Main.buildPayload
@@ -658,10 +640,7 @@ handleAttributesViewMsg model msg =
                                     Api.Routes.Main.settingsUpdateDecoder
                                 )
                             )
-                            (Maybe.withDefault
-                                ""
-                                model.savedToken
-                            )
+                            (getSavedToken model)
                             |> Cmd.map ApiRequest
                         , Api.Routes.Main.buildRequest
                             (Api.Routes.Main.buildPayload
@@ -672,10 +651,7 @@ handleAttributesViewMsg model msg =
                                     Api.Routes.Main.settingsUpdateDecoder
                                 )
                             )
-                            (Maybe.withDefault
-                                ""
-                                model.savedToken
-                            )
+                            (getSavedToken model)
                             |> Cmd.map ApiRequest
                         , Api.Routes.Main.buildRequest
                             (Api.Routes.Main.buildPayload
@@ -686,10 +662,7 @@ handleAttributesViewMsg model msg =
                                     Api.Routes.Main.settingsUpdateDecoder
                                 )
                             )
-                            (Maybe.withDefault
-                                ""
-                                model.savedToken
-                            )
+                            (getSavedToken model)
                             |> Cmd.map ApiRequest
                         , case AttributesPage.getDistinctAttr model.distinctAttr of
                             Just da ->
@@ -700,10 +673,7 @@ handleAttributesViewMsg model msg =
                                             Api.Routes.Main.settingsUpdateDecoder
                                         )
                                     )
-                                    (Maybe.withDefault
-                                        ""
-                                        model.savedToken
-                                    )
+                                    (getSavedToken model)
                                     |> Cmd.map ApiRequest
 
                             Nothing ->
@@ -753,10 +723,7 @@ handleSynonymsViewMsg model msg =
                                         Api.Routes.Main.settingsUpdateDecoder
                                     )
                                 )
-                                (Maybe.withDefault
-                                    ""
-                                    model.savedToken
-                                )
+                                (getSavedToken model)
                                 |> Cmd.map ApiRequest
                             )
 
@@ -793,10 +760,7 @@ handleStopWordsViewMsg model msg =
                                 Api.Routes.Main.settingsUpdateDecoder
                             )
                         )
-                        (Maybe.withDefault
-                            ""
-                            model.savedToken
-                        )
+                        (getSavedToken model)
                         |> Cmd.map ApiRequest
                     )
 
@@ -816,30 +780,50 @@ handleStopWordsViewMsg model msg =
 
 handleSettingsViewMsg : Model -> SettingsPage.Msg -> ( Model, Cmd Msg )
 handleSettingsViewMsg model msg =
-    case msg of
-        SettingsPage.KeyValueChanged t ->
-            let
-                updatedModel =
-                    { model | token = Just t }
+    let
+        ( updatedSettingsPageViewModel, _ ) =
+            SettingsPage.update msg model.pages.settings
 
-                updatedSettingsPageViewModel =
-                    getSettingsViewModel updatedModel
+        pagesModel =
+            model.pages
 
-                updatedModelValue =
-                    { model
-                        | token = updatedModel.token
-                        , pages = updateSettingsViewModel model.pages updatedSettingsPageViewModel
-                    }
-            in
-            ( updatedModelValue
-            , Cmd.none
-            )
+        updatedPagesModel =
+            { pagesModel
+                | settings = updatedSettingsPageViewModel
+                , selectedPage = Settings updatedSettingsPageViewModel
+            }
 
-        SettingsPage.SaveKeyValue ->
-            ( { model | savedToken = model.token }, Cmd.none )
+        updatedModelValue =
+            { model
+                | pages = updatedPagesModel
+            }
+    in
+    ( updatedModelValue, Cmd.none )
 
-        SettingsPage.None ->
-            ( model, Cmd.none )
+
+
+-- case msg of
+--     SettingsPage.KeyValueChanged t ->
+--         let
+--             updatedModel =
+--                 { model | token = Just t }
+--             updatedSettingsPageViewModel =
+--                 getSettingsViewModel updatedModel
+--             updatedModelValue =
+--                 { model
+--                     | token = updatedModel.token
+--                     , pages = updateSettingsViewModel model.pages updatedSettingsPageViewModel
+--                 }
+--         in
+--         ( updatedModelValue
+--         , Cmd.none
+--         )
+--     SettingsPage.UpdateColorScheme s ->
+--         ( model, Cmd.none )
+--     SettingsPage.SaveKeyValue ->
+--         ( { model | savedToken = model.token }, Cmd.none )
+--     SettingsPage.None ->
+--         ( model, Cmd.none )
 
 
 handleSidebarSelection : Model -> Sidebar.Msg -> ( Model, Cmd Msg )
@@ -866,10 +850,7 @@ handleSidebarSelection model sidebarMsg =
                             ( updatedModel
                             , Api.Routes.Main.buildRequest
                                 (Api.Routes.Main.buildPayload (ListDocuments uid))
-                                (Maybe.withDefault
-                                    ""
-                                    model.savedToken
-                                )
+                                (getSavedToken model)
                                 |> Cmd.map ApiRequest
                             )
 
@@ -882,10 +863,7 @@ handleSidebarSelection model sidebarMsg =
                             ( updatedModel
                             , Api.Routes.Main.buildRequest
                                 (Api.Routes.Main.buildPayload (ListSynonyms indexUid Api.Routes.Main.synonymsListDecoder))
-                                (Maybe.withDefault
-                                    ""
-                                    model.savedToken
-                                )
+                                (getSavedToken model)
                                 |> Cmd.map ApiRequest
                             )
 
@@ -898,10 +876,7 @@ handleSidebarSelection model sidebarMsg =
                             ( updatedModel
                             , Api.Routes.Main.buildRequest
                                 (Api.Routes.Main.buildPayload (ListStopWords indexUid Api.Routes.Main.maybeStringListDecoder))
-                                (Maybe.withDefault
-                                    ""
-                                    model.savedToken
-                                )
+                                (getSavedToken model)
                                 |> Cmd.map ApiRequest
                             )
 
@@ -914,10 +889,7 @@ handleSidebarSelection model sidebarMsg =
                             ( updatedModel
                             , Api.Routes.Main.buildRequest
                                 (Api.Routes.Main.buildPayload (Stats indexUid statsDecoder))
-                                (Maybe.withDefault
-                                    ""
-                                    model.savedToken
-                                )
+                                (getSavedToken model)
                                 |> Cmd.map ApiRequest
                             )
 
@@ -994,11 +966,6 @@ getSidebarViewModel model =
     , selectedPage = model.pages.selectedPage
     , dropDown = model.sidebarModel.dropDown
     }
-
-
-getSettingsViewModel : Model -> SettingsPage.Model
-getSettingsViewModel model =
-    { tokenValue = Maybe.withDefault "" model.token, title = "Settings" }
 
 
 getSynonymsViewModel : Model -> SynonymsPage.Model
@@ -1328,13 +1295,16 @@ getCurrentlySelectedIndexId model =
             Nothing
 
 
+getSavedToken : Model -> String
+getSavedToken model =
+    model.pages.settings.savedTokenValue
+
+
 init : () -> ( Model, Cmd Msg )
 init _ =
     let
         model =
-            { token = Nothing
-            , savedToken = Nothing
-            , pages = Views.init ""
+            { pages = Views.init ""
             , documents = []
             , synonyms = SynonymsPage.init.synonymStates
             , pollingQueue = []
@@ -1351,9 +1321,6 @@ init _ =
     ( model
     , Api.Routes.Main.buildRequest
         (Api.Routes.Main.buildPayload (ListIndexes Api.Routes.Main.indexesRouteResponseListDecoder))
-        (Maybe.withDefault
-            ""
-            model.savedToken
-        )
+        (getSavedToken model)
         |> Cmd.map ApiRequest
     )

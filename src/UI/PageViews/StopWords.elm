@@ -4,7 +4,7 @@ import Element exposing (..)
 import Request exposing (RequestStatus(..))
 import UI.Components.Toolbar
 import UI.Elements
-import UI.Styles
+import UI.Styles exposing (Config)
 
 
 type Msg
@@ -51,27 +51,27 @@ init =
     { words = [], newValue = "", deletionQueue = [] }
 
 
-view : Model -> Element Msg
-view model =
+view : Model -> Config -> Element Msg
+view model config =
     Element.column
         [ height fill
         , width fill
         , paddingEach { top = 20, bottom = 12, left = 0, right = 0 }
-        , inFront (toolbarView model)
+        , inFront (toolbarView model config)
         ]
         [ Element.column
             [ width fill
             , height fill
             , scrollbarY
-            , paddingXY 120 40
+            , paddingXY 120 60
             ]
             [ UI.Elements.spacer UI.Styles.XL
-            , UI.Elements.textfield model.newValue "Add a word" NewValueUpdated None Create
+            , UI.Elements.textfield model.newValue "Add a word" NewValueUpdated None Create config
             , UI.Elements.spacer UI.Styles.SM
             , Element.wrappedRow
                 [ spacing 12
                 ]
-                (List.map (\w -> UI.Elements.chip w.title w.requestStatus w.saved (Remove w)) model.words)
+                (List.map (\w -> UI.Elements.chip w.title w.requestStatus w.saved (Remove w) config) model.words)
             , UI.Elements.spacer UI.Styles.XL
             ]
         ]
@@ -97,8 +97,8 @@ getValueChanged model =
         > 0
 
 
-toolbarView : Model -> Element Msg
-toolbarView m =
+toolbarView : Model -> Config -> Element Msg
+toolbarView m config =
     let
         toolbarModel =
             { valueChanged = getValueChanged m
@@ -107,7 +107,7 @@ toolbarView m =
             , title = "Stopwords"
             }
     in
-    UI.Components.Toolbar.toolbarView toolbarModel None Sync Reset
+    UI.Components.Toolbar.toolbarView toolbarModel None Sync Reset config
 
 
 createNew : String -> StopWord

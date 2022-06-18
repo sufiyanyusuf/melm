@@ -11568,6 +11568,9 @@ var $author$project$Api$Routes$Main$buildRequest = F2(
 						}));
 		}
 	});
+var $author$project$Main$getSavedToken = function (model) {
+	return model.pages.settings.savedTokenValue;
+};
 var $author$project$Api$Routes$Main$IndexesRouteResponseListItem = F5(
 	function (uid, name, createdAt, updatedAt, primaryKey) {
 		return {createdAt: createdAt, name: name, primaryKey: primaryKey, uid: uid, updatedAt: updatedAt};
@@ -11622,7 +11625,8 @@ var $author$project$UI$PageViews$Attributes$buildMockModelFromAttributes = funct
 };
 var $author$project$UI$PageViews$Attributes$init = $author$project$UI$PageViews$Attributes$buildMockModelFromAttributes(_List_Nil);
 var $author$project$UI$PageViews$Documents$init = {documents: _List_Nil};
-var $author$project$UI$PageViews$Settings$init = {title: 'Settings', tokenValue: ''};
+var $author$project$UI$Styles$Light = {$: 'Light'};
+var $author$project$UI$PageViews$Settings$init = {colorScheme: $author$project$UI$Styles$Light, savedTokenValue: '', tokenValue: ''};
 var $author$project$UI$PageViews$StopWords$init = {deletionQueue: _List_Nil, newValue: '', words: _List_Nil};
 var $author$project$UI$Pages$init = function (indexUid) {
 	return {
@@ -11668,12 +11672,10 @@ var $author$project$Main$init = function (_v0) {
 		indexStats: $elm$core$Maybe$Nothing,
 		pages: $author$project$UI$Pages$init(''),
 		pollingQueue: _List_Nil,
-		savedToken: $elm$core$Maybe$Nothing,
 		searchableAttrs: _List_Nil,
 		sidebarModel: $author$project$UI$Sidebar$init,
 		sortableAttrs: _List_Nil,
-		synonyms: $author$project$UI$PageViews$Synonyms$init.synonymStates,
-		token: $elm$core$Maybe$Nothing
+		synonyms: $author$project$UI$PageViews$Synonyms$init.synonymStates
 	};
 	return _Utils_Tuple2(
 		model,
@@ -11684,7 +11686,7 @@ var $author$project$Main$init = function (_v0) {
 				$author$project$Api$Routes$Main$buildRequest,
 				$author$project$Api$Routes$Main$buildPayload(
 					$author$project$Api$Routes$Main$ListIndexes($author$project$Api$Routes$Main$indexesRouteResponseListDecoder)),
-				A2($elm$core$Maybe$withDefault, '', model.savedToken))));
+				$author$project$Main$getSavedToken(model))));
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
@@ -12657,51 +12659,50 @@ var $author$project$Main$handlePollUpdate = F3(
 			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
-var $author$project$Main$getSettingsViewModel = function (model) {
-	return {
-		title: 'Settings',
-		tokenValue: A2($elm$core$Maybe$withDefault, '', model.token)
-	};
-};
 var $author$project$UI$Pages$Settings = function (a) {
 	return {$: 'Settings', a: a};
 };
-var $author$project$Main$updateSettingsViewModel = F2(
-	function (pages, updatedPage) {
-		return _Utils_update(
-			pages,
-			{
-				selectedPage: $author$project$UI$Pages$Settings(updatedPage),
-				settings: updatedPage
-			});
-	});
-var $author$project$Main$handleSettingsViewMsg = F2(
-	function (model, msg) {
+var $author$project$UI$PageViews$Settings$update = F2(
+	function (msg, model) {
 		switch (msg.$) {
-			case 'KeyValueChanged':
+			case 'TokenValueChanged':
 				var t = msg.a;
 				var updatedModel = _Utils_update(
 					model,
-					{
-						token: $elm$core$Maybe$Just(t)
-					});
-				var updatedSettingsPageViewModel = $author$project$Main$getSettingsViewModel(updatedModel);
-				var updatedModelValue = _Utils_update(
-					model,
-					{
-						pages: A2($author$project$Main$updateSettingsViewModel, model.pages, updatedSettingsPageViewModel),
-						token: updatedModel.token
-					});
-				return _Utils_Tuple2(updatedModelValue, $elm$core$Platform$Cmd$none);
+					{tokenValue: t});
+				return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
+			case 'UpdateColorScheme':
+				var s = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{colorScheme: s}),
+					$elm$core$Platform$Cmd$none);
 			case 'SaveKeyValue':
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{savedToken: model.token}),
+						{savedTokenValue: model.tokenValue}),
 					$elm$core$Platform$Cmd$none);
 			default:
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
+	});
+var $author$project$Main$handleSettingsViewMsg = F2(
+	function (model, msg) {
+		var pagesModel = model.pages;
+		var _v0 = A2($author$project$UI$PageViews$Settings$update, msg, model.pages.settings);
+		var updatedSettingsPageViewModel = _v0.a;
+		var updatedPagesModel = _Utils_update(
+			pagesModel,
+			{
+				selectedPage: $author$project$UI$Pages$Settings(updatedSettingsPageViewModel),
+				settings: updatedSettingsPageViewModel
+			});
+		var updatedModelValue = _Utils_update(
+			model,
+			{pages: updatedPagesModel});
+		return _Utils_Tuple2(updatedModelValue, $elm$core$Platform$Cmd$none);
 	});
 var $author$project$Api$Routes$Main$ListDocuments = function (a) {
 	return {$: 'ListDocuments', a: a};
@@ -12799,7 +12800,7 @@ var $author$project$Main$handleSidebarSelection = F2(
 										$author$project$Api$Routes$Main$buildRequest,
 										$author$project$Api$Routes$Main$buildPayload(
 											$author$project$Api$Routes$Main$ListDocuments(uid)),
-										A2($elm$core$Maybe$withDefault, '', model.savedToken))));
+										$author$project$Main$getSavedToken(model))));
 						} else {
 							return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
 						}
@@ -12817,7 +12818,7 @@ var $author$project$Main$handleSidebarSelection = F2(
 										$author$project$Api$Routes$Main$buildRequest,
 										$author$project$Api$Routes$Main$buildPayload(
 											A2($author$project$Api$Routes$Main$ListSynonyms, indexUid, $author$project$Api$Routes$Main$synonymsListDecoder)),
-										A2($elm$core$Maybe$withDefault, '', model.savedToken))));
+										$author$project$Main$getSavedToken(model))));
 						} else {
 							return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
 						}
@@ -12834,7 +12835,7 @@ var $author$project$Main$handleSidebarSelection = F2(
 										$author$project$Api$Routes$Main$buildRequest,
 										$author$project$Api$Routes$Main$buildPayload(
 											A2($author$project$Api$Routes$Main$ListStopWords, indexUid, $author$project$Api$Routes$Main$maybeStringListDecoder)),
-										A2($elm$core$Maybe$withDefault, '', model.savedToken))));
+										$author$project$Main$getSavedToken(model))));
 						} else {
 							return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
 						}
@@ -12851,7 +12852,7 @@ var $author$project$Main$handleSidebarSelection = F2(
 										$author$project$Api$Routes$Main$buildRequest,
 										$author$project$Api$Routes$Main$buildPayload(
 											A2($author$project$Api$Routes$Main$Stats, indexUid, $author$project$Api$Routes$Main$statsDecoder)),
-										A2($elm$core$Maybe$withDefault, '', model.savedToken))));
+										$author$project$Main$getSavedToken(model))));
 						} else {
 							return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
 						}
@@ -13202,7 +13203,7 @@ var $author$project$Main$handleApiResponse = F2(
 							$author$project$Api$Routes$Main$buildRequest,
 							$author$project$Api$Routes$Main$buildPayload(
 								A2($author$project$Api$Routes$Main$ListDisplayedAttrs, r.indexUid, $author$project$Api$Routes$Main$maybeStringListDecoder)),
-							A2($elm$core$Maybe$withDefault, '', model.savedToken))));
+							$author$project$Main$getSavedToken(model))));
 			case 'HandleListDisplayedAttrsResponse':
 				var r = apiResponse.a;
 				if (r.$ === 'Ok') {
@@ -13411,7 +13412,7 @@ var $author$project$Main$handleApiResponse = F2(
 										$author$project$Api$Routes$Main$buildRequest,
 										$author$project$Api$Routes$Main$buildPayload(
 											A2($author$project$Api$Routes$Main$ListDisplayedAttrs, indexUid, $author$project$Api$Routes$Main$maybeStringListDecoder)),
-										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
+										$author$project$Main$getSavedToken(model))),
 									A2(
 									$elm$core$Platform$Cmd$map,
 									$author$project$Main$ApiRequest,
@@ -13419,7 +13420,7 @@ var $author$project$Main$handleApiResponse = F2(
 										$author$project$Api$Routes$Main$buildRequest,
 										$author$project$Api$Routes$Main$buildPayload(
 											A2($author$project$Api$Routes$Main$ListFilterableAttrs, indexUid, $author$project$Api$Routes$Main$maybeStringListDecoder)),
-										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
+										$author$project$Main$getSavedToken(model))),
 									A2(
 									$elm$core$Platform$Cmd$map,
 									$author$project$Main$ApiRequest,
@@ -13427,7 +13428,7 @@ var $author$project$Main$handleApiResponse = F2(
 										$author$project$Api$Routes$Main$buildRequest,
 										$author$project$Api$Routes$Main$buildPayload(
 											A2($author$project$Api$Routes$Main$ListSortableAttrs, indexUid, $author$project$Api$Routes$Main$maybeStringListDecoder)),
-										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
+										$author$project$Main$getSavedToken(model))),
 									A2(
 									$elm$core$Platform$Cmd$map,
 									$author$project$Main$ApiRequest,
@@ -13435,7 +13436,7 @@ var $author$project$Main$handleApiResponse = F2(
 										$author$project$Api$Routes$Main$buildRequest,
 										$author$project$Api$Routes$Main$buildPayload(
 											A2($author$project$Api$Routes$Main$ListSearchableAttrs, indexUid, $author$project$Api$Routes$Main$maybeStringListDecoder)),
-										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
+										$author$project$Main$getSavedToken(model))),
 									A2(
 									$elm$core$Platform$Cmd$map,
 									$author$project$Main$ApiRequest,
@@ -13443,7 +13444,7 @@ var $author$project$Main$handleApiResponse = F2(
 										$author$project$Api$Routes$Main$buildRequest,
 										$author$project$Api$Routes$Main$buildPayload(
 											A2($author$project$Api$Routes$Main$ListDistinctAttr, indexUid, $author$project$Api$Routes$Main$stringDecoder)),
-										A2($elm$core$Maybe$withDefault, '', model.savedToken)))
+										$author$project$Main$getSavedToken(model)))
 								])));
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -13602,7 +13603,7 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 														},
 														model.displayedAttrs)),
 												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
-										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
+										$author$project$Main$getSavedToken(model))),
 									A2(
 									$elm$core$Platform$Cmd$map,
 									$author$project$Main$ApiRequest,
@@ -13624,7 +13625,7 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 														},
 														model.filterableAttrs)),
 												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
-										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
+										$author$project$Main$getSavedToken(model))),
 									A2(
 									$elm$core$Platform$Cmd$map,
 									$author$project$Main$ApiRequest,
@@ -13646,7 +13647,7 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 														},
 														model.searchableAttrs)),
 												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
-										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
+										$author$project$Main$getSavedToken(model))),
 									A2(
 									$elm$core$Platform$Cmd$map,
 									$author$project$Main$ApiRequest,
@@ -13668,7 +13669,7 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 														},
 														model.sortableAttrs)),
 												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
-										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
+										$author$project$Main$getSavedToken(model))),
 									A2(
 									$elm$core$Platform$Cmd$map,
 									$author$project$Main$ApiRequest,
@@ -13690,7 +13691,7 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 														},
 														model.displayedAttrs)),
 												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
-										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
+										$author$project$Main$getSavedToken(model))),
 									function () {
 									var _v14 = $author$project$UI$PageViews$Attributes$getDistinctAttr(model.distinctAttr);
 									if (_v14.$ === 'Just') {
@@ -13702,7 +13703,7 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 												$author$project$Api$Routes$Main$buildRequest,
 												$author$project$Api$Routes$Main$buildPayload(
 													A3($author$project$Api$Routes$Main$UpdateDistinctAttr, uid, da, $author$project$Api$Routes$Main$settingsUpdateDecoder)),
-												A2($elm$core$Maybe$withDefault, '', model.savedToken)));
+												$author$project$Main$getSavedToken(model)));
 									} else {
 										return $elm$core$Platform$Cmd$none;
 									}
@@ -13731,16 +13732,9 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 483, column: 13},
-						end: {line: 483, column: 23}
+						start: {line: 474, column: 13},
+						end: {line: 474, column: 23}
 					})('branch \'IndexesViewMsg _\' not implemented');
-			case 'SearchViewMsg':
-				return _Debug_todo(
-					'Main',
-					{
-						start: {line: 486, column: 13},
-						end: {line: 486, column: 23}
-					})('branch \'SearchViewMsg _\' not implemented');
 			case 'DocumentsViewMsg':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'StopWordsViewMsg':
@@ -13779,7 +13773,7 @@ var $author$project$Main$handleStopWordsViewMsg = F2(
 											},
 											model.pages.stopWords.words),
 										$author$project$Api$Routes$Main$settingsUpdateDecoder)),
-								A2($elm$core$Maybe$withDefault, '', model.savedToken))));
+								$author$project$Main$getSavedToken(model))));
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
@@ -13846,7 +13840,7 @@ var $author$project$Main$handleSynonymsViewMsg = F2(
 										indexUid,
 										$elm$core$Dict$fromList(currentSynonyms),
 										$author$project$Api$Routes$Main$settingsUpdateDecoder)),
-								A2($elm$core$Maybe$withDefault, '', model.savedToken))));
+								$author$project$Main$getSavedToken(model))));
 				} else {
 					return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
 				}
@@ -13911,6 +13905,9 @@ var $mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
 	return {$: 'Fill', a: a};
 };
 var $mdgriffith$elm_ui$Element$fill = $mdgriffith$elm_ui$Internal$Model$Fill(1);
+var $author$project$Main$getConfig = function (model) {
+	return {scheme: model.pages.settings.colorScheme};
+};
 var $author$project$UI$Pages$getPageList = function (model) {
 	return _List_fromArray(
 		[
@@ -19733,18 +19730,37 @@ var $mdgriffith$elm_ui$Element$rgb255 = F3(
 		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
 	});
 var $mdgriffith$elm_ui$Element$rgba = $mdgriffith$elm_ui$Internal$Model$Rgba;
-var $author$project$UI$Styles$color = {
-	clear: A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0),
-	gray100: A3($mdgriffith$elm_ui$Element$rgb255, 243, 244, 245),
-	gray200: A3($mdgriffith$elm_ui$Element$rgb255, 243, 244, 245),
-	gray300: A3($mdgriffith$elm_ui$Element$rgb255, 224, 224, 224),
-	gray500: A3($mdgriffith$elm_ui$Element$rgb255, 46, 52, 54),
-	green500: A3($mdgriffith$elm_ui$Element$rgb255, 17, 199, 112),
-	primary100: A3($mdgriffith$elm_ui$Element$rgb255, 234, 235, 245),
-	primary200: A3($mdgriffith$elm_ui$Element$rgb255, 218, 221, 246),
-	primary300: A3($mdgriffith$elm_ui$Element$rgb255, 218, 221, 246),
-	primary500: A3($mdgriffith$elm_ui$Element$rgb255, 114, 159, 207),
-	white: A3($mdgriffith$elm_ui$Element$rgb255, 255, 255, 255)
+var $author$project$UI$Styles$color = function (config) {
+	var _v0 = config.scheme;
+	if (_v0.$ === 'Light') {
+		return {
+			clear: A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0),
+			gray100: A3($mdgriffith$elm_ui$Element$rgb255, 243, 244, 245),
+			gray200: A3($mdgriffith$elm_ui$Element$rgb255, 243, 244, 245),
+			gray300: A3($mdgriffith$elm_ui$Element$rgb255, 224, 224, 224),
+			gray500: A3($mdgriffith$elm_ui$Element$rgb255, 46, 52, 54),
+			green500: A3($mdgriffith$elm_ui$Element$rgb255, 17, 199, 112),
+			primary100: A3($mdgriffith$elm_ui$Element$rgb255, 234, 235, 245),
+			primary200: A3($mdgriffith$elm_ui$Element$rgb255, 218, 221, 246),
+			primary300: A3($mdgriffith$elm_ui$Element$rgb255, 218, 221, 246),
+			primary500: A3($mdgriffith$elm_ui$Element$rgb255, 114, 159, 207),
+			white: A3($mdgriffith$elm_ui$Element$rgb255, 255, 255, 255)
+		};
+	} else {
+		return {
+			clear: A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0),
+			gray100: A3($mdgriffith$elm_ui$Element$rgb255, 243, 244, 245),
+			gray200: A3($mdgriffith$elm_ui$Element$rgb255, 243, 244, 245),
+			gray300: A3($mdgriffith$elm_ui$Element$rgb255, 224, 224, 224),
+			gray500: A3($mdgriffith$elm_ui$Element$rgb255, 46, 52, 54),
+			green500: A3($mdgriffith$elm_ui$Element$rgb255, 17, 199, 112),
+			primary100: A3($mdgriffith$elm_ui$Element$rgb255, 234, 235, 245),
+			primary200: A3($mdgriffith$elm_ui$Element$rgb255, 218, 221, 246),
+			primary300: A3($mdgriffith$elm_ui$Element$rgb255, 218, 221, 246),
+			primary500: A3($mdgriffith$elm_ui$Element$rgb255, 114, 159, 207),
+			white: A3($mdgriffith$elm_ui$Element$rgb255, 255, 255, 255)
+		};
+	}
 };
 var $mdgriffith$elm_ui$Element$el = F2(
 	function (attrs, child) {
@@ -20040,6 +20056,52 @@ var $author$project$UI$Icons$dictionary = function (style) {
 				]));
 	}
 };
+var $author$project$UI$Icons$display = function (_v0) {
+	return A2(
+		$elm$svg$Svg$svg,
+		_List_fromArray(
+			[
+				$elm$svg$Svg$Attributes$width('44'),
+				$elm$svg$Svg$Attributes$height('28'),
+				$elm$svg$Svg$Attributes$viewBox('0 0 44 28'),
+				$elm$svg$Svg$Attributes$fill('none'),
+				$elm$svg$Svg$Attributes$xmlSpace('http://www.w3.org/2000/svg')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$svg$Svg$path,
+				_List_fromArray(
+					[
+						$elm$svg$Svg$Attributes$d('M22 27.2656C24.1354 27.2656 26.1458 27.0104 28.0312 26.5C29.9271 25.9896 31.6719 25.3177 33.2656 24.4844C34.8594 23.6406 36.2812 22.7135 37.5312 21.7031C38.7917 20.6927 39.8646 19.6823 40.75 18.6719C41.6354 17.651 42.3073 16.7083 42.7656 15.8438C43.2344 14.9688 43.4688 14.2656 43.4688 13.7344C43.4688 13.2031 43.2344 12.5052 42.7656 11.6406C42.3073 10.776 41.6354 9.83854 40.75 8.82812C39.8646 7.80729 38.7917 6.79167 37.5312 5.78125C36.2812 4.77083 34.8542 3.84896 33.25 3.01562C31.6562 2.17188 29.9167 1.49479 28.0312 0.984375C26.1458 0.473958 24.1354 0.21875 22 0.21875C19.9062 0.21875 17.9167 0.473958 16.0312 0.984375C14.1562 1.49479 12.4219 2.17188 10.8281 3.01562C9.23438 3.84896 7.80208 4.77083 6.53125 5.78125C5.26042 6.79167 4.17708 7.80729 3.28125 8.82812C2.39583 9.83854 1.71354 10.776 1.23438 11.6406C0.765625 12.5052 0.53125 13.2031 0.53125 13.7344C0.53125 14.2656 0.765625 14.9688 1.23438 15.8438C1.71354 16.7083 2.39583 17.651 3.28125 18.6719C4.17708 19.6823 5.25521 20.6927 6.51562 21.7031C7.78646 22.7135 9.21875 23.6406 10.8125 24.4844C12.4062 25.3177 14.1406 25.9896 16.0156 26.5C17.901 27.0104 19.8958 27.2656 22 27.2656ZM22 24.25C20.3333 24.25 18.7344 24.0469 17.2031 23.6406C15.6823 23.2344 14.2552 22.6927 12.9219 22.0156C11.5885 21.3385 10.3802 20.6042 9.29688 19.8125C8.22396 19.0104 7.29688 18.2188 6.51562 17.4375C5.73438 16.6458 5.13021 15.9219 4.70312 15.2656C4.28646 14.6094 4.07812 14.099 4.07812 13.7344C4.07812 13.4323 4.28646 12.9688 4.70312 12.3438C5.13021 11.7188 5.73438 11.0104 6.51562 10.2188C7.29688 9.41667 8.22396 8.60938 9.29688 7.79688C10.3802 6.98438 11.5885 6.23438 12.9219 5.54688C14.2552 4.84896 15.6823 4.28646 17.2031 3.85938C18.7344 3.43229 20.3333 3.21875 22 3.21875C23.6667 3.21875 25.2604 3.43229 26.7812 3.85938C28.3021 4.28646 29.7292 4.84896 31.0625 5.54688C32.3958 6.23438 33.6042 6.98438 34.6875 7.79688C35.7708 8.60938 36.7031 9.41667 37.4844 10.2188C38.2656 11.0104 38.8646 11.7188 39.2812 12.3438C39.7083 12.9688 39.9219 13.4323 39.9219 13.7344C39.9219 14.099 39.7083 14.6094 39.2812 15.2656C38.8646 15.9219 38.2656 16.6458 37.4844 17.4375C36.7031 18.2188 35.7708 19.0104 34.6875 19.8125C33.6042 20.6042 32.3958 21.3385 31.0625 22.0156C29.7292 22.6927 28.3021 23.2344 26.7812 23.6406C25.2604 24.0469 23.6667 24.25 22 24.25ZM22.0156 22.1562C23.1719 22.1562 24.2604 21.9375 25.2812 21.5C26.3021 21.0521 27.1979 20.4427 27.9688 19.6719C28.7396 18.8906 29.3438 17.9948 29.7812 16.9844C30.2188 15.9635 30.4375 14.8802 30.4375 13.7344C30.4375 12.5677 30.2188 11.474 29.7812 10.4531C29.3438 9.43229 28.7396 8.54167 27.9688 7.78125C27.1979 7.01042 26.3021 6.41146 25.2812 5.98438C24.2604 5.54688 23.1719 5.32812 22.0156 5.32812C20.8281 5.32812 19.724 5.54688 18.7031 5.98438C17.6823 6.41146 16.7865 7.01042 16.0156 7.78125C15.2448 8.54167 14.6406 9.43229 14.2031 10.4531C13.776 11.474 13.5625 12.5677 13.5625 13.7344C13.5625 14.8802 13.7812 15.9635 14.2188 16.9844C14.6562 17.9948 15.2604 18.8906 16.0312 19.6719C16.8021 20.4427 17.6927 21.0521 18.7031 21.5C19.724 21.9375 20.8281 22.1562 22.0156 22.1562ZM22 16.4688C21.2396 16.4688 20.5938 16.1979 20.0625 15.6562C19.5312 15.1146 19.2656 14.474 19.2656 13.7344C19.2656 12.9844 19.5312 12.3438 20.0625 11.8125C20.5938 11.2812 21.2396 11.0156 22 11.0156C22.75 11.0156 23.3906 11.2812 23.9219 11.8125C24.4635 12.3438 24.7344 12.9844 24.7344 13.7344C24.7344 14.474 24.4635 15.1146 23.9219 15.6562C23.3906 16.1979 22.75 16.4688 22 16.4688Z'),
+						$elm$svg$Svg$Attributes$fill('#9CA0AC')
+					]),
+				_List_Nil)
+			]));
+};
+var $author$project$UI$Icons$distinct = function (_v0) {
+	return A2(
+		$elm$svg$Svg$svg,
+		_List_fromArray(
+			[
+				$elm$svg$Svg$Attributes$width('26'),
+				$elm$svg$Svg$Attributes$height('40'),
+				$elm$svg$Svg$Attributes$viewBox('0 0 26 40'),
+				$elm$svg$Svg$Attributes$fill('none'),
+				$elm$svg$Svg$Attributes$xmlSpace('http://www.w3.org/2000/svg')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$svg$Svg$path,
+				_List_fromArray(
+					[
+						$elm$svg$Svg$Attributes$d('M13 39.125C13.125 39.125 13.2865 38.9792 13.4844 38.6875C13.6927 38.4062 13.901 38.0365 14.1094 37.5781C14.3177 37.1302 14.4896 36.6458 14.625 36.125C14.7604 35.6042 14.8281 35.1094 14.8281 34.6406V25.5H11.1719V34.6406C11.1719 35.1094 11.2396 35.6042 11.375 36.125C11.5208 36.6458 11.6927 37.1302 11.8906 37.5781C12.099 38.0365 12.3021 38.4062 12.5 38.6875C12.7083 38.9792 12.875 39.125 13 39.125ZM2.98438 27.1094H23.0156C23.8281 27.1094 24.4792 26.8698 24.9688 26.3906C25.4583 25.9115 25.7031 25.2812 25.7031 24.5C25.7031 23.2604 25.3802 22.0677 24.7344 20.9219C24.0885 19.7656 23.1823 18.7344 22.0156 17.8281C20.8594 16.9219 19.5104 16.2031 17.9688 15.6719C16.4375 15.1406 14.7812 14.875 13 14.875C11.2292 14.875 9.57292 15.1406 8.03125 15.6719C6.48958 16.2031 5.14062 16.9219 3.98438 17.8281C2.82812 18.7344 1.92188 19.7656 1.26562 20.9219C0.619792 22.0677 0.296875 23.2604 0.296875 24.5C0.296875 25.2812 0.541667 25.9115 1.03125 26.3906C1.53125 26.8698 2.18229 27.1094 2.98438 27.1094ZM3.85938 23.9688C3.61979 23.9688 3.52083 23.8281 3.5625 23.5469C3.67708 22.8594 3.98438 22.1823 4.48438 21.5156C4.99479 20.849 5.66667 20.25 6.5 19.7188C7.34375 19.1771 8.3125 18.7448 9.40625 18.4219C10.5104 18.099 11.7083 17.9375 13 17.9375C14.3021 17.9375 15.5 18.099 16.5938 18.4219C17.6979 18.7448 18.6667 19.1771 19.5 19.7188C20.3333 20.25 21.0052 20.849 21.5156 21.5156C22.026 22.1823 22.3333 22.8594 22.4375 23.5469C22.4896 23.8281 22.3906 23.9688 22.1406 23.9688H3.85938ZM2.28125 2.92188C2.28125 3.51562 2.51042 4.10417 2.96875 4.6875C3.22917 5.02083 3.59375 5.40104 4.0625 5.82812C4.53125 6.24479 5.06771 6.68229 5.67188 7.14062C6.28646 7.59896 6.9375 8.05729 7.625 8.51562L7.03125 17.4062H10.3281L10.9375 7.10938C10.9479 6.78646 10.8333 6.5625 10.5938 6.4375C10.1667 6.20833 9.76042 5.97917 9.375 5.75C9 5.52083 8.65625 5.30729 8.34375 5.10938C8.04167 4.90104 7.78125 4.71354 7.5625 4.54688C7.34375 4.38021 7.17708 4.25 7.0625 4.15625C7 4.08333 6.97917 4.01562 7 3.95312C7.03125 3.89062 7.08854 3.85938 7.17188 3.85938H18.8438C18.9167 3.85938 18.9688 3.89062 19 3.95312C19.0312 4.01562 19.0104 4.08333 18.9375 4.15625C18.8229 4.25 18.6562 4.38021 18.4375 4.54688C18.2292 4.71354 17.9688 4.90104 17.6562 5.10938C17.3542 5.30729 17.0104 5.52083 16.625 5.75C16.25 5.97917 15.8438 6.20833 15.4062 6.4375C15.1667 6.5625 15.0573 6.78646 15.0781 7.10938L15.6719 17.4062H18.9688L18.375 8.51562C19.0625 8.05729 19.7135 7.59896 20.3281 7.14062C20.9427 6.68229 21.4792 6.24479 21.9375 5.82812C22.4062 5.40104 22.7708 5.02083 23.0312 4.6875C23.5 4.10417 23.7344 3.51562 23.7344 2.92188C23.7344 2.32812 23.526 1.84375 23.1094 1.46875C22.7031 1.08333 22.1771 0.890625 21.5312 0.890625H4.48438C3.82812 0.890625 3.29688 1.08333 2.89062 1.46875C2.48438 1.84375 2.28125 2.32812 2.28125 2.92188Z'),
+						$elm$svg$Svg$Attributes$fill('#9CA0AC')
+					]),
+				_List_Nil)
+			]));
+};
 var $author$project$UI$Icons$documents = function (style) {
 	if (style.$ === 'Outline') {
 		return A2(
@@ -20086,6 +20148,29 @@ var $author$project$UI$Icons$documents = function (style) {
 					_List_Nil)
 				]));
 	}
+};
+var $author$project$UI$Icons$filter = function (_v0) {
+	return A2(
+		$elm$svg$Svg$svg,
+		_List_fromArray(
+			[
+				$elm$svg$Svg$Attributes$width('34'),
+				$elm$svg$Svg$Attributes$height('33'),
+				$elm$svg$Svg$Attributes$viewBox('0 0 34 33'),
+				$elm$svg$Svg$Attributes$fill('none'),
+				$elm$svg$Svg$Attributes$xmlSpace('http://www.w3.org/2000/svg')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$svg$Svg$path,
+				_List_fromArray(
+					[
+						$elm$svg$Svg$Attributes$d('M16.9844 32.8594C19.1927 32.8594 21.2708 32.4375 23.2188 31.5938C25.1667 30.7604 26.8854 29.599 28.375 28.1094C29.8646 26.6198 31.0312 24.901 31.875 22.9531C32.7188 21.0052 33.1406 18.9271 33.1406 16.7188C33.1406 14.5104 32.7188 12.4323 31.875 10.4844C31.0312 8.53646 29.8646 6.82292 28.375 5.34375C26.8854 3.85417 25.1667 2.6875 23.2188 1.84375C21.2708 1 19.1875 0.578125 16.9688 0.578125C14.7604 0.578125 12.6823 1 10.7344 1.84375C8.79688 2.6875 7.08333 3.85417 5.59375 5.34375C4.11458 6.82292 2.95312 8.53646 2.10938 10.4844C1.26562 12.4323 0.84375 14.5104 0.84375 16.7188C0.84375 18.9271 1.26562 21.0052 2.10938 22.9531C2.95312 24.901 4.11458 26.6198 5.59375 28.1094C7.08333 29.599 8.80208 30.7604 10.75 31.5938C12.6979 32.4375 14.776 32.8594 16.9844 32.8594ZM16.9844 29.6719C15.1927 29.6719 13.5104 29.3385 11.9375 28.6719C10.375 28.0052 9 27.0781 7.8125 25.8906C6.63542 24.7031 5.71354 23.3281 5.04688 21.7656C4.38021 20.2031 4.04688 18.5208 4.04688 16.7188C4.04688 14.9271 4.38021 13.25 5.04688 11.6875C5.71354 10.1146 6.63542 8.73438 7.8125 7.54688C8.98958 6.35938 10.3594 5.43229 11.9219 4.76562C13.4948 4.09896 15.1771 3.76562 16.9688 3.76562C18.7708 3.76562 20.4531 4.09896 22.0156 4.76562C23.5781 5.43229 24.9531 6.35938 26.1406 7.54688C27.3385 8.73438 28.2708 10.1146 28.9375 11.6875C29.6042 13.25 29.9375 14.9271 29.9375 16.7188C29.9375 18.5208 29.6042 20.2031 28.9375 21.7656C28.2708 23.3281 27.3438 24.7031 26.1562 25.8906C24.9792 27.0781 23.6042 28.0052 22.0312 28.6719C20.4688 29.3385 18.7865 29.6719 16.9844 29.6719ZM8.8125 13.7344H25.1875C25.5729 13.7344 25.8906 13.6198 26.1406 13.3906C26.3906 13.1615 26.5156 12.8698 26.5156 12.5156C26.5156 12.1406 26.3906 11.8385 26.1406 11.6094C25.8906 11.3802 25.5729 11.2656 25.1875 11.2656H8.8125C8.42708 11.2656 8.10938 11.3802 7.85938 11.6094C7.60938 11.8385 7.48438 12.1406 7.48438 12.5156C7.48438 12.8698 7.60938 13.1615 7.85938 13.3906C8.10938 13.6198 8.42708 13.7344 8.8125 13.7344ZM10.9688 18.8906H23.0156C23.401 18.8906 23.7188 18.7812 23.9688 18.5625C24.2188 18.3333 24.3438 18.0365 24.3438 17.6719C24.3438 17.2969 24.2188 17 23.9688 16.7812C23.7188 16.5521 23.401 16.4375 23.0156 16.4375H10.9688C10.5833 16.4375 10.2656 16.5521 10.0156 16.7812C9.76562 17 9.64062 17.2969 9.64062 17.6719C9.64062 18.0365 9.76562 18.3333 10.0156 18.5625C10.2656 18.7812 10.5833 18.8906 10.9688 18.8906ZM13.2188 24.0625H20.7812C21.1667 24.0625 21.4792 23.9479 21.7188 23.7188C21.9688 23.4896 22.0938 23.1979 22.0938 22.8438C22.0938 22.4688 21.9688 22.1667 21.7188 21.9375C21.4792 21.7083 21.1667 21.5938 20.7812 21.5938H13.2188C12.8333 21.5938 12.5156 21.7083 12.2656 21.9375C12.026 22.1667 11.9062 22.4688 11.9062 22.8438C11.9062 23.1979 12.026 23.4896 12.2656 23.7188C12.5156 23.9479 12.8333 24.0625 13.2188 24.0625Z'),
+						$elm$svg$Svg$Attributes$fill('#9CA0AC')
+					]),
+				_List_Nil)
+			]));
 };
 var $mdgriffith$elm_ui$Internal$Model$unstyled = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Unstyled, $elm$core$Basics$always);
 var $mdgriffith$elm_ui$Element$html = $mdgriffith$elm_ui$Internal$Model$unstyled;
@@ -20206,6 +20291,29 @@ var $author$project$UI$Icons$retry = function (_v0) {
 				_List_Nil)
 			]));
 };
+var $author$project$UI$Icons$search = function (_v0) {
+	return A2(
+		$elm$svg$Svg$svg,
+		_List_fromArray(
+			[
+				$elm$svg$Svg$Attributes$width('33'),
+				$elm$svg$Svg$Attributes$height('32'),
+				$elm$svg$Svg$Attributes$viewBox('0 0 33 32'),
+				$elm$svg$Svg$Attributes$fill('none'),
+				$elm$svg$Svg$Attributes$xmlSpace('http://www.w3.org/2000/svg')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$svg$Svg$path,
+				_List_fromArray(
+					[
+						$elm$svg$Svg$Attributes$d('M0.953125 12.9375C0.953125 14.7188 1.28646 16.3906 1.95312 17.9531C2.61979 19.5156 3.54688 20.8906 4.73438 22.0781C5.92188 23.2656 7.29167 24.1927 8.84375 24.8594C10.4062 25.526 12.0781 25.8594 13.8594 25.8594C15.1198 25.8594 16.3229 25.6823 17.4688 25.3281C18.625 24.9635 19.6927 24.4688 20.6719 23.8438L27.4688 30.6406C27.7292 30.901 28.026 31.0938 28.3594 31.2188C28.6927 31.3438 29.0365 31.4062 29.3906 31.4062C29.9115 31.4062 30.3698 31.2865 30.7656 31.0469C31.1615 30.8177 31.474 30.5 31.7031 30.0938C31.9323 29.6875 32.0469 29.2344 32.0469 28.7344C32.0469 28.3698 31.9792 28.026 31.8438 27.7031C31.7188 27.3906 31.5312 27.1042 31.2812 26.8438L24.5469 20.0781C25.2448 19.0677 25.7865 17.9583 26.1719 16.75C26.5677 15.5417 26.7656 14.2708 26.7656 12.9375C26.7656 11.1667 26.4323 9.5 25.7656 7.9375C25.099 6.375 24.1719 5.00521 22.9844 3.82812C21.7969 2.64062 20.4219 1.71354 18.8594 1.04688C17.3073 0.380208 15.6406 0.046875 13.8594 0.046875C12.0781 0.046875 10.4062 0.380208 8.84375 1.04688C7.29167 1.71354 5.92188 2.64062 4.73438 3.82812C3.54688 5.00521 2.61979 6.375 1.95312 7.9375C1.28646 9.5 0.953125 11.1667 0.953125 12.9375ZM4.75 12.9375C4.75 11.6875 4.98438 10.5156 5.45312 9.42188C5.93229 8.31771 6.58854 7.34896 7.42188 6.51562C8.25521 5.67188 9.21875 5.01562 10.3125 4.54688C11.4167 4.07812 12.599 3.84375 13.8594 3.84375C15.1198 3.84375 16.2969 4.07812 17.3906 4.54688C18.4948 5.01562 19.4635 5.67188 20.2969 6.51562C21.1302 7.34896 21.7812 8.31771 22.25 9.42188C22.7292 10.5156 22.9688 11.6875 22.9688 12.9375C22.9688 14.1979 22.7292 15.3802 22.25 16.4844C21.7812 17.5781 21.1302 18.5417 20.2969 19.375C19.4635 20.2083 18.4948 20.8646 17.3906 21.3438C16.2969 21.8125 15.1198 22.0469 13.8594 22.0469C12.599 22.0469 11.4167 21.8125 10.3125 21.3438C9.21875 20.8646 8.25521 20.2083 7.42188 19.375C6.58854 18.5417 5.93229 17.5781 5.45312 16.4844C4.98438 15.3802 4.75 14.1979 4.75 12.9375Z'),
+						$elm$svg$Svg$Attributes$fill('#9CA0AC')
+					]),
+				_List_Nil)
+			]));
+};
 var $author$project$UI$Icons$settingsGear = function (style) {
 	if (style.$ === 'Outline') {
 		return A2(
@@ -20252,6 +20360,29 @@ var $author$project$UI$Icons$settingsGear = function (style) {
 					_List_Nil)
 				]));
 	}
+};
+var $author$project$UI$Icons$sort = function (_v0) {
+	return A2(
+		$elm$svg$Svg$svg,
+		_List_fromArray(
+			[
+				$elm$svg$Svg$Attributes$width('39'),
+				$elm$svg$Svg$Attributes$height('31'),
+				$elm$svg$Svg$Attributes$viewBox('0 0 39 31'),
+				$elm$svg$Svg$Attributes$fill('none'),
+				$elm$svg$Svg$Attributes$xmlSpace('http://www.w3.org/2000/svg')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$svg$Svg$path,
+				_List_fromArray(
+					[
+						$elm$svg$Svg$Attributes$d('M8.6875 1.21875L0.828125 9.28125C0.401042 9.70833 0.1875 10.2083 0.1875 10.7812C0.1875 11.3854 0.380208 11.8854 0.765625 12.2812C1.15104 12.6667 1.64583 12.8594 2.25 12.8594C2.84375 12.8594 3.32812 12.6562 3.70312 12.25L6.875 8.95312L8.23438 7.375L8.14062 10.25V28.8281C8.14062 29.4323 8.33854 29.9323 8.73438 30.3281C9.13021 30.724 9.63021 30.9219 10.2344 30.9219C10.8281 30.9219 11.3229 30.724 11.7188 30.3281C12.1146 29.9323 12.3125 29.4323 12.3125 28.8281V10.25L12.2344 7.375L13.5781 8.95312L16.7656 12.25C17.1406 12.6562 17.6198 12.8594 18.2031 12.8594C18.8073 12.8594 19.3021 12.6667 19.6875 12.2812C20.0729 11.8854 20.2656 11.3854 20.2656 10.7812C20.2656 10.2083 20.0573 9.70833 19.6406 9.28125L11.7812 1.21875C11.3438 0.760417 10.8229 0.53125 10.2188 0.53125C9.625 0.53125 9.11458 0.760417 8.6875 1.21875ZM30.3281 30.25L38.1719 22.1562C38.599 21.7396 38.8125 21.2396 38.8125 20.6562C38.8125 20.0521 38.6198 19.5573 38.2344 19.1719C37.849 18.7865 37.3542 18.5938 36.75 18.5938C36.1562 18.5938 35.6719 18.7917 35.2969 19.1875L32.1406 22.4844L30.7812 24.0625L30.8594 21.1875V2.625C30.8594 2.02083 30.6615 1.52083 30.2656 1.125C29.8698 0.729167 29.375 0.53125 28.7812 0.53125C28.1771 0.53125 27.6771 0.729167 27.2812 1.125C26.8854 1.52083 26.6875 2.02083 26.6875 2.625V21.1875L26.7812 24.0625L25.4219 22.4844L22.25 19.1875C21.875 18.7917 21.3958 18.5938 20.8125 18.5938C20.2083 18.5938 19.7083 18.7865 19.3125 19.1719C18.9271 19.5573 18.7344 20.0521 18.7344 20.6562C18.7344 21.2396 18.9479 21.7396 19.375 22.1562L27.2344 30.25C27.6615 30.6979 28.1719 30.9219 28.7656 30.9219C29.3698 30.9219 29.8906 30.6979 30.3281 30.25Z'),
+						$elm$svg$Svg$Attributes$fill('#9CA0AC')
+					]),
+				_List_Nil)
+			]));
 };
 var $author$project$UI$Icons$switches = function (style) {
 	if (style.$ === 'Outline') {
@@ -20336,9 +20467,24 @@ var $author$project$UI$Icons$buildIcon = F2(
 			case 'Dictionary':
 				return $mdgriffith$elm_ui$Element$html(
 					$author$project$UI$Icons$dictionary(style));
-			default:
+			case 'Block':
 				return $mdgriffith$elm_ui$Element$html(
 					$author$project$UI$Icons$block(style));
+			case 'Searchable':
+				return $mdgriffith$elm_ui$Element$html(
+					$author$project$UI$Icons$search(style));
+			case 'Filterable':
+				return $mdgriffith$elm_ui$Element$html(
+					$author$project$UI$Icons$filter(style));
+			case 'Displayed':
+				return $mdgriffith$elm_ui$Element$html(
+					$author$project$UI$Icons$display(style));
+			case 'Sortable':
+				return $mdgriffith$elm_ui$Element$html(
+					$author$project$UI$Icons$sort(style));
+			default:
+				return $mdgriffith$elm_ui$Element$html(
+					$author$project$UI$Icons$distinct(style));
 		}
 	});
 var $author$project$UI$Sidebar$getPageIcon = F2(
@@ -20393,6 +20539,7 @@ var $mdgriffith$elm_ui$Internal$Model$Monospace = {$: 'Monospace'};
 var $mdgriffith$elm_ui$Element$Font$monospace = $mdgriffith$elm_ui$Internal$Model$Monospace;
 var $mdgriffith$elm_ui$Element$Font$regular = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$fontWeight, $mdgriffith$elm_ui$Internal$Style$classes.textNormalWeight);
 var $mdgriffith$elm_ui$Element$Font$sansSerif = $mdgriffith$elm_ui$Internal$Model$SansSerif;
+var $mdgriffith$elm_ui$Element$Font$semiBold = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$fontWeight, $mdgriffith$elm_ui$Internal$Style$classes.textSemiBold);
 var $mdgriffith$elm_ui$Element$Font$size = function (i) {
 	return A2(
 		$mdgriffith$elm_ui$Internal$Model$StyleClass,
@@ -20400,91 +20547,115 @@ var $mdgriffith$elm_ui$Element$Font$size = function (i) {
 		$mdgriffith$elm_ui$Internal$Model$FontSize(i));
 };
 var $mdgriffith$elm_ui$Element$Font$typeface = $mdgriffith$elm_ui$Internal$Model$Typeface;
-var $author$project$UI$Styles$getTypographicStyleFor = function (style) {
-	switch (style.$) {
-		case 'H1':
-			return _List_fromArray(
-				[
-					$mdgriffith$elm_ui$Element$Font$size(40),
-					$mdgriffith$elm_ui$Element$Font$bold,
-					$mdgriffith$elm_ui$Element$Font$family(
-					_List_fromArray(
-						[
-							$mdgriffith$elm_ui$Element$Font$typeface('System-UI'),
-							$mdgriffith$elm_ui$Element$Font$sansSerif
-						])),
-					$mdgriffith$elm_ui$Element$Font$letterSpacing(-1),
-					$mdgriffith$elm_ui$Element$Font$color($author$project$UI$Styles$color.gray500)
-				]);
-		case 'H2':
-			return _List_fromArray(
-				[
-					$mdgriffith$elm_ui$Element$Font$size(32),
-					$mdgriffith$elm_ui$Element$Font$bold,
-					$mdgriffith$elm_ui$Element$Font$family(
-					_List_fromArray(
-						[
-							$mdgriffith$elm_ui$Element$Font$typeface('System-UI'),
-							$mdgriffith$elm_ui$Element$Font$sansSerif
-						])),
-					$mdgriffith$elm_ui$Element$Font$letterSpacing(-0.4),
-					$mdgriffith$elm_ui$Element$Font$color($author$project$UI$Styles$color.gray500)
-				]);
-		case 'H3':
-			return _List_fromArray(
-				[
-					$mdgriffith$elm_ui$Element$Font$size(24),
-					$mdgriffith$elm_ui$Element$Font$bold,
-					$mdgriffith$elm_ui$Element$Font$family(
-					_List_fromArray(
-						[
-							$mdgriffith$elm_ui$Element$Font$typeface('System-UI'),
-							$mdgriffith$elm_ui$Element$Font$sansSerif
-						])),
-					$mdgriffith$elm_ui$Element$Font$letterSpacing(-0.2),
-					$mdgriffith$elm_ui$Element$Font$color($author$project$UI$Styles$color.gray500)
-				]);
-		case 'Body':
-			return _List_fromArray(
-				[
-					$mdgriffith$elm_ui$Element$Font$size(18),
-					$mdgriffith$elm_ui$Element$Font$medium,
-					$mdgriffith$elm_ui$Element$Font$family(
-					_List_fromArray(
-						[
-							$mdgriffith$elm_ui$Element$Font$typeface('System-UI'),
-							$mdgriffith$elm_ui$Element$Font$sansSerif
-						])),
-					$mdgriffith$elm_ui$Element$Font$color($author$project$UI$Styles$color.gray500)
-				]);
-		case 'BodyBold':
-			return _List_fromArray(
-				[
-					$mdgriffith$elm_ui$Element$Font$size(18),
-					$mdgriffith$elm_ui$Element$Font$bold,
-					$mdgriffith$elm_ui$Element$Font$family(
-					_List_fromArray(
-						[
-							$mdgriffith$elm_ui$Element$Font$typeface('System-UI'),
-							$mdgriffith$elm_ui$Element$Font$sansSerif
-						])),
-					$mdgriffith$elm_ui$Element$Font$color($author$project$UI$Styles$color.gray500)
-				]);
-		default:
-			return _List_fromArray(
-				[
-					$mdgriffith$elm_ui$Element$Font$size(14),
-					$mdgriffith$elm_ui$Element$Font$regular,
-					$mdgriffith$elm_ui$Element$Font$family(
-					_List_fromArray(
-						[
-							$mdgriffith$elm_ui$Element$Font$typeface('System-UI'),
-							$mdgriffith$elm_ui$Element$Font$monospace
-						])),
-					$mdgriffith$elm_ui$Element$Font$color($author$project$UI$Styles$color.gray500)
-				]);
-	}
-};
+var $author$project$UI$Styles$getTypographicStyleFor = F2(
+	function (style, config) {
+		switch (style.$) {
+			case 'H1':
+				return _List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$Font$size(40),
+						$mdgriffith$elm_ui$Element$Font$bold,
+						$mdgriffith$elm_ui$Element$Font$family(
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$Font$typeface('Inter'),
+								$mdgriffith$elm_ui$Element$Font$sansSerif
+							])),
+						$mdgriffith$elm_ui$Element$Font$color(
+						$author$project$UI$Styles$color(config).gray500),
+						$mdgriffith$elm_ui$Element$Font$letterSpacing(-0.6)
+					]);
+			case 'H2':
+				return _List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$Font$size(32),
+						$mdgriffith$elm_ui$Element$Font$bold,
+						$mdgriffith$elm_ui$Element$Font$family(
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$Font$typeface('Inter'),
+								$mdgriffith$elm_ui$Element$Font$sansSerif
+							])),
+						$mdgriffith$elm_ui$Element$Font$color(
+						$author$project$UI$Styles$color(config).gray500),
+						$mdgriffith$elm_ui$Element$Font$letterSpacing(-0.4)
+					]);
+			case 'H3':
+				return _List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$Font$size(24),
+						$mdgriffith$elm_ui$Element$Font$bold,
+						$mdgriffith$elm_ui$Element$Font$family(
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$Font$typeface('Inter'),
+								$mdgriffith$elm_ui$Element$Font$sansSerif
+							])),
+						$mdgriffith$elm_ui$Element$Font$letterSpacing(-0.2),
+						$mdgriffith$elm_ui$Element$Font$color(
+						$author$project$UI$Styles$color(config).gray500)
+					]);
+			case 'Body':
+				return _List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$Font$size(18),
+						$mdgriffith$elm_ui$Element$Font$medium,
+						$mdgriffith$elm_ui$Element$Font$family(
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$Font$typeface('Inter'),
+								$mdgriffith$elm_ui$Element$Font$sansSerif
+							])),
+						$mdgriffith$elm_ui$Element$Font$color(
+						$author$project$UI$Styles$color(config).gray500),
+						$mdgriffith$elm_ui$Element$Font$letterSpacing(-0.1)
+					]);
+			case 'BodyBold':
+				return _List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$Font$size(18),
+						$mdgriffith$elm_ui$Element$Font$bold,
+						$mdgriffith$elm_ui$Element$Font$family(
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$Font$typeface('Inter'),
+								$mdgriffith$elm_ui$Element$Font$sansSerif
+							])),
+						$mdgriffith$elm_ui$Element$Font$color(
+						$author$project$UI$Styles$color(config).gray500),
+						$mdgriffith$elm_ui$Element$Font$letterSpacing(-0.1)
+					]);
+			case 'Code':
+				return _List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$Font$size(14),
+						$mdgriffith$elm_ui$Element$Font$regular,
+						$mdgriffith$elm_ui$Element$Font$family(
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$Font$typeface('Inter'),
+								$mdgriffith$elm_ui$Element$Font$monospace
+							])),
+						$mdgriffith$elm_ui$Element$Font$color(
+						$author$project$UI$Styles$color(config).gray500)
+					]);
+			default:
+				return _List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$Font$size(24),
+						$mdgriffith$elm_ui$Element$Font$semiBold,
+						$mdgriffith$elm_ui$Element$Font$family(
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$Font$typeface('Inter'),
+								$mdgriffith$elm_ui$Element$Font$sansSerif
+							])),
+						$mdgriffith$elm_ui$Element$Font$letterSpacing(-0.2),
+						$mdgriffith$elm_ui$Element$Font$color(
+						$author$project$UI$Styles$color(config).gray500)
+					]);
+		}
+	});
 var $mdgriffith$elm_ui$Internal$Model$Max = F2(
 	function (a, b) {
 		return {$: 'Max', a: a, b: b};
@@ -20701,8 +20872,8 @@ var $mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
 var $mdgriffith$elm_ui$Element$text = function (content) {
 	return $mdgriffith$elm_ui$Internal$Model$Text(content);
 };
-var $author$project$UI$Sidebar$sidebarListItemView = F3(
-	function (title, isSelected, page) {
+var $author$project$UI$Sidebar$sidebarListItemView = F4(
+	function (title, isSelected, page, config) {
 		return A2(
 			$mdgriffith$elm_ui$Element$el,
 			_List_Nil,
@@ -20726,13 +20897,15 @@ var $author$project$UI$Sidebar$sidebarListItemView = F3(
 								$mdgriffith$elm_ui$Element$mouseOver(
 								_List_fromArray(
 									[
-										$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.gray300)
+										$mdgriffith$elm_ui$Element$Background$color(
+										$author$project$UI$Styles$color(config).gray300)
 									]))
 							]),
 							A2(
 							$author$project$Utils$addIf,
 							isSelected,
-							$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.primary200))
+							$mdgriffith$elm_ui$Element$Background$color(
+								$author$project$UI$Styles$color(config).primary200))
 						])),
 				_List_fromArray(
 					[
@@ -20751,7 +20924,7 @@ var $author$project$UI$Sidebar$sidebarListItemView = F3(
 							[
 								A2(
 								$mdgriffith$elm_ui$Element$el,
-								$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$Body),
+								A2($author$project$UI$Styles$getTypographicStyleFor, $author$project$UI$Styles$Body, config),
 								$mdgriffith$elm_ui$Element$text(title))
 							]))
 					])));
@@ -21008,8 +21181,8 @@ var $mdgriffith$elm_ui$Element$Border$width = function (v) {
 			v,
 			v));
 };
-var $author$project$UI$Components$Dropdown$dropDownButton = F3(
-	function (item, expanded, selectedItem) {
+var $author$project$UI$Components$Dropdown$dropDownButton = F4(
+	function (item, expanded, selectedItem, config) {
 		var t = function () {
 			if (item.$ === 'Just') {
 				var i = item.a;
@@ -21033,19 +21206,23 @@ var $author$project$UI$Components$Dropdown$dropDownButton = F3(
 							$mdgriffith$elm_ui$Element$mouseOver(
 							_List_fromArray(
 								[
-									$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.gray300)
+									$mdgriffith$elm_ui$Element$Background$color(
+									$author$project$UI$Styles$color(config).gray300)
 								])),
 							$mdgriffith$elm_ui$Element$Border$width(1),
-							$mdgriffith$elm_ui$Element$Border$color($author$project$UI$Styles$color.gray300)
+							$mdgriffith$elm_ui$Element$Border$color(
+							$author$project$UI$Styles$color(config).gray300)
 						]),
 						A2(
 						$author$project$Utils$addIf,
 						expanded,
-						$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.gray300)),
+						$mdgriffith$elm_ui$Element$Background$color(
+							$author$project$UI$Styles$color(config).gray300)),
 						A2(
 						$author$project$Utils$addIf,
 						expanded,
-						$mdgriffith$elm_ui$Element$Border$color($author$project$UI$Styles$color.white))
+						$mdgriffith$elm_ui$Element$Border$color(
+							$author$project$UI$Styles$color(config).white))
 					])),
 			_List_fromArray(
 				[
@@ -21060,7 +21237,7 @@ var $author$project$UI$Components$Dropdown$dropDownButton = F3(
 						[
 							A2(
 							$mdgriffith$elm_ui$Element$el,
-							$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$Body),
+							A2($author$project$UI$Styles$getTypographicStyleFor, $author$project$UI$Styles$Body, config),
 							t)
 						]))
 				]));
@@ -21068,46 +21245,48 @@ var $author$project$UI$Components$Dropdown$dropDownButton = F3(
 var $author$project$UI$Components$Dropdown$Select = function (a) {
 	return {$: 'Select', a: a};
 };
-var $author$project$UI$Components$Dropdown$dropDownMenuListItem = function (item) {
-	return A2(
-		$mdgriffith$elm_ui$Element$row,
-		$elm$core$List$concat(
+var $author$project$UI$Components$Dropdown$dropDownMenuListItem = F2(
+	function (item, config) {
+		return A2(
+			$mdgriffith$elm_ui$Element$row,
+			$elm$core$List$concat(
+				_List_fromArray(
+					[
+						_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$Events$onClick(
+							$author$project$UI$Components$Dropdown$Select(item)),
+							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+							$mdgriffith$elm_ui$Element$paddingEach(
+							{bottom: 10, left: 8, right: 8, top: 8}),
+							$mdgriffith$elm_ui$Element$Border$rounded(4),
+							$mdgriffith$elm_ui$Element$pointer,
+							$mdgriffith$elm_ui$Element$mouseOver(
+							_List_fromArray(
+								[
+									$mdgriffith$elm_ui$Element$Background$color(
+									$author$project$UI$Styles$color(config).gray300)
+								]))
+						])
+					])),
 			_List_fromArray(
 				[
+					A2(
+					$mdgriffith$elm_ui$Element$paragraph,
 					_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$Events$onClick(
-						$author$project$UI$Components$Dropdown$Select(item)),
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-						$mdgriffith$elm_ui$Element$paddingEach(
-						{bottom: 10, left: 8, right: 8, top: 8}),
-						$mdgriffith$elm_ui$Element$Border$rounded(4),
-						$mdgriffith$elm_ui$Element$pointer,
-						$mdgriffith$elm_ui$Element$mouseOver(
-						_List_fromArray(
-							[
-								$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.gray300)
-							]))
-					])
-				])),
-		_List_fromArray(
-			[
-				A2(
-				$mdgriffith$elm_ui$Element$paragraph,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$paddingEach(
-						{bottom: 0, left: 8, right: 0, top: 0})
-					]),
-				_List_fromArray(
-					[
-						A2(
-						$mdgriffith$elm_ui$Element$el,
-						$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$Body),
-						$mdgriffith$elm_ui$Element$text(item.title))
-					]))
-			]));
-};
+						[
+							$mdgriffith$elm_ui$Element$paddingEach(
+							{bottom: 0, left: 8, right: 0, top: 0})
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$mdgriffith$elm_ui$Element$el,
+							A2($author$project$UI$Styles$getTypographicStyleFor, $author$project$UI$Styles$Body, config),
+							$mdgriffith$elm_ui$Element$text(item.title))
+						]))
+				]));
+	});
 var $mdgriffith$elm_ui$Internal$Model$boxShadowClass = function (shadow) {
 	return $elm$core$String$concat(
 		_List_fromArray(
@@ -21132,8 +21311,8 @@ var $mdgriffith$elm_ui$Element$Border$shadow = function (almostShade) {
 			'box-shadow',
 			$mdgriffith$elm_ui$Internal$Model$formatBoxShadow(shade)));
 };
-var $author$project$UI$Components$Dropdown$dropDownMenu = F2(
-	function (visible, items) {
+var $author$project$UI$Components$Dropdown$dropDownMenu = F3(
+	function (visible, items, config) {
 		return visible ? A2(
 			$mdgriffith$elm_ui$Element$column,
 			_List_fromArray(
@@ -21144,7 +21323,7 @@ var $author$project$UI$Components$Dropdown$dropDownMenu = F2(
 					$mdgriffith$elm_ui$Element$Border$shadow(
 					{
 						blur: 15,
-						color: $author$project$UI$Styles$color.gray300,
+						color: $author$project$UI$Styles$color(config).gray300,
 						offset: _Utils_Tuple2(0, 0),
 						size: 0
 					})
@@ -21152,7 +21331,7 @@ var $author$project$UI$Components$Dropdown$dropDownMenu = F2(
 			A2(
 				$elm$core$List$map,
 				function (item) {
-					return $author$project$UI$Components$Dropdown$dropDownMenuListItem(item);
+					return A2($author$project$UI$Components$Dropdown$dropDownMenuListItem, item, config);
 				},
 				items)) : $mdgriffith$elm_ui$Element$none;
 	});
@@ -21166,71 +21345,75 @@ var $mdgriffith$elm_ui$Element$moveDown = function (y) {
 		$mdgriffith$elm_ui$Internal$Flag$moveY,
 		$mdgriffith$elm_ui$Internal$Model$MoveY(y));
 };
-var $author$project$UI$Components$Dropdown$view = function (model) {
-	return A2(
-		$mdgriffith$elm_ui$Element$column,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$padding(12),
-				$mdgriffith$elm_ui$Element$moveDown(8),
-				$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.white),
-				$mdgriffith$elm_ui$Element$scrollbarY,
-				$mdgriffith$elm_ui$Element$height(
-				A2($mdgriffith$elm_ui$Element$maximum, 320, $mdgriffith$elm_ui$Element$shrink)),
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-				$mdgriffith$elm_ui$Element$spacing(2)
-			]),
-		_List_fromArray(
-			[
-				A3($author$project$UI$Components$Dropdown$dropDownButton, model.selectedValue, model.expanded, $author$project$UI$Components$Dropdown$TriggerClicked),
-				A2($author$project$UI$Components$Dropdown$dropDownMenu, model.expanded, model.options)
-			]));
-};
-var $author$project$UI$Sidebar$sidebarView = function (model) {
-	return A2(
-		$mdgriffith$elm_ui$Element$column,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$width(
-				$mdgriffith$elm_ui$Element$px(240)),
-				$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
-				$mdgriffith$elm_ui$Element$padding(12),
-				$mdgriffith$elm_ui$Element$inFront(
-				A2(
-					$mdgriffith$elm_ui$Element$map,
-					$author$project$UI$Sidebar$DropdownMsg,
-					$author$project$UI$Components$Dropdown$view(model.dropDown))),
-				$mdgriffith$elm_ui$Element$scrollbarY
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$mdgriffith$elm_ui$Element$table,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-						$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
-						A2($mdgriffith$elm_ui$Element$paddingXY, 0, 64)
-					]),
-				{
-					columns: _List_fromArray(
+var $author$project$UI$Components$Dropdown$view = F2(
+	function (model, config) {
+		return A2(
+			$mdgriffith$elm_ui$Element$column,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$padding(12),
+					$mdgriffith$elm_ui$Element$moveDown(8),
+					$mdgriffith$elm_ui$Element$Background$color(
+					$author$project$UI$Styles$color(config).white),
+					$mdgriffith$elm_ui$Element$scrollbarY,
+					$mdgriffith$elm_ui$Element$height(
+					A2($mdgriffith$elm_ui$Element$maximum, 320, $mdgriffith$elm_ui$Element$shrink)),
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+					$mdgriffith$elm_ui$Element$spacing(2)
+				]),
+			_List_fromArray(
+				[
+					A4($author$project$UI$Components$Dropdown$dropDownButton, model.selectedValue, model.expanded, $author$project$UI$Components$Dropdown$TriggerClicked, config),
+					A3($author$project$UI$Components$Dropdown$dropDownMenu, model.expanded, model.options, config)
+				]));
+	});
+var $author$project$UI$Sidebar$sidebarView = F2(
+	function (model, config) {
+		return A2(
+			$mdgriffith$elm_ui$Element$column,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$width(
+					$mdgriffith$elm_ui$Element$px(240)),
+					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+					$mdgriffith$elm_ui$Element$padding(12),
+					$mdgriffith$elm_ui$Element$inFront(
+					A2(
+						$mdgriffith$elm_ui$Element$map,
+						$author$project$UI$Sidebar$DropdownMsg,
+						A2($author$project$UI$Components$Dropdown$view, model.dropDown, config))),
+					$mdgriffith$elm_ui$Element$scrollbarY
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$mdgriffith$elm_ui$Element$table,
+					_List_fromArray(
 						[
-							{
-							header: $mdgriffith$elm_ui$Element$none,
-							view: function (page) {
-								return A3(
-									$author$project$UI$Sidebar$sidebarListItemView,
-									$author$project$UI$Sidebar$getPageTitle(page),
-									_Utils_eq(model.selectedPage, page),
-									page);
-							},
-							width: $mdgriffith$elm_ui$Element$fill
-						}
+							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+							$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+							A2($mdgriffith$elm_ui$Element$paddingXY, 0, 64)
 						]),
-					data: model.pages
-				})
-			]));
-};
+					{
+						columns: _List_fromArray(
+							[
+								{
+								header: $mdgriffith$elm_ui$Element$none,
+								view: function (page) {
+									return A4(
+										$author$project$UI$Sidebar$sidebarListItemView,
+										$author$project$UI$Sidebar$getPageTitle(page),
+										_Utils_eq(model.selectedPage, page),
+										page,
+										config);
+								},
+								width: $mdgriffith$elm_ui$Element$fill
+							}
+							]),
+						data: model.pages
+					})
+				]));
+	});
 var $author$project$UI$PageView$AttributesViewMsg = function (a) {
 	return {$: 'AttributesViewMsg', a: a};
 };
@@ -21248,7 +21431,13 @@ var $author$project$UI$PageView$SynonymsViewMsg = function (a) {
 };
 var $author$project$UI$Styles$LG = {$: 'LG'};
 var $author$project$UI$Styles$MD = {$: 'MD'};
-var $author$project$UI$Styles$H2 = {$: 'H2'};
+var $author$project$UI$Styles$CardTitle = {$: 'CardTitle'};
+var $author$project$UI$Icons$Displayed = {$: 'Displayed'};
+var $author$project$UI$Icons$Distinct = {$: 'Distinct'};
+var $author$project$UI$Icons$Filterable = {$: 'Filterable'};
+var $author$project$UI$Styles$SM = {$: 'SM'};
+var $author$project$UI$Icons$Searchable = {$: 'Searchable'};
+var $author$project$UI$Icons$Sortable = {$: 'Sortable'};
 var $author$project$UI$Styles$FILL = {$: 'FILL'};
 var $author$project$UI$PageViews$Attributes$Toggle = F2(
 	function (a, b) {
@@ -21323,21 +21512,22 @@ var $author$project$UI$Elements$spacer = function (size) {
 				$mdgriffith$elm_ui$Element$none);
 	}
 };
-var $author$project$UI$Elements$switchBody = function (model) {
-	var background = model ? $author$project$UI$Styles$color.green500 : $author$project$UI$Styles$color.gray300;
-	return A2(
-		$mdgriffith$elm_ui$Element$el,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$Background$color(background),
-				$mdgriffith$elm_ui$Element$width(
-				$mdgriffith$elm_ui$Element$px(48)),
-				$mdgriffith$elm_ui$Element$height(
-				$mdgriffith$elm_ui$Element$px(32)),
-				$mdgriffith$elm_ui$Element$Border$rounded(20)
-			]),
-		$mdgriffith$elm_ui$Element$none);
-};
+var $author$project$UI$Elements$switchBody = F2(
+	function (model, config) {
+		var background = model ? $author$project$UI$Styles$color(config).green500 : $author$project$UI$Styles$color(config).gray300;
+		return A2(
+			$mdgriffith$elm_ui$Element$el,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$Background$color(background),
+					$mdgriffith$elm_ui$Element$width(
+					$mdgriffith$elm_ui$Element$px(48)),
+					$mdgriffith$elm_ui$Element$height(
+					$mdgriffith$elm_ui$Element$px(32)),
+					$mdgriffith$elm_ui$Element$Border$rounded(20)
+				]),
+			$mdgriffith$elm_ui$Element$none);
+	});
 var $mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
 var $mdgriffith$elm_ui$Element$centerY = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$CenterY);
 var $mdgriffith$elm_ui$Internal$Model$MoveX = function (a) {
@@ -21350,38 +21540,40 @@ var $mdgriffith$elm_ui$Element$moveRight = function (x) {
 		$mdgriffith$elm_ui$Internal$Flag$moveX,
 		$mdgriffith$elm_ui$Internal$Model$MoveX(x));
 };
-var $author$project$UI$Elements$switchHandle = function (model) {
-	var position = model ? 20 : 4;
-	return A2(
-		$mdgriffith$elm_ui$Element$el,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.white),
-				$mdgriffith$elm_ui$Element$width(
-				$mdgriffith$elm_ui$Element$px(24)),
-				$mdgriffith$elm_ui$Element$height(
-				$mdgriffith$elm_ui$Element$px(24)),
-				$mdgriffith$elm_ui$Element$Border$rounded(12),
-				$mdgriffith$elm_ui$Element$centerY,
-				$mdgriffith$elm_ui$Element$moveRight(position)
-			]),
-		$mdgriffith$elm_ui$Element$none);
-};
-var $author$project$UI$Elements$switch = F2(
-	function (model, msg) {
+var $author$project$UI$Elements$switchHandle = F2(
+	function (model, config) {
+		var position = model ? 20 : 4;
+		return A2(
+			$mdgriffith$elm_ui$Element$el,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$Background$color(
+					$author$project$UI$Styles$color(config).white),
+					$mdgriffith$elm_ui$Element$width(
+					$mdgriffith$elm_ui$Element$px(24)),
+					$mdgriffith$elm_ui$Element$height(
+					$mdgriffith$elm_ui$Element$px(24)),
+					$mdgriffith$elm_ui$Element$Border$rounded(12),
+					$mdgriffith$elm_ui$Element$centerY,
+					$mdgriffith$elm_ui$Element$moveRight(position)
+				]),
+			$mdgriffith$elm_ui$Element$none);
+	});
+var $author$project$UI$Elements$switch = F3(
+	function (model, msg, config) {
 		return A2(
 			$mdgriffith$elm_ui$Element$el,
 			_List_fromArray(
 				[
 					$mdgriffith$elm_ui$Element$inFront(
-					$author$project$UI$Elements$switchHandle(model)),
+					A2($author$project$UI$Elements$switchHandle, model, config)),
 					$mdgriffith$elm_ui$Element$pointer,
 					$mdgriffith$elm_ui$Element$Events$onClick(msg)
 				]),
-			$author$project$UI$Elements$switchBody(model));
+			A2($author$project$UI$Elements$switchBody, model, config));
 	});
-var $author$project$UI$Elements$syncIndicator = F2(
-	function (status, valueChanged) {
+var $author$project$UI$Elements$syncIndicator = F3(
+	function (status, valueChanged, config) {
 		if (valueChanged) {
 			switch (status.$) {
 				case 'NoRequest':
@@ -21389,7 +21581,8 @@ var $author$project$UI$Elements$syncIndicator = F2(
 						$mdgriffith$elm_ui$Element$el,
 						_List_fromArray(
 							[
-								$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.primary200),
+								$mdgriffith$elm_ui$Element$Background$color(
+								$author$project$UI$Styles$color(config).primary200),
 								$mdgriffith$elm_ui$Element$width(
 								$mdgriffith$elm_ui$Element$px(8)),
 								$mdgriffith$elm_ui$Element$height(
@@ -21403,7 +21596,8 @@ var $author$project$UI$Elements$syncIndicator = F2(
 						$mdgriffith$elm_ui$Element$el,
 						_List_fromArray(
 							[
-								$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.primary500),
+								$mdgriffith$elm_ui$Element$Background$color(
+								$author$project$UI$Styles$color(config).primary500),
 								$mdgriffith$elm_ui$Element$width(
 								$mdgriffith$elm_ui$Element$px(8)),
 								$mdgriffith$elm_ui$Element$height(
@@ -21417,7 +21611,8 @@ var $author$project$UI$Elements$syncIndicator = F2(
 						$mdgriffith$elm_ui$Element$el,
 						_List_fromArray(
 							[
-								$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.primary200),
+								$mdgriffith$elm_ui$Element$Background$color(
+								$author$project$UI$Styles$color(config).primary200),
 								$mdgriffith$elm_ui$Element$width(
 								$mdgriffith$elm_ui$Element$px(8)),
 								$mdgriffith$elm_ui$Element$height(
@@ -21431,7 +21626,8 @@ var $author$project$UI$Elements$syncIndicator = F2(
 						$mdgriffith$elm_ui$Element$el,
 						_List_fromArray(
 							[
-								$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.green500),
+								$mdgriffith$elm_ui$Element$Background$color(
+								$author$project$UI$Styles$color(config).green500),
 								$mdgriffith$elm_ui$Element$width(
 								$mdgriffith$elm_ui$Element$px(8)),
 								$mdgriffith$elm_ui$Element$height(
@@ -21445,8 +21641,8 @@ var $author$project$UI$Elements$syncIndicator = F2(
 			return $mdgriffith$elm_ui$Element$none;
 		}
 	});
-var $author$project$UI$PageViews$Attributes$cardViewRow = F2(
-	function (model, attrType) {
+var $author$project$UI$PageViews$Attributes$cardViewRow = F3(
+	function (model, attrType, config) {
 		return A2(
 			$mdgriffith$elm_ui$Element$column,
 			_List_fromArray(
@@ -21466,43 +21662,58 @@ var $author$project$UI$PageViews$Attributes$cardViewRow = F2(
 						[
 							A2(
 							$mdgriffith$elm_ui$Element$el,
-							$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$Body),
+							A2($author$project$UI$Styles$getTypographicStyleFor, $author$project$UI$Styles$Body, config),
 							$mdgriffith$elm_ui$Element$text(model.title)),
 							$author$project$UI$Elements$spacer($author$project$UI$Styles$XS),
-							A2(
+							A3(
 							$author$project$UI$Elements$syncIndicator,
 							model.requestStatus,
-							!_Utils_eq(model.saved, model.enabled)),
+							!_Utils_eq(model.saved, model.enabled),
+							config),
 							$author$project$UI$Elements$spacer($author$project$UI$Styles$FILL),
-							A2(
+							A3(
 							$author$project$UI$Elements$switch,
 							model.enabled,
-							A2($author$project$UI$PageViews$Attributes$Toggle, model, attrType))
+							A2($author$project$UI$PageViews$Attributes$Toggle, model, attrType),
+							config)
 						]))
 				]));
 	});
-var $author$project$UI$PageViews$Attributes$cardView = F2(
-	function (model, attrType) {
-		var title = function () {
+var $author$project$UI$PageViews$Attributes$cardView = F3(
+	function (model, attrType, config) {
+		var _v0 = function () {
 			switch (attrType.$) {
 				case 'Displayed':
-					return 'Displayed';
+					return _Utils_Tuple2(
+						'Displayed',
+						A2($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Displayed, $author$project$UI$Icons$Outline));
 				case 'Sortable':
-					return 'Sortable';
+					return _Utils_Tuple2(
+						'Sortable',
+						A2($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Sortable, $author$project$UI$Icons$Outline));
 				case 'Searchable':
-					return 'Searchable';
+					return _Utils_Tuple2(
+						'Searchable',
+						A2($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Searchable, $author$project$UI$Icons$Outline));
 				case 'Filterable':
-					return 'Filterable';
+					return _Utils_Tuple2(
+						'Filterable',
+						A2($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Filterable, $author$project$UI$Icons$Outline));
 				default:
-					return 'Distinct';
+					return _Utils_Tuple2(
+						'Distinct',
+						A2($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Distinct, $author$project$UI$Icons$Outline));
 			}
 		}();
+		var title = _v0.a;
+		var icon = _v0.b;
 		return A2(
 			$mdgriffith$elm_ui$Element$column,
 			_List_fromArray(
 				[
-					$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.white),
-					$mdgriffith$elm_ui$Element$Border$rounded(12),
+					$mdgriffith$elm_ui$Element$Background$color(
+					$author$project$UI$Styles$color(config).white),
+					$mdgriffith$elm_ui$Element$Border$rounded(20),
 					$mdgriffith$elm_ui$Element$padding(24),
 					$mdgriffith$elm_ui$Element$width(
 					$mdgriffith$elm_ui$Element$px(320))
@@ -21510,16 +21721,18 @@ var $author$project$UI$PageViews$Attributes$cardView = F2(
 			_Utils_ap(
 				_List_fromArray(
 					[
+						icon,
+						$author$project$UI$Elements$spacer($author$project$UI$Styles$SM),
 						A2(
 						$mdgriffith$elm_ui$Element$el,
-						$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H2),
+						A2($author$project$UI$Styles$getTypographicStyleFor, $author$project$UI$Styles$CardTitle, config),
 						$mdgriffith$elm_ui$Element$text(title)),
 						$author$project$UI$Elements$spacer($author$project$UI$Styles$MD)
 					]),
 				A2(
 					$elm$core$List$map,
 					function (x) {
-						return A2($author$project$UI$PageViews$Attributes$cardViewRow, x, attrType);
+						return A3($author$project$UI$PageViews$Attributes$cardViewRow, x, attrType, config);
 					},
 					model)));
 	});
@@ -21697,26 +21910,39 @@ var $mdgriffith$elm_ui$Element$Input$button = F2(
 				_List_fromArray(
 					[label])));
 	});
-var $author$project$UI$Elements$getButtonProps = function (buttonType) {
-	if (buttonType.$ === 'Subtle') {
-		return {bgColor: $author$project$UI$Styles$color.white, hoverColor: $author$project$UI$Styles$color.gray300};
-	} else {
-		return {bgColor: $author$project$UI$Styles$color.clear, hoverColor: $author$project$UI$Styles$color.gray300};
-	}
-};
-var $author$project$UI$Elements$button = F3(
-	function (buttonTheme, model, msg) {
-		var props = $author$project$UI$Elements$getButtonProps(buttonTheme);
+var $author$project$UI$Elements$getButtonProps = F2(
+	function (buttonType, config) {
+		switch (buttonType.$) {
+			case 'Subtle':
+				return {
+					bgColor: $author$project$UI$Styles$color(config).white,
+					hoverColor: $author$project$UI$Styles$color(config).gray300
+				};
+			case 'Clear':
+				return {
+					bgColor: $author$project$UI$Styles$color(config).clear,
+					hoverColor: $author$project$UI$Styles$color(config).gray300
+				};
+			default:
+				return {
+					bgColor: $author$project$UI$Styles$color(config).white,
+					hoverColor: $author$project$UI$Styles$color(config).gray300
+				};
+		}
+	});
+var $author$project$UI$Elements$button = F4(
+	function (buttonTheme, model, msg, config) {
+		var props = A2($author$project$UI$Elements$getButtonProps, buttonTheme, config);
 		return A2(
 			$mdgriffith$elm_ui$Element$el,
-			$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$Body),
+			A2($author$project$UI$Styles$getTypographicStyleFor, $author$project$UI$Styles$Body, config),
 			A2(
 				$mdgriffith$elm_ui$Element$Input$button,
 				_List_fromArray(
 					[
 						$mdgriffith$elm_ui$Element$Background$color(props.bgColor),
 						$mdgriffith$elm_ui$Element$paddingEach(
-						{bottom: 8, left: 12, right: 12, top: 10}),
+						{bottom: 8, left: 12, right: 12, top: 8}),
 						$mdgriffith$elm_ui$Element$Border$rounded(6),
 						$mdgriffith$elm_ui$Element$mouseOver(
 						_List_fromArray(
@@ -21729,8 +21955,8 @@ var $author$project$UI$Elements$button = F3(
 					onPress: $elm$core$Maybe$Just(msg)
 				}));
 	});
-var $author$project$UI$Components$Toolbar$toolbarView = F4(
-	function (model, create, sync, cancel) {
+var $author$project$UI$Components$Toolbar$toolbarView = F5(
+	function (model, create, sync, cancel, config) {
 		return A2(
 			$mdgriffith$elm_ui$Element$row,
 			_List_fromArray(
@@ -21738,7 +21964,8 @@ var $author$project$UI$Components$Toolbar$toolbarView = F4(
 					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
 					A2($mdgriffith$elm_ui$Element$paddingXY, 40, 12),
 					$mdgriffith$elm_ui$Element$alignTop,
-					$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.gray100)
+					$mdgriffith$elm_ui$Element$Background$color(
+					$author$project$UI$Styles$color(config).gray100)
 				]),
 			$elm$core$List$concat(
 				_List_fromArray(
@@ -21748,10 +21975,10 @@ var $author$project$UI$Components$Toolbar$toolbarView = F4(
 							A2(
 							$mdgriffith$elm_ui$Element$el,
 							_Utils_ap(
-								$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$H3),
+								A2($author$project$UI$Styles$getTypographicStyleFor, $author$project$UI$Styles$H3, config),
 								_List_fromArray(
 									[
-										A2($mdgriffith$elm_ui$Element$paddingXY, 0, 20)
+										A2($mdgriffith$elm_ui$Element$paddingXY, 0, 8)
 									])),
 							$mdgriffith$elm_ui$Element$text(model.title)),
 							$author$project$UI$Elements$spacer($author$project$UI$Styles$MD)
@@ -21759,27 +21986,28 @@ var $author$project$UI$Components$Toolbar$toolbarView = F4(
 						A2(
 						$author$project$Utils$addElementIf,
 						model.showCreateAction,
-						A3($author$project$UI$Elements$button, $author$project$UI$Elements$Subtle, 'Add', create)),
+						A4($author$project$UI$Elements$button, $author$project$UI$Elements$Subtle, 'Add', create, config)),
 						A2(
 						$author$project$Utils$addElementsIf,
 						model.valueChanged,
 						_List_fromArray(
 							[
 								$author$project$UI$Elements$spacer($author$project$UI$Styles$FILL),
-								A3($author$project$UI$Elements$button, $author$project$UI$Elements$Clear, 'Save', sync),
-								A3($author$project$UI$Elements$button, $author$project$UI$Elements$Clear, 'Cancel', cancel)
+								A4($author$project$UI$Elements$button, $author$project$UI$Elements$Clear, 'Save', sync, config),
+								A4($author$project$UI$Elements$button, $author$project$UI$Elements$Clear, 'Cancel', cancel, config)
 							]))
 					])));
 	});
-var $author$project$UI$PageViews$Attributes$toolbarView = function (model) {
-	var toolbarModel = {
-		loading: $author$project$UI$PageViews$Attributes$isLoading(model),
-		showCreateAction: false,
-		title: 'Attributes',
-		valueChanged: $author$project$UI$PageViews$Attributes$getValueChanged(model)
-	};
-	return A4($author$project$UI$Components$Toolbar$toolbarView, toolbarModel, $author$project$UI$PageViews$Attributes$None, $author$project$UI$PageViews$Attributes$Save, $author$project$UI$PageViews$Attributes$Reset);
-};
+var $author$project$UI$PageViews$Attributes$toolbarView = F2(
+	function (model, config) {
+		var toolbarModel = {
+			loading: $author$project$UI$PageViews$Attributes$isLoading(model),
+			showCreateAction: false,
+			title: 'Attributes',
+			valueChanged: $author$project$UI$PageViews$Attributes$getValueChanged(model)
+		};
+		return A5($author$project$UI$Components$Toolbar$toolbarView, toolbarModel, $author$project$UI$PageViews$Attributes$None, $author$project$UI$PageViews$Attributes$Save, $author$project$UI$PageViews$Attributes$Reset, config);
+	});
 var $mdgriffith$elm_ui$Internal$Model$Padding = F5(
 	function (a, b, c, d, e) {
 		return {$: 'Padding', a: a, b: b, c: c, d: d, e: e};
@@ -21968,63 +22196,65 @@ var $mdgriffith$elm_ui$Element$wrappedRow = F2(
 			}
 		}
 	});
-var $author$project$UI$PageViews$Attributes$view = function (model) {
-	return A2(
-		$mdgriffith$elm_ui$Element$column,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-				$mdgriffith$elm_ui$Element$paddingEach(
-				{bottom: 12, left: 0, right: 0, top: 20}),
-				$mdgriffith$elm_ui$Element$inFront(
-				$author$project$UI$PageViews$Attributes$toolbarView(model))
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$mdgriffith$elm_ui$Element$column,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-						$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
-						$mdgriffith$elm_ui$Element$scrollbarY,
-						A2($mdgriffith$elm_ui$Element$paddingXY, 120, 40)
-					]),
-				_List_fromArray(
-					[
-						$author$project$UI$Elements$spacer($author$project$UI$Styles$LG),
-						A2(
-						$mdgriffith$elm_ui$Element$wrappedRow,
-						_List_fromArray(
-							[
-								$mdgriffith$elm_ui$Element$spacing(20)
-							]),
-						_List_fromArray(
-							[
-								A2($author$project$UI$PageViews$Attributes$cardView, model.displayed, $author$project$UI$PageViews$Attributes$Displayed),
-								A2($author$project$UI$PageViews$Attributes$cardView, model.searchable, $author$project$UI$PageViews$Attributes$Searchable),
-								A2($author$project$UI$PageViews$Attributes$cardView, model.filterable, $author$project$UI$PageViews$Attributes$Filterable),
-								A2($author$project$UI$PageViews$Attributes$cardView, model.sortable, $author$project$UI$PageViews$Attributes$Sortable),
-								A2($author$project$UI$PageViews$Attributes$cardView, model.distinct, $author$project$UI$PageViews$Attributes$Distinct)
-							])),
-						$author$project$UI$Elements$spacer($author$project$UI$Styles$LG),
-						$author$project$UI$Elements$spacer($author$project$UI$Styles$MD)
-					]))
-			]));
-};
+var $author$project$UI$PageViews$Attributes$view = F2(
+	function (model, config) {
+		return A2(
+			$mdgriffith$elm_ui$Element$column,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+					$mdgriffith$elm_ui$Element$paddingEach(
+					{bottom: 12, left: 0, right: 0, top: 20}),
+					$mdgriffith$elm_ui$Element$inFront(
+					A2($author$project$UI$PageViews$Attributes$toolbarView, model, config))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$mdgriffith$elm_ui$Element$column,
+					_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+							$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+							$mdgriffith$elm_ui$Element$scrollbarY,
+							A2($mdgriffith$elm_ui$Element$paddingXY, 120, 60)
+						]),
+					_List_fromArray(
+						[
+							$author$project$UI$Elements$spacer($author$project$UI$Styles$LG),
+							A2(
+							$mdgriffith$elm_ui$Element$wrappedRow,
+							_List_fromArray(
+								[
+									$mdgriffith$elm_ui$Element$spacing(20)
+								]),
+							_List_fromArray(
+								[
+									A3($author$project$UI$PageViews$Attributes$cardView, model.displayed, $author$project$UI$PageViews$Attributes$Displayed, config),
+									A3($author$project$UI$PageViews$Attributes$cardView, model.searchable, $author$project$UI$PageViews$Attributes$Searchable, config),
+									A3($author$project$UI$PageViews$Attributes$cardView, model.filterable, $author$project$UI$PageViews$Attributes$Filterable, config),
+									A3($author$project$UI$PageViews$Attributes$cardView, model.sortable, $author$project$UI$PageViews$Attributes$Sortable, config),
+									A3($author$project$UI$PageViews$Attributes$cardView, model.distinct, $author$project$UI$PageViews$Attributes$Distinct, config)
+								])),
+							$author$project$UI$Elements$spacer($author$project$UI$Styles$LG),
+							$author$project$UI$Elements$spacer($author$project$UI$Styles$MD)
+						]))
+				]));
+	});
 var $author$project$UI$Styles$Code = {$: 'Code'};
-var $author$project$UI$Styles$SM = {$: 'SM'};
-var $author$project$UI$PageViews$Documents$card = function (t) {
-	return _Utils_ap(
-		t,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$padding(20),
-				$mdgriffith$elm_ui$Element$Border$rounded(12),
-				$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.white)
-			]));
-};
+var $author$project$UI$PageViews$Documents$card = F2(
+	function (t, config) {
+		return _Utils_ap(
+			t,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$padding(20),
+					$mdgriffith$elm_ui$Element$Border$rounded(12),
+					$mdgriffith$elm_ui$Element$Background$color(
+					$author$project$UI$Styles$color(config).white)
+				]));
+	});
 var $author$project$UI$PageViews$Documents$getIdString = F2(
 	function (json, key) {
 		var _v0 = A2(
@@ -22554,10 +22784,11 @@ var $ThinkAlexandria$elm_pretty_print_json$Json$Print$prettyString = F2(
 					json)));
 	});
 var $author$project$UI$PageViews$Documents$X = {$: 'X'};
-var $author$project$UI$PageViews$Documents$toolbarView = function (_v0) {
-	var toolbarModel = {loading: false, showCreateAction: false, title: 'Document', valueChanged: false};
-	return A4($author$project$UI$Components$Toolbar$toolbarView, toolbarModel, $author$project$UI$PageViews$Documents$X, $author$project$UI$PageViews$Documents$X, $author$project$UI$PageViews$Documents$X);
-};
+var $author$project$UI$PageViews$Documents$toolbarView = F2(
+	function (_v0, config) {
+		var toolbarModel = {loading: false, showCreateAction: false, title: 'Document', valueChanged: false};
+		return A5($author$project$UI$Components$Toolbar$toolbarView, toolbarModel, $author$project$UI$PageViews$Documents$X, $author$project$UI$PageViews$Documents$X, $author$project$UI$PageViews$Documents$X, config);
+	});
 var $elm$core$Result$withDefault = F2(
 	function (def, result) {
 		if (result.$ === 'Ok') {
@@ -22567,70 +22798,76 @@ var $elm$core$Result$withDefault = F2(
 			return def;
 		}
 	});
-var $author$project$UI$PageViews$Documents$view = function (model) {
-	return A2(
-		$mdgriffith$elm_ui$Element$column,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-				$mdgriffith$elm_ui$Element$inFront(
-				$author$project$UI$PageViews$Documents$toolbarView(model)),
-				$mdgriffith$elm_ui$Element$paddingEach(
-				{bottom: 12, left: 0, right: 0, top: 20})
-			]),
-		_List_fromArray(
-			[
-				$author$project$UI$Elements$spacer($author$project$UI$Styles$SM),
-				A2(
-				$mdgriffith$elm_ui$Element$table,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-						$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
-						$mdgriffith$elm_ui$Element$scrollbarY,
-						$mdgriffith$elm_ui$Element$spacing(16),
-						A2($mdgriffith$elm_ui$Element$paddingXY, 120, 40)
-					]),
-				{
-					columns: _List_fromArray(
+var $author$project$UI$PageViews$Documents$view = F2(
+	function (model, config) {
+		return A2(
+			$mdgriffith$elm_ui$Element$column,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+					$mdgriffith$elm_ui$Element$inFront(
+					A2($author$project$UI$PageViews$Documents$toolbarView, model, config)),
+					$mdgriffith$elm_ui$Element$paddingEach(
+					{bottom: 12, left: 0, right: 0, top: 20})
+				]),
+			_List_fromArray(
+				[
+					$author$project$UI$Elements$spacer($author$project$UI$Styles$SM),
+					A2(
+					$mdgriffith$elm_ui$Element$table,
+					_List_fromArray(
 						[
-							{
-							header: $mdgriffith$elm_ui$Element$none,
-							view: function (document) {
-								return A2(
-									$mdgriffith$elm_ui$Element$column,
-									$author$project$UI$PageViews$Documents$card(
-										$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$Code)),
-									_List_fromArray(
-										[
-											$mdgriffith$elm_ui$Element$text(
-											A2(
-												$elm$core$Maybe$withDefault,
-												'fail',
-												A2($author$project$UI$PageViews$Documents$getIdString, document, 'id'))),
-											$mdgriffith$elm_ui$Element$text(
-											A2(
-												$elm$core$Result$withDefault,
-												'',
-												A2(
-													$ThinkAlexandria$elm_pretty_print_json$Json$Print$prettyString,
-													{columns: 1, indent: 4},
-													document)))
-										]));
-							},
-							width: $mdgriffith$elm_ui$Element$fill
-						}
+							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+							$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+							$mdgriffith$elm_ui$Element$scrollbarY,
+							$mdgriffith$elm_ui$Element$spacing(16),
+							A2($mdgriffith$elm_ui$Element$paddingXY, 120, 60)
 						]),
-					data: model.documents
-				})
-			]));
-};
-var $author$project$UI$PageViews$Settings$KeyValueChanged = function (a) {
-	return {$: 'KeyValueChanged', a: a};
-};
+					{
+						columns: _List_fromArray(
+							[
+								{
+								header: $mdgriffith$elm_ui$Element$none,
+								view: function (document) {
+									return A2(
+										$mdgriffith$elm_ui$Element$column,
+										A2(
+											$author$project$UI$PageViews$Documents$card,
+											A2($author$project$UI$Styles$getTypographicStyleFor, $author$project$UI$Styles$Code, config),
+											config),
+										_List_fromArray(
+											[
+												$mdgriffith$elm_ui$Element$text(
+												A2(
+													$elm$core$Maybe$withDefault,
+													'fail',
+													A2($author$project$UI$PageViews$Documents$getIdString, document, 'id'))),
+												$mdgriffith$elm_ui$Element$text(
+												A2(
+													$elm$core$Result$withDefault,
+													'',
+													A2(
+														$ThinkAlexandria$elm_pretty_print_json$Json$Print$prettyString,
+														{columns: 1, indent: 4},
+														document)))
+											]));
+								},
+								width: $mdgriffith$elm_ui$Element$fill
+							}
+							]),
+						data: model.documents
+					})
+				]));
+	});
+var $author$project$UI$Styles$Dark = {$: 'Dark'};
 var $author$project$UI$PageViews$Settings$None = {$: 'None'};
-var $author$project$UI$PageViews$Settings$SaveKeyValue = {$: 'SaveKeyValue'};
+var $author$project$UI$PageViews$Settings$TokenValueChanged = function (a) {
+	return {$: 'TokenValueChanged', a: a};
+};
+var $author$project$UI$PageViews$Settings$UpdateColorScheme = function (a) {
+	return {$: 'UpdateColorScheme', a: a};
+};
 var $author$project$UI$Styles$XL = {$: 'XL'};
 var $mdgriffith$elm_ui$Element$Input$HiddenLabel = function (a) {
 	return {$: 'HiddenLabel', a: a};
@@ -23430,12 +23667,12 @@ var $mdgriffith$elm_ui$Element$Input$text = $mdgriffith$elm_ui$Element$Input$tex
 		spellchecked: false,
 		type_: $mdgriffith$elm_ui$Element$Input$TextInputNode('text')
 	});
-var $author$project$UI$Elements$textfield = F5(
-	function (value, placeholder, valueChanged, loseFocus, returnKeyMsg) {
+var $author$project$UI$Elements$textfield = F6(
+	function (value, placeholder, valueChanged, loseFocus, returnKeyMsg, config) {
 		return A2(
 			$mdgriffith$elm_ui$Element$el,
 			_Utils_ap(
-				$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$Body),
+				A2($author$project$UI$Styles$getTypographicStyleFor, $author$project$UI$Styles$Body, config),
 				_List_fromArray(
 					[
 						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
@@ -23448,8 +23685,10 @@ var $author$project$UI$Elements$textfield = F5(
 						$mdgriffith$elm_ui$Element$spacing(8),
 						$mdgriffith$elm_ui$Element$Border$width(0),
 						$mdgriffith$elm_ui$Element$Border$rounded(6),
-						$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.white),
-						$mdgriffith$elm_ui$Element$Border$color($author$project$UI$Styles$color.gray300),
+						$mdgriffith$elm_ui$Element$Background$color(
+						$author$project$UI$Styles$color(config).white),
+						$mdgriffith$elm_ui$Element$Border$color(
+						$author$project$UI$Styles$color(config).gray300),
 						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
 						$mdgriffith$elm_ui$Element$padding(12),
 						$mdgriffith$elm_ui$Element$Events$onLoseFocus(loseFocus)
@@ -23465,42 +23704,63 @@ var $author$project$UI$Elements$textfield = F5(
 					text: value
 				}));
 	});
-var $author$project$UI$PageViews$Settings$toolbarView = function (_v0) {
-	var toolbarModel = {loading: false, showCreateAction: false, title: 'Settings', valueChanged: true};
-	return A4($author$project$UI$Components$Toolbar$toolbarView, toolbarModel, $author$project$UI$PageViews$Settings$None, $author$project$UI$PageViews$Settings$SaveKeyValue, $author$project$UI$PageViews$Settings$None);
-};
-var $author$project$UI$PageViews$Settings$view = function (model) {
-	return A2(
-		$mdgriffith$elm_ui$Element$column,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-				$mdgriffith$elm_ui$Element$paddingEach(
-				{bottom: 12, left: 0, right: 0, top: 20}),
-				$mdgriffith$elm_ui$Element$inFront(
-				$author$project$UI$PageViews$Settings$toolbarView(model))
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$mdgriffith$elm_ui$Element$column,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-						$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
-						$mdgriffith$elm_ui$Element$scrollbarY,
-						A2($mdgriffith$elm_ui$Element$paddingXY, 120, 40)
-					]),
-				_List_fromArray(
-					[
-						$author$project$UI$Elements$spacer($author$project$UI$Styles$XL),
-						A5($author$project$UI$Elements$textfield, model.tokenValue, 'Token', $author$project$UI$PageViews$Settings$KeyValueChanged, $author$project$UI$PageViews$Settings$None, $author$project$UI$PageViews$Settings$None),
-						$author$project$UI$Elements$spacer($author$project$UI$Styles$SM),
-						A3($author$project$UI$Elements$button, $author$project$UI$Elements$Subtle, 'Save Token', $author$project$UI$PageViews$Settings$SaveKeyValue)
-					]))
-			]));
-};
+var $author$project$UI$PageViews$Settings$SaveKeyValue = {$: 'SaveKeyValue'};
+var $author$project$UI$PageViews$Settings$toolbarView = F2(
+	function (_v0, config) {
+		var toolbarModel = {loading: false, showCreateAction: false, title: 'Settings', valueChanged: false};
+		return A5($author$project$UI$Components$Toolbar$toolbarView, toolbarModel, $author$project$UI$PageViews$Settings$None, $author$project$UI$PageViews$Settings$SaveKeyValue, $author$project$UI$PageViews$Settings$None, config);
+	});
+var $author$project$UI$PageViews$Settings$view = F2(
+	function (model, config) {
+		return A2(
+			$mdgriffith$elm_ui$Element$column,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+					$mdgriffith$elm_ui$Element$paddingEach(
+					{bottom: 12, left: 0, right: 0, top: 20}),
+					$mdgriffith$elm_ui$Element$inFront(
+					A2($author$project$UI$PageViews$Settings$toolbarView, model, config))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$mdgriffith$elm_ui$Element$column,
+					_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+							$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+							$mdgriffith$elm_ui$Element$scrollbarY,
+							A2($mdgriffith$elm_ui$Element$paddingXY, 120, 60)
+						]),
+					_List_fromArray(
+						[
+							$author$project$UI$Elements$spacer($author$project$UI$Styles$XL),
+							A6($author$project$UI$Elements$textfield, model.tokenValue, 'Token', $author$project$UI$PageViews$Settings$TokenValueChanged, $author$project$UI$PageViews$Settings$None, $author$project$UI$PageViews$Settings$None, config),
+							$author$project$UI$Elements$spacer($author$project$UI$Styles$MD),
+							A2(
+							$mdgriffith$elm_ui$Element$row,
+							_List_Nil,
+							_List_fromArray(
+								[
+									A4(
+									$author$project$UI$Elements$button,
+									$author$project$UI$Elements$Subtle,
+									'Light',
+									$author$project$UI$PageViews$Settings$UpdateColorScheme($author$project$UI$Styles$Light),
+									config),
+									$author$project$UI$Elements$spacer($author$project$UI$Styles$MD),
+									A4(
+									$author$project$UI$Elements$button,
+									$author$project$UI$Elements$Subtle,
+									'Dark',
+									$author$project$UI$PageViews$Settings$UpdateColorScheme($author$project$UI$Styles$Dark),
+									config)
+								]))
+						]))
+				]));
+	});
 var $author$project$UI$PageViews$StopWords$Create = {$: 'Create'};
 var $author$project$UI$PageViews$StopWords$NewValueUpdated = function (a) {
 	return {$: 'NewValueUpdated', a: a};
@@ -23510,31 +23770,34 @@ var $author$project$UI$PageViews$StopWords$Remove = function (a) {
 	return {$: 'Remove', a: a};
 };
 var $author$project$UI$Icons$Close = {$: 'Close'};
-var $author$project$UI$Elements$chip = F4(
-	function (text, requestStatus, saved, msg) {
+var $author$project$UI$Elements$chip = F5(
+	function (text, requestStatus, saved, msg, config) {
 		return A2(
 			$mdgriffith$elm_ui$Element$el,
-			$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$Body),
+			A2($author$project$UI$Styles$getTypographicStyleFor, $author$project$UI$Styles$Body, config),
 			A2(
 				$mdgriffith$elm_ui$Element$row,
 				_List_fromArray(
 					[
-						$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.white),
+						$mdgriffith$elm_ui$Element$Background$color(
+						$author$project$UI$Styles$color(config).white),
 						$mdgriffith$elm_ui$Element$paddingEach(
 						{bottom: 4, left: 12, right: 4, top: 4}),
 						$mdgriffith$elm_ui$Element$Border$rounded(6),
 						$mdgriffith$elm_ui$Element$mouseOver(
 						_List_fromArray(
 							[
-								$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.gray100)
+								$mdgriffith$elm_ui$Element$Background$color(
+								$author$project$UI$Styles$color(config).gray100)
 							])),
-						$mdgriffith$elm_ui$Element$Border$color($author$project$UI$Styles$color.gray300),
+						$mdgriffith$elm_ui$Element$Border$color(
+						$author$project$UI$Styles$color(config).gray300),
 						$mdgriffith$elm_ui$Element$Border$width(1),
 						$mdgriffith$elm_ui$Element$spacing(4)
 					]),
 				_List_fromArray(
 					[
-						A2($author$project$UI$Elements$syncIndicator, requestStatus, !saved),
+						A3($author$project$UI$Elements$syncIndicator, requestStatus, !saved, config),
 						$mdgriffith$elm_ui$Element$text(text),
 						A2(
 						$mdgriffith$elm_ui$Element$el,
@@ -23583,64 +23846,67 @@ var $author$project$UI$PageViews$StopWords$isLoading = function (model) {
 				},
 				model.words))));
 };
-var $author$project$UI$PageViews$StopWords$toolbarView = function (m) {
-	var toolbarModel = {
-		loading: $author$project$UI$PageViews$StopWords$isLoading(m),
-		showCreateAction: false,
-		title: 'Stopwords',
-		valueChanged: $author$project$UI$PageViews$StopWords$getValueChanged(m)
-	};
-	return A4($author$project$UI$Components$Toolbar$toolbarView, toolbarModel, $author$project$UI$PageViews$StopWords$None, $author$project$UI$PageViews$StopWords$Sync, $author$project$UI$PageViews$StopWords$Reset);
-};
-var $author$project$UI$PageViews$StopWords$view = function (model) {
-	return A2(
-		$mdgriffith$elm_ui$Element$column,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-				$mdgriffith$elm_ui$Element$paddingEach(
-				{bottom: 12, left: 0, right: 0, top: 20}),
-				$mdgriffith$elm_ui$Element$inFront(
-				$author$project$UI$PageViews$StopWords$toolbarView(model))
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$mdgriffith$elm_ui$Element$column,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-						$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
-						$mdgriffith$elm_ui$Element$scrollbarY,
-						A2($mdgriffith$elm_ui$Element$paddingXY, 120, 40)
-					]),
-				_List_fromArray(
-					[
-						$author$project$UI$Elements$spacer($author$project$UI$Styles$XL),
-						A5($author$project$UI$Elements$textfield, model.newValue, 'Add a word', $author$project$UI$PageViews$StopWords$NewValueUpdated, $author$project$UI$PageViews$StopWords$None, $author$project$UI$PageViews$StopWords$Create),
-						$author$project$UI$Elements$spacer($author$project$UI$Styles$SM),
-						A2(
-						$mdgriffith$elm_ui$Element$wrappedRow,
-						_List_fromArray(
-							[
-								$mdgriffith$elm_ui$Element$spacing(12)
-							]),
-						A2(
-							$elm$core$List$map,
-							function (w) {
-								return A4(
-									$author$project$UI$Elements$chip,
-									w.title,
-									w.requestStatus,
-									w.saved,
-									$author$project$UI$PageViews$StopWords$Remove(w));
-							},
-							model.words)),
-						$author$project$UI$Elements$spacer($author$project$UI$Styles$XL)
-					]))
-			]));
-};
+var $author$project$UI$PageViews$StopWords$toolbarView = F2(
+	function (m, config) {
+		var toolbarModel = {
+			loading: $author$project$UI$PageViews$StopWords$isLoading(m),
+			showCreateAction: false,
+			title: 'Stopwords',
+			valueChanged: $author$project$UI$PageViews$StopWords$getValueChanged(m)
+		};
+		return A5($author$project$UI$Components$Toolbar$toolbarView, toolbarModel, $author$project$UI$PageViews$StopWords$None, $author$project$UI$PageViews$StopWords$Sync, $author$project$UI$PageViews$StopWords$Reset, config);
+	});
+var $author$project$UI$PageViews$StopWords$view = F2(
+	function (model, config) {
+		return A2(
+			$mdgriffith$elm_ui$Element$column,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+					$mdgriffith$elm_ui$Element$paddingEach(
+					{bottom: 12, left: 0, right: 0, top: 20}),
+					$mdgriffith$elm_ui$Element$inFront(
+					A2($author$project$UI$PageViews$StopWords$toolbarView, model, config))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$mdgriffith$elm_ui$Element$column,
+					_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+							$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+							$mdgriffith$elm_ui$Element$scrollbarY,
+							A2($mdgriffith$elm_ui$Element$paddingXY, 120, 60)
+						]),
+					_List_fromArray(
+						[
+							$author$project$UI$Elements$spacer($author$project$UI$Styles$XL),
+							A6($author$project$UI$Elements$textfield, model.newValue, 'Add a word', $author$project$UI$PageViews$StopWords$NewValueUpdated, $author$project$UI$PageViews$StopWords$None, $author$project$UI$PageViews$StopWords$Create, config),
+							$author$project$UI$Elements$spacer($author$project$UI$Styles$SM),
+							A2(
+							$mdgriffith$elm_ui$Element$wrappedRow,
+							_List_fromArray(
+								[
+									$mdgriffith$elm_ui$Element$spacing(12)
+								]),
+							A2(
+								$elm$core$List$map,
+								function (w) {
+									return A5(
+										$author$project$UI$Elements$chip,
+										w.title,
+										w.requestStatus,
+										w.saved,
+										$author$project$UI$PageViews$StopWords$Remove(w),
+										config);
+								},
+								model.words)),
+							$author$project$UI$Elements$spacer($author$project$UI$Styles$XL)
+						]))
+				]));
+	});
 var $author$project$UI$PageViews$Synonyms$CardViewMsg = function (a) {
 	return {$: 'CardViewMsg', a: a};
 };
@@ -23675,15 +23941,16 @@ var $author$project$UI$PageViews$Synonyms$isLoading = function (model) {
 				},
 				model.synonymStates))));
 };
-var $author$project$UI$PageViews$Synonyms$toolbarView = function (m) {
-	var toolbarModel = {
-		loading: $author$project$UI$PageViews$Synonyms$isLoading(m),
-		showCreateAction: true,
-		title: 'Synonyms',
-		valueChanged: $author$project$UI$PageViews$Synonyms$getValueChanged(m)
-	};
-	return A4($author$project$UI$Components$Toolbar$toolbarView, toolbarModel, $author$project$UI$PageViews$Synonyms$New, $author$project$UI$PageViews$Synonyms$Sync, $author$project$UI$PageViews$Synonyms$Reset);
-};
+var $author$project$UI$PageViews$Synonyms$toolbarView = F2(
+	function (m, config) {
+		var toolbarModel = {
+			loading: $author$project$UI$PageViews$Synonyms$isLoading(m),
+			showCreateAction: true,
+			title: 'Synonyms',
+			valueChanged: $author$project$UI$PageViews$Synonyms$getValueChanged(m)
+		};
+		return A5($author$project$UI$Components$Toolbar$toolbarView, toolbarModel, $author$project$UI$PageViews$Synonyms$New, $author$project$UI$PageViews$Synonyms$Sync, $author$project$UI$PageViews$Synonyms$Reset, config);
+	});
 var $author$project$UI$Components$SynonymCard$DoneEditing = {$: 'DoneEditing'};
 var $author$project$UI$Components$SynonymCard$UpdatedList = F2(
 	function (a, b) {
@@ -23712,8 +23979,8 @@ var $mdgriffith$elm_ui$Element$mouseDown = function (decs) {
 			$mdgriffith$elm_ui$Internal$Model$Active,
 			$mdgriffith$elm_ui$Internal$Model$unwrapDecorations(decs)));
 };
-var $author$project$UI$Elements$iconButton = F2(
-	function (icon, msg) {
+var $author$project$UI$Elements$iconButton = F3(
+	function (icon, msg, config) {
 		return A2(
 			$mdgriffith$elm_ui$Element$el,
 			_List_fromArray(
@@ -23725,223 +23992,240 @@ var $author$project$UI$Elements$iconButton = F2(
 					$mdgriffith$elm_ui$Element$mouseOver(
 					_List_fromArray(
 						[
-							$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.gray100)
+							$mdgriffith$elm_ui$Element$Background$color(
+							$author$project$UI$Styles$color(config).gray100)
 						])),
 					$mdgriffith$elm_ui$Element$mouseDown(
 					_List_fromArray(
 						[
-							$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.gray300)
+							$mdgriffith$elm_ui$Element$Background$color(
+							$author$project$UI$Styles$color(config).gray300)
 						]))
 				]),
 			A2($author$project$UI$Icons$buildIcon, icon, $author$project$UI$Icons$Outline));
 	});
-var $author$project$UI$Components$SynonymCard$failedView = function (model) {
-	var _v0 = model.requestStatus;
-	if (_v0.$ === 'Failed') {
-		return A2(
-			$mdgriffith$elm_ui$Element$row,
-			_Utils_ap(
+var $author$project$UI$Components$SynonymCard$failedView = F2(
+	function (model, config) {
+		var _v0 = model.requestStatus;
+		if (_v0.$ === 'Failed') {
+			return A2(
+				$mdgriffith$elm_ui$Element$row,
+				_Utils_ap(
+					_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$padding(8),
+							$mdgriffith$elm_ui$Element$Background$color(
+							$author$project$UI$Styles$color(config).white),
+							$mdgriffith$elm_ui$Element$Border$rounded(8),
+							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+						]),
+					A2($author$project$UI$Styles$getTypographicStyleFor, $author$project$UI$Styles$Body, config)),
 				_List_fromArray(
 					[
-						$mdgriffith$elm_ui$Element$padding(8),
-						$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.white),
-						$mdgriffith$elm_ui$Element$Border$rounded(8),
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+						A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+								$mdgriffith$elm_ui$Element$padding(4)
+							]),
+						$mdgriffith$elm_ui$Element$text('Failed')),
+						A2(
+						$mdgriffith$elm_ui$Element$row,
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink)
+							]),
+						_List_fromArray(
+							[
+								A3(
+								$author$project$UI$Elements$iconButton,
+								$author$project$UI$Icons$Retry,
+								$author$project$UI$Components$SynonymCard$RetrySave(model.index),
+								config),
+								A3(
+								$author$project$UI$Elements$iconButton,
+								$author$project$UI$Icons$Trash,
+								$author$project$UI$Components$SynonymCard$Remove(model.index),
+								config)
+							]))
+					]));
+		} else {
+			return $mdgriffith$elm_ui$Element$none;
+		}
+	});
+var $author$project$UI$Components$SynonymCard$loadingView = F2(
+	function (model, config) {
+		var _v0 = model.requestStatus;
+		if (_v0.$ === 'Fired') {
+			return A2(
+				$mdgriffith$elm_ui$Element$row,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
+						$mdgriffith$elm_ui$Element$paddingEach(
+						{bottom: 0, left: 8, right: 0, top: 0})
 					]),
-				$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$Body)),
-			_List_fromArray(
-				[
-					A2(
-					$mdgriffith$elm_ui$Element$el,
-					_List_fromArray(
-						[
-							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-							$mdgriffith$elm_ui$Element$padding(4)
-						]),
-					$mdgriffith$elm_ui$Element$text('Failed')),
-					A2(
-					$mdgriffith$elm_ui$Element$row,
-					_List_fromArray(
-						[
-							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink)
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$author$project$UI$Elements$iconButton,
-							$author$project$UI$Icons$Retry,
-							$author$project$UI$Components$SynonymCard$RetrySave(model.index)),
-							A2(
-							$author$project$UI$Elements$iconButton,
-							$author$project$UI$Icons$Trash,
-							$author$project$UI$Components$SynonymCard$Remove(model.index))
-						]))
-				]));
-	} else {
-		return $mdgriffith$elm_ui$Element$none;
-	}
-};
-var $author$project$UI$Components$SynonymCard$loadingView = function (model) {
-	var _v0 = model.requestStatus;
-	if (_v0.$ === 'Fired') {
+				_List_fromArray(
+					[
+						A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$Background$color(
+								$author$project$UI$Styles$color(config).primary200),
+								$mdgriffith$elm_ui$Element$width(
+								$mdgriffith$elm_ui$Element$px(12)),
+								$mdgriffith$elm_ui$Element$height(
+								$mdgriffith$elm_ui$Element$px(12)),
+								$mdgriffith$elm_ui$Element$Border$rounded(6)
+							]),
+						$mdgriffith$elm_ui$Element$text('')),
+						A2(
+						$mdgriffith$elm_ui$Element$el,
+						_Utils_ap(
+							A2($author$project$UI$Styles$getTypographicStyleFor, $author$project$UI$Styles$Body, config),
+							_List_fromArray(
+								[
+									$mdgriffith$elm_ui$Element$padding(12)
+								])),
+						$mdgriffith$elm_ui$Element$text('Syncing'))
+					]));
+		} else {
+			return $mdgriffith$elm_ui$Element$none;
+		}
+	});
+var $author$project$UI$Components$SynonymCard$view = F2(
+	function (model, config) {
 		return A2(
-			$mdgriffith$elm_ui$Element$row,
+			$mdgriffith$elm_ui$Element$column,
 			_List_fromArray(
 				[
-					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
-					$mdgriffith$elm_ui$Element$paddingEach(
-					{bottom: 0, left: 8, right: 0, top: 0})
+					$mdgriffith$elm_ui$Element$padding(8),
+					$mdgriffith$elm_ui$Element$Background$color(
+					$author$project$UI$Styles$color(config).white),
+					$mdgriffith$elm_ui$Element$Border$rounded(8),
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
 				]),
 			_List_fromArray(
 				[
+					A6(
+					$author$project$UI$Elements$textfield,
+					model.synonymKey,
+					'Tomato',
+					$author$project$UI$Components$SynonymCard$UpdatedTitle(model.index),
+					$author$project$UI$Components$SynonymCard$DoneEditing,
+					$author$project$UI$Components$SynonymCard$DoneEditing,
+					config),
+					A6(
+					$author$project$UI$Elements$textfield,
+					model.synonymsValue,
+					'Tomayto, Tomaato, Tomaeto',
+					$author$project$UI$Components$SynonymCard$UpdatedList(model.index),
+					$author$project$UI$Components$SynonymCard$DoneEditing,
+					$author$project$UI$Components$SynonymCard$DoneEditing,
+					config),
+					A2($author$project$UI$Components$SynonymCard$loadingView, model, config),
+					A2($author$project$UI$Components$SynonymCard$failedView, model, config)
+				]));
+	});
+var $author$project$UI$PageViews$Synonyms$view = F2(
+	function (model, config) {
+		return A2(
+			$mdgriffith$elm_ui$Element$column,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+					$mdgriffith$elm_ui$Element$scrollbarY,
+					$mdgriffith$elm_ui$Element$inFront(
+					A2($author$project$UI$PageViews$Synonyms$toolbarView, model, config)),
+					$mdgriffith$elm_ui$Element$paddingEach(
+					{bottom: 12, left: 0, right: 0, top: 20})
+				]),
+			_List_fromArray(
+				[
+					$author$project$UI$Elements$spacer($author$project$UI$Styles$LG),
 					A2(
-					$mdgriffith$elm_ui$Element$el,
+					$mdgriffith$elm_ui$Element$table,
 					_List_fromArray(
 						[
-							$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.primary200),
-							$mdgriffith$elm_ui$Element$width(
-							$mdgriffith$elm_ui$Element$px(12)),
-							$mdgriffith$elm_ui$Element$height(
-							$mdgriffith$elm_ui$Element$px(12)),
-							$mdgriffith$elm_ui$Element$Border$rounded(6)
+							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+							$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+							$mdgriffith$elm_ui$Element$scrollbarY,
+							$mdgriffith$elm_ui$Element$spacing(20),
+							A2($mdgriffith$elm_ui$Element$paddingXY, 120, 60)
 						]),
-					$mdgriffith$elm_ui$Element$text('')),
-					A2(
-					$mdgriffith$elm_ui$Element$el,
-					_Utils_ap(
-						$author$project$UI$Styles$getTypographicStyleFor($author$project$UI$Styles$Body),
-						_List_fromArray(
+					{
+						columns: _List_fromArray(
 							[
-								$mdgriffith$elm_ui$Element$padding(12)
-							])),
-					$mdgriffith$elm_ui$Element$text('Syncing'))
+								{
+								header: $mdgriffith$elm_ui$Element$none,
+								view: function (item) {
+									return A2(
+										$mdgriffith$elm_ui$Element$map,
+										$author$project$UI$PageViews$Synonyms$CardViewMsg,
+										A2($author$project$UI$Components$SynonymCard$view, item, config));
+								},
+								width: $mdgriffith$elm_ui$Element$fill
+							}
+							]),
+						data: model.synonymStates
+					}),
+					$author$project$UI$Elements$spacer($author$project$UI$Styles$LG)
 				]));
-	} else {
-		return $mdgriffith$elm_ui$Element$none;
-	}
-};
-var $author$project$UI$Components$SynonymCard$view = function (model) {
-	return A2(
-		$mdgriffith$elm_ui$Element$column,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$padding(8),
-				$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.white),
-				$mdgriffith$elm_ui$Element$Border$rounded(8),
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
-			]),
-		_List_fromArray(
-			[
-				A5(
-				$author$project$UI$Elements$textfield,
-				model.synonymKey,
-				'Tomato',
-				$author$project$UI$Components$SynonymCard$UpdatedTitle(model.index),
-				$author$project$UI$Components$SynonymCard$DoneEditing,
-				$author$project$UI$Components$SynonymCard$DoneEditing),
-				A5(
-				$author$project$UI$Elements$textfield,
-				model.synonymsValue,
-				'Tomayto, Tomaato, Tomaeto',
-				$author$project$UI$Components$SynonymCard$UpdatedList(model.index),
-				$author$project$UI$Components$SynonymCard$DoneEditing,
-				$author$project$UI$Components$SynonymCard$DoneEditing),
-				$author$project$UI$Components$SynonymCard$loadingView(model),
-				$author$project$UI$Components$SynonymCard$failedView(model)
-			]));
-};
-var $author$project$UI$PageViews$Synonyms$view = function (model) {
-	return A2(
-		$mdgriffith$elm_ui$Element$column,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-				$mdgriffith$elm_ui$Element$scrollbarY,
-				$mdgriffith$elm_ui$Element$inFront(
-				$author$project$UI$PageViews$Synonyms$toolbarView(model)),
-				$mdgriffith$elm_ui$Element$paddingEach(
-				{bottom: 12, left: 0, right: 0, top: 20})
-			]),
-		_List_fromArray(
-			[
-				$author$project$UI$Elements$spacer($author$project$UI$Styles$LG),
-				A2(
-				$mdgriffith$elm_ui$Element$table,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-						$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
-						$mdgriffith$elm_ui$Element$scrollbarY,
-						$mdgriffith$elm_ui$Element$spacing(20),
-						A2($mdgriffith$elm_ui$Element$paddingXY, 120, 40)
-					]),
-				{
-					columns: _List_fromArray(
-						[
-							{
-							header: $mdgriffith$elm_ui$Element$none,
-							view: function (item) {
-								return A2(
-									$mdgriffith$elm_ui$Element$map,
-									$author$project$UI$PageViews$Synonyms$CardViewMsg,
-									$author$project$UI$Components$SynonymCard$view(item));
-							},
-							width: $mdgriffith$elm_ui$Element$fill
-						}
-						]),
-					data: model.synonymStates
-				}),
-				$author$project$UI$Elements$spacer($author$project$UI$Styles$LG)
-			]));
-};
-var $author$project$UI$PageView$getCurrentPageView = function (currentPage) {
-	switch (currentPage.$) {
-		case 'Settings':
-			var s = currentPage.a;
-			return A2(
-				$mdgriffith$elm_ui$Element$map,
-				$author$project$UI$PageView$SettingsViewMsg,
-				$author$project$UI$PageViews$Settings$view(s));
-		case 'Documents':
-			var m = currentPage.a;
-			return A2(
-				$mdgriffith$elm_ui$Element$map,
-				$author$project$UI$PageView$DocumentsViewMsg,
-				$author$project$UI$PageViews$Documents$view(m));
-		case 'Synonyms':
-			var s = currentPage.a;
-			return A2(
-				$mdgriffith$elm_ui$Element$map,
-				$author$project$UI$PageView$SynonymsViewMsg,
-				$author$project$UI$PageViews$Synonyms$view(s));
-		case 'StopWords':
-			var m = currentPage.a;
-			return A2(
-				$mdgriffith$elm_ui$Element$map,
-				$author$project$UI$PageView$StopWordsViewMsg,
-				$author$project$UI$PageViews$StopWords$view(m));
-		default:
-			var m = currentPage.a;
-			return A2(
-				$mdgriffith$elm_ui$Element$map,
-				$author$project$UI$PageView$AttributesViewMsg,
-				$author$project$UI$PageViews$Attributes$view(m));
-	}
-};
-var $author$project$UI$PageView$view = function (currentPage) {
-	return A2(
-		$mdgriffith$elm_ui$Element$el,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-				$mdgriffith$elm_ui$Element$Background$color($author$project$UI$Styles$color.gray100),
-				$mdgriffith$elm_ui$Element$padding(1)
-			]),
-		$author$project$UI$PageView$getCurrentPageView(currentPage));
-};
+	});
+var $author$project$UI$PageView$getCurrentPageView = F2(
+	function (currentPage, config) {
+		switch (currentPage.$) {
+			case 'Settings':
+				var s = currentPage.a;
+				return A2(
+					$mdgriffith$elm_ui$Element$map,
+					$author$project$UI$PageView$SettingsViewMsg,
+					A2($author$project$UI$PageViews$Settings$view, s, config));
+			case 'Documents':
+				var m = currentPage.a;
+				return A2(
+					$mdgriffith$elm_ui$Element$map,
+					$author$project$UI$PageView$DocumentsViewMsg,
+					A2($author$project$UI$PageViews$Documents$view, m, config));
+			case 'Synonyms':
+				var s = currentPage.a;
+				return A2(
+					$mdgriffith$elm_ui$Element$map,
+					$author$project$UI$PageView$SynonymsViewMsg,
+					A2($author$project$UI$PageViews$Synonyms$view, s, config));
+			case 'StopWords':
+				var m = currentPage.a;
+				return A2(
+					$mdgriffith$elm_ui$Element$map,
+					$author$project$UI$PageView$StopWordsViewMsg,
+					A2($author$project$UI$PageViews$StopWords$view, m, config));
+			default:
+				var m = currentPage.a;
+				return A2(
+					$mdgriffith$elm_ui$Element$map,
+					$author$project$UI$PageView$AttributesViewMsg,
+					A2($author$project$UI$PageViews$Attributes$view, m, config));
+		}
+	});
+var $author$project$UI$PageView$view = F2(
+	function (currentPage, config) {
+		return A2(
+			$mdgriffith$elm_ui$Element$el,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+					$mdgriffith$elm_ui$Element$Background$color(
+					$author$project$UI$Styles$color(config).gray100),
+					$mdgriffith$elm_ui$Element$padding(1)
+				]),
+			A2($author$project$UI$PageView$getCurrentPageView, currentPage, config));
+	});
 var $author$project$Main$view = function (model) {
+	var config = $author$project$Main$getConfig(model);
 	return A2(
 		$mdgriffith$elm_ui$Element$layout,
 		_List_fromArray(
@@ -23961,15 +24245,17 @@ var $author$project$Main$view = function (model) {
 					A2(
 					$mdgriffith$elm_ui$Element$map,
 					$author$project$Main$SidebarMsg,
-					$author$project$UI$Sidebar$sidebarView(
-						$author$project$Main$getSidebarViewModel(model))),
+					A2(
+						$author$project$UI$Sidebar$sidebarView,
+						$author$project$Main$getSidebarViewModel(model),
+						config)),
 					A2(
 					$mdgriffith$elm_ui$Element$map,
 					$author$project$Main$PageViewMsg,
-					$author$project$UI$PageView$view(model.pages.selectedPage))
+					A2($author$project$UI$PageView$view, model.pages.selectedPage, config))
 				])));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Api.Routes.Main.IndexKeys":{"args":[],"type":"{ indexUid : String.String, keys : List.List String.String }"},"Api.Routes.Main.IndexStats":{"args":[],"type":"{ numberOfDocuments : Basics.Int, isIndexing : Basics.Bool, fieldDistribution : Dict.Dict String.String Basics.Int }"},"Api.Routes.Main.IndexesRouteResponseListItem":{"args":[],"type":"{ uid : String.String, name : String.String, createdAt : String.String, updatedAt : String.String, primaryKey : String.String }"},"Api.Routes.Main.SettingsRouteResponseItem":{"args":[],"type":"{ uid : Basics.Int, indexUid : String.String }"},"UI.PageViews.Attributes.Attribute":{"args":[],"type":"{ title : String.String, enabled : Basics.Bool, saved : Basics.Bool, requestStatus : Request.RequestStatus }"},"UI.Components.Dropdown.Item":{"args":[],"type":"{ title : String.String, id : String.String }"},"UI.Components.SynonymCard.Model":{"args":[],"type":"{ index : Basics.Int, synonymKey : String.String, synonymsValue : String.String, synonymList : List.List String.String, saved : Maybe.Maybe ( String.String, List.List String.String ), requestStatus : Request.RequestStatus, taskId : Maybe.Maybe Basics.Int }"},"UI.PageViews.Attributes.Model":{"args":[],"type":"{ displayed : List.List UI.PageViews.Attributes.Attribute, sortable : List.List UI.PageViews.Attributes.Attribute, searchable : List.List UI.PageViews.Attributes.Attribute, filterable : List.List UI.PageViews.Attributes.Attribute, distinct : List.List UI.PageViews.Attributes.Attribute }"},"UI.PageViews.Documents.Model":{"args":[],"type":"{ documents : List.List String.String }"},"UI.PageViews.Settings.Model":{"args":[],"type":"{ tokenValue : String.String, title : String.String }"},"UI.PageViews.StopWords.Model":{"args":[],"type":"{ words : List.List UI.PageViews.StopWords.StopWord, newValue : String.String, deletionQueue : List.List UI.PageViews.StopWords.StopWord }"},"UI.PageViews.Synonyms.Model":{"args":[],"type":"{ synonymStates : List.List UI.Components.SynonymCard.Model }"},"UI.PageViews.StopWords.StopWord":{"args":[],"type":"{ title : String.String, requestStatus : Request.RequestStatus, saved : Basics.Bool }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"],"ApiRequest":["Api.Routes.Main.Msg"],"PollUpdate":["Main.Task","SweetPoll.Msg String.String"],"AddToPollQueue":["Main.Task"],"UpdateKeysForIndex":["Api.Routes.Main.IndexKeys"]}},"List.List":{"args":["a"],"tags":{}},"Api.Routes.Main.Msg":{"args":[],"tags":{"HandleListIndexesResponse":["Result.Result Http.Error (List.List Api.Routes.Main.IndexesRouteResponseListItem)"],"HandleShowResponse":["Result.Result Http.Error Api.Routes.Main.IndexesRouteResponseListItem"],"HandleDocumentsResponse":["Result.Result Http.Error String.String"],"HandleListStopWordsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleUpdateSynonymsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleListSynonymsResponse":["Result.Result Http.Error (Dict.Dict String.String (List.List String.String))","String.String"],"HandleIndexKeysResponse":["Api.Routes.Main.IndexKeys"],"HandleListDisplayedAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleListSearchableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleListSortableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleListFilterableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleListDistinctAttrResponse":["Result.Result Http.Error (Maybe.Maybe String.String)","String.String"],"HandleUpdateDisplayedAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateFilterableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateSortableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateSearchableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateDistinctAttrResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateStopWordsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleStatsResponse":["Result.Result Http.Error Api.Routes.Main.IndexStats","String.String"]}},"SweetPoll.Msg":{"args":["data"],"tags":{"PollResult":["Result.Result Http.Error data"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.PageViews.Indexes.Msg"],"SettingsViewMsg":["UI.PageViews.Settings.Msg"],"SearchViewMsg":["UI.PageViews.Search.Msg"],"DocumentsViewMsg":["UI.PageViews.Documents.Msg"],"StopWordsViewMsg":["UI.PageViews.StopWords.Msg"],"SynonymsViewMsg":["UI.PageViews.Synonyms.Msg"],"AttributesViewMsg":["UI.PageViews.Attributes.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"],"DropdownMsg":["UI.Components.Dropdown.Msg"]}},"String.String":{"args":[],"tags":{"String":[]}},"Main.Task":{"args":[],"tags":{"UpdateSynonymsTask":["Basics.Int","String.String"],"UpdateAttributeTask":["Basics.Int","String.String","UI.PageViews.Attributes.AttributeType"],"UpdateStopWordsTask":["Basics.Int","String.String"]}},"UI.PageViews.Attributes.AttributeType":{"args":[],"tags":{"Displayed":[],"Sortable":[],"Searchable":[],"Filterable":[],"Distinct":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"UI.Components.Dropdown.Msg":{"args":[],"tags":{"TriggerClicked":[],"Select":["UI.Components.Dropdown.Item"]}},"UI.PageViews.Attributes.Msg":{"args":[],"tags":{"X":["Basics.Bool"],"Toggle":["UI.PageViews.Attributes.Attribute","UI.PageViews.Attributes.AttributeType"],"Save":[],"Reset":[],"None":[]}},"UI.PageViews.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Search.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Settings.Msg":{"args":[],"tags":{"KeyValueChanged":["String.String"],"SaveKeyValue":[],"None":[]}},"UI.PageViews.StopWords.Msg":{"args":[],"tags":{"Create":[],"NewValueUpdated":["String.String"],"Remove":["UI.PageViews.StopWords.StopWord"],"Sync":[],"Reset":[],"None":[]}},"UI.PageViews.Synonyms.Msg":{"args":[],"tags":{"CardViewMsg":["UI.Components.SynonymCard.Msg"],"Sync":[],"New":[],"NoAction":[],"Reset":[]}},"UI.Pages.Page":{"args":[],"tags":{"Settings":["UI.PageViews.Settings.Model"],"Documents":["UI.PageViews.Documents.Model"],"Synonyms":["UI.PageViews.Synonyms.Model"],"StopWords":["UI.PageViews.StopWords.Model"],"Attributes":["UI.PageViews.Attributes.Model"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"UI.Components.SynonymCard.Msg":{"args":[],"tags":{"UpdatedTitle":["Basics.Int","String.String"],"UpdatedList":["Basics.Int","String.String"],"Remove":["Basics.Int"],"RetrySave":["Basics.Int"],"Save":["Basics.Int"],"Reset":[],"DoneEditing":[]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}},"Request.RequestStatus":{"args":[],"tags":{"NoRequest":[],"Fired":[],"Success":[],"Failed":[]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Api.Routes.Main.IndexKeys":{"args":[],"type":"{ indexUid : String.String, keys : List.List String.String }"},"Api.Routes.Main.IndexStats":{"args":[],"type":"{ numberOfDocuments : Basics.Int, isIndexing : Basics.Bool, fieldDistribution : Dict.Dict String.String Basics.Int }"},"Api.Routes.Main.IndexesRouteResponseListItem":{"args":[],"type":"{ uid : String.String, name : String.String, createdAt : String.String, updatedAt : String.String, primaryKey : String.String }"},"Api.Routes.Main.SettingsRouteResponseItem":{"args":[],"type":"{ uid : Basics.Int, indexUid : String.String }"},"UI.PageViews.Attributes.Attribute":{"args":[],"type":"{ title : String.String, enabled : Basics.Bool, saved : Basics.Bool, requestStatus : Request.RequestStatus }"},"UI.Components.Dropdown.Item":{"args":[],"type":"{ title : String.String, id : String.String }"},"UI.Components.SynonymCard.Model":{"args":[],"type":"{ index : Basics.Int, synonymKey : String.String, synonymsValue : String.String, synonymList : List.List String.String, saved : Maybe.Maybe ( String.String, List.List String.String ), requestStatus : Request.RequestStatus, taskId : Maybe.Maybe Basics.Int }"},"UI.PageViews.Attributes.Model":{"args":[],"type":"{ displayed : List.List UI.PageViews.Attributes.Attribute, sortable : List.List UI.PageViews.Attributes.Attribute, searchable : List.List UI.PageViews.Attributes.Attribute, filterable : List.List UI.PageViews.Attributes.Attribute, distinct : List.List UI.PageViews.Attributes.Attribute }"},"UI.PageViews.Documents.Model":{"args":[],"type":"{ documents : List.List String.String }"},"UI.PageViews.Settings.Model":{"args":[],"type":"{ tokenValue : String.String, colorScheme : UI.Styles.ColorScheme, savedTokenValue : String.String }"},"UI.PageViews.StopWords.Model":{"args":[],"type":"{ words : List.List UI.PageViews.StopWords.StopWord, newValue : String.String, deletionQueue : List.List UI.PageViews.StopWords.StopWord }"},"UI.PageViews.Synonyms.Model":{"args":[],"type":"{ synonymStates : List.List UI.Components.SynonymCard.Model }"},"UI.PageViews.StopWords.StopWord":{"args":[],"type":"{ title : String.String, requestStatus : Request.RequestStatus, saved : Basics.Bool }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"],"ApiRequest":["Api.Routes.Main.Msg"],"PollUpdate":["Main.Task","SweetPoll.Msg String.String"],"AddToPollQueue":["Main.Task"],"UpdateKeysForIndex":["Api.Routes.Main.IndexKeys"]}},"List.List":{"args":["a"],"tags":{}},"Api.Routes.Main.Msg":{"args":[],"tags":{"HandleListIndexesResponse":["Result.Result Http.Error (List.List Api.Routes.Main.IndexesRouteResponseListItem)"],"HandleShowResponse":["Result.Result Http.Error Api.Routes.Main.IndexesRouteResponseListItem"],"HandleDocumentsResponse":["Result.Result Http.Error String.String"],"HandleListStopWordsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleUpdateSynonymsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleListSynonymsResponse":["Result.Result Http.Error (Dict.Dict String.String (List.List String.String))","String.String"],"HandleIndexKeysResponse":["Api.Routes.Main.IndexKeys"],"HandleListDisplayedAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleListSearchableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleListSortableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleListFilterableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleListDistinctAttrResponse":["Result.Result Http.Error (Maybe.Maybe String.String)","String.String"],"HandleUpdateDisplayedAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateFilterableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateSortableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateSearchableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateDistinctAttrResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateStopWordsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleStatsResponse":["Result.Result Http.Error Api.Routes.Main.IndexStats","String.String"]}},"SweetPoll.Msg":{"args":["data"],"tags":{"PollResult":["Result.Result Http.Error data"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.PageViews.Indexes.Msg"],"SettingsViewMsg":["UI.PageViews.Settings.Msg"],"DocumentsViewMsg":["UI.PageViews.Documents.Msg"],"StopWordsViewMsg":["UI.PageViews.StopWords.Msg"],"SynonymsViewMsg":["UI.PageViews.Synonyms.Msg"],"AttributesViewMsg":["UI.PageViews.Attributes.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"],"DropdownMsg":["UI.Components.Dropdown.Msg"]}},"String.String":{"args":[],"tags":{"String":[]}},"Main.Task":{"args":[],"tags":{"UpdateSynonymsTask":["Basics.Int","String.String"],"UpdateAttributeTask":["Basics.Int","String.String","UI.PageViews.Attributes.AttributeType"],"UpdateStopWordsTask":["Basics.Int","String.String"]}},"UI.PageViews.Attributes.AttributeType":{"args":[],"tags":{"Displayed":[],"Sortable":[],"Searchable":[],"Filterable":[],"Distinct":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"UI.Components.Dropdown.Msg":{"args":[],"tags":{"TriggerClicked":[],"Select":["UI.Components.Dropdown.Item"]}},"UI.PageViews.Attributes.Msg":{"args":[],"tags":{"X":["Basics.Bool"],"Toggle":["UI.PageViews.Attributes.Attribute","UI.PageViews.Attributes.AttributeType"],"Save":[],"Reset":[],"None":[]}},"UI.PageViews.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Settings.Msg":{"args":[],"tags":{"TokenValueChanged":["String.String"],"SaveKeyValue":[],"UpdateColorScheme":["UI.Styles.ColorScheme"],"None":[]}},"UI.PageViews.StopWords.Msg":{"args":[],"tags":{"Create":[],"NewValueUpdated":["String.String"],"Remove":["UI.PageViews.StopWords.StopWord"],"Sync":[],"Reset":[],"None":[]}},"UI.PageViews.Synonyms.Msg":{"args":[],"tags":{"CardViewMsg":["UI.Components.SynonymCard.Msg"],"Sync":[],"New":[],"NoAction":[],"Reset":[]}},"UI.Pages.Page":{"args":[],"tags":{"Settings":["UI.PageViews.Settings.Model"],"Documents":["UI.PageViews.Documents.Model"],"Synonyms":["UI.PageViews.Synonyms.Model"],"StopWords":["UI.PageViews.StopWords.Model"],"Attributes":["UI.PageViews.Attributes.Model"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"UI.Styles.ColorScheme":{"args":[],"tags":{"Light":[],"Dark":[]}},"UI.Components.SynonymCard.Msg":{"args":[],"tags":{"UpdatedTitle":["Basics.Int","String.String"],"UpdatedList":["Basics.Int","String.String"],"Remove":["Basics.Int"],"RetrySave":["Basics.Int"],"Save":["Basics.Int"],"Reset":[],"DoneEditing":[]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}},"Request.RequestStatus":{"args":[],"tags":{"NoRequest":[],"Fired":[],"Success":[],"Failed":[]}}}}})}});}(this));

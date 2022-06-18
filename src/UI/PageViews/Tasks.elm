@@ -1,15 +1,15 @@
 module UI.PageViews.Tasks exposing (..)
 
 import Element exposing (..)
-import UI.Styles
+import UI.Styles exposing (Config)
 
 
 type Msg
     = X
 
 
-view : Element Msg
-view =
+view : Config -> Element Msg
+view config =
     el
-        (UI.Styles.getTypographicStyleFor UI.Styles.H1)
+        (UI.Styles.getTypographicStyleFor UI.Styles.H1 config)
         (text "(Views.pageTitle Views.Tasks)")

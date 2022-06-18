@@ -12,7 +12,7 @@ import Json.Print as Print
 import Request exposing (RequestStatus(..))
 import UI.Components.Toolbar
 import UI.Elements
-import UI.Styles
+import UI.Styles exposing (Config)
 
 
 type Msg
@@ -29,12 +29,12 @@ init =
     { documents = [] }
 
 
-view : Model -> Element Msg
-view model =
+view : Model -> Config -> Element Msg
+view model config =
     Element.column
         [ height fill
         , width fill
-        , inFront (toolbarView model)
+        , inFront (toolbarView model config)
         , paddingEach { top = 20, bottom = 12, left = 0, right = 0 }
         ]
         [ UI.Elements.spacer UI.Styles.SM
@@ -43,7 +43,7 @@ view model =
             , height fill
             , scrollbarY
             , spacing 16
-            , paddingXY 120 40
+            , paddingXY 120 60
             ]
             { data = model.documents
             , columns =
@@ -52,7 +52,7 @@ view model =
                   , view =
                         \document ->
                             Element.column
-                                (card (UI.Styles.getTypographicStyleFor UI.Styles.Code))
+                                (card (UI.Styles.getTypographicStyleFor UI.Styles.Code config) config)
                                 [ Element.text
                                     (Maybe.withDefault "fail" (getIdString document "id"))
                                 , Element.text
@@ -64,8 +64,8 @@ view model =
         ]
 
 
-toolbarView : Model -> Element Msg
-toolbarView _ =
+toolbarView : Model -> Config -> Element Msg
+toolbarView _ config =
     let
         toolbarModel =
             { valueChanged = False
@@ -74,15 +74,15 @@ toolbarView _ =
             , title = "Document"
             }
     in
-    UI.Components.Toolbar.toolbarView toolbarModel X X X
+    UI.Components.Toolbar.toolbarView toolbarModel X X X config
 
 
-card : List (Element.Attr () msg) -> List (Element.Attr () msg)
-card t =
+card : List (Element.Attr () msg) -> Config -> List (Element.Attr () msg)
+card t config =
     t
         ++ [ padding 20
            , rounded 12
-           , Background.color UI.Styles.color.white
+           , Background.color (UI.Styles.color config).white
            ]
 
 

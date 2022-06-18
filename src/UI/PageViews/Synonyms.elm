@@ -6,7 +6,7 @@ import Request exposing (..)
 import UI.Components.SynonymCard as SynonymCard exposing (Msg(..))
 import UI.Components.Toolbar
 import UI.Elements
-import UI.Styles
+import UI.Styles exposing (Config)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -57,13 +57,13 @@ addNew model =
     )
 
 
-view : Model -> Element Msg
-view model =
+view : Model -> Config -> Element Msg
+view model config =
     Element.column
         [ height fill
         , width fill
         , scrollbarY
-        , inFront (toolbarView model)
+        , inFront (toolbarView model config)
         , paddingEach { top = 20, bottom = 12, left = 0, right = 0 }
         ]
         [ UI.Elements.spacer UI.Styles.LG
@@ -72,14 +72,14 @@ view model =
             , height fill
             , scrollbarY
             , spacing 20
-            , paddingXY 120 40
+            , paddingXY 120 60
             ]
             { data = model.synonymStates
             , columns =
                 [ { header = Element.none
                   , width = fill
                   , view =
-                        \item -> SynonymCard.view item |> Element.map CardViewMsg
+                        \item -> SynonymCard.view item config |> Element.map CardViewMsg
                   }
                 ]
             }
@@ -105,8 +105,8 @@ getValueChanged model =
         /= 0
 
 
-toolbarView : Model -> Element Msg
-toolbarView m =
+toolbarView : Model -> Config -> Element Msg
+toolbarView m config =
     let
         toolbarModel =
             { valueChanged = getValueChanged m
@@ -115,7 +115,7 @@ toolbarView m =
             , title = "Synonyms"
             }
     in
-    UI.Components.Toolbar.toolbarView toolbarModel New Sync Reset
+    UI.Components.Toolbar.toolbarView toolbarModel New Sync Reset config
 
 
 updateSyncStatusState : List SynonymCard.Model -> RequestStatus -> List SynonymCard.Model
