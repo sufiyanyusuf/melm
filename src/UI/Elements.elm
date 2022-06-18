@@ -96,15 +96,15 @@ switchHandle model config =
     let
         position =
             if model == True then
-                20
+                16
 
             else
                 4
     in
     el
         [ Background.color (UI.Styles.color config).white
-        , width (px 24)
-        , Element.height (px 24)
+        , width (px 16)
+        , Element.height (px 16)
         , Element.Border.rounded 12
         , Element.centerY
         , Element.moveRight position
@@ -124,9 +124,9 @@ switchBody model config =
     in
     el
         [ Background.color background
-        , width (px 48)
-        , Element.height (px 32)
-        , Element.Border.rounded 20
+        , width (px 36)
+        , Element.height (px 24)
+        , Element.Border.rounded 24
         ]
         Element.none
 
