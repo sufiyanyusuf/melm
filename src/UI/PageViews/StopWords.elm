@@ -12,6 +12,7 @@ type Msg
     | NewValueUpdated String
     | Remove StopWord
     | Sync
+    | Reset
     | None
 
 
@@ -92,6 +93,8 @@ getValueChanged model =
         |> List.length
     )
         /= 0
+        || List.length model.deletionQueue
+        > 0
 
 
 toolbarView : Model -> Element Msg
@@ -100,11 +103,11 @@ toolbarView m =
         toolbarModel =
             { valueChanged = getValueChanged m
             , loading = isLoading m
-            , showCreateAction = True
+            , showCreateAction = False
             , title = "Stopwords"
             }
     in
-    UI.Components.Toolbar.toolbarView toolbarModel Create Sync None
+    UI.Components.Toolbar.toolbarView toolbarModel None Sync Reset
 
 
 createNew : String -> StopWord

@@ -35,6 +35,7 @@ type Msg
     | Sync
     | New
     | NoAction
+    | Reset
 
 
 type alias Model =
@@ -114,7 +115,7 @@ toolbarView m =
             , title = "Synonyms"
             }
     in
-    UI.Components.Toolbar.toolbarView toolbarModel New Sync NoAction
+    UI.Components.Toolbar.toolbarView toolbarModel New Sync Reset
 
 
 updateSyncStatusState : List SynonymCard.Model -> RequestStatus -> List SynonymCard.Model

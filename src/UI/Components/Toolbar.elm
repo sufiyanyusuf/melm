@@ -34,9 +34,4 @@ toolbarView model create sync cancel =
                 , UI.Elements.button UI.Elements.Clear "Cancel" cancel
                 ]
             ]
-         -- , addElementsIf model.valueChanged <|
-         --     [ UI.Elements.spacer UI.Styles.FILL
-         --     , UI.Elements.button UI.Elements.Clear "Save" sync
-         --     , UI.Elements.button UI.Elements.Clear "Cancel" cancel
-         --     ]
         )

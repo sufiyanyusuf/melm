@@ -15,9 +15,9 @@ import UI.PageViews.Attributes as AttributesPage exposing (buildModelFromRespons
 import UI.PageViews.Documents as DocumentsPage
 import UI.PageViews.Settings as SettingsPage
 import UI.PageViews.StopWords as StopWordsPage
-import UI.PageViews.Synonyms as SynonymsPage exposing (Msg(..))
+import UI.PageViews.Synonyms as SynonymsPage
 import UI.Pages as Views exposing (Page(..))
-import UI.Sidebar as Sidebar
+import UI.Sidebar as Sidebar exposing (Msg(..))
 import UI.Styles exposing (..)
 
 
@@ -714,6 +714,9 @@ handleAttributesViewMsg model msg =
                 Nothing ->
                     ( model, Cmd.none )
 
+        AttributesPage.Reset ->
+            update (SidebarMsg (SelectPage model.pages.selectedPage)) model
+
         _ ->
             ( model, Cmd.none )
 
@@ -723,7 +726,7 @@ handleSynonymsViewMsg model msg =
     case msg of
         m ->
             case m of
-                Sync ->
+                SynonymsPage.Sync ->
                     let
                         ( updatedSynonymsViewModel, _ ) =
                             SynonymsPage.update msg (getSynonymsViewModel model)
@@ -759,6 +762,9 @@ handleSynonymsViewMsg model msg =
 
                         Nothing ->
                             ( updatedModel, Cmd.none )
+
+                SynonymsPage.Reset ->
+                    update (SidebarMsg (SelectPage model.pages.selectedPage)) model
 
                 _ ->
                     let
@@ -796,6 +802,9 @@ handleStopWordsViewMsg model msg =
 
                 Nothing ->
                     ( model, Cmd.none )
+
+        StopWordsPage.Reset ->
+            update (SidebarMsg (SelectPage model.pages.selectedPage)) model
 
         _ ->
             let

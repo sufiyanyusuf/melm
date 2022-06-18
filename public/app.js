@@ -11721,14 +11721,48 @@ var $author$project$UI$PageViews$Documents$Model = function (documents) {
 	return {documents: documents};
 };
 var $author$project$UI$PageViews$Attributes$Searchable = {$: 'Searchable'};
+var $author$project$UI$Sidebar$SelectPage = function (a) {
+	return {$: 'SelectPage', a: a};
+};
+var $author$project$Main$SidebarMsg = function (a) {
+	return {$: 'SidebarMsg', a: a};
+};
 var $author$project$UI$PageViews$Attributes$Sortable = {$: 'Sortable'};
 var $author$project$Main$UpdateAttributeTask = F3(
 	function (a, b, c) {
 		return {$: 'UpdateAttributeTask', a: a, b: b, c: c};
 	});
+var $author$project$Api$Routes$Main$UpdateDisplayedAttrs = F3(
+	function (a, b, c) {
+		return {$: 'UpdateDisplayedAttrs', a: a, b: b, c: c};
+	});
+var $author$project$Api$Routes$Main$UpdateDistinctAttr = F3(
+	function (a, b, c) {
+		return {$: 'UpdateDistinctAttr', a: a, b: b, c: c};
+	});
+var $author$project$Api$Routes$Main$UpdateFilterableAttrs = F3(
+	function (a, b, c) {
+		return {$: 'UpdateFilterableAttrs', a: a, b: b, c: c};
+	});
+var $author$project$Api$Routes$Main$UpdateSearchableAttrs = F3(
+	function (a, b, c) {
+		return {$: 'UpdateSearchableAttrs', a: a, b: b, c: c};
+	});
+var $author$project$Api$Routes$Main$UpdateSortableAttrs = F3(
+	function (a, b, c) {
+		return {$: 'UpdateSortableAttrs', a: a, b: b, c: c};
+	});
+var $author$project$Api$Routes$Main$UpdateStopWords = F3(
+	function (a, b, c) {
+		return {$: 'UpdateStopWords', a: a, b: b, c: c};
+	});
 var $author$project$Main$UpdateStopWordsTask = F2(
 	function (a, b) {
 		return {$: 'UpdateStopWordsTask', a: a, b: b};
+	});
+var $author$project$Api$Routes$Main$UpdateSynonyms = F3(
+	function (a, b, c) {
+		return {$: 'UpdateSynonyms', a: a, b: b, c: c};
 	});
 var $author$project$Main$UpdateSynonymsTask = F2(
 	function (a, b) {
@@ -11947,29 +11981,6 @@ var $author$project$Main$buildSynonymsViewModelFromApiResponse = function (d) {
 			}),
 		$elm$core$Dict$toList(d));
 };
-var $author$project$Main$getAttributesViewModel = function (model) {
-	return {displayed: model.displayedAttrs, distinct: model.distinctAttr, filterable: model.filterableAttrs, searchable: model.searchableAttrs, sortable: model.sortableAttrs};
-};
-var $author$project$Api$Routes$Main$UpdateDisplayedAttrs = F3(
-	function (a, b, c) {
-		return {$: 'UpdateDisplayedAttrs', a: a, b: b, c: c};
-	});
-var $author$project$Api$Routes$Main$UpdateDistinctAttr = F3(
-	function (a, b, c) {
-		return {$: 'UpdateDistinctAttr', a: a, b: b, c: c};
-	});
-var $author$project$Api$Routes$Main$UpdateFilterableAttrs = F3(
-	function (a, b, c) {
-		return {$: 'UpdateFilterableAttrs', a: a, b: b, c: c};
-	});
-var $author$project$Api$Routes$Main$UpdateSearchableAttrs = F3(
-	function (a, b, c) {
-		return {$: 'UpdateSearchableAttrs', a: a, b: b, c: c};
-	});
-var $author$project$Api$Routes$Main$UpdateSortableAttrs = F3(
-	function (a, b, c) {
-		return {$: 'UpdateSortableAttrs', a: a, b: b, c: c};
-	});
 var $elm$core$List$filter = F2(
 	function (isGood, list) {
 		return A3(
@@ -11981,6 +11992,9 @@ var $elm$core$List$filter = F2(
 			_List_Nil,
 			list);
 	});
+var $author$project$Main$getAttributesViewModel = function (model) {
+	return {displayed: model.displayedAttrs, distinct: model.distinctAttr, filterable: model.filterableAttrs, searchable: model.searchableAttrs, sortable: model.sortableAttrs};
+};
 var $author$project$Main$getCurrentlySelectedIndexId = function (model) {
 	var _v0 = model.sidebarModel.dropDown.selectedValue;
 	if (_v0.$ === 'Just') {
@@ -12013,682 +12027,9 @@ var $author$project$UI$PageViews$Attributes$getDistinctAttr = function (m) {
 				},
 				m)));
 };
-var $author$project$Api$Routes$Main$SettingsRouteResponseItem = F2(
-	function (uid, indexUid) {
-		return {indexUid: indexUid, uid: uid};
-	});
-var $author$project$Api$Routes$Main$settingsUpdateDecoder = A3(
-	$elm$json$Json$Decode$map2,
-	$author$project$Api$Routes$Main$SettingsRouteResponseItem,
-	A2($elm$json$Json$Decode$field, 'uid', $elm$json$Json$Decode$int),
-	A2($elm$json$Json$Decode$field, 'indexUid', $elm$json$Json$Decode$string));
-var $author$project$UI$Pages$Attributes = function (a) {
-	return {$: 'Attributes', a: a};
-};
-var $author$project$Main$updateAttributesViewModel = F2(
-	function (pages, updatedPage) {
-		return _Utils_update(
-			pages,
-			{
-				attributes: updatedPage,
-				selectedPage: $author$project$UI$Pages$Attributes(updatedPage)
-			});
-	});
-var $author$project$Main$handleAttributesViewMsg = F2(
-	function (model, msg) {
-		switch (msg.$) {
-			case 'X':
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			case 'Toggle':
-				var attr = msg.a;
-				var attrType = msg.b;
-				switch (attrType.$) {
-					case 'Displayed':
-						var updatedDisplayAttrs = A2(
-							$elm$core$List$map,
-							function (x) {
-								return _Utils_eq(x.title, attr.title) ? _Utils_update(
-									x,
-									{enabled: !x.enabled}) : x;
-							},
-							model.displayedAttrs);
-						var updatedModel = _Utils_update(
-							model,
-							{displayedAttrs: updatedDisplayAttrs});
-						return _Utils_Tuple2(
-							_Utils_update(
-								updatedModel,
-								{
-									pages: A2(
-										$author$project$Main$updateAttributesViewModel,
-										model.pages,
-										$author$project$Main$getAttributesViewModel(updatedModel))
-								}),
-							$elm$core$Platform$Cmd$none);
-					case 'Searchable':
-						var updatedSearchableAttrs = A2(
-							$elm$core$List$map,
-							function (x) {
-								return _Utils_eq(x.title, attr.title) ? _Utils_update(
-									x,
-									{enabled: !x.enabled}) : x;
-							},
-							model.searchableAttrs);
-						var updatedModel = _Utils_update(
-							model,
-							{searchableAttrs: updatedSearchableAttrs});
-						return _Utils_Tuple2(
-							_Utils_update(
-								updatedModel,
-								{
-									pages: A2(
-										$author$project$Main$updateAttributesViewModel,
-										model.pages,
-										$author$project$Main$getAttributesViewModel(updatedModel))
-								}),
-							$elm$core$Platform$Cmd$none);
-					case 'Sortable':
-						var updatedSortableAttrs = A2(
-							$elm$core$List$map,
-							function (x) {
-								return _Utils_eq(x.title, attr.title) ? _Utils_update(
-									x,
-									{enabled: !x.enabled}) : x;
-							},
-							model.sortableAttrs);
-						var updatedModel = _Utils_update(
-							model,
-							{sortableAttrs: updatedSortableAttrs});
-						return _Utils_Tuple2(
-							_Utils_update(
-								updatedModel,
-								{
-									pages: A2(
-										$author$project$Main$updateAttributesViewModel,
-										model.pages,
-										$author$project$Main$getAttributesViewModel(updatedModel))
-								}),
-							$elm$core$Platform$Cmd$none);
-					case 'Filterable':
-						var updatedFilterableAttrs = A2(
-							$elm$core$List$map,
-							function (x) {
-								return _Utils_eq(x.title, attr.title) ? _Utils_update(
-									x,
-									{enabled: !x.enabled}) : x;
-							},
-							model.filterableAttrs);
-						var updatedModel = _Utils_update(
-							model,
-							{filterableAttrs: updatedFilterableAttrs});
-						return _Utils_Tuple2(
-							_Utils_update(
-								updatedModel,
-								{
-									pages: A2(
-										$author$project$Main$updateAttributesViewModel,
-										model.pages,
-										$author$project$Main$getAttributesViewModel(updatedModel))
-								}),
-							$elm$core$Platform$Cmd$none);
-					default:
-						var updatedDistinctAttr = A2(
-							$elm$core$List$map,
-							function (x) {
-								return _Utils_eq(x.title, attr.title) ? _Utils_update(
-									x,
-									{enabled: !x.enabled}) : _Utils_update(
-									x,
-									{enabled: false});
-							},
-							model.distinctAttr);
-						var updatedModel = _Utils_update(
-							model,
-							{distinctAttr: updatedDistinctAttr});
-						return _Utils_Tuple2(
-							_Utils_update(
-								updatedModel,
-								{
-									pages: A2(
-										$author$project$Main$updateAttributesViewModel,
-										model.pages,
-										$author$project$Main$getAttributesViewModel(updatedModel))
-								}),
-							$elm$core$Platform$Cmd$none);
-				}
-			case 'Save':
-				var _v2 = $author$project$Main$getCurrentlySelectedIndexId(model);
-				if (_v2.$ === 'Just') {
-					var uid = _v2.a;
-					return _Utils_Tuple2(
-						model,
-						$elm$core$Platform$Cmd$batch(
-							_List_fromArray(
-								[
-									A2(
-									$elm$core$Platform$Cmd$map,
-									$author$project$Main$ApiRequest,
-									A2(
-										$author$project$Api$Routes$Main$buildRequest,
-										$author$project$Api$Routes$Main$buildPayload(
-											A3(
-												$author$project$Api$Routes$Main$UpdateDisplayedAttrs,
-												uid,
-												A2(
-													$elm$core$List$map,
-													function (x) {
-														return x.title;
-													},
-													A2(
-														$elm$core$List$filter,
-														function (x) {
-															return x.enabled;
-														},
-														model.displayedAttrs)),
-												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
-										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
-									A2(
-									$elm$core$Platform$Cmd$map,
-									$author$project$Main$ApiRequest,
-									A2(
-										$author$project$Api$Routes$Main$buildRequest,
-										$author$project$Api$Routes$Main$buildPayload(
-											A3(
-												$author$project$Api$Routes$Main$UpdateFilterableAttrs,
-												uid,
-												A2(
-													$elm$core$List$map,
-													function (x) {
-														return x.title;
-													},
-													A2(
-														$elm$core$List$filter,
-														function (x) {
-															return x.enabled;
-														},
-														model.filterableAttrs)),
-												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
-										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
-									A2(
-									$elm$core$Platform$Cmd$map,
-									$author$project$Main$ApiRequest,
-									A2(
-										$author$project$Api$Routes$Main$buildRequest,
-										$author$project$Api$Routes$Main$buildPayload(
-											A3(
-												$author$project$Api$Routes$Main$UpdateSearchableAttrs,
-												uid,
-												A2(
-													$elm$core$List$map,
-													function (x) {
-														return x.title;
-													},
-													A2(
-														$elm$core$List$filter,
-														function (x) {
-															return x.enabled;
-														},
-														model.searchableAttrs)),
-												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
-										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
-									A2(
-									$elm$core$Platform$Cmd$map,
-									$author$project$Main$ApiRequest,
-									A2(
-										$author$project$Api$Routes$Main$buildRequest,
-										$author$project$Api$Routes$Main$buildPayload(
-											A3(
-												$author$project$Api$Routes$Main$UpdateSortableAttrs,
-												uid,
-												A2(
-													$elm$core$List$map,
-													function (x) {
-														return x.title;
-													},
-													A2(
-														$elm$core$List$filter,
-														function (x) {
-															return x.enabled;
-														},
-														model.sortableAttrs)),
-												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
-										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
-									A2(
-									$elm$core$Platform$Cmd$map,
-									$author$project$Main$ApiRequest,
-									A2(
-										$author$project$Api$Routes$Main$buildRequest,
-										$author$project$Api$Routes$Main$buildPayload(
-											A3(
-												$author$project$Api$Routes$Main$UpdateDisplayedAttrs,
-												uid,
-												A2(
-													$elm$core$List$map,
-													function (x) {
-														return x.title;
-													},
-													A2(
-														$elm$core$List$filter,
-														function (x) {
-															return x.enabled;
-														},
-														model.displayedAttrs)),
-												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
-										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
-									function () {
-									var _v3 = $author$project$UI$PageViews$Attributes$getDistinctAttr(model.distinctAttr);
-									if (_v3.$ === 'Just') {
-										var da = _v3.a;
-										return A2(
-											$elm$core$Platform$Cmd$map,
-											$author$project$Main$ApiRequest,
-											A2(
-												$author$project$Api$Routes$Main$buildRequest,
-												$author$project$Api$Routes$Main$buildPayload(
-													A3($author$project$Api$Routes$Main$UpdateDistinctAttr, uid, da, $author$project$Api$Routes$Main$settingsUpdateDecoder)),
-												A2($elm$core$Maybe$withDefault, '', model.savedToken)));
-									} else {
-										return $elm$core$Platform$Cmd$none;
-									}
-								}()
-								])));
-				} else {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-				}
-			default:
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-		}
-	});
-var $author$project$Main$getSettingsViewModel = function (model) {
-	return {
-		title: 'Settings',
-		tokenValue: A2($elm$core$Maybe$withDefault, '', model.token)
-	};
-};
-var $author$project$UI$Pages$Settings = function (a) {
-	return {$: 'Settings', a: a};
-};
-var $author$project$Main$updateSettingsViewModel = F2(
-	function (pages, updatedPage) {
-		return _Utils_update(
-			pages,
-			{
-				selectedPage: $author$project$UI$Pages$Settings(updatedPage),
-				settings: updatedPage
-			});
-	});
-var $author$project$Main$handleSettingsViewMsg = F2(
-	function (model, msg) {
-		switch (msg.$) {
-			case 'KeyValueChanged':
-				var t = msg.a;
-				var updatedModel = _Utils_update(
-					model,
-					{
-						token: $elm$core$Maybe$Just(t)
-					});
-				var updatedSettingsPageViewModel = $author$project$Main$getSettingsViewModel(updatedModel);
-				var updatedModelValue = _Utils_update(
-					model,
-					{
-						pages: A2($author$project$Main$updateSettingsViewModel, model.pages, updatedSettingsPageViewModel),
-						token: updatedModel.token
-					});
-				return _Utils_Tuple2(updatedModelValue, $elm$core$Platform$Cmd$none);
-			case 'SaveKeyValue':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{savedToken: model.token}),
-					$elm$core$Platform$Cmd$none);
-			default:
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-		}
-	});
-var $author$project$Api$Routes$Main$UpdateStopWords = F3(
-	function (a, b, c) {
-		return {$: 'UpdateStopWords', a: a, b: b, c: c};
-	});
-var $author$project$UI$PageViews$StopWords$createNew = function (s) {
-	return {requestStatus: $author$project$Request$NoRequest, saved: false, title: s};
-};
-var $elm$core$List$sortBy = _List_sortBy;
-var $author$project$UI$PageViews$StopWords$addNewWord = function (m) {
-	var e = A2(
-		$elm$core$List$map,
-		function (x) {
-			return x.title;
-		},
-		m.words);
-	if (A2($elm$core$List$member, m.newValue, e)) {
-		return m;
-	} else {
-		var nw = A2(
-			$elm$core$List$sortBy,
-			function ($) {
-				return $.title;
-			},
-			_Utils_ap(
-				m.words,
-				_List_fromArray(
-					[
-						$author$project$UI$PageViews$StopWords$createNew(m.newValue)
-					])));
-		return _Utils_update(
-			m,
-			{newValue: '', words: nw});
-	}
-};
-var $author$project$UI$PageViews$StopWords$removeWord = F2(
-	function (m, w) {
-		return _Utils_update(
-			m,
-			{
-				deletionQueue: _Utils_ap(
-					m.deletionQueue,
-					_List_fromArray(
-						[w])),
-				words: A2(
-					$elm$core$List$filter,
-					function (x) {
-						return !_Utils_eq(x, w);
-					},
-					m.words)
-			});
-	});
-var $author$project$UI$PageViews$StopWords$update = F2(
-	function (msg, model) {
-		switch (msg.$) {
-			case 'Create':
-				return _Utils_Tuple2(
-					$author$project$UI$PageViews$StopWords$addNewWord(model),
-					$elm$core$Platform$Cmd$none);
-			case 'NewValueUpdated':
-				var v = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{newValue: v}),
-					$elm$core$Platform$Cmd$none);
-			case 'Remove':
-				var w = msg.a;
-				return _Utils_Tuple2(
-					A2($author$project$UI$PageViews$StopWords$removeWord, model, w),
-					$elm$core$Platform$Cmd$none);
-			default:
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-		}
-	});
-var $author$project$UI$Pages$StopWords = function (a) {
-	return {$: 'StopWords', a: a};
-};
-var $author$project$Main$updateStopWordsViewModel = F2(
-	function (pages, updatedPage) {
-		return _Utils_update(
-			pages,
-			{
-				selectedPage: $author$project$UI$Pages$StopWords(updatedPage),
-				stopWords: updatedPage
-			});
-	});
-var $author$project$Main$handleStopWordsViewMsg = F2(
-	function (model, msg) {
-		if (msg.$ === 'Sync') {
-			var _v1 = $author$project$Main$getCurrentlySelectedIndexId(model);
-			if (_v1.$ === 'Just') {
-				var uid = _v1.a;
-				return _Utils_Tuple2(
-					model,
-					A2(
-						$elm$core$Platform$Cmd$map,
-						$author$project$Main$ApiRequest,
-						A2(
-							$author$project$Api$Routes$Main$buildRequest,
-							$author$project$Api$Routes$Main$buildPayload(
-								A3(
-									$author$project$Api$Routes$Main$UpdateStopWords,
-									uid,
-									A2(
-										$elm$core$List$map,
-										function (x) {
-											return x.title;
-										},
-										model.pages.stopWords.words),
-									$author$project$Api$Routes$Main$settingsUpdateDecoder)),
-							A2($elm$core$Maybe$withDefault, '', model.savedToken))));
-			} else {
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			}
-		} else {
-			var _v2 = A2($author$project$UI$PageViews$StopWords$update, msg, model.pages.stopWords);
-			var m = _v2.a;
-			return _Utils_Tuple2(
-				_Utils_update(
-					model,
-					{
-						pages: A2($author$project$Main$updateStopWordsViewModel, model.pages, m)
-					}),
-				$elm$core$Platform$Cmd$none);
-		}
-	});
-var $author$project$Api$Routes$Main$UpdateSynonyms = F3(
-	function (a, b, c) {
-		return {$: 'UpdateSynonyms', a: a, b: b, c: c};
-	});
 var $author$project$Main$getSynonymsViewModel = function (model) {
 	return {synonymStates: model.synonyms};
 };
-var $author$project$UI$Components$SynonymCard$init = function (index) {
-	return {index: index, requestStatus: $author$project$Request$NoRequest, saved: $elm$core$Maybe$Nothing, synonymKey: '', synonymList: _List_Nil, synonymsValue: '', taskId: $elm$core$Maybe$Nothing};
-};
-var $author$project$UI$PageViews$Synonyms$addNew = function (model) {
-	return _Utils_Tuple2(
-		_Utils_update(
-			model,
-			{
-				synonymStates: _Utils_ap(
-					model.synonymStates,
-					_List_fromArray(
-						[
-							$author$project$UI$Components$SynonymCard$init(
-							$elm$core$List$length(model.synonymStates))
-						]))
-			}),
-		$elm$core$Platform$Cmd$none);
-};
-var $author$project$UI$Components$SynonymCard$resetValue = function (model) {
-	var _v0 = model.saved;
-	if (_v0.$ === 'Just') {
-		var _v1 = _v0.a;
-		var k = _v1.a;
-		var v = _v1.b;
-		return _Utils_update(
-			model,
-			{
-				synonymKey: k,
-				synonymList: v,
-				synonymsValue: A3(
-					$elm$core$List$foldl,
-					F2(
-						function (x, a) {
-							return x + (',' + a);
-						}),
-					'',
-					v)
-			});
-	} else {
-		return _Utils_update(
-			model,
-			{synonymKey: '', synonymList: _List_Nil, synonymsValue: ''});
-	}
-};
-var $author$project$UI$Components$SynonymCard$update = F2(
-	function (msg, model) {
-		switch (msg.$) {
-			case 'UpdatedTitle':
-				var i = msg.a;
-				var t = msg.b;
-				return _Utils_eq(model.index, i) ? _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{synonymKey: t}),
-					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			case 'UpdatedList':
-				var i = msg.a;
-				var l = msg.b;
-				return _Utils_eq(model.index, i) ? _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							synonymList: A2($elm$core$String$split, ',', l),
-							synonymsValue: l
-						}),
-					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			case 'Reset':
-				return _Utils_Tuple2(
-					$author$project$UI$Components$SynonymCard$resetValue(model),
-					$elm$core$Platform$Cmd$none);
-			default:
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-		}
-	});
-var $author$project$UI$PageViews$Synonyms$update = F2(
-	function (msg, model) {
-		switch (msg.$) {
-			case 'New':
-				return $author$project$UI$PageViews$Synonyms$addNew(model);
-			case 'CardViewMsg':
-				var m = msg.a;
-				var synonymCards = A2(
-					$elm$core$List$map,
-					function (_v2) {
-						var a = _v2.a;
-						return a;
-					},
-					A2(
-						$elm$core$List$map,
-						function (c) {
-							return A2($author$project$UI$Components$SynonymCard$update, m, c);
-						},
-						model.synonymStates));
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{synonymStates: synonymCards}),
-					$elm$core$Platform$Cmd$none);
-			default:
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-		}
-	});
-var $author$project$UI$Pages$Synonyms = function (a) {
-	return {$: 'Synonyms', a: a};
-};
-var $author$project$Main$updateSynonymsViewModel = F2(
-	function (pages, updatedPage) {
-		return _Utils_update(
-			pages,
-			{
-				selectedPage: $author$project$UI$Pages$Synonyms(updatedPage),
-				synonyms: updatedPage
-			});
-	});
-var $author$project$Main$handleSynonymsViewMsg = F2(
-	function (model, msg) {
-		var m = msg;
-		if (m.$ === 'Sync') {
-			var currentSynonyms = A2(
-				$elm$core$List$filter,
-				function (_v4) {
-					var k = _v4.a;
-					var v = _v4.b;
-					return (k !== '') && (!_Utils_eq(v, _List_Nil));
-				},
-				A2(
-					$elm$core$List$map,
-					function (s) {
-						return _Utils_Tuple2(s.synonymKey, s.synonymList);
-					},
-					model.synonyms));
-			var _v2 = A2(
-				$author$project$UI$PageViews$Synonyms$update,
-				msg,
-				$author$project$Main$getSynonymsViewModel(model));
-			var updatedSynonymsViewModel = _v2.a;
-			var updatedModel = _Utils_update(
-				model,
-				{
-					pages: A2($author$project$Main$updateSynonymsViewModel, model.pages, updatedSynonymsViewModel),
-					synonyms: updatedSynonymsViewModel.synonymStates
-				});
-			var _v3 = $author$project$Main$getCurrentlySelectedIndexId(updatedModel);
-			if (_v3.$ === 'Just') {
-				var indexUid = _v3.a;
-				return _Utils_Tuple2(
-					updatedModel,
-					A2(
-						$elm$core$Platform$Cmd$map,
-						$author$project$Main$ApiRequest,
-						A2(
-							$author$project$Api$Routes$Main$buildRequest,
-							$author$project$Api$Routes$Main$buildPayload(
-								A3(
-									$author$project$Api$Routes$Main$UpdateSynonyms,
-									indexUid,
-									$elm$core$Dict$fromList(currentSynonyms),
-									$author$project$Api$Routes$Main$settingsUpdateDecoder)),
-							A2($elm$core$Maybe$withDefault, '', model.savedToken))));
-			} else {
-				return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
-			}
-		} else {
-			var _v5 = A2(
-				$author$project$UI$PageViews$Synonyms$update,
-				msg,
-				$author$project$Main$getSynonymsViewModel(model));
-			var updatedSynonymsViewModel = _v5.a;
-			return _Utils_Tuple2(
-				_Utils_update(
-					model,
-					{
-						pages: A2($author$project$Main$updateSynonymsViewModel, model.pages, updatedSynonymsViewModel),
-						synonyms: updatedSynonymsViewModel.synonymStates
-					}),
-				$elm$core$Platform$Cmd$none);
-		}
-	});
-var $author$project$Main$handlePageViewMessage = F2(
-	function (model, pageViewMsg) {
-		switch (pageViewMsg.$) {
-			case 'SettingsViewMsg':
-				var m = pageViewMsg.a;
-				return A2($author$project$Main$handleSettingsViewMsg, model, m);
-			case 'IndexesViewMsg':
-				return _Debug_todo(
-					'Main',
-					{
-						start: {line: 483, column: 13},
-						end: {line: 483, column: 23}
-					})('branch \'IndexesViewMsg _\' not implemented');
-			case 'SearchViewMsg':
-				return _Debug_todo(
-					'Main',
-					{
-						start: {line: 486, column: 13},
-						end: {line: 486, column: 23}
-					})('branch \'SearchViewMsg _\' not implemented');
-			case 'DocumentsViewMsg':
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			case 'StopWordsViewMsg':
-				var m = pageViewMsg.a;
-				return A2($author$project$Main$handleStopWordsViewMsg, model, m);
-			case 'SynonymsViewMsg':
-				var msg = pageViewMsg.a;
-				return A2($author$project$Main$handleSynonymsViewMsg, model, msg);
-			default:
-				var msg = pageViewMsg.a;
-				return A2($author$project$Main$handleAttributesViewMsg, model, msg);
-		}
-	});
 var $author$project$Main$PollUpdate = F2(
 	function (a, b) {
 		return {$: 'PollUpdate', a: a, b: b};
@@ -12862,6 +12203,18 @@ var $author$project$Main$handlePollRequest = F2(
 var $author$project$Request$Failed = {$: 'Failed'};
 var $author$project$Request$Fired = {$: 'Fired'};
 var $author$project$Request$Success = {$: 'Success'};
+var $author$project$UI$Pages$Attributes = function (a) {
+	return {$: 'Attributes', a: a};
+};
+var $author$project$Main$updateAttributesViewModel = F2(
+	function (pages, updatedPage) {
+		return _Utils_update(
+			pages,
+			{
+				attributes: updatedPage,
+				selectedPage: $author$project$UI$Pages$Attributes(updatedPage)
+			});
+	});
 var $author$project$Main$updatePollState = F2(
 	function (task, newState) {
 		return function (_v0) {
@@ -12869,6 +12222,18 @@ var $author$project$Main$updatePollState = F2(
 			var s = _v0.b;
 			return _Utils_eq(t, task) ? _Utils_Tuple2(t, newState) : _Utils_Tuple2(t, s);
 		};
+	});
+var $author$project$UI$Pages$StopWords = function (a) {
+	return {$: 'StopWords', a: a};
+};
+var $author$project$Main$updateStopWordsViewModel = F2(
+	function (pages, updatedPage) {
+		return _Utils_update(
+			pages,
+			{
+				selectedPage: $author$project$UI$Pages$StopWords(updatedPage),
+				stopWords: updatedPage
+			});
 	});
 var $author$project$UI$PageViews$Attributes$updateSyncStatusState = F2(
 	function (model, status) {
@@ -12919,6 +12284,7 @@ var $author$project$UI$PageViews$StopWords$updateSyncStatusState = F2(
 				{words: words});
 		}
 	});
+var $elm$core$List$sortBy = _List_sortBy;
 var $elm$core$List$sort = function (xs) {
 	return A2($elm$core$List$sortBy, $elm$core$Basics$identity, xs);
 };
@@ -12945,6 +12311,18 @@ var $author$project$UI$PageViews$Synonyms$updateSyncStatusState = F2(
 					{requestStatus: status}) : c;
 			},
 			model);
+	});
+var $author$project$UI$Pages$Synonyms = function (a) {
+	return {$: 'Synonyms', a: a};
+};
+var $author$project$Main$updateSynonymsViewModel = F2(
+	function (pages, updatedPage) {
+		return _Utils_update(
+			pages,
+			{
+				selectedPage: $author$project$UI$Pages$Synonyms(updatedPage),
+				synonyms: updatedPage
+			});
 	});
 var $author$project$Main$handlePollSignal = F6(
 	function (model, newState, newData, error, cmd, task) {
@@ -13279,6 +12657,52 @@ var $author$project$Main$handlePollUpdate = F3(
 			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
+var $author$project$Main$getSettingsViewModel = function (model) {
+	return {
+		title: 'Settings',
+		tokenValue: A2($elm$core$Maybe$withDefault, '', model.token)
+	};
+};
+var $author$project$UI$Pages$Settings = function (a) {
+	return {$: 'Settings', a: a};
+};
+var $author$project$Main$updateSettingsViewModel = F2(
+	function (pages, updatedPage) {
+		return _Utils_update(
+			pages,
+			{
+				selectedPage: $author$project$UI$Pages$Settings(updatedPage),
+				settings: updatedPage
+			});
+	});
+var $author$project$Main$handleSettingsViewMsg = F2(
+	function (model, msg) {
+		switch (msg.$) {
+			case 'KeyValueChanged':
+				var t = msg.a;
+				var updatedModel = _Utils_update(
+					model,
+					{
+						token: $elm$core$Maybe$Just(t)
+					});
+				var updatedSettingsPageViewModel = $author$project$Main$getSettingsViewModel(updatedModel);
+				var updatedModelValue = _Utils_update(
+					model,
+					{
+						pages: A2($author$project$Main$updateSettingsViewModel, model.pages, updatedSettingsPageViewModel),
+						token: updatedModel.token
+					});
+				return _Utils_Tuple2(updatedModelValue, $elm$core$Platform$Cmd$none);
+			case 'SaveKeyValue':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{savedToken: model.token}),
+					$elm$core$Platform$Cmd$none);
+			default:
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+		}
+	});
 var $author$project$Api$Routes$Main$ListDocuments = function (a) {
 	return {$: 'ListDocuments', a: a};
 };
@@ -13290,9 +12714,6 @@ var $author$project$Api$Routes$Main$ListSynonyms = F2(
 	function (a, b) {
 		return {$: 'ListSynonyms', a: a, b: b};
 	});
-var $author$project$UI$Sidebar$SelectPage = function (a) {
-	return {$: 'SelectPage', a: a};
-};
 var $author$project$Api$Routes$Main$Stats = F2(
 	function (a, b) {
 		return {$: 'Stats', a: a, b: b};
@@ -13461,6 +12882,15 @@ var $author$project$Main$handleSidebarSelection = F2(
 			}
 		}
 	});
+var $author$project$Api$Routes$Main$SettingsRouteResponseItem = F2(
+	function (uid, indexUid) {
+		return {indexUid: indexUid, uid: uid};
+	});
+var $author$project$Api$Routes$Main$settingsUpdateDecoder = A3(
+	$elm$json$Json$Decode$map2,
+	$author$project$Api$Routes$Main$SettingsRouteResponseItem,
+	A2($elm$json$Json$Decode$field, 'uid', $elm$json$Json$Decode$int),
+	A2($elm$json$Json$Decode$field, 'indexUid', $elm$json$Json$Decode$string));
 var $elm$json$Json$Decode$oneOf = _Json_oneOf;
 var $elm$json$Json$Decode$maybe = function (decoder) {
 	return $elm$json$Json$Decode$oneOf(
@@ -13471,6 +12901,177 @@ var $elm$json$Json$Decode$maybe = function (decoder) {
 			]));
 };
 var $author$project$Api$Routes$Main$stringDecoder = $elm$json$Json$Decode$maybe($elm$json$Json$Decode$string);
+var $author$project$UI$PageViews$StopWords$createNew = function (s) {
+	return {requestStatus: $author$project$Request$NoRequest, saved: false, title: s};
+};
+var $author$project$UI$PageViews$StopWords$addNewWord = function (m) {
+	var e = A2(
+		$elm$core$List$map,
+		function (x) {
+			return x.title;
+		},
+		m.words);
+	if (A2($elm$core$List$member, m.newValue, e)) {
+		return m;
+	} else {
+		var nw = A2(
+			$elm$core$List$sortBy,
+			function ($) {
+				return $.title;
+			},
+			_Utils_ap(
+				m.words,
+				_List_fromArray(
+					[
+						$author$project$UI$PageViews$StopWords$createNew(m.newValue)
+					])));
+		return _Utils_update(
+			m,
+			{newValue: '', words: nw});
+	}
+};
+var $author$project$UI$PageViews$StopWords$removeWord = F2(
+	function (m, w) {
+		return _Utils_update(
+			m,
+			{
+				deletionQueue: _Utils_ap(
+					m.deletionQueue,
+					_List_fromArray(
+						[w])),
+				words: A2(
+					$elm$core$List$filter,
+					function (x) {
+						return !_Utils_eq(x, w);
+					},
+					m.words)
+			});
+	});
+var $author$project$UI$PageViews$StopWords$update = F2(
+	function (msg, model) {
+		switch (msg.$) {
+			case 'Create':
+				return _Utils_Tuple2(
+					$author$project$UI$PageViews$StopWords$addNewWord(model),
+					$elm$core$Platform$Cmd$none);
+			case 'NewValueUpdated':
+				var v = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{newValue: v}),
+					$elm$core$Platform$Cmd$none);
+			case 'Remove':
+				var w = msg.a;
+				return _Utils_Tuple2(
+					A2($author$project$UI$PageViews$StopWords$removeWord, model, w),
+					$elm$core$Platform$Cmd$none);
+			default:
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+		}
+	});
+var $author$project$UI$Components$SynonymCard$init = function (index) {
+	return {index: index, requestStatus: $author$project$Request$NoRequest, saved: $elm$core$Maybe$Nothing, synonymKey: '', synonymList: _List_Nil, synonymsValue: '', taskId: $elm$core$Maybe$Nothing};
+};
+var $author$project$UI$PageViews$Synonyms$addNew = function (model) {
+	return _Utils_Tuple2(
+		_Utils_update(
+			model,
+			{
+				synonymStates: _Utils_ap(
+					model.synonymStates,
+					_List_fromArray(
+						[
+							$author$project$UI$Components$SynonymCard$init(
+							$elm$core$List$length(model.synonymStates))
+						]))
+			}),
+		$elm$core$Platform$Cmd$none);
+};
+var $author$project$UI$Components$SynonymCard$resetValue = function (model) {
+	var _v0 = model.saved;
+	if (_v0.$ === 'Just') {
+		var _v1 = _v0.a;
+		var k = _v1.a;
+		var v = _v1.b;
+		return _Utils_update(
+			model,
+			{
+				synonymKey: k,
+				synonymList: v,
+				synonymsValue: A3(
+					$elm$core$List$foldl,
+					F2(
+						function (x, a) {
+							return x + (',' + a);
+						}),
+					'',
+					v)
+			});
+	} else {
+		return _Utils_update(
+			model,
+			{synonymKey: '', synonymList: _List_Nil, synonymsValue: ''});
+	}
+};
+var $author$project$UI$Components$SynonymCard$update = F2(
+	function (msg, model) {
+		switch (msg.$) {
+			case 'UpdatedTitle':
+				var i = msg.a;
+				var t = msg.b;
+				return _Utils_eq(model.index, i) ? _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{synonymKey: t}),
+					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			case 'UpdatedList':
+				var i = msg.a;
+				var l = msg.b;
+				return _Utils_eq(model.index, i) ? _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							synonymList: A2($elm$core$String$split, ',', l),
+							synonymsValue: l
+						}),
+					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			case 'Reset':
+				return _Utils_Tuple2(
+					$author$project$UI$Components$SynonymCard$resetValue(model),
+					$elm$core$Platform$Cmd$none);
+			default:
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+		}
+	});
+var $author$project$UI$PageViews$Synonyms$update = F2(
+	function (msg, model) {
+		switch (msg.$) {
+			case 'New':
+				return $author$project$UI$PageViews$Synonyms$addNew(model);
+			case 'CardViewMsg':
+				var m = msg.a;
+				var synonymCards = A2(
+					$elm$core$List$map,
+					function (_v2) {
+						var a = _v2.a;
+						return a;
+					},
+					A2(
+						$elm$core$List$map,
+						function (c) {
+							return A2($author$project$UI$Components$SynonymCard$update, m, c);
+						},
+						model.synonymStates));
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{synonymStates: synonymCards}),
+					$elm$core$Platform$Cmd$none);
+			default:
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+		}
+	});
 var $author$project$Main$updateDocumentsViewModel = F2(
 	function (pages, updatedPage) {
 		return _Utils_update(
@@ -13849,6 +13450,428 @@ var $author$project$Main$handleApiResponse = F2(
 				}
 		}
 	});
+var $author$project$Main$handleAttributesViewMsg = F2(
+	function (model, msg) {
+		switch (msg.$) {
+			case 'X':
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			case 'Toggle':
+				var attr = msg.a;
+				var attrType = msg.b;
+				switch (attrType.$) {
+					case 'Displayed':
+						var updatedDisplayAttrs = A2(
+							$elm$core$List$map,
+							function (x) {
+								return _Utils_eq(x.title, attr.title) ? _Utils_update(
+									x,
+									{enabled: !x.enabled}) : x;
+							},
+							model.displayedAttrs);
+						var updatedModel = _Utils_update(
+							model,
+							{displayedAttrs: updatedDisplayAttrs});
+						return _Utils_Tuple2(
+							_Utils_update(
+								updatedModel,
+								{
+									pages: A2(
+										$author$project$Main$updateAttributesViewModel,
+										model.pages,
+										$author$project$Main$getAttributesViewModel(updatedModel))
+								}),
+							$elm$core$Platform$Cmd$none);
+					case 'Searchable':
+						var updatedSearchableAttrs = A2(
+							$elm$core$List$map,
+							function (x) {
+								return _Utils_eq(x.title, attr.title) ? _Utils_update(
+									x,
+									{enabled: !x.enabled}) : x;
+							},
+							model.searchableAttrs);
+						var updatedModel = _Utils_update(
+							model,
+							{searchableAttrs: updatedSearchableAttrs});
+						return _Utils_Tuple2(
+							_Utils_update(
+								updatedModel,
+								{
+									pages: A2(
+										$author$project$Main$updateAttributesViewModel,
+										model.pages,
+										$author$project$Main$getAttributesViewModel(updatedModel))
+								}),
+							$elm$core$Platform$Cmd$none);
+					case 'Sortable':
+						var updatedSortableAttrs = A2(
+							$elm$core$List$map,
+							function (x) {
+								return _Utils_eq(x.title, attr.title) ? _Utils_update(
+									x,
+									{enabled: !x.enabled}) : x;
+							},
+							model.sortableAttrs);
+						var updatedModel = _Utils_update(
+							model,
+							{sortableAttrs: updatedSortableAttrs});
+						return _Utils_Tuple2(
+							_Utils_update(
+								updatedModel,
+								{
+									pages: A2(
+										$author$project$Main$updateAttributesViewModel,
+										model.pages,
+										$author$project$Main$getAttributesViewModel(updatedModel))
+								}),
+							$elm$core$Platform$Cmd$none);
+					case 'Filterable':
+						var updatedFilterableAttrs = A2(
+							$elm$core$List$map,
+							function (x) {
+								return _Utils_eq(x.title, attr.title) ? _Utils_update(
+									x,
+									{enabled: !x.enabled}) : x;
+							},
+							model.filterableAttrs);
+						var updatedModel = _Utils_update(
+							model,
+							{filterableAttrs: updatedFilterableAttrs});
+						return _Utils_Tuple2(
+							_Utils_update(
+								updatedModel,
+								{
+									pages: A2(
+										$author$project$Main$updateAttributesViewModel,
+										model.pages,
+										$author$project$Main$getAttributesViewModel(updatedModel))
+								}),
+							$elm$core$Platform$Cmd$none);
+					default:
+						var updatedDistinctAttr = A2(
+							$elm$core$List$map,
+							function (x) {
+								return _Utils_eq(x.title, attr.title) ? _Utils_update(
+									x,
+									{enabled: !x.enabled}) : _Utils_update(
+									x,
+									{enabled: false});
+							},
+							model.distinctAttr);
+						var updatedModel = _Utils_update(
+							model,
+							{distinctAttr: updatedDistinctAttr});
+						return _Utils_Tuple2(
+							_Utils_update(
+								updatedModel,
+								{
+									pages: A2(
+										$author$project$Main$updateAttributesViewModel,
+										model.pages,
+										$author$project$Main$getAttributesViewModel(updatedModel))
+								}),
+							$elm$core$Platform$Cmd$none);
+				}
+			case 'Save':
+				var _v13 = $author$project$Main$getCurrentlySelectedIndexId(model);
+				if (_v13.$ === 'Just') {
+					var uid = _v13.a;
+					return _Utils_Tuple2(
+						model,
+						$elm$core$Platform$Cmd$batch(
+							_List_fromArray(
+								[
+									A2(
+									$elm$core$Platform$Cmd$map,
+									$author$project$Main$ApiRequest,
+									A2(
+										$author$project$Api$Routes$Main$buildRequest,
+										$author$project$Api$Routes$Main$buildPayload(
+											A3(
+												$author$project$Api$Routes$Main$UpdateDisplayedAttrs,
+												uid,
+												A2(
+													$elm$core$List$map,
+													function (x) {
+														return x.title;
+													},
+													A2(
+														$elm$core$List$filter,
+														function (x) {
+															return x.enabled;
+														},
+														model.displayedAttrs)),
+												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
+										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
+									A2(
+									$elm$core$Platform$Cmd$map,
+									$author$project$Main$ApiRequest,
+									A2(
+										$author$project$Api$Routes$Main$buildRequest,
+										$author$project$Api$Routes$Main$buildPayload(
+											A3(
+												$author$project$Api$Routes$Main$UpdateFilterableAttrs,
+												uid,
+												A2(
+													$elm$core$List$map,
+													function (x) {
+														return x.title;
+													},
+													A2(
+														$elm$core$List$filter,
+														function (x) {
+															return x.enabled;
+														},
+														model.filterableAttrs)),
+												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
+										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
+									A2(
+									$elm$core$Platform$Cmd$map,
+									$author$project$Main$ApiRequest,
+									A2(
+										$author$project$Api$Routes$Main$buildRequest,
+										$author$project$Api$Routes$Main$buildPayload(
+											A3(
+												$author$project$Api$Routes$Main$UpdateSearchableAttrs,
+												uid,
+												A2(
+													$elm$core$List$map,
+													function (x) {
+														return x.title;
+													},
+													A2(
+														$elm$core$List$filter,
+														function (x) {
+															return x.enabled;
+														},
+														model.searchableAttrs)),
+												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
+										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
+									A2(
+									$elm$core$Platform$Cmd$map,
+									$author$project$Main$ApiRequest,
+									A2(
+										$author$project$Api$Routes$Main$buildRequest,
+										$author$project$Api$Routes$Main$buildPayload(
+											A3(
+												$author$project$Api$Routes$Main$UpdateSortableAttrs,
+												uid,
+												A2(
+													$elm$core$List$map,
+													function (x) {
+														return x.title;
+													},
+													A2(
+														$elm$core$List$filter,
+														function (x) {
+															return x.enabled;
+														},
+														model.sortableAttrs)),
+												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
+										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
+									A2(
+									$elm$core$Platform$Cmd$map,
+									$author$project$Main$ApiRequest,
+									A2(
+										$author$project$Api$Routes$Main$buildRequest,
+										$author$project$Api$Routes$Main$buildPayload(
+											A3(
+												$author$project$Api$Routes$Main$UpdateDisplayedAttrs,
+												uid,
+												A2(
+													$elm$core$List$map,
+													function (x) {
+														return x.title;
+													},
+													A2(
+														$elm$core$List$filter,
+														function (x) {
+															return x.enabled;
+														},
+														model.displayedAttrs)),
+												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
+										A2($elm$core$Maybe$withDefault, '', model.savedToken))),
+									function () {
+									var _v14 = $author$project$UI$PageViews$Attributes$getDistinctAttr(model.distinctAttr);
+									if (_v14.$ === 'Just') {
+										var da = _v14.a;
+										return A2(
+											$elm$core$Platform$Cmd$map,
+											$author$project$Main$ApiRequest,
+											A2(
+												$author$project$Api$Routes$Main$buildRequest,
+												$author$project$Api$Routes$Main$buildPayload(
+													A3($author$project$Api$Routes$Main$UpdateDistinctAttr, uid, da, $author$project$Api$Routes$Main$settingsUpdateDecoder)),
+												A2($elm$core$Maybe$withDefault, '', model.savedToken)));
+									} else {
+										return $elm$core$Platform$Cmd$none;
+									}
+								}()
+								])));
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
+			case 'Reset':
+				return A2(
+					$author$project$Main$update,
+					$author$project$Main$SidebarMsg(
+						$author$project$UI$Sidebar$SelectPage(model.pages.selectedPage)),
+					model);
+			default:
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+		}
+	});
+var $author$project$Main$handlePageViewMessage = F2(
+	function (model, pageViewMsg) {
+		switch (pageViewMsg.$) {
+			case 'SettingsViewMsg':
+				var m = pageViewMsg.a;
+				return A2($author$project$Main$handleSettingsViewMsg, model, m);
+			case 'IndexesViewMsg':
+				return _Debug_todo(
+					'Main',
+					{
+						start: {line: 483, column: 13},
+						end: {line: 483, column: 23}
+					})('branch \'IndexesViewMsg _\' not implemented');
+			case 'SearchViewMsg':
+				return _Debug_todo(
+					'Main',
+					{
+						start: {line: 486, column: 13},
+						end: {line: 486, column: 23}
+					})('branch \'SearchViewMsg _\' not implemented');
+			case 'DocumentsViewMsg':
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			case 'StopWordsViewMsg':
+				var m = pageViewMsg.a;
+				return A2($author$project$Main$handleStopWordsViewMsg, model, m);
+			case 'SynonymsViewMsg':
+				var msg = pageViewMsg.a;
+				return A2($author$project$Main$handleSynonymsViewMsg, model, msg);
+			default:
+				var msg = pageViewMsg.a;
+				return A2($author$project$Main$handleAttributesViewMsg, model, msg);
+		}
+	});
+var $author$project$Main$handleStopWordsViewMsg = F2(
+	function (model, msg) {
+		switch (msg.$) {
+			case 'Sync':
+				var _v8 = $author$project$Main$getCurrentlySelectedIndexId(model);
+				if (_v8.$ === 'Just') {
+					var uid = _v8.a;
+					return _Utils_Tuple2(
+						model,
+						A2(
+							$elm$core$Platform$Cmd$map,
+							$author$project$Main$ApiRequest,
+							A2(
+								$author$project$Api$Routes$Main$buildRequest,
+								$author$project$Api$Routes$Main$buildPayload(
+									A3(
+										$author$project$Api$Routes$Main$UpdateStopWords,
+										uid,
+										A2(
+											$elm$core$List$map,
+											function (x) {
+												return x.title;
+											},
+											model.pages.stopWords.words),
+										$author$project$Api$Routes$Main$settingsUpdateDecoder)),
+								A2($elm$core$Maybe$withDefault, '', model.savedToken))));
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
+			case 'Reset':
+				return A2(
+					$author$project$Main$update,
+					$author$project$Main$SidebarMsg(
+						$author$project$UI$Sidebar$SelectPage(model.pages.selectedPage)),
+					model);
+			default:
+				var _v9 = A2($author$project$UI$PageViews$StopWords$update, msg, model.pages.stopWords);
+				var m = _v9.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							pages: A2($author$project$Main$updateStopWordsViewModel, model.pages, m)
+						}),
+					$elm$core$Platform$Cmd$none);
+		}
+	});
+var $author$project$Main$handleSynonymsViewMsg = F2(
+	function (model, msg) {
+		var m = msg;
+		switch (m.$) {
+			case 'Sync':
+				var currentSynonyms = A2(
+					$elm$core$List$filter,
+					function (_v5) {
+						var k = _v5.a;
+						var v = _v5.b;
+						return (k !== '') && (!_Utils_eq(v, _List_Nil));
+					},
+					A2(
+						$elm$core$List$map,
+						function (s) {
+							return _Utils_Tuple2(s.synonymKey, s.synonymList);
+						},
+						model.synonyms));
+				var _v3 = A2(
+					$author$project$UI$PageViews$Synonyms$update,
+					msg,
+					$author$project$Main$getSynonymsViewModel(model));
+				var updatedSynonymsViewModel = _v3.a;
+				var updatedModel = _Utils_update(
+					model,
+					{
+						pages: A2($author$project$Main$updateSynonymsViewModel, model.pages, updatedSynonymsViewModel),
+						synonyms: updatedSynonymsViewModel.synonymStates
+					});
+				var _v4 = $author$project$Main$getCurrentlySelectedIndexId(updatedModel);
+				if (_v4.$ === 'Just') {
+					var indexUid = _v4.a;
+					return _Utils_Tuple2(
+						updatedModel,
+						A2(
+							$elm$core$Platform$Cmd$map,
+							$author$project$Main$ApiRequest,
+							A2(
+								$author$project$Api$Routes$Main$buildRequest,
+								$author$project$Api$Routes$Main$buildPayload(
+									A3(
+										$author$project$Api$Routes$Main$UpdateSynonyms,
+										indexUid,
+										$elm$core$Dict$fromList(currentSynonyms),
+										$author$project$Api$Routes$Main$settingsUpdateDecoder)),
+								A2($elm$core$Maybe$withDefault, '', model.savedToken))));
+				} else {
+					return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
+				}
+			case 'Reset':
+				return A2(
+					$author$project$Main$update,
+					$author$project$Main$SidebarMsg(
+						$author$project$UI$Sidebar$SelectPage(model.pages.selectedPage)),
+					model);
+			default:
+				var _v6 = A2(
+					$author$project$UI$PageViews$Synonyms$update,
+					msg,
+					$author$project$Main$getSynonymsViewModel(model));
+				var updatedSynonymsViewModel = _v6.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							pages: A2($author$project$Main$updateSynonymsViewModel, model.pages, updatedSynonymsViewModel),
+							synonyms: updatedSynonymsViewModel.synonymStates
+						}),
+					$elm$core$Platform$Cmd$none);
+		}
+	});
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -13883,9 +13906,6 @@ var $author$project$Main$update = F2(
 	});
 var $author$project$Main$PageViewMsg = function (a) {
 	return {$: 'PageViewMsg', a: a};
-};
-var $author$project$Main$SidebarMsg = function (a) {
-	return {$: 'SidebarMsg', a: a};
 };
 var $mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
 	return {$: 'Fill', a: a};
@@ -21504,6 +21524,7 @@ var $author$project$UI$PageViews$Attributes$cardView = F2(
 					model)));
 	});
 var $author$project$UI$PageViews$Attributes$None = {$: 'None'};
+var $author$project$UI$PageViews$Attributes$Reset = {$: 'Reset'};
 var $author$project$UI$PageViews$Attributes$Save = {$: 'Save'};
 var $author$project$UI$PageViews$Attributes$getAllAttrs = function (model) {
 	return $elm$core$List$concat(
@@ -21757,7 +21778,7 @@ var $author$project$UI$PageViews$Attributes$toolbarView = function (model) {
 		title: 'Attributes',
 		valueChanged: $author$project$UI$PageViews$Attributes$getValueChanged(model)
 	};
-	return A4($author$project$UI$Components$Toolbar$toolbarView, toolbarModel, $author$project$UI$PageViews$Attributes$None, $author$project$UI$PageViews$Attributes$Save, $author$project$UI$PageViews$Attributes$None);
+	return A4($author$project$UI$Components$Toolbar$toolbarView, toolbarModel, $author$project$UI$PageViews$Attributes$None, $author$project$UI$PageViews$Attributes$Save, $author$project$UI$PageViews$Attributes$Reset);
 };
 var $mdgriffith$elm_ui$Internal$Model$Padding = F5(
 	function (a, b, c, d, e) {
@@ -23532,9 +23553,10 @@ var $author$project$UI$Elements$chip = F4(
 						A2($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Close, $author$project$UI$Icons$Outline))
 					])));
 	});
+var $author$project$UI$PageViews$StopWords$Reset = {$: 'Reset'};
 var $author$project$UI$PageViews$StopWords$Sync = {$: 'Sync'};
 var $author$project$UI$PageViews$StopWords$getValueChanged = function (model) {
-	return !(!$elm$core$List$length(
+	return (!(!$elm$core$List$length(
 		A2(
 			$elm$core$List$filter,
 			function (x) {
@@ -23545,7 +23567,7 @@ var $author$project$UI$PageViews$StopWords$getValueChanged = function (model) {
 				function (x) {
 					return x.saved;
 				},
-				model.words))));
+				model.words))))) || ($elm$core$List$length(model.deletionQueue) > 0);
 };
 var $author$project$UI$PageViews$StopWords$isLoading = function (model) {
 	return !(!$elm$core$List$length(
@@ -23564,11 +23586,11 @@ var $author$project$UI$PageViews$StopWords$isLoading = function (model) {
 var $author$project$UI$PageViews$StopWords$toolbarView = function (m) {
 	var toolbarModel = {
 		loading: $author$project$UI$PageViews$StopWords$isLoading(m),
-		showCreateAction: true,
+		showCreateAction: false,
 		title: 'Stopwords',
 		valueChanged: $author$project$UI$PageViews$StopWords$getValueChanged(m)
 	};
-	return A4($author$project$UI$Components$Toolbar$toolbarView, toolbarModel, $author$project$UI$PageViews$StopWords$Create, $author$project$UI$PageViews$StopWords$Sync, $author$project$UI$PageViews$StopWords$None);
+	return A4($author$project$UI$Components$Toolbar$toolbarView, toolbarModel, $author$project$UI$PageViews$StopWords$None, $author$project$UI$PageViews$StopWords$Sync, $author$project$UI$PageViews$StopWords$Reset);
 };
 var $author$project$UI$PageViews$StopWords$view = function (model) {
 	return A2(
@@ -23623,7 +23645,7 @@ var $author$project$UI$PageViews$Synonyms$CardViewMsg = function (a) {
 	return {$: 'CardViewMsg', a: a};
 };
 var $author$project$UI$PageViews$Synonyms$New = {$: 'New'};
-var $author$project$UI$PageViews$Synonyms$NoAction = {$: 'NoAction'};
+var $author$project$UI$PageViews$Synonyms$Reset = {$: 'Reset'};
 var $author$project$UI$PageViews$Synonyms$Sync = {$: 'Sync'};
 var $author$project$UI$PageViews$Synonyms$getValueChanged = function (model) {
 	return !(!$elm$core$List$length(
@@ -23660,7 +23682,7 @@ var $author$project$UI$PageViews$Synonyms$toolbarView = function (m) {
 		title: 'Synonyms',
 		valueChanged: $author$project$UI$PageViews$Synonyms$getValueChanged(m)
 	};
-	return A4($author$project$UI$Components$Toolbar$toolbarView, toolbarModel, $author$project$UI$PageViews$Synonyms$New, $author$project$UI$PageViews$Synonyms$Sync, $author$project$UI$PageViews$Synonyms$NoAction);
+	return A4($author$project$UI$Components$Toolbar$toolbarView, toolbarModel, $author$project$UI$PageViews$Synonyms$New, $author$project$UI$PageViews$Synonyms$Sync, $author$project$UI$PageViews$Synonyms$Reset);
 };
 var $author$project$UI$Components$SynonymCard$DoneEditing = {$: 'DoneEditing'};
 var $author$project$UI$Components$SynonymCard$UpdatedList = F2(
@@ -23950,4 +23972,4 @@ var $author$project$Main$view = function (model) {
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Api.Routes.Main.IndexKeys":{"args":[],"type":"{ indexUid : String.String, keys : List.List String.String }"},"Api.Routes.Main.IndexStats":{"args":[],"type":"{ numberOfDocuments : Basics.Int, isIndexing : Basics.Bool, fieldDistribution : Dict.Dict String.String Basics.Int }"},"Api.Routes.Main.IndexesRouteResponseListItem":{"args":[],"type":"{ uid : String.String, name : String.String, createdAt : String.String, updatedAt : String.String, primaryKey : String.String }"},"Api.Routes.Main.SettingsRouteResponseItem":{"args":[],"type":"{ uid : Basics.Int, indexUid : String.String }"},"UI.PageViews.Attributes.Attribute":{"args":[],"type":"{ title : String.String, enabled : Basics.Bool, saved : Basics.Bool, requestStatus : Request.RequestStatus }"},"UI.Components.Dropdown.Item":{"args":[],"type":"{ title : String.String, id : String.String }"},"UI.Components.SynonymCard.Model":{"args":[],"type":"{ index : Basics.Int, synonymKey : String.String, synonymsValue : String.String, synonymList : List.List String.String, saved : Maybe.Maybe ( String.String, List.List String.String ), requestStatus : Request.RequestStatus, taskId : Maybe.Maybe Basics.Int }"},"UI.PageViews.Attributes.Model":{"args":[],"type":"{ displayed : List.List UI.PageViews.Attributes.Attribute, sortable : List.List UI.PageViews.Attributes.Attribute, searchable : List.List UI.PageViews.Attributes.Attribute, filterable : List.List UI.PageViews.Attributes.Attribute, distinct : List.List UI.PageViews.Attributes.Attribute }"},"UI.PageViews.Documents.Model":{"args":[],"type":"{ documents : List.List String.String }"},"UI.PageViews.Settings.Model":{"args":[],"type":"{ tokenValue : String.String, title : String.String }"},"UI.PageViews.StopWords.Model":{"args":[],"type":"{ words : List.List UI.PageViews.StopWords.StopWord, newValue : String.String, deletionQueue : List.List UI.PageViews.StopWords.StopWord }"},"UI.PageViews.Synonyms.Model":{"args":[],"type":"{ synonymStates : List.List UI.Components.SynonymCard.Model }"},"UI.PageViews.StopWords.StopWord":{"args":[],"type":"{ title : String.String, requestStatus : Request.RequestStatus, saved : Basics.Bool }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"],"ApiRequest":["Api.Routes.Main.Msg"],"PollUpdate":["Main.Task","SweetPoll.Msg String.String"],"AddToPollQueue":["Main.Task"],"UpdateKeysForIndex":["Api.Routes.Main.IndexKeys"]}},"List.List":{"args":["a"],"tags":{}},"Api.Routes.Main.Msg":{"args":[],"tags":{"HandleListIndexesResponse":["Result.Result Http.Error (List.List Api.Routes.Main.IndexesRouteResponseListItem)"],"HandleShowResponse":["Result.Result Http.Error Api.Routes.Main.IndexesRouteResponseListItem"],"HandleDocumentsResponse":["Result.Result Http.Error String.String"],"HandleListStopWordsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleUpdateSynonymsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleListSynonymsResponse":["Result.Result Http.Error (Dict.Dict String.String (List.List String.String))","String.String"],"HandleIndexKeysResponse":["Api.Routes.Main.IndexKeys"],"HandleListDisplayedAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleListSearchableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleListSortableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleListFilterableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleListDistinctAttrResponse":["Result.Result Http.Error (Maybe.Maybe String.String)","String.String"],"HandleUpdateDisplayedAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateFilterableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateSortableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateSearchableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateDistinctAttrResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateStopWordsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleStatsResponse":["Result.Result Http.Error Api.Routes.Main.IndexStats","String.String"]}},"SweetPoll.Msg":{"args":["data"],"tags":{"PollResult":["Result.Result Http.Error data"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.PageViews.Indexes.Msg"],"SettingsViewMsg":["UI.PageViews.Settings.Msg"],"SearchViewMsg":["UI.PageViews.Search.Msg"],"DocumentsViewMsg":["UI.PageViews.Documents.Msg"],"StopWordsViewMsg":["UI.PageViews.StopWords.Msg"],"SynonymsViewMsg":["UI.PageViews.Synonyms.Msg"],"AttributesViewMsg":["UI.PageViews.Attributes.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"],"DropdownMsg":["UI.Components.Dropdown.Msg"]}},"String.String":{"args":[],"tags":{"String":[]}},"Main.Task":{"args":[],"tags":{"UpdateSynonymsTask":["Basics.Int","String.String"],"UpdateAttributeTask":["Basics.Int","String.String","UI.PageViews.Attributes.AttributeType"],"UpdateStopWordsTask":["Basics.Int","String.String"]}},"UI.PageViews.Attributes.AttributeType":{"args":[],"tags":{"Displayed":[],"Sortable":[],"Searchable":[],"Filterable":[],"Distinct":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"UI.Components.Dropdown.Msg":{"args":[],"tags":{"TriggerClicked":[],"Select":["UI.Components.Dropdown.Item"]}},"UI.PageViews.Attributes.Msg":{"args":[],"tags":{"X":["Basics.Bool"],"Toggle":["UI.PageViews.Attributes.Attribute","UI.PageViews.Attributes.AttributeType"],"Save":[],"None":[]}},"UI.PageViews.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Search.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Settings.Msg":{"args":[],"tags":{"KeyValueChanged":["String.String"],"SaveKeyValue":[],"None":[]}},"UI.PageViews.StopWords.Msg":{"args":[],"tags":{"Create":[],"NewValueUpdated":["String.String"],"Remove":["UI.PageViews.StopWords.StopWord"],"Sync":[],"None":[]}},"UI.PageViews.Synonyms.Msg":{"args":[],"tags":{"CardViewMsg":["UI.Components.SynonymCard.Msg"],"Sync":[],"New":[],"NoAction":[]}},"UI.Pages.Page":{"args":[],"tags":{"Settings":["UI.PageViews.Settings.Model"],"Documents":["UI.PageViews.Documents.Model"],"Synonyms":["UI.PageViews.Synonyms.Model"],"StopWords":["UI.PageViews.StopWords.Model"],"Attributes":["UI.PageViews.Attributes.Model"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"UI.Components.SynonymCard.Msg":{"args":[],"tags":{"UpdatedTitle":["Basics.Int","String.String"],"UpdatedList":["Basics.Int","String.String"],"Remove":["Basics.Int"],"RetrySave":["Basics.Int"],"Save":["Basics.Int"],"Reset":[],"DoneEditing":[]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}},"Request.RequestStatus":{"args":[],"tags":{"NoRequest":[],"Fired":[],"Success":[],"Failed":[]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Api.Routes.Main.IndexKeys":{"args":[],"type":"{ indexUid : String.String, keys : List.List String.String }"},"Api.Routes.Main.IndexStats":{"args":[],"type":"{ numberOfDocuments : Basics.Int, isIndexing : Basics.Bool, fieldDistribution : Dict.Dict String.String Basics.Int }"},"Api.Routes.Main.IndexesRouteResponseListItem":{"args":[],"type":"{ uid : String.String, name : String.String, createdAt : String.String, updatedAt : String.String, primaryKey : String.String }"},"Api.Routes.Main.SettingsRouteResponseItem":{"args":[],"type":"{ uid : Basics.Int, indexUid : String.String }"},"UI.PageViews.Attributes.Attribute":{"args":[],"type":"{ title : String.String, enabled : Basics.Bool, saved : Basics.Bool, requestStatus : Request.RequestStatus }"},"UI.Components.Dropdown.Item":{"args":[],"type":"{ title : String.String, id : String.String }"},"UI.Components.SynonymCard.Model":{"args":[],"type":"{ index : Basics.Int, synonymKey : String.String, synonymsValue : String.String, synonymList : List.List String.String, saved : Maybe.Maybe ( String.String, List.List String.String ), requestStatus : Request.RequestStatus, taskId : Maybe.Maybe Basics.Int }"},"UI.PageViews.Attributes.Model":{"args":[],"type":"{ displayed : List.List UI.PageViews.Attributes.Attribute, sortable : List.List UI.PageViews.Attributes.Attribute, searchable : List.List UI.PageViews.Attributes.Attribute, filterable : List.List UI.PageViews.Attributes.Attribute, distinct : List.List UI.PageViews.Attributes.Attribute }"},"UI.PageViews.Documents.Model":{"args":[],"type":"{ documents : List.List String.String }"},"UI.PageViews.Settings.Model":{"args":[],"type":"{ tokenValue : String.String, title : String.String }"},"UI.PageViews.StopWords.Model":{"args":[],"type":"{ words : List.List UI.PageViews.StopWords.StopWord, newValue : String.String, deletionQueue : List.List UI.PageViews.StopWords.StopWord }"},"UI.PageViews.Synonyms.Model":{"args":[],"type":"{ synonymStates : List.List UI.Components.SynonymCard.Model }"},"UI.PageViews.StopWords.StopWord":{"args":[],"type":"{ title : String.String, requestStatus : Request.RequestStatus, saved : Basics.Bool }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"],"ApiRequest":["Api.Routes.Main.Msg"],"PollUpdate":["Main.Task","SweetPoll.Msg String.String"],"AddToPollQueue":["Main.Task"],"UpdateKeysForIndex":["Api.Routes.Main.IndexKeys"]}},"List.List":{"args":["a"],"tags":{}},"Api.Routes.Main.Msg":{"args":[],"tags":{"HandleListIndexesResponse":["Result.Result Http.Error (List.List Api.Routes.Main.IndexesRouteResponseListItem)"],"HandleShowResponse":["Result.Result Http.Error Api.Routes.Main.IndexesRouteResponseListItem"],"HandleDocumentsResponse":["Result.Result Http.Error String.String"],"HandleListStopWordsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleUpdateSynonymsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleListSynonymsResponse":["Result.Result Http.Error (Dict.Dict String.String (List.List String.String))","String.String"],"HandleIndexKeysResponse":["Api.Routes.Main.IndexKeys"],"HandleListDisplayedAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleListSearchableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleListSortableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleListFilterableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleListDistinctAttrResponse":["Result.Result Http.Error (Maybe.Maybe String.String)","String.String"],"HandleUpdateDisplayedAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateFilterableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateSortableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateSearchableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateDistinctAttrResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateStopWordsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleStatsResponse":["Result.Result Http.Error Api.Routes.Main.IndexStats","String.String"]}},"SweetPoll.Msg":{"args":["data"],"tags":{"PollResult":["Result.Result Http.Error data"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.PageViews.Indexes.Msg"],"SettingsViewMsg":["UI.PageViews.Settings.Msg"],"SearchViewMsg":["UI.PageViews.Search.Msg"],"DocumentsViewMsg":["UI.PageViews.Documents.Msg"],"StopWordsViewMsg":["UI.PageViews.StopWords.Msg"],"SynonymsViewMsg":["UI.PageViews.Synonyms.Msg"],"AttributesViewMsg":["UI.PageViews.Attributes.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"],"DropdownMsg":["UI.Components.Dropdown.Msg"]}},"String.String":{"args":[],"tags":{"String":[]}},"Main.Task":{"args":[],"tags":{"UpdateSynonymsTask":["Basics.Int","String.String"],"UpdateAttributeTask":["Basics.Int","String.String","UI.PageViews.Attributes.AttributeType"],"UpdateStopWordsTask":["Basics.Int","String.String"]}},"UI.PageViews.Attributes.AttributeType":{"args":[],"tags":{"Displayed":[],"Sortable":[],"Searchable":[],"Filterable":[],"Distinct":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"UI.Components.Dropdown.Msg":{"args":[],"tags":{"TriggerClicked":[],"Select":["UI.Components.Dropdown.Item"]}},"UI.PageViews.Attributes.Msg":{"args":[],"tags":{"X":["Basics.Bool"],"Toggle":["UI.PageViews.Attributes.Attribute","UI.PageViews.Attributes.AttributeType"],"Save":[],"Reset":[],"None":[]}},"UI.PageViews.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Search.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Settings.Msg":{"args":[],"tags":{"KeyValueChanged":["String.String"],"SaveKeyValue":[],"None":[]}},"UI.PageViews.StopWords.Msg":{"args":[],"tags":{"Create":[],"NewValueUpdated":["String.String"],"Remove":["UI.PageViews.StopWords.StopWord"],"Sync":[],"Reset":[],"None":[]}},"UI.PageViews.Synonyms.Msg":{"args":[],"tags":{"CardViewMsg":["UI.Components.SynonymCard.Msg"],"Sync":[],"New":[],"NoAction":[],"Reset":[]}},"UI.Pages.Page":{"args":[],"tags":{"Settings":["UI.PageViews.Settings.Model"],"Documents":["UI.PageViews.Documents.Model"],"Synonyms":["UI.PageViews.Synonyms.Model"],"StopWords":["UI.PageViews.StopWords.Model"],"Attributes":["UI.PageViews.Attributes.Model"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"UI.Components.SynonymCard.Msg":{"args":[],"tags":{"UpdatedTitle":["Basics.Int","String.String"],"UpdatedList":["Basics.Int","String.String"],"Remove":["Basics.Int"],"RetrySave":["Basics.Int"],"Save":["Basics.Int"],"Reset":[],"DoneEditing":[]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}},"Request.RequestStatus":{"args":[],"tags":{"NoRequest":[],"Fired":[],"Success":[],"Failed":[]}}}}})}});}(this));

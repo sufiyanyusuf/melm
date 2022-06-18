@@ -31,6 +31,7 @@ type Msg
     = X Bool
     | Toggle Attribute AttributeType
     | Save
+    | Reset
     | None
 
 
@@ -97,7 +98,7 @@ toolbarView model =
             , title = "Attributes"
             }
     in
-    UI.Components.Toolbar.toolbarView toolbarModel None Save None
+    UI.Components.Toolbar.toolbarView toolbarModel None Save Reset
 
 
 cardView : List Attribute -> AttributeType -> Element Msg
