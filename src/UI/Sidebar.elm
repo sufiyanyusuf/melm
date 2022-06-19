@@ -114,7 +114,7 @@ sidebarListItemView title isSelected page config =
                 , addIf isSelected <| Background.color (UI.Styles.color config).primary100
                 ]
             )
-            [ getPageIcon page (getIconStyle isSelected)
+            [ getPageIcon page (getIconStyle isSelected) config
             , paragraph [ paddingEach { top = 0, left = 8, bottom = 4, right = 0 } ]
                 [ el
                     (List.concat
@@ -148,23 +148,23 @@ getPageTitle page =
             "Attributes"
 
 
-getPageIcon : UI.Pages.Page -> UI.Icons.Style -> Element msg
-getPageIcon page style =
+getPageIcon : UI.Pages.Page -> UI.Icons.Style -> Config -> Element msg
+getPageIcon page style config =
     case page of
         UI.Pages.Settings _ ->
-            UI.Icons.buildIcon SettingsGear style
+            UI.Icons.buildIcon SettingsGear style config
 
         UI.Pages.Documents _ ->
-            UI.Icons.buildIcon Documents style
+            UI.Icons.buildIcon Documents style config
 
         UI.Pages.Synonyms _ ->
-            UI.Icons.buildIcon Dictionary style
+            UI.Icons.buildIcon Dictionary style config
 
         UI.Pages.StopWords _ ->
-            UI.Icons.buildIcon Block style
+            UI.Icons.buildIcon Block style config
 
         UI.Pages.Attributes _ ->
-            UI.Icons.buildIcon Switches style
+            UI.Icons.buildIcon Switches style config
 
 
 getIconStyle : Bool -> UI.Icons.Style

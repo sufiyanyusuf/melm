@@ -52,7 +52,7 @@ view model config =
             ]
             [ UI.Elements.spacer UI.Styles.LG
             , Element.wrappedRow
-                [ spacing 20
+                [ spacing 32
                 ]
                 [ cardView model.displayed Displayed config
                 , cardView model.searchable Searchable config
@@ -108,19 +108,19 @@ cardView model attrType config =
         ( title, icon ) =
             case attrType of
                 Displayed ->
-                    ( "Displayed", UI.Icons.buildIcon UI.Icons.Displayed Outline )
+                    ( "Displayed", UI.Icons.buildIcon UI.Icons.Displayed Outline config )
 
                 Sortable ->
-                    ( "Sortable", UI.Icons.buildIcon UI.Icons.Sortable Outline )
+                    ( "Sortable", UI.Icons.buildIcon UI.Icons.Sortable Outline config )
 
                 Searchable ->
-                    ( "Searchable", UI.Icons.buildIcon UI.Icons.Searchable Outline )
+                    ( "Searchable", UI.Icons.buildIcon UI.Icons.Searchable Outline config )
 
                 Filterable ->
-                    ( "Filterable", UI.Icons.buildIcon UI.Icons.Filterable Outline )
+                    ( "Filterable", UI.Icons.buildIcon UI.Icons.Filterable Outline config )
 
                 Distinct ->
-                    ( "Distinct", UI.Icons.buildIcon UI.Icons.Distinct Outline )
+                    ( "Distinct", UI.Icons.buildIcon UI.Icons.Distinct Outline config )
     in
     Element.column
         [ Element.Background.color (UI.Styles.color config).white

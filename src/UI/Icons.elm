@@ -4,6 +4,7 @@ import Element exposing (Element)
 import Html
 import Svg exposing (path, svg)
 import Svg.Attributes exposing (d, fill, height, viewBox, width, xmlSpace)
+import UI.Styles exposing (Config, colorHexValue)
 
 
 type Style
@@ -31,8 +32,8 @@ type Icon
     | Distinct
 
 
-buildIcon : Icon -> Style -> Element msg
-buildIcon icon style =
+buildIcon : Icon -> Style -> Config -> Element msg
+buildIcon icon style config =
     case icon of
         Close ->
             Element.html (close style)

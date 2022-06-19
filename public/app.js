@@ -20507,8 +20507,8 @@ var $author$project$UI$Icons$switches = function (style) {
 				]));
 	}
 };
-var $author$project$UI$Icons$buildIcon = F2(
-	function (icon, style) {
+var $author$project$UI$Icons$buildIcon = F3(
+	function (icon, style, config) {
 		switch (icon.$) {
 			case 'Close':
 				return $mdgriffith$elm_ui$Element$html(
@@ -20563,19 +20563,19 @@ var $author$project$UI$Icons$buildIcon = F2(
 					$author$project$UI$Icons$distinct(style));
 		}
 	});
-var $author$project$UI$Sidebar$getPageIcon = F2(
-	function (page, style) {
+var $author$project$UI$Sidebar$getPageIcon = F3(
+	function (page, style, config) {
 		switch (page.$) {
 			case 'Settings':
-				return A2($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$SettingsGear, style);
+				return A3($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$SettingsGear, style, config);
 			case 'Documents':
-				return A2($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Documents, style);
+				return A3($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Documents, style, config);
 			case 'Synonyms':
-				return A2($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Dictionary, style);
+				return A3($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Dictionary, style, config);
 			case 'StopWords':
-				return A2($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Block, style);
+				return A3($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Block, style, config);
 			default:
-				return A2($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Switches, style);
+				return A3($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Switches, style, config);
 		}
 	});
 var $mdgriffith$elm_ui$Internal$Flag$fontWeight = $mdgriffith$elm_ui$Internal$Flag$flag(13);
@@ -20689,7 +20689,7 @@ var $author$project$UI$Styles$getTypographicStyleFor = F2(
 							])),
 						$mdgriffith$elm_ui$Element$Font$color(
 						$author$project$UI$Styles$color(config).gray300),
-						$mdgriffith$elm_ui$Element$Font$letterSpacing(0.4)
+						$mdgriffith$elm_ui$Element$Font$letterSpacing(0.2)
 					]);
 			case 'BodyBold':
 				return _List_fromArray(
@@ -20991,10 +20991,11 @@ var $author$project$UI$Sidebar$sidebarListItemView = F4(
 						])),
 				_List_fromArray(
 					[
-						A2(
+						A3(
 						$author$project$UI$Sidebar$getPageIcon,
 						page,
-						$author$project$UI$Sidebar$getIconStyle(isSelected)),
+						$author$project$UI$Sidebar$getIconStyle(isSelected),
+						config),
 						A2(
 						$mdgriffith$elm_ui$Element$paragraph,
 						_List_fromArray(
@@ -21791,23 +21792,23 @@ var $author$project$UI$PageViews$Attributes$cardView = F3(
 				case 'Displayed':
 					return _Utils_Tuple2(
 						'Displayed',
-						A2($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Displayed, $author$project$UI$Icons$Outline));
+						A3($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Displayed, $author$project$UI$Icons$Outline, config));
 				case 'Sortable':
 					return _Utils_Tuple2(
 						'Sortable',
-						A2($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Sortable, $author$project$UI$Icons$Outline));
+						A3($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Sortable, $author$project$UI$Icons$Outline, config));
 				case 'Searchable':
 					return _Utils_Tuple2(
 						'Searchable',
-						A2($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Searchable, $author$project$UI$Icons$Outline));
+						A3($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Searchable, $author$project$UI$Icons$Outline, config));
 				case 'Filterable':
 					return _Utils_Tuple2(
 						'Filterable',
-						A2($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Filterable, $author$project$UI$Icons$Outline));
+						A3($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Filterable, $author$project$UI$Icons$Outline, config));
 				default:
 					return _Utils_Tuple2(
 						'Distinct',
-						A2($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Distinct, $author$project$UI$Icons$Outline));
+						A3($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Distinct, $author$project$UI$Icons$Outline, config));
 			}
 		}();
 		var title = _v0.a;
@@ -22344,7 +22345,7 @@ var $author$project$UI$PageViews$Attributes$view = F2(
 							$mdgriffith$elm_ui$Element$wrappedRow,
 							_List_fromArray(
 								[
-									$mdgriffith$elm_ui$Element$spacing(20)
+									$mdgriffith$elm_ui$Element$spacing(32)
 								]),
 							_List_fromArray(
 								[
@@ -23965,7 +23966,7 @@ var $author$project$UI$Elements$chip = F5(
 										$mdgriffith$elm_ui$Element$alpha(0.3)
 									]))
 							]),
-						A2($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Close, $author$project$UI$Icons$Outline))
+						A3($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Close, $author$project$UI$Icons$Outline, config))
 					])));
 	});
 var $author$project$UI$PageViews$StopWords$Reset = {$: 'Reset'};
@@ -24154,7 +24155,7 @@ var $author$project$UI$Elements$iconButton = F3(
 							$author$project$UI$Styles$color(config).gray300)
 						]))
 				]),
-			A2($author$project$UI$Icons$buildIcon, icon, $author$project$UI$Icons$Outline));
+			A3($author$project$UI$Icons$buildIcon, icon, $author$project$UI$Icons$Outline, config));
 	});
 var $author$project$UI$Components$SynonymCard$failedView = F2(
 	function (model, config) {

@@ -51,6 +51,59 @@ type alias Colors =
     }
 
 
+type alias ColorsHexValue =
+    { primary500 : String
+    , primary400 : String
+    , primary300 : String
+    , primary200 : String
+    , primary100 : String
+    , gray500 : String
+    , gray400 : String
+    , gray300 : String
+    , gray200 : String
+    , gray100 : String
+    , green500 : String
+    , white : String
+    , clear : String
+    }
+
+
+colorHexValue : Config -> ColorsHexValue
+colorHexValue config =
+    case config.scheme of
+        Light ->
+            { primary500 = "#1C2890"
+            , primary400 = "#4E5BCF"
+            , primary300 = "#959EF0"
+            , primary200 = "#B1B8FA"
+            , primary100 = "#D3D8FF"
+            , gray500 = "#F4F4F4"
+            , gray400 = "#E1E1E1"
+            , gray300 = "#808080"
+            , gray200 = "#4C4C4C"
+            , gray100 = "#1A1A1A"
+            , white = "#FFFFFF"
+            , green500 = "#11C74F"
+            , clear = ""
+            }
+
+        Dark ->
+            { primary500 = "#1C2890"
+            , primary400 = "#4E5BCF"
+            , primary300 = "#959EF0"
+            , primary200 = "#B1B8FA"
+            , primary100 = "#D3D8FF"
+            , gray500 = "#F4F4F4"
+            , gray400 = "#E1E1E1"
+            , gray300 = "#808080"
+            , gray200 = "#4C4C4C"
+            , gray100 = "#1A1A1A"
+            , white = "#FFFFFF"
+            , green500 = "#11C74F"
+            , clear = ""
+            }
+
+
 color : Config -> Colors
 color config =
     case config.scheme of
@@ -142,7 +195,7 @@ getTypographicStyleFor style config =
                 , Font.sansSerif
                 ]
             , Font.color (color config).gray300
-            , Font.letterSpacing 0.4
+            , Font.letterSpacing 0.2
             ]
 
         BodyBold ->
