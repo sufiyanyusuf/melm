@@ -108,19 +108,19 @@ cardView model attrType config =
         ( title, icon ) =
             case attrType of
                 Displayed ->
-                    ( "Displayed", UI.Icons.buildIcon UI.Icons.Displayed Outline config )
+                    ( "Displayed", UI.Icons.buildIcon UI.Icons.Displayed Outline config (UI.Styles.color config).gray300 )
 
                 Sortable ->
-                    ( "Sortable", UI.Icons.buildIcon UI.Icons.Sortable Outline config )
+                    ( "Sortable", UI.Icons.buildIcon UI.Icons.Sortable Outline config (UI.Styles.color config).gray300 )
 
                 Searchable ->
-                    ( "Searchable", UI.Icons.buildIcon UI.Icons.Searchable Outline config )
+                    ( "Searchable", UI.Icons.buildIcon UI.Icons.Searchable Outline config (UI.Styles.color config).gray300 )
 
                 Filterable ->
-                    ( "Filterable", UI.Icons.buildIcon UI.Icons.Filterable Outline config )
+                    ( "Filterable", UI.Icons.buildIcon UI.Icons.Filterable Outline config (UI.Styles.color config).gray300 )
 
                 Distinct ->
-                    ( "Distinct", UI.Icons.buildIcon UI.Icons.Distinct Outline config )
+                    ( "Distinct", UI.Icons.buildIcon UI.Icons.Distinct Outline config (UI.Styles.color config).gray300 )
     in
     Element.column
         [ Element.Background.color (UI.Styles.color config).white

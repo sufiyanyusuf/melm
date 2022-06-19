@@ -209,7 +209,7 @@ iconButton icon msg config =
         , Element.mouseOver [ Background.color (UI.Styles.color config).gray100 ]
         , Element.mouseDown [ Background.color (UI.Styles.color config).gray300 ]
         ]
-        (buildIcon icon Outline config)
+        (buildIcon icon Outline config (UI.Styles.color config).primary400)
 
 
 chip : String -> RequestStatus -> Bool -> msg -> Config -> Element msg
@@ -234,7 +234,7 @@ chip text requestStatus saved msg config =
                 , Element.Events.onClick msg
                 , Element.mouseOver <| [ alpha 0.3 ]
                 ]
-                (buildIcon UI.Icons.Close Outline config)
+                (buildIcon UI.Icons.Close Outline config (UI.Styles.color config).primary500)
             ]
         )
 

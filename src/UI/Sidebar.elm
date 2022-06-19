@@ -10,7 +10,7 @@ import UI.Components.Dropdown as Dropdown
 import UI.Icons exposing (Icon(..), Style(..))
 import UI.PageViews.Documents as Documents
 import UI.Pages
-import UI.Styles exposing (Config)
+import UI.Styles exposing (Config, color)
 import Utils exposing (addIf)
 
 
@@ -114,7 +114,7 @@ sidebarListItemView title isSelected page config =
                 , addIf isSelected <| Background.color (UI.Styles.color config).primary100
                 ]
             )
-            [ getPageIcon page (getIconStyle isSelected) config
+            [ getPageIcon page (getIconStyle isSelected) config (UI.Styles.color config).primary100
             , paragraph [ paddingEach { top = 0, left = 8, bottom = 4, right = 0 } ]
                 [ el
                     (List.concat
@@ -148,23 +148,23 @@ getPageTitle page =
             "Attributes"
 
 
-getPageIcon : UI.Pages.Page -> UI.Icons.Style -> Config -> Element msg
-getPageIcon page style config =
+getPageIcon : UI.Pages.Page -> UI.Icons.Style -> Config -> color -> Element msg
+getPageIcon page style config color =
     case page of
         UI.Pages.Settings _ ->
-            UI.Icons.buildIcon SettingsGear style config
+            UI.Icons.buildIcon SettingsGear style config color
 
         UI.Pages.Documents _ ->
-            UI.Icons.buildIcon Documents style config
+            UI.Icons.buildIcon Documents style config color
 
         UI.Pages.Synonyms _ ->
-            UI.Icons.buildIcon Dictionary style config
+            UI.Icons.buildIcon Dictionary style config color
 
         UI.Pages.StopWords _ ->
-            UI.Icons.buildIcon Block style config
+            UI.Icons.buildIcon Block style config color
 
         UI.Pages.Attributes _ ->
-            UI.Icons.buildIcon Switches style config
+            UI.Icons.buildIcon Switches style config color
 
 
 getIconStyle : Bool -> UI.Icons.Style

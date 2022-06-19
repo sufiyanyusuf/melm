@@ -24,14 +24,103 @@ type Typography
     | Label
 
 
+type alias Config =
+    { scheme : ColorScheme
+    }
+
+
 type ColorScheme
     = Light
     | Dark
 
 
-type alias Config =
-    { scheme : ColorScheme
-    }
+type ColorHue
+    = Primary
+    | Grayscale
+
+
+type ColorIntensity
+    = I100
+    | I200
+    | I300
+    | I400
+    | I500
+
+
+buildColor : ColorHue -> ColorIntensity -> Config -> String
+buildColor hue intensity config =
+    case config.scheme of
+        Light ->
+            case hue of
+                Primary ->
+                    case intensity of
+                        I100 ->
+                            "#D3D8FF"
+
+                        I200 ->
+                            "#B1B8FA"
+
+                        I300 ->
+                            "#959EF0"
+
+                        I400 ->
+                            "#4E5BCF"
+
+                        I500 ->
+                            "#1C2890"
+
+                Grayscale ->
+                    case intensity of
+                        I100 ->
+                            "#1A1A1A"
+
+                        I200 ->
+                            "#4C4C4C"
+
+                        I300 ->
+                            "#808080"
+
+                        I400 ->
+                            "#E1E1E1"
+
+                        I500 ->
+                            "#F4F4F4"
+
+        Dark ->
+            case hue of
+                Primary ->
+                    case intensity of
+                        I100 ->
+                            "#D3D8FF"
+
+                        I200 ->
+                            "#B1B8FA"
+
+                        I300 ->
+                            "#959EF0"
+
+                        I400 ->
+                            "#4E5BCF"
+
+                        I500 ->
+                            "#1C2890"
+
+                Grayscale ->
+                    case intensity of
+                        I100 ->
+                            "#1A1A1A"
+
+                        I200 ->
+                            "#4C4C4C"
+
+                        I300 ->
+                            "#808080"
+
+                        I400 ->
+                            "#E1E1E1"
+
+                        I500 ->
+                            "#F4F4F4"
 
 
 type alias Colors =
