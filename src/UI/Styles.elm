@@ -21,6 +21,7 @@ type Typography
     | BodyBold
     | Code
     | CardTitle
+    | Label
 
 
 type ColorScheme
@@ -131,6 +132,17 @@ getTypographicStyleFor style config =
                 ]
             , Font.color (color config).gray400
             , Font.letterSpacing -0.1
+            ]
+
+        Label ->
+            [ Font.size 14
+            , Font.medium
+            , Font.family
+                [ Font.typeface "Inter"
+                , Font.sansSerif
+                ]
+            , Font.color (color config).gray300
+            , Font.letterSpacing 0.4
             ]
 
         BodyBold ->

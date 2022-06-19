@@ -7,7 +7,6 @@ import Element exposing (..)
 import Html exposing (Html)
 import Http
 import Request exposing (..)
-import Svg.Attributes exposing (mode)
 import SweetPoll exposing (PollingState)
 import UI.Components.Dropdown exposing (Msg(..))
 import UI.Components.SynonymCard exposing (Msg(..))
@@ -278,7 +277,7 @@ handleApiResponse model apiResponse =
         HandleIndexKeysResponse r ->
             ( model
             , Api.Routes.Main.buildRequest
-                (Api.Routes.Main.buildPayload (ListDisplayedAttrs r.indexUid Api.Routes.Main.maybeStringListDecoder))
+                (Api.Routes.Main.buildPayload (ListDisplayedAttrs r.indexUid Api.Routes.Main.maybeStringListDecoder) (getRootUrl model))
                 (getSavedToken model)
                 |> Cmd.map ApiRequest
             )
@@ -451,25 +450,29 @@ handleApiResponse model apiResponse =
                         , documentKeys = ( indexUid, keys )
                         , pages = updateAttributesViewModel model.pages updatedAttributesPageViewModel
                       }
-                    , Cmd.batch
+                    , let
+                        rootUrl =
+                            getRootUrl model
+                      in
+                      Cmd.batch
                         [ Api.Routes.Main.buildRequest
-                            (Api.Routes.Main.buildPayload (ListDisplayedAttrs indexUid Api.Routes.Main.maybeStringListDecoder))
+                            (Api.Routes.Main.buildPayload (ListDisplayedAttrs indexUid Api.Routes.Main.maybeStringListDecoder) rootUrl)
                             (getSavedToken model)
                             |> Cmd.map ApiRequest
                         , Api.Routes.Main.buildRequest
-                            (Api.Routes.Main.buildPayload (ListFilterableAttrs indexUid Api.Routes.Main.maybeStringListDecoder))
+                            (Api.Routes.Main.buildPayload (ListFilterableAttrs indexUid Api.Routes.Main.maybeStringListDecoder) rootUrl)
                             (getSavedToken model)
                             |> Cmd.map ApiRequest
                         , Api.Routes.Main.buildRequest
-                            (Api.Routes.Main.buildPayload (ListSortableAttrs indexUid Api.Routes.Main.maybeStringListDecoder))
+                            (Api.Routes.Main.buildPayload (ListSortableAttrs indexUid Api.Routes.Main.maybeStringListDecoder) rootUrl)
                             (getSavedToken model)
                             |> Cmd.map ApiRequest
                         , Api.Routes.Main.buildRequest
-                            (Api.Routes.Main.buildPayload (ListSearchableAttrs indexUid Api.Routes.Main.maybeStringListDecoder))
+                            (Api.Routes.Main.buildPayload (ListSearchableAttrs indexUid Api.Routes.Main.maybeStringListDecoder) rootUrl)
                             (getSavedToken model)
                             |> Cmd.map ApiRequest
                         , Api.Routes.Main.buildRequest
-                            (Api.Routes.Main.buildPayload (ListDistinctAttr indexUid Api.Routes.Main.stringDecoder))
+                            (Api.Routes.Main.buildPayload (ListDistinctAttr indexUid Api.Routes.Main.stringDecoder) rootUrl)
                             (getSavedToken model)
                             |> Cmd.map ApiRequest
                         ]
@@ -503,6 +506,10 @@ handlePageViewMessage model pageViewMsg =
 
 handleAttributesViewMsg : Model -> AttributesPage.Msg -> ( Model, Cmd Msg )
 handleAttributesViewMsg model msg =
+    let
+        rootUrl =
+            getRootUrl model
+    in
     case msg of
         AttributesPage.X _ ->
             ( model, Cmd.none )
@@ -632,6 +639,7 @@ handleAttributesViewMsg model msg =
                                     )
                                     Api.Routes.Main.settingsUpdateDecoder
                                 )
+                                rootUrl
                             )
                             (getSavedToken model)
                             |> Cmd.map ApiRequest
@@ -643,6 +651,7 @@ handleAttributesViewMsg model msg =
                                     )
                                     Api.Routes.Main.settingsUpdateDecoder
                                 )
+                                rootUrl
                             )
                             (getSavedToken model)
                             |> Cmd.map ApiRequest
@@ -654,6 +663,7 @@ handleAttributesViewMsg model msg =
                                     )
                                     Api.Routes.Main.settingsUpdateDecoder
                                 )
+                                rootUrl
                             )
                             (getSavedToken model)
                             |> Cmd.map ApiRequest
@@ -665,6 +675,7 @@ handleAttributesViewMsg model msg =
                                     )
                                     Api.Routes.Main.settingsUpdateDecoder
                                 )
+                                rootUrl
                             )
                             (getSavedToken model)
                             |> Cmd.map ApiRequest
@@ -676,6 +687,7 @@ handleAttributesViewMsg model msg =
                                     )
                                     Api.Routes.Main.settingsUpdateDecoder
                                 )
+                                rootUrl
                             )
                             (getSavedToken model)
                             |> Cmd.map ApiRequest
@@ -687,6 +699,7 @@ handleAttributesViewMsg model msg =
                                             da
                                             Api.Routes.Main.settingsUpdateDecoder
                                         )
+                                        rootUrl
                                     )
                                     (getSavedToken model)
                                     |> Cmd.map ApiRequest
@@ -737,6 +750,7 @@ handleSynonymsViewMsg model msg =
                                         (Dict.fromList currentSynonyms)
                                         Api.Routes.Main.settingsUpdateDecoder
                                     )
+                                    (getRootUrl model)
                                 )
                                 (getSavedToken model)
                                 |> Cmd.map ApiRequest
@@ -774,6 +788,7 @@ handleStopWordsViewMsg model msg =
                                 (List.map (\x -> x.title) model.pages.stopWords.words)
                                 Api.Routes.Main.settingsUpdateDecoder
                             )
+                            (getRootUrl model)
                         )
                         (getSavedToken model)
                         |> Cmd.map ApiRequest
@@ -816,31 +831,6 @@ handleSettingsViewMsg model msg =
     ( updatedModelValue, Cmd.none )
 
 
-
--- case msg of
---     SettingsPage.KeyValueChanged t ->
---         let
---             updatedModel =
---                 { model | token = Just t }
---             updatedSettingsPageViewModel =
---                 getSettingsViewModel updatedModel
---             updatedModelValue =
---                 { model
---                     | token = updatedModel.token
---                     , pages = updateSettingsViewModel model.pages updatedSettingsPageViewModel
---                 }
---         in
---         ( updatedModelValue
---         , Cmd.none
---         )
---     SettingsPage.UpdateColorScheme s ->
---         ( model, Cmd.none )
---     SettingsPage.SaveKeyValue ->
---         ( { model | savedToken = model.token }, Cmd.none )
---     SettingsPage.None ->
---         ( model, Cmd.none )
-
-
 handleSidebarSelection : Model -> Sidebar.Msg -> ( Model, Cmd Msg )
 handleSidebarSelection model sidebarMsg =
     case sidebarMsg of
@@ -864,7 +854,7 @@ handleSidebarSelection model sidebarMsg =
                         Just uid ->
                             ( updatedModel
                             , Api.Routes.Main.buildRequest
-                                (Api.Routes.Main.buildPayload (ListDocuments uid))
+                                (Api.Routes.Main.buildPayload (ListDocuments uid) (getRootUrl model))
                                 (getSavedToken model)
                                 |> Cmd.map ApiRequest
                             )
@@ -877,7 +867,7 @@ handleSidebarSelection model sidebarMsg =
                         Just indexUid ->
                             ( updatedModel
                             , Api.Routes.Main.buildRequest
-                                (Api.Routes.Main.buildPayload (ListSynonyms indexUid Api.Routes.Main.synonymsListDecoder))
+                                (Api.Routes.Main.buildPayload (ListSynonyms indexUid Api.Routes.Main.synonymsListDecoder) (getRootUrl model))
                                 (getSavedToken model)
                                 |> Cmd.map ApiRequest
                             )
@@ -890,7 +880,7 @@ handleSidebarSelection model sidebarMsg =
                         Just indexUid ->
                             ( updatedModel
                             , Api.Routes.Main.buildRequest
-                                (Api.Routes.Main.buildPayload (ListStopWords indexUid Api.Routes.Main.maybeStringListDecoder))
+                                (Api.Routes.Main.buildPayload (ListStopWords indexUid Api.Routes.Main.maybeStringListDecoder) (getRootUrl model))
                                 (getSavedToken model)
                                 |> Cmd.map ApiRequest
                             )
@@ -903,7 +893,7 @@ handleSidebarSelection model sidebarMsg =
                         Just indexUid ->
                             ( updatedModel
                             , Api.Routes.Main.buildRequest
-                                (Api.Routes.Main.buildPayload (Stats indexUid statsDecoder))
+                                (Api.Routes.Main.buildPayload (Stats indexUid statsDecoder) (getRootUrl model))
                                 (getSavedToken model)
                                 |> Cmd.map ApiRequest
                             )
@@ -947,7 +937,7 @@ handlePollRequest model task =
                 getTaskId task
 
             ( pollState, pollCmd ) =
-                SweetPoll.init (taskConfigBuilder taskId)
+                SweetPoll.init (taskConfigBuilder taskId (getRootUrl model))
         in
         ( { model
             | pollingQueue = model.pollingQueue ++ [ ( task, pollState ) ]
@@ -1035,7 +1025,7 @@ handlePollUpdate model message task =
     in
     let
         config =
-            taskConfigBuilder taskId
+            taskConfigBuilder taskId (getRootUrl model)
 
         item =
             List.filter (\( a, _ ) -> a == task) model.pollingQueue
@@ -1315,6 +1305,11 @@ getSavedToken model =
     model.pages.settings.savedTokenValue
 
 
+getRootUrl : Model -> String
+getRootUrl model =
+    model.pages.settings.savedEndpointValue
+
+
 init : () -> ( Model, Cmd Msg )
 init _ =
     let
@@ -1335,7 +1330,7 @@ init _ =
     in
     ( model
     , Api.Routes.Main.buildRequest
-        (Api.Routes.Main.buildPayload (ListIndexes Api.Routes.Main.indexesRouteResponseListDecoder))
+        (Api.Routes.Main.buildPayload (ListIndexes Api.Routes.Main.indexesRouteResponseListDecoder) (getRootUrl model))
         (getSavedToken model)
         |> Cmd.map ApiRequest
     )

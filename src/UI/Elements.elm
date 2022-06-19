@@ -36,8 +36,8 @@ spacer size =
             Element.el [ Element.width fill, Element.height fill ] Element.none
 
 
-textfield : String -> String -> (String -> msg) -> msg -> msg -> Config -> Element msg
-textfield value placeholder valueChanged loseFocus returnKeyMsg config =
+textfield : String -> String -> String -> (String -> msg) -> msg -> msg -> Config -> Element msg
+textfield value label placeholder valueChanged loseFocus returnKeyMsg config =
     el
         (UI.Styles.getTypographicStyleFor UI.Styles.Body config
             ++ [ Element.width fill
@@ -59,7 +59,12 @@ textfield value placeholder valueChanged loseFocus returnKeyMsg config =
             { text = value
             , placeholder = Just (Input.placeholder [] (Element.text placeholder))
             , onChange = valueChanged
-            , label = Input.labelHidden ""
+            , label =
+                Input.labelAbove (UI.Styles.getTypographicStyleFor UI.Styles.Label config)
+                    (Element.column [ paddingXY 0 4 ]
+                        [ Element.text label
+                        ]
+                    )
             }
         )
 

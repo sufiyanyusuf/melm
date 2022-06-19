@@ -66,7 +66,7 @@ view model config =
             , paddingXY 120 60
             ]
             [ UI.Elements.spacer UI.Styles.XL
-            , UI.Elements.textfield model.newValue "Add a word" NewValueUpdated None Create config
+            , UI.Elements.textfield model.newValue "Add a word" "blah" NewValueUpdated None Create config
             , UI.Elements.spacer UI.Styles.SM
             , Element.wrappedRow
                 [ spacing 12

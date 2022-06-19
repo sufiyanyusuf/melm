@@ -9,7 +9,8 @@ import UI.Styles exposing (ColorScheme(..), Config)
 
 type Msg
     = TokenValueChanged String
-    | SaveKeyValue
+    | EndpointValueChanged String
+    | Save
     | UpdateColorScheme ColorScheme
     | None
 
@@ -18,34 +19,46 @@ type alias Model =
     { tokenValue : String
     , colorScheme : UI.Styles.ColorScheme
     , savedTokenValue : String
+    , endpointValue : String
+    , savedEndpointValue : String
     }
 
 
 init : Model
 init =
-    { tokenValue = "", savedTokenValue = "", colorScheme = UI.Styles.Light }
+    { tokenValue = "", savedTokenValue = "", colorScheme = UI.Styles.Light, endpointValue = "http://localhost:7700", savedEndpointValue = "http://localhost:7700" }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         TokenValueChanged t ->
-            let
-                updatedModel =
-                    { model | tokenValue = t }
-            in
-            ( updatedModel
+            ( { model | tokenValue = t }
+            , Cmd.none
+            )
+
+        EndpointValueChanged t ->
+            ( { model | endpointValue = t }
             , Cmd.none
             )
 
         UpdateColorScheme s ->
             ( { model | colorScheme = s }, Cmd.none )
 
-        SaveKeyValue ->
-            ( { model | savedTokenValue = model.tokenValue }, Cmd.none )
+        Save ->
+            ( { model | savedTokenValue = model.tokenValue, savedEndpointValue = model.endpointValue }, Cmd.none )
 
         None ->
             ( model, Cmd.none )
+
+
+valueChanged : Model -> Bool
+valueChanged model =
+    if model.tokenValue /= model.savedTokenValue || model.endpointValue /= model.savedEndpointValue then
+        True
+
+    else
+        False
 
 
 view : Model -> Config -> Element Msg
@@ -63,8 +76,10 @@ view model config =
             , paddingXY 120 60
             ]
             [ Elements.spacer UI.Styles.XL
-            , textfield model.tokenValue "Token" TokenValueChanged None None config
+            , textfield model.endpointValue "Endpoint" "http://localhost:7700" EndpointValueChanged None None config
             , Elements.spacer UI.Styles.MD
+            , textfield model.tokenValue "Token" "9438u093ty94y3989428ur929r20kfjvdfv7vfs" TokenValueChanged None None config
+            , Elements.spacer UI.Styles.LG
             , Element.row []
                 [ button Subtle "Light" (UpdateColorScheme Light) config
                 , Elements.spacer UI.Styles.MD
@@ -75,13 +90,13 @@ view model config =
 
 
 toolbarView : Model -> Config -> Element Msg
-toolbarView _ config =
+toolbarView model config =
     let
         toolbarModel =
-            { valueChanged = False
+            { valueChanged = valueChanged model
             , loading = False
             , showCreateAction = False
             , title = "Settings"
             }
     in
-    UI.Components.Toolbar.toolbarView toolbarModel None SaveKeyValue None config
+    UI.Components.Toolbar.toolbarView toolbarModel None Save None config

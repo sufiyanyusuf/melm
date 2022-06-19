@@ -1,6 +1,6 @@
 module Api.Routes.Main exposing (..)
 
-import Api.Helper exposing (RequestMethod(..), getRequestMethodTitle, headers, rootUrl)
+import Api.Helper exposing (RequestMethod(..), getRequestMethodTitle, headers)
 import Dict exposing (Dict)
 import Http
 import Json.Decode exposing (Decoder, bool, decodeString, field, int, keyValuePairs, list, string)
@@ -325,8 +325,8 @@ buildRequest payload token =
                 |> Cmd.map (\a -> a x)
 
 
-buildPayload : Route -> Payload
-buildPayload r =
+buildPayload : Route -> String -> Payload
+buildPayload r rootUrl =
     case r of
         ListIndexes _ ->
             { method = GET, endpoint = rootUrl ++ "/indexes", body = Http.emptyBody, route = r }
@@ -493,11 +493,11 @@ stringDecoder =
     Json.Decode.maybe string
 
 
-taskConfigBuilder : Int -> SweetPoll.Config String
-taskConfigBuilder id =
+taskConfigBuilder : Int -> String -> SweetPoll.Config String
+taskConfigBuilder id rootUrl =
     let
         payload =
-            buildPayload (GetTask id)
+            buildPayload (GetTask id) rootUrl
     in
     { url = payload.endpoint
     , decoder = field "status" string

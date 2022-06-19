@@ -10789,171 +10789,171 @@ var $elm$http$Http$jsonBody = function (value) {
 		'application/json',
 		A2($elm$json$Json$Encode$encode, 0, value));
 };
-var $author$project$Api$Helper$rootUrl = 'http://localhost:7700';
-var $author$project$Api$Routes$Main$buildPayload = function (r) {
-	switch (r.$) {
-		case 'ListIndexes':
-			return {body: $elm$http$Http$emptyBody, endpoint: $author$project$Api$Helper$rootUrl + '/indexes', method: $author$project$Api$Helper$GET, route: r};
-		case 'ShowIndex':
-			var i = r.a;
-			return {body: $elm$http$Http$emptyBody, endpoint: $author$project$Api$Helper$rootUrl + ('/indexes/' + i), method: $author$project$Api$Helper$GET, route: r};
-		case 'CreateIndex':
-			var _v1 = r.a;
-			var i = _v1.a;
-			var k = _v1.b;
-			if (k.$ === 'Just') {
-				var key = k.a;
-				var body = $elm$json$Json$Encode$object(
-					_List_fromArray(
-						[
-							_Utils_Tuple2(
-							'uid',
-							$elm$json$Json$Encode$string(i)),
-							_Utils_Tuple2(
-							'primaryKey',
-							$elm$json$Json$Encode$string(key))
-						]));
+var $author$project$Api$Routes$Main$buildPayload = F2(
+	function (r, rootUrl) {
+		switch (r.$) {
+			case 'ListIndexes':
+				return {body: $elm$http$Http$emptyBody, endpoint: rootUrl + '/indexes', method: $author$project$Api$Helper$GET, route: r};
+			case 'ShowIndex':
+				var i = r.a;
+				return {body: $elm$http$Http$emptyBody, endpoint: rootUrl + ('/indexes/' + i), method: $author$project$Api$Helper$GET, route: r};
+			case 'CreateIndex':
+				var _v1 = r.a;
+				var i = _v1.a;
+				var k = _v1.b;
+				if (k.$ === 'Just') {
+					var key = k.a;
+					var body = $elm$json$Json$Encode$object(
+						_List_fromArray(
+							[
+								_Utils_Tuple2(
+								'uid',
+								$elm$json$Json$Encode$string(i)),
+								_Utils_Tuple2(
+								'primaryKey',
+								$elm$json$Json$Encode$string(key))
+							]));
+					return {
+						body: $elm$http$Http$jsonBody(body),
+						endpoint: rootUrl + '/indexes',
+						method: $author$project$Api$Helper$POST,
+						route: r
+					};
+				} else {
+					var body = $elm$json$Json$Encode$object(
+						_List_fromArray(
+							[
+								_Utils_Tuple2(
+								'uid',
+								$elm$json$Json$Encode$string(i))
+							]));
+					return {
+						body: $elm$http$Http$jsonBody(body),
+						endpoint: rootUrl + '/indexes',
+						method: $author$project$Api$Helper$POST,
+						route: r
+					};
+				}
+			case 'UpdateIndex':
+				var i = r.a;
+				return {body: $elm$http$Http$emptyBody, endpoint: rootUrl + ('/indexes/' + i), method: $author$project$Api$Helper$PUT, route: r};
+			case 'DeleteIndex':
+				var i = r.a;
+				return {body: $elm$http$Http$emptyBody, endpoint: rootUrl + ('/indexes/' + i), method: $author$project$Api$Helper$DELETE, route: r};
+			case 'ListDocuments':
+				var i = r.a;
+				return {body: $elm$http$Http$emptyBody, endpoint: rootUrl + ('/indexes/' + (i + '/documents')), method: $author$project$Api$Helper$GET, route: r};
+			case 'ListStopWords':
+				var i = r.a;
+				return {body: $elm$http$Http$emptyBody, endpoint: rootUrl + ('/indexes/' + (i + '/settings/stop-words')), method: $author$project$Api$Helper$GET, route: r};
+			case 'UpdateStopWords':
+				var i = r.a;
+				var w = r.b;
+				var body = A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, w);
 				return {
 					body: $elm$http$Http$jsonBody(body),
-					endpoint: $author$project$Api$Helper$rootUrl + '/indexes',
+					endpoint: rootUrl + ('/indexes/' + (i + '/settings/stop-words')),
 					method: $author$project$Api$Helper$POST,
 					route: r
 				};
-			} else {
-				var body = $elm$json$Json$Encode$object(
-					_List_fromArray(
-						[
-							_Utils_Tuple2(
-							'uid',
-							$elm$json$Json$Encode$string(i))
-						]));
+			case 'ResetStopWords':
+				var i = r.a;
+				return {body: $elm$http$Http$emptyBody, endpoint: rootUrl + ('/indexes/' + (i + '/settings/stop-words')), method: $author$project$Api$Helper$DELETE, route: r};
+			case 'GetTask':
+				var i = r.a;
+				return {
+					body: $elm$http$Http$emptyBody,
+					endpoint: rootUrl + ('/tasks/' + $elm$core$String$fromInt(i)),
+					method: $author$project$Api$Helper$GET,
+					route: r
+				};
+			case 'UpdateSynonyms':
+				var i = r.a;
+				var dic = r.b;
+				var body = A3(
+					$elm$json$Json$Encode$dict,
+					$elm$core$Basics$identity,
+					$elm$json$Json$Encode$list($elm$json$Json$Encode$string),
+					dic);
 				return {
 					body: $elm$http$Http$jsonBody(body),
-					endpoint: $author$project$Api$Helper$rootUrl + '/indexes',
+					endpoint: rootUrl + ('/indexes/' + (i + '/settings/synonyms')),
 					method: $author$project$Api$Helper$POST,
 					route: r
 				};
-			}
-		case 'UpdateIndex':
-			var i = r.a;
-			return {body: $elm$http$Http$emptyBody, endpoint: $author$project$Api$Helper$rootUrl + ('/indexes/' + i), method: $author$project$Api$Helper$PUT, route: r};
-		case 'DeleteIndex':
-			var i = r.a;
-			return {body: $elm$http$Http$emptyBody, endpoint: $author$project$Api$Helper$rootUrl + ('/indexes/' + i), method: $author$project$Api$Helper$DELETE, route: r};
-		case 'ListDocuments':
-			var i = r.a;
-			return {body: $elm$http$Http$emptyBody, endpoint: $author$project$Api$Helper$rootUrl + ('/indexes/' + (i + '/documents')), method: $author$project$Api$Helper$GET, route: r};
-		case 'ListStopWords':
-			var i = r.a;
-			return {body: $elm$http$Http$emptyBody, endpoint: $author$project$Api$Helper$rootUrl + ('/indexes/' + (i + '/settings/stop-words')), method: $author$project$Api$Helper$GET, route: r};
-		case 'UpdateStopWords':
-			var i = r.a;
-			var w = r.b;
-			var body = A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, w);
-			return {
-				body: $elm$http$Http$jsonBody(body),
-				endpoint: $author$project$Api$Helper$rootUrl + ('/indexes/' + (i + '/settings/stop-words')),
-				method: $author$project$Api$Helper$POST,
-				route: r
-			};
-		case 'ResetStopWords':
-			var i = r.a;
-			return {body: $elm$http$Http$emptyBody, endpoint: $author$project$Api$Helper$rootUrl + ('/indexes/' + (i + '/settings/stop-words')), method: $author$project$Api$Helper$DELETE, route: r};
-		case 'GetTask':
-			var i = r.a;
-			return {
-				body: $elm$http$Http$emptyBody,
-				endpoint: $author$project$Api$Helper$rootUrl + ('/tasks/' + $elm$core$String$fromInt(i)),
-				method: $author$project$Api$Helper$GET,
-				route: r
-			};
-		case 'UpdateSynonyms':
-			var i = r.a;
-			var dic = r.b;
-			var body = A3(
-				$elm$json$Json$Encode$dict,
-				$elm$core$Basics$identity,
-				$elm$json$Json$Encode$list($elm$json$Json$Encode$string),
-				dic);
-			return {
-				body: $elm$http$Http$jsonBody(body),
-				endpoint: $author$project$Api$Helper$rootUrl + ('/indexes/' + (i + '/settings/synonyms')),
-				method: $author$project$Api$Helper$POST,
-				route: r
-			};
-		case 'ListSynonyms':
-			var i = r.a;
-			return {body: $elm$http$Http$emptyBody, endpoint: $author$project$Api$Helper$rootUrl + ('/indexes/' + (i + '/settings/synonyms')), method: $author$project$Api$Helper$GET, route: r};
-		case 'ListDisplayedAttrs':
-			var i = r.a;
-			return {body: $elm$http$Http$emptyBody, endpoint: $author$project$Api$Helper$rootUrl + ('/indexes/' + (i + '/settings/displayed-attributes')), method: $author$project$Api$Helper$GET, route: r};
-		case 'ListSearchableAttrs':
-			var i = r.a;
-			return {body: $elm$http$Http$emptyBody, endpoint: $author$project$Api$Helper$rootUrl + ('/indexes/' + (i + '/settings/searchable-attributes')), method: $author$project$Api$Helper$GET, route: r};
-		case 'ListSortableAttrs':
-			var i = r.a;
-			return {body: $elm$http$Http$emptyBody, endpoint: $author$project$Api$Helper$rootUrl + ('/indexes/' + (i + '/settings/sortable-attributes')), method: $author$project$Api$Helper$GET, route: r};
-		case 'ListFilterableAttrs':
-			var i = r.a;
-			return {body: $elm$http$Http$emptyBody, endpoint: $author$project$Api$Helper$rootUrl + ('/indexes/' + (i + '/settings/filterable-attributes')), method: $author$project$Api$Helper$GET, route: r};
-		case 'ListDistinctAttr':
-			var i = r.a;
-			return {body: $elm$http$Http$emptyBody, endpoint: $author$project$Api$Helper$rootUrl + ('/indexes/' + (i + '/settings/distinct-attribute')), method: $author$project$Api$Helper$GET, route: r};
-		case 'UpdateDisplayedAttrs':
-			var i = r.a;
-			var attrs = r.b;
-			var body = A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, attrs);
-			return {
-				body: $elm$http$Http$jsonBody(body),
-				endpoint: $author$project$Api$Helper$rootUrl + ('/indexes/' + (i + '/settings/displayed-attributes')),
-				method: $author$project$Api$Helper$POST,
-				route: r
-			};
-		case 'UpdateFilterableAttrs':
-			var i = r.a;
-			var attrs = r.b;
-			var body = A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, attrs);
-			return {
-				body: $elm$http$Http$jsonBody(body),
-				endpoint: $author$project$Api$Helper$rootUrl + ('/indexes/' + (i + '/settings/filterable-attributes')),
-				method: $author$project$Api$Helper$POST,
-				route: r
-			};
-		case 'UpdateSortableAttrs':
-			var i = r.a;
-			var attrs = r.b;
-			var body = A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, attrs);
-			return {
-				body: $elm$http$Http$jsonBody(body),
-				endpoint: $author$project$Api$Helper$rootUrl + ('/indexes/' + (i + '/settings/sortable-attributes')),
-				method: $author$project$Api$Helper$POST,
-				route: r
-			};
-		case 'UpdateSearchableAttrs':
-			var i = r.a;
-			var attrs = r.b;
-			var body = A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, attrs);
-			return {
-				body: $elm$http$Http$jsonBody(body),
-				endpoint: $author$project$Api$Helper$rootUrl + ('/indexes/' + (i + '/settings/searchable-attributes')),
-				method: $author$project$Api$Helper$POST,
-				route: r
-			};
-		case 'UpdateDistinctAttr':
-			var i = r.a;
-			var attrs = r.b;
-			var body = $elm$json$Json$Encode$string(attrs);
-			return {
-				body: $elm$http$Http$jsonBody(body),
-				endpoint: $author$project$Api$Helper$rootUrl + ('/indexes/' + (i + '/settings/distinct-attribute')),
-				method: $author$project$Api$Helper$POST,
-				route: r
-			};
-		default:
-			var i = r.a;
-			return {body: $elm$http$Http$emptyBody, endpoint: $author$project$Api$Helper$rootUrl + ('/indexes/' + (i + '/stats')), method: $author$project$Api$Helper$GET, route: r};
-	}
-};
+			case 'ListSynonyms':
+				var i = r.a;
+				return {body: $elm$http$Http$emptyBody, endpoint: rootUrl + ('/indexes/' + (i + '/settings/synonyms')), method: $author$project$Api$Helper$GET, route: r};
+			case 'ListDisplayedAttrs':
+				var i = r.a;
+				return {body: $elm$http$Http$emptyBody, endpoint: rootUrl + ('/indexes/' + (i + '/settings/displayed-attributes')), method: $author$project$Api$Helper$GET, route: r};
+			case 'ListSearchableAttrs':
+				var i = r.a;
+				return {body: $elm$http$Http$emptyBody, endpoint: rootUrl + ('/indexes/' + (i + '/settings/searchable-attributes')), method: $author$project$Api$Helper$GET, route: r};
+			case 'ListSortableAttrs':
+				var i = r.a;
+				return {body: $elm$http$Http$emptyBody, endpoint: rootUrl + ('/indexes/' + (i + '/settings/sortable-attributes')), method: $author$project$Api$Helper$GET, route: r};
+			case 'ListFilterableAttrs':
+				var i = r.a;
+				return {body: $elm$http$Http$emptyBody, endpoint: rootUrl + ('/indexes/' + (i + '/settings/filterable-attributes')), method: $author$project$Api$Helper$GET, route: r};
+			case 'ListDistinctAttr':
+				var i = r.a;
+				return {body: $elm$http$Http$emptyBody, endpoint: rootUrl + ('/indexes/' + (i + '/settings/distinct-attribute')), method: $author$project$Api$Helper$GET, route: r};
+			case 'UpdateDisplayedAttrs':
+				var i = r.a;
+				var attrs = r.b;
+				var body = A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, attrs);
+				return {
+					body: $elm$http$Http$jsonBody(body),
+					endpoint: rootUrl + ('/indexes/' + (i + '/settings/displayed-attributes')),
+					method: $author$project$Api$Helper$POST,
+					route: r
+				};
+			case 'UpdateFilterableAttrs':
+				var i = r.a;
+				var attrs = r.b;
+				var body = A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, attrs);
+				return {
+					body: $elm$http$Http$jsonBody(body),
+					endpoint: rootUrl + ('/indexes/' + (i + '/settings/filterable-attributes')),
+					method: $author$project$Api$Helper$POST,
+					route: r
+				};
+			case 'UpdateSortableAttrs':
+				var i = r.a;
+				var attrs = r.b;
+				var body = A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, attrs);
+				return {
+					body: $elm$http$Http$jsonBody(body),
+					endpoint: rootUrl + ('/indexes/' + (i + '/settings/sortable-attributes')),
+					method: $author$project$Api$Helper$POST,
+					route: r
+				};
+			case 'UpdateSearchableAttrs':
+				var i = r.a;
+				var attrs = r.b;
+				var body = A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, attrs);
+				return {
+					body: $elm$http$Http$jsonBody(body),
+					endpoint: rootUrl + ('/indexes/' + (i + '/settings/searchable-attributes')),
+					method: $author$project$Api$Helper$POST,
+					route: r
+				};
+			case 'UpdateDistinctAttr':
+				var i = r.a;
+				var attrs = r.b;
+				var body = $elm$json$Json$Encode$string(attrs);
+				return {
+					body: $elm$http$Http$jsonBody(body),
+					endpoint: rootUrl + ('/indexes/' + (i + '/settings/distinct-attribute')),
+					method: $author$project$Api$Helper$POST,
+					route: r
+				};
+			default:
+				var i = r.a;
+				return {body: $elm$http$Http$emptyBody, endpoint: rootUrl + ('/indexes/' + (i + '/stats')), method: $author$project$Api$Helper$GET, route: r};
+		}
+	});
 var $author$project$Api$Routes$Main$HandleDocumentsResponse = function (a) {
 	return {$: 'HandleDocumentsResponse', a: a};
 };
@@ -11568,6 +11568,9 @@ var $author$project$Api$Routes$Main$buildRequest = F2(
 						}));
 		}
 	});
+var $author$project$Main$getRootUrl = function (model) {
+	return model.pages.settings.savedEndpointValue;
+};
 var $author$project$Main$getSavedToken = function (model) {
 	return model.pages.settings.savedTokenValue;
 };
@@ -11626,7 +11629,7 @@ var $author$project$UI$PageViews$Attributes$buildMockModelFromAttributes = funct
 var $author$project$UI$PageViews$Attributes$init = $author$project$UI$PageViews$Attributes$buildMockModelFromAttributes(_List_Nil);
 var $author$project$UI$PageViews$Documents$init = {documents: _List_Nil};
 var $author$project$UI$Styles$Light = {$: 'Light'};
-var $author$project$UI$PageViews$Settings$init = {colorScheme: $author$project$UI$Styles$Light, savedTokenValue: '', tokenValue: ''};
+var $author$project$UI$PageViews$Settings$init = {colorScheme: $author$project$UI$Styles$Light, endpointValue: 'http://localhost:7700', savedEndpointValue: 'http://localhost:7700', savedTokenValue: '', tokenValue: ''};
 var $author$project$UI$PageViews$StopWords$init = {deletionQueue: _List_Nil, newValue: '', words: _List_Nil};
 var $author$project$UI$Pages$init = {
 	attributes: $author$project$UI$PageViews$Attributes$init,
@@ -11682,8 +11685,10 @@ var $author$project$Main$init = function (_v0) {
 			$author$project$Main$ApiRequest,
 			A2(
 				$author$project$Api$Routes$Main$buildRequest,
-				$author$project$Api$Routes$Main$buildPayload(
-					$author$project$Api$Routes$Main$ListIndexes($author$project$Api$Routes$Main$indexesRouteResponseListDecoder)),
+				A2(
+					$author$project$Api$Routes$Main$buildPayload,
+					$author$project$Api$Routes$Main$ListIndexes($author$project$Api$Routes$Main$indexesRouteResponseListDecoder),
+					$author$project$Main$getRootUrl(model)),
 				$author$project$Main$getSavedToken(model))));
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
@@ -12154,18 +12159,21 @@ var $NoRedInk$elm_sweet_poll$SweetPoll$init = function (config) {
 var $author$project$Api$Routes$Main$GetTask = function (a) {
 	return {$: 'GetTask', a: a};
 };
-var $author$project$Api$Routes$Main$taskConfigBuilder = function (id) {
-	var payload = $author$project$Api$Routes$Main$buildPayload(
-		$author$project$Api$Routes$Main$GetTask(id));
-	return {
-		decoder: A2($elm$json$Json$Decode$field, 'status', $elm$json$Json$Decode$string),
-		delay: 10,
-		delayMultiplier: 2,
-		maxDelay: 1000,
-		samesBeforeDelay: 8,
-		url: payload.endpoint
-	};
-};
+var $author$project$Api$Routes$Main$taskConfigBuilder = F2(
+	function (id, rootUrl) {
+		var payload = A2(
+			$author$project$Api$Routes$Main$buildPayload,
+			$author$project$Api$Routes$Main$GetTask(id),
+			rootUrl);
+		return {
+			decoder: A2($elm$json$Json$Decode$field, 'status', $elm$json$Json$Decode$string),
+			delay: 10,
+			delayMultiplier: 2,
+			maxDelay: 1000,
+			samesBeforeDelay: 8,
+			url: payload.endpoint
+		};
+	});
 var $author$project$Main$handlePollRequest = F2(
 	function (model, task) {
 		var tasks = A2(
@@ -12180,7 +12188,10 @@ var $author$project$Main$handlePollRequest = F2(
 		} else {
 			var taskId = $author$project$Main$getTaskId(task);
 			var _v0 = $NoRedInk$elm_sweet_poll$SweetPoll$init(
-				$author$project$Api$Routes$Main$taskConfigBuilder(taskId));
+				A2(
+					$author$project$Api$Routes$Main$taskConfigBuilder,
+					taskId,
+					$author$project$Main$getRootUrl(model)));
 			var pollState = _v0.a;
 			var pollCmd = _v0.b;
 			return _Utils_Tuple2(
@@ -12642,7 +12653,10 @@ var $author$project$Main$handlePollUpdate = F3(
 					return _Utils_eq(a, task);
 				},
 				model.pollingQueue));
-		var config = $author$project$Api$Routes$Main$taskConfigBuilder(taskId);
+		var config = A2(
+			$author$project$Api$Routes$Main$taskConfigBuilder,
+			taskId,
+			$author$project$Main$getRootUrl(model));
 		if (item.$ === 'Just') {
 			var _v1 = item.a;
 			var id = _v1.a;
@@ -12665,10 +12679,18 @@ var $author$project$UI$PageViews$Settings$update = F2(
 		switch (msg.$) {
 			case 'TokenValueChanged':
 				var t = msg.a;
-				var updatedModel = _Utils_update(
-					model,
-					{tokenValue: t});
-				return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{tokenValue: t}),
+					$elm$core$Platform$Cmd$none);
+			case 'EndpointValueChanged':
+				var t = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{endpointValue: t}),
+					$elm$core$Platform$Cmd$none);
 			case 'UpdateColorScheme':
 				var s = msg.a;
 				return _Utils_Tuple2(
@@ -12676,11 +12698,11 @@ var $author$project$UI$PageViews$Settings$update = F2(
 						model,
 						{colorScheme: s}),
 					$elm$core$Platform$Cmd$none);
-			case 'SaveKeyValue':
+			case 'Save':
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{savedTokenValue: model.tokenValue}),
+						{savedEndpointValue: model.endpointValue, savedTokenValue: model.tokenValue}),
 					$elm$core$Platform$Cmd$none);
 			default:
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -12796,8 +12818,10 @@ var $author$project$Main$handleSidebarSelection = F2(
 									$author$project$Main$ApiRequest,
 									A2(
 										$author$project$Api$Routes$Main$buildRequest,
-										$author$project$Api$Routes$Main$buildPayload(
-											$author$project$Api$Routes$Main$ListDocuments(uid)),
+										A2(
+											$author$project$Api$Routes$Main$buildPayload,
+											$author$project$Api$Routes$Main$ListDocuments(uid),
+											$author$project$Main$getRootUrl(model)),
 										$author$project$Main$getSavedToken(model))));
 						} else {
 							return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
@@ -12814,8 +12838,10 @@ var $author$project$Main$handleSidebarSelection = F2(
 									$author$project$Main$ApiRequest,
 									A2(
 										$author$project$Api$Routes$Main$buildRequest,
-										$author$project$Api$Routes$Main$buildPayload(
-											A2($author$project$Api$Routes$Main$ListSynonyms, indexUid, $author$project$Api$Routes$Main$synonymsListDecoder)),
+										A2(
+											$author$project$Api$Routes$Main$buildPayload,
+											A2($author$project$Api$Routes$Main$ListSynonyms, indexUid, $author$project$Api$Routes$Main$synonymsListDecoder),
+											$author$project$Main$getRootUrl(model)),
 										$author$project$Main$getSavedToken(model))));
 						} else {
 							return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
@@ -12831,8 +12857,10 @@ var $author$project$Main$handleSidebarSelection = F2(
 									$author$project$Main$ApiRequest,
 									A2(
 										$author$project$Api$Routes$Main$buildRequest,
-										$author$project$Api$Routes$Main$buildPayload(
-											A2($author$project$Api$Routes$Main$ListStopWords, indexUid, $author$project$Api$Routes$Main$maybeStringListDecoder)),
+										A2(
+											$author$project$Api$Routes$Main$buildPayload,
+											A2($author$project$Api$Routes$Main$ListStopWords, indexUid, $author$project$Api$Routes$Main$maybeStringListDecoder),
+											$author$project$Main$getRootUrl(model)),
 										$author$project$Main$getSavedToken(model))));
 						} else {
 							return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
@@ -12848,8 +12876,10 @@ var $author$project$Main$handleSidebarSelection = F2(
 									$author$project$Main$ApiRequest,
 									A2(
 										$author$project$Api$Routes$Main$buildRequest,
-										$author$project$Api$Routes$Main$buildPayload(
-											A2($author$project$Api$Routes$Main$Stats, indexUid, $author$project$Api$Routes$Main$statsDecoder)),
+										A2(
+											$author$project$Api$Routes$Main$buildPayload,
+											A2($author$project$Api$Routes$Main$Stats, indexUid, $author$project$Api$Routes$Main$statsDecoder),
+											$author$project$Main$getRootUrl(model)),
 										$author$project$Main$getSavedToken(model))));
 						} else {
 							return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
@@ -13199,8 +13229,10 @@ var $author$project$Main$handleApiResponse = F2(
 						$author$project$Main$ApiRequest,
 						A2(
 							$author$project$Api$Routes$Main$buildRequest,
-							$author$project$Api$Routes$Main$buildPayload(
-								A2($author$project$Api$Routes$Main$ListDisplayedAttrs, r.indexUid, $author$project$Api$Routes$Main$maybeStringListDecoder)),
+							A2(
+								$author$project$Api$Routes$Main$buildPayload,
+								A2($author$project$Api$Routes$Main$ListDisplayedAttrs, r.indexUid, $author$project$Api$Routes$Main$maybeStringListDecoder),
+								$author$project$Main$getRootUrl(model)),
 							$author$project$Main$getSavedToken(model))));
 			case 'HandleListDisplayedAttrsResponse':
 				var r = apiResponse.a;
@@ -13400,50 +13432,63 @@ var $author$project$Main$handleApiResponse = F2(
 								searchableAttrs: updatedAttributesPageViewModel.searchable,
 								sortableAttrs: updatedAttributesPageViewModel.sortable
 							}),
-						$elm$core$Platform$Cmd$batch(
-							_List_fromArray(
-								[
-									A2(
-									$elm$core$Platform$Cmd$map,
-									$author$project$Main$ApiRequest,
-									A2(
-										$author$project$Api$Routes$Main$buildRequest,
-										$author$project$Api$Routes$Main$buildPayload(
-											A2($author$project$Api$Routes$Main$ListDisplayedAttrs, indexUid, $author$project$Api$Routes$Main$maybeStringListDecoder)),
-										$author$project$Main$getSavedToken(model))),
-									A2(
-									$elm$core$Platform$Cmd$map,
-									$author$project$Main$ApiRequest,
-									A2(
-										$author$project$Api$Routes$Main$buildRequest,
-										$author$project$Api$Routes$Main$buildPayload(
-											A2($author$project$Api$Routes$Main$ListFilterableAttrs, indexUid, $author$project$Api$Routes$Main$maybeStringListDecoder)),
-										$author$project$Main$getSavedToken(model))),
-									A2(
-									$elm$core$Platform$Cmd$map,
-									$author$project$Main$ApiRequest,
-									A2(
-										$author$project$Api$Routes$Main$buildRequest,
-										$author$project$Api$Routes$Main$buildPayload(
-											A2($author$project$Api$Routes$Main$ListSortableAttrs, indexUid, $author$project$Api$Routes$Main$maybeStringListDecoder)),
-										$author$project$Main$getSavedToken(model))),
-									A2(
-									$elm$core$Platform$Cmd$map,
-									$author$project$Main$ApiRequest,
-									A2(
-										$author$project$Api$Routes$Main$buildRequest,
-										$author$project$Api$Routes$Main$buildPayload(
-											A2($author$project$Api$Routes$Main$ListSearchableAttrs, indexUid, $author$project$Api$Routes$Main$maybeStringListDecoder)),
-										$author$project$Main$getSavedToken(model))),
-									A2(
-									$elm$core$Platform$Cmd$map,
-									$author$project$Main$ApiRequest,
-									A2(
-										$author$project$Api$Routes$Main$buildRequest,
-										$author$project$Api$Routes$Main$buildPayload(
-											A2($author$project$Api$Routes$Main$ListDistinctAttr, indexUid, $author$project$Api$Routes$Main$stringDecoder)),
-										$author$project$Main$getSavedToken(model)))
-								])));
+						function () {
+							var rootUrl = $author$project$Main$getRootUrl(model);
+							return $elm$core$Platform$Cmd$batch(
+								_List_fromArray(
+									[
+										A2(
+										$elm$core$Platform$Cmd$map,
+										$author$project$Main$ApiRequest,
+										A2(
+											$author$project$Api$Routes$Main$buildRequest,
+											A2(
+												$author$project$Api$Routes$Main$buildPayload,
+												A2($author$project$Api$Routes$Main$ListDisplayedAttrs, indexUid, $author$project$Api$Routes$Main$maybeStringListDecoder),
+												rootUrl),
+											$author$project$Main$getSavedToken(model))),
+										A2(
+										$elm$core$Platform$Cmd$map,
+										$author$project$Main$ApiRequest,
+										A2(
+											$author$project$Api$Routes$Main$buildRequest,
+											A2(
+												$author$project$Api$Routes$Main$buildPayload,
+												A2($author$project$Api$Routes$Main$ListFilterableAttrs, indexUid, $author$project$Api$Routes$Main$maybeStringListDecoder),
+												rootUrl),
+											$author$project$Main$getSavedToken(model))),
+										A2(
+										$elm$core$Platform$Cmd$map,
+										$author$project$Main$ApiRequest,
+										A2(
+											$author$project$Api$Routes$Main$buildRequest,
+											A2(
+												$author$project$Api$Routes$Main$buildPayload,
+												A2($author$project$Api$Routes$Main$ListSortableAttrs, indexUid, $author$project$Api$Routes$Main$maybeStringListDecoder),
+												rootUrl),
+											$author$project$Main$getSavedToken(model))),
+										A2(
+										$elm$core$Platform$Cmd$map,
+										$author$project$Main$ApiRequest,
+										A2(
+											$author$project$Api$Routes$Main$buildRequest,
+											A2(
+												$author$project$Api$Routes$Main$buildPayload,
+												A2($author$project$Api$Routes$Main$ListSearchableAttrs, indexUid, $author$project$Api$Routes$Main$maybeStringListDecoder),
+												rootUrl),
+											$author$project$Main$getSavedToken(model))),
+										A2(
+										$elm$core$Platform$Cmd$map,
+										$author$project$Main$ApiRequest,
+										A2(
+											$author$project$Api$Routes$Main$buildRequest,
+											A2(
+												$author$project$Api$Routes$Main$buildPayload,
+												A2($author$project$Api$Routes$Main$ListDistinctAttr, indexUid, $author$project$Api$Routes$Main$stringDecoder),
+												rootUrl),
+											$author$project$Main$getSavedToken(model)))
+									]));
+						}());
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
@@ -13451,6 +13496,7 @@ var $author$project$Main$handleApiResponse = F2(
 	});
 var $author$project$Main$handleAttributesViewMsg = F2(
 	function (model, msg) {
+		var rootUrl = $author$project$Main$getRootUrl(model);
 		switch (msg.$) {
 			case 'X':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -13585,7 +13631,8 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 									$author$project$Main$ApiRequest,
 									A2(
 										$author$project$Api$Routes$Main$buildRequest,
-										$author$project$Api$Routes$Main$buildPayload(
+										A2(
+											$author$project$Api$Routes$Main$buildPayload,
 											A3(
 												$author$project$Api$Routes$Main$UpdateDisplayedAttrs,
 												uid,
@@ -13600,14 +13647,16 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 															return x.enabled;
 														},
 														model.displayedAttrs)),
-												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
+												$author$project$Api$Routes$Main$settingsUpdateDecoder),
+											rootUrl),
 										$author$project$Main$getSavedToken(model))),
 									A2(
 									$elm$core$Platform$Cmd$map,
 									$author$project$Main$ApiRequest,
 									A2(
 										$author$project$Api$Routes$Main$buildRequest,
-										$author$project$Api$Routes$Main$buildPayload(
+										A2(
+											$author$project$Api$Routes$Main$buildPayload,
 											A3(
 												$author$project$Api$Routes$Main$UpdateFilterableAttrs,
 												uid,
@@ -13622,14 +13671,16 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 															return x.enabled;
 														},
 														model.filterableAttrs)),
-												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
+												$author$project$Api$Routes$Main$settingsUpdateDecoder),
+											rootUrl),
 										$author$project$Main$getSavedToken(model))),
 									A2(
 									$elm$core$Platform$Cmd$map,
 									$author$project$Main$ApiRequest,
 									A2(
 										$author$project$Api$Routes$Main$buildRequest,
-										$author$project$Api$Routes$Main$buildPayload(
+										A2(
+											$author$project$Api$Routes$Main$buildPayload,
 											A3(
 												$author$project$Api$Routes$Main$UpdateSearchableAttrs,
 												uid,
@@ -13644,14 +13695,16 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 															return x.enabled;
 														},
 														model.searchableAttrs)),
-												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
+												$author$project$Api$Routes$Main$settingsUpdateDecoder),
+											rootUrl),
 										$author$project$Main$getSavedToken(model))),
 									A2(
 									$elm$core$Platform$Cmd$map,
 									$author$project$Main$ApiRequest,
 									A2(
 										$author$project$Api$Routes$Main$buildRequest,
-										$author$project$Api$Routes$Main$buildPayload(
+										A2(
+											$author$project$Api$Routes$Main$buildPayload,
 											A3(
 												$author$project$Api$Routes$Main$UpdateSortableAttrs,
 												uid,
@@ -13666,14 +13719,16 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 															return x.enabled;
 														},
 														model.sortableAttrs)),
-												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
+												$author$project$Api$Routes$Main$settingsUpdateDecoder),
+											rootUrl),
 										$author$project$Main$getSavedToken(model))),
 									A2(
 									$elm$core$Platform$Cmd$map,
 									$author$project$Main$ApiRequest,
 									A2(
 										$author$project$Api$Routes$Main$buildRequest,
-										$author$project$Api$Routes$Main$buildPayload(
+										A2(
+											$author$project$Api$Routes$Main$buildPayload,
 											A3(
 												$author$project$Api$Routes$Main$UpdateDisplayedAttrs,
 												uid,
@@ -13688,7 +13743,8 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 															return x.enabled;
 														},
 														model.displayedAttrs)),
-												$author$project$Api$Routes$Main$settingsUpdateDecoder)),
+												$author$project$Api$Routes$Main$settingsUpdateDecoder),
+											rootUrl),
 										$author$project$Main$getSavedToken(model))),
 									function () {
 									var _v14 = $author$project$UI$PageViews$Attributes$getDistinctAttr(model.distinctAttr);
@@ -13699,8 +13755,10 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 											$author$project$Main$ApiRequest,
 											A2(
 												$author$project$Api$Routes$Main$buildRequest,
-												$author$project$Api$Routes$Main$buildPayload(
-													A3($author$project$Api$Routes$Main$UpdateDistinctAttr, uid, da, $author$project$Api$Routes$Main$settingsUpdateDecoder)),
+												A2(
+													$author$project$Api$Routes$Main$buildPayload,
+													A3($author$project$Api$Routes$Main$UpdateDistinctAttr, uid, da, $author$project$Api$Routes$Main$settingsUpdateDecoder),
+													rootUrl),
 												$author$project$Main$getSavedToken(model)));
 									} else {
 										return $elm$core$Platform$Cmd$none;
@@ -13730,8 +13788,8 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 474, column: 13},
-						end: {line: 474, column: 23}
+						start: {line: 492, column: 13},
+						end: {line: 492, column: 23}
 					})('branch \'IndexesViewMsg _\' not implemented');
 			case 'DocumentsViewMsg':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -13760,7 +13818,8 @@ var $author$project$Main$handleStopWordsViewMsg = F2(
 							$author$project$Main$ApiRequest,
 							A2(
 								$author$project$Api$Routes$Main$buildRequest,
-								$author$project$Api$Routes$Main$buildPayload(
+								A2(
+									$author$project$Api$Routes$Main$buildPayload,
 									A3(
 										$author$project$Api$Routes$Main$UpdateStopWords,
 										uid,
@@ -13770,7 +13829,8 @@ var $author$project$Main$handleStopWordsViewMsg = F2(
 												return x.title;
 											},
 											model.pages.stopWords.words),
-										$author$project$Api$Routes$Main$settingsUpdateDecoder)),
+										$author$project$Api$Routes$Main$settingsUpdateDecoder),
+									$author$project$Main$getRootUrl(model)),
 								$author$project$Main$getSavedToken(model))));
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -13832,12 +13892,14 @@ var $author$project$Main$handleSynonymsViewMsg = F2(
 							$author$project$Main$ApiRequest,
 							A2(
 								$author$project$Api$Routes$Main$buildRequest,
-								$author$project$Api$Routes$Main$buildPayload(
+								A2(
+									$author$project$Api$Routes$Main$buildPayload,
 									A3(
 										$author$project$Api$Routes$Main$UpdateSynonyms,
 										indexUid,
 										$elm$core$Dict$fromList(currentSynonyms),
-										$author$project$Api$Routes$Main$settingsUpdateDecoder)),
+										$author$project$Api$Routes$Main$settingsUpdateDecoder),
+									$author$project$Main$getRootUrl(model)),
 								$author$project$Main$getSavedToken(model))));
 				} else {
 					return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
@@ -13899,10 +13961,59 @@ var $author$project$Main$update = F2(
 var $author$project$Main$PageViewMsg = function (a) {
 	return {$: 'PageViewMsg', a: a};
 };
+var $mdgriffith$elm_ui$Internal$Model$Rgba = F4(
+	function (a, b, c, d) {
+		return {$: 'Rgba', a: a, b: b, c: c, d: d};
+	});
+var $mdgriffith$elm_ui$Element$rgb255 = F3(
+	function (red, green, blue) {
+		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
+	});
+var $mdgriffith$elm_ui$Element$rgba = $mdgriffith$elm_ui$Internal$Model$Rgba;
+var $author$project$UI$Styles$color = function (config) {
+	var _v0 = config.scheme;
+	if (_v0.$ === 'Light') {
+		return {
+			clear: A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0),
+			gray100: A3($mdgriffith$elm_ui$Element$rgb255, 244, 244, 244),
+			gray200: A3($mdgriffith$elm_ui$Element$rgb255, 225, 225, 225),
+			gray300: A3($mdgriffith$elm_ui$Element$rgb255, 128, 128, 128),
+			gray400: A3($mdgriffith$elm_ui$Element$rgb255, 76, 76, 76),
+			gray500: A3($mdgriffith$elm_ui$Element$rgb255, 26, 26, 26),
+			green500: A3($mdgriffith$elm_ui$Element$rgb255, 17, 199, 112),
+			primary100: A3($mdgriffith$elm_ui$Element$rgb255, 211, 216, 255),
+			primary200: A3($mdgriffith$elm_ui$Element$rgb255, 177, 184, 250),
+			primary300: A3($mdgriffith$elm_ui$Element$rgb255, 149, 158, 240),
+			primary400: A3($mdgriffith$elm_ui$Element$rgb255, 78, 91, 207),
+			primary500: A3($mdgriffith$elm_ui$Element$rgb255, 28, 40, 144),
+			white: A3($mdgriffith$elm_ui$Element$rgb255, 255, 255, 255)
+		};
+	} else {
+		return {
+			clear: A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0),
+			gray100: A3($mdgriffith$elm_ui$Element$rgb255, 18, 18, 18),
+			gray200: A3($mdgriffith$elm_ui$Element$rgb255, 41, 41, 41),
+			gray300: A3($mdgriffith$elm_ui$Element$rgb255, 89, 89, 89),
+			gray400: A3($mdgriffith$elm_ui$Element$rgb255, 153, 153, 153),
+			gray500: A3($mdgriffith$elm_ui$Element$rgb255, 229, 229, 229),
+			green500: A3($mdgriffith$elm_ui$Element$rgb255, 17, 199, 112),
+			primary100: A3($mdgriffith$elm_ui$Element$rgb255, 159, 169, 255),
+			primary200: A3($mdgriffith$elm_ui$Element$rgb255, 114, 128, 253),
+			primary300: A3($mdgriffith$elm_ui$Element$rgb255, 60, 75, 211),
+			primary400: A3($mdgriffith$elm_ui$Element$rgb255, 23, 33, 123),
+			primary500: A3($mdgriffith$elm_ui$Element$rgb255, 9, 13, 51),
+			white: A3($mdgriffith$elm_ui$Element$rgb255, 25, 25, 25)
+		};
+	}
+};
 var $mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
 	return {$: 'Fill', a: a};
 };
 var $mdgriffith$elm_ui$Element$fill = $mdgriffith$elm_ui$Internal$Model$Fill(1);
+var $mdgriffith$elm_ui$Internal$Model$FocusStyleOption = function (a) {
+	return {$: 'FocusStyleOption', a: a};
+};
+var $mdgriffith$elm_ui$Element$focusStyle = $mdgriffith$elm_ui$Internal$Model$FocusStyleOption;
 var $author$project$Main$getConfig = function (model) {
 	return {scheme: model.pages.settings.colorScheme};
 };
@@ -19267,10 +19378,6 @@ var $mdgriffith$elm_ui$Internal$Model$element = F4(
 	});
 var $mdgriffith$elm_ui$Internal$Model$AllowHover = {$: 'AllowHover'};
 var $mdgriffith$elm_ui$Internal$Model$Layout = {$: 'Layout'};
-var $mdgriffith$elm_ui$Internal$Model$Rgba = F4(
-	function (a, b, c, d) {
-		return {$: 'Rgba', a: a, b: b, c: c, d: d};
-	});
 var $mdgriffith$elm_ui$Internal$Model$focusDefaultStyle = {
 	backgroundColor: $elm$core$Maybe$Nothing,
 	borderColor: $elm$core$Maybe$Nothing,
@@ -19532,8 +19639,6 @@ var $mdgriffith$elm_ui$Element$layoutWith = F3(
 				_Utils_ap($mdgriffith$elm_ui$Internal$Model$rootStyle, attrs)),
 			child);
 	});
-var $mdgriffith$elm_ui$Element$layout = $mdgriffith$elm_ui$Element$layoutWith(
-	{options: _List_Nil});
 var $mdgriffith$elm_ui$Internal$Model$Empty = {$: 'Empty'};
 var $mdgriffith$elm_ui$Internal$Model$Text = function (a) {
 	return {$: 'Text', a: a};
@@ -19607,47 +19712,6 @@ var $mdgriffith$elm_ui$Element$Background$color = function (clr) {
 			'bg-' + $mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
 			'background-color',
 			clr));
-};
-var $mdgriffith$elm_ui$Element$rgb255 = F3(
-	function (red, green, blue) {
-		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
-	});
-var $mdgriffith$elm_ui$Element$rgba = $mdgriffith$elm_ui$Internal$Model$Rgba;
-var $author$project$UI$Styles$color = function (config) {
-	var _v0 = config.scheme;
-	if (_v0.$ === 'Light') {
-		return {
-			clear: A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0),
-			gray100: A3($mdgriffith$elm_ui$Element$rgb255, 244, 244, 244),
-			gray200: A3($mdgriffith$elm_ui$Element$rgb255, 225, 225, 225),
-			gray300: A3($mdgriffith$elm_ui$Element$rgb255, 128, 128, 128),
-			gray400: A3($mdgriffith$elm_ui$Element$rgb255, 76, 76, 76),
-			gray500: A3($mdgriffith$elm_ui$Element$rgb255, 26, 26, 26),
-			green500: A3($mdgriffith$elm_ui$Element$rgb255, 17, 199, 112),
-			primary100: A3($mdgriffith$elm_ui$Element$rgb255, 211, 216, 255),
-			primary200: A3($mdgriffith$elm_ui$Element$rgb255, 177, 184, 250),
-			primary300: A3($mdgriffith$elm_ui$Element$rgb255, 149, 158, 240),
-			primary400: A3($mdgriffith$elm_ui$Element$rgb255, 78, 91, 207),
-			primary500: A3($mdgriffith$elm_ui$Element$rgb255, 28, 40, 144),
-			white: A3($mdgriffith$elm_ui$Element$rgb255, 255, 255, 255)
-		};
-	} else {
-		return {
-			clear: A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0),
-			gray100: A3($mdgriffith$elm_ui$Element$rgb255, 18, 18, 18),
-			gray200: A3($mdgriffith$elm_ui$Element$rgb255, 41, 41, 41),
-			gray300: A3($mdgriffith$elm_ui$Element$rgb255, 89, 89, 89),
-			gray400: A3($mdgriffith$elm_ui$Element$rgb255, 153, 153, 153),
-			gray500: A3($mdgriffith$elm_ui$Element$rgb255, 229, 229, 229),
-			green500: A3($mdgriffith$elm_ui$Element$rgb255, 17, 199, 112),
-			primary100: A3($mdgriffith$elm_ui$Element$rgb255, 159, 169, 255),
-			primary200: A3($mdgriffith$elm_ui$Element$rgb255, 114, 128, 253),
-			primary300: A3($mdgriffith$elm_ui$Element$rgb255, 60, 75, 211),
-			primary400: A3($mdgriffith$elm_ui$Element$rgb255, 23, 33, 123),
-			primary500: A3($mdgriffith$elm_ui$Element$rgb255, 9, 13, 51),
-			white: A3($mdgriffith$elm_ui$Element$rgb255, 25, 25, 25)
-		};
-	}
 };
 var $mdgriffith$elm_ui$Internal$Model$AsColumn = {$: 'AsColumn'};
 var $mdgriffith$elm_ui$Internal$Model$asColumn = $mdgriffith$elm_ui$Internal$Model$AsColumn;
@@ -20564,7 +20628,7 @@ var $author$project$UI$Styles$getTypographicStyleFor = F2(
 								$mdgriffith$elm_ui$Element$Font$sansSerif
 							])),
 						$mdgriffith$elm_ui$Element$Font$color(
-						$author$project$UI$Styles$color(config).gray500),
+						$author$project$UI$Styles$color(config).gray400),
 						$mdgriffith$elm_ui$Element$Font$letterSpacing(-0.6)
 					]);
 			case 'H2':
@@ -20579,7 +20643,7 @@ var $author$project$UI$Styles$getTypographicStyleFor = F2(
 								$mdgriffith$elm_ui$Element$Font$sansSerif
 							])),
 						$mdgriffith$elm_ui$Element$Font$color(
-						$author$project$UI$Styles$color(config).gray500),
+						$author$project$UI$Styles$color(config).gray400),
 						$mdgriffith$elm_ui$Element$Font$letterSpacing(-0.4)
 					]);
 			case 'H3':
@@ -20595,7 +20659,7 @@ var $author$project$UI$Styles$getTypographicStyleFor = F2(
 							])),
 						$mdgriffith$elm_ui$Element$Font$letterSpacing(-0.2),
 						$mdgriffith$elm_ui$Element$Font$color(
-						$author$project$UI$Styles$color(config).gray500)
+						$author$project$UI$Styles$color(config).gray400)
 					]);
 			case 'Body':
 				return _List_fromArray(
@@ -20609,14 +20673,14 @@ var $author$project$UI$Styles$getTypographicStyleFor = F2(
 								$mdgriffith$elm_ui$Element$Font$sansSerif
 							])),
 						$mdgriffith$elm_ui$Element$Font$color(
-						$author$project$UI$Styles$color(config).gray500),
+						$author$project$UI$Styles$color(config).gray400),
 						$mdgriffith$elm_ui$Element$Font$letterSpacing(-0.1)
 					]);
-			case 'BodyBold':
+			case 'Label':
 				return _List_fromArray(
 					[
-						$mdgriffith$elm_ui$Element$Font$size(18),
-						$mdgriffith$elm_ui$Element$Font$bold,
+						$mdgriffith$elm_ui$Element$Font$size(14),
+						$mdgriffith$elm_ui$Element$Font$medium,
 						$mdgriffith$elm_ui$Element$Font$family(
 						_List_fromArray(
 							[
@@ -20624,7 +20688,22 @@ var $author$project$UI$Styles$getTypographicStyleFor = F2(
 								$mdgriffith$elm_ui$Element$Font$sansSerif
 							])),
 						$mdgriffith$elm_ui$Element$Font$color(
-						$author$project$UI$Styles$color(config).gray500),
+						$author$project$UI$Styles$color(config).gray300),
+						$mdgriffith$elm_ui$Element$Font$letterSpacing(0.4)
+					]);
+			case 'BodyBold':
+				return _List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$Font$size(18),
+						$mdgriffith$elm_ui$Element$Font$semiBold,
+						$mdgriffith$elm_ui$Element$Font$family(
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$Font$typeface('Inter'),
+								$mdgriffith$elm_ui$Element$Font$sansSerif
+							])),
+						$mdgriffith$elm_ui$Element$Font$color(
+						$author$project$UI$Styles$color(config).gray400),
 						$mdgriffith$elm_ui$Element$Font$letterSpacing(-0.1)
 					]);
 			case 'Code':
@@ -20639,7 +20718,7 @@ var $author$project$UI$Styles$getTypographicStyleFor = F2(
 								$mdgriffith$elm_ui$Element$Font$monospace
 							])),
 						$mdgriffith$elm_ui$Element$Font$color(
-						$author$project$UI$Styles$color(config).gray500)
+						$author$project$UI$Styles$color(config).gray400)
 					]);
 			default:
 				return _List_fromArray(
@@ -20654,7 +20733,7 @@ var $author$project$UI$Styles$getTypographicStyleFor = F2(
 							])),
 						$mdgriffith$elm_ui$Element$Font$letterSpacing(-0.2),
 						$mdgriffith$elm_ui$Element$Font$color(
-						$author$project$UI$Styles$color(config).gray500)
+						$author$project$UI$Styles$color(config).gray400)
 					]);
 		}
 	});
@@ -21284,7 +21363,7 @@ var $author$project$UI$Components$Dropdown$dropDownMenuListItem = F2(
 							_List_fromArray(
 								[
 									$mdgriffith$elm_ui$Element$Background$color(
-									$author$project$UI$Styles$color(config).gray100)
+									$author$project$UI$Styles$color(config).gray200)
 								]))
 						])
 					])),
@@ -21341,16 +21420,16 @@ var $author$project$UI$Components$Dropdown$dropDownMenu = F3(
 					$mdgriffith$elm_ui$Element$padding(4),
 					$mdgriffith$elm_ui$Element$Border$shadow(
 					{
-						blur: 15,
-						color: $author$project$UI$Styles$color(config).gray100,
+						blur: 12,
+						color: $author$project$UI$Styles$color(config).gray200,
 						offset: _Utils_Tuple2(0, 0),
-						size: 0
+						size: 1
 					}),
 					$mdgriffith$elm_ui$Element$Border$width(1),
 					$mdgriffith$elm_ui$Element$Border$color(
 					$author$project$UI$Styles$color(config).gray200),
 					$mdgriffith$elm_ui$Element$Background$color(
-					$author$project$UI$Styles$color(config).white)
+					$author$project$UI$Styles$color(config).gray100)
 				]),
 			A2(
 				$elm$core$List$map,
@@ -21547,10 +21626,10 @@ var $author$project$UI$Elements$switchBody = F2(
 				[
 					$mdgriffith$elm_ui$Element$Background$color(background),
 					$mdgriffith$elm_ui$Element$width(
-					$mdgriffith$elm_ui$Element$px(48)),
+					$mdgriffith$elm_ui$Element$px(36)),
 					$mdgriffith$elm_ui$Element$height(
-					$mdgriffith$elm_ui$Element$px(32)),
-					$mdgriffith$elm_ui$Element$Border$rounded(20)
+					$mdgriffith$elm_ui$Element$px(24)),
+					$mdgriffith$elm_ui$Element$Border$rounded(24)
 				]),
 			$mdgriffith$elm_ui$Element$none);
 	});
@@ -21568,7 +21647,7 @@ var $mdgriffith$elm_ui$Element$moveRight = function (x) {
 };
 var $author$project$UI$Elements$switchHandle = F2(
 	function (model, config) {
-		var position = model ? 20 : 4;
+		var position = model ? 16 : 4;
 		return A2(
 			$mdgriffith$elm_ui$Element$el,
 			_List_fromArray(
@@ -21576,9 +21655,9 @@ var $author$project$UI$Elements$switchHandle = F2(
 					$mdgriffith$elm_ui$Element$Background$color(
 					$author$project$UI$Styles$color(config).white),
 					$mdgriffith$elm_ui$Element$width(
-					$mdgriffith$elm_ui$Element$px(24)),
+					$mdgriffith$elm_ui$Element$px(16)),
 					$mdgriffith$elm_ui$Element$height(
-					$mdgriffith$elm_ui$Element$px(24)),
+					$mdgriffith$elm_ui$Element$px(16)),
 					$mdgriffith$elm_ui$Element$Border$rounded(12),
 					$mdgriffith$elm_ui$Element$centerY,
 					$mdgriffith$elm_ui$Element$moveRight(position)
@@ -21739,7 +21818,7 @@ var $author$project$UI$PageViews$Attributes$cardView = F3(
 				[
 					$mdgriffith$elm_ui$Element$Background$color(
 					$author$project$UI$Styles$color(config).white),
-					$mdgriffith$elm_ui$Element$Border$rounded(20),
+					$mdgriffith$elm_ui$Element$Border$rounded(14),
 					$mdgriffith$elm_ui$Element$padding(24),
 					$mdgriffith$elm_ui$Element$width(
 					$mdgriffith$elm_ui$Element$px(320))
@@ -21800,8 +21879,8 @@ var $author$project$UI$PageViews$Attributes$isLoading = function (model) {
 				},
 				$author$project$UI$PageViews$Attributes$getAllAttrs(model)))));
 };
-var $author$project$UI$Elements$Clear = {$: 'Clear'};
 var $author$project$UI$Styles$H3 = {$: 'H3'};
+var $author$project$UI$Elements$PrimaryLight = {$: 'PrimaryLight'};
 var $author$project$UI$Elements$Subtle = {$: 'Subtle'};
 var $author$project$Utils$addElementIf = F2(
 	function (isNeed, element) {
@@ -21814,6 +21893,7 @@ var $author$project$Utils$addElementsIf = F2(
 	});
 var $mdgriffith$elm_ui$Internal$Model$Top = {$: 'Top'};
 var $mdgriffith$elm_ui$Element$alignTop = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$Top);
+var $author$project$UI$Styles$BodyBold = {$: 'BodyBold'};
 var $mdgriffith$elm_ui$Internal$Model$Button = {$: 'Button'};
 var $elm$json$Json$Encode$bool = _Json_wrap;
 var $elm$html$Html$Attributes$boolProperty = F2(
@@ -21942,17 +22022,26 @@ var $author$project$UI$Elements$getButtonProps = F2(
 			case 'Subtle':
 				return {
 					bgColor: $author$project$UI$Styles$color(config).white,
-					hoverColor: $author$project$UI$Styles$color(config).gray200
+					hoverColor: $author$project$UI$Styles$color(config).gray200,
+					textColor: $author$project$UI$Styles$color(config).gray500
 				};
 			case 'Clear':
 				return {
 					bgColor: $author$project$UI$Styles$color(config).clear,
-					hoverColor: $author$project$UI$Styles$color(config).gray200
+					hoverColor: $author$project$UI$Styles$color(config).gray200,
+					textColor: $author$project$UI$Styles$color(config).gray500
+				};
+			case 'PrimaryLight':
+				return {
+					bgColor: $author$project$UI$Styles$color(config).primary100,
+					hoverColor: $author$project$UI$Styles$color(config).primary200,
+					textColor: $author$project$UI$Styles$color(config).primary500
 				};
 			default:
 				return {
-					bgColor: $author$project$UI$Styles$color(config).white,
-					hoverColor: $author$project$UI$Styles$color(config).gray200
+					bgColor: $author$project$UI$Styles$color(config).primary400,
+					hoverColor: $author$project$UI$Styles$color(config).primary500,
+					textColor: $author$project$UI$Styles$color(config).primary100
 				};
 		}
 	});
@@ -21961,7 +22050,7 @@ var $author$project$UI$Elements$button = F4(
 		var props = A2($author$project$UI$Elements$getButtonProps, buttonTheme, config);
 		return A2(
 			$mdgriffith$elm_ui$Element$el,
-			A2($author$project$UI$Styles$getTypographicStyleFor, $author$project$UI$Styles$Body, config),
+			A2($author$project$UI$Styles$getTypographicStyleFor, $author$project$UI$Styles$BodyBold, config),
 			A2(
 				$mdgriffith$elm_ui$Element$Input$button,
 				_List_fromArray(
@@ -21974,7 +22063,8 @@ var $author$project$UI$Elements$button = F4(
 						_List_fromArray(
 							[
 								$mdgriffith$elm_ui$Element$Background$color(props.hoverColor)
-							]))
+							])),
+						$mdgriffith$elm_ui$Element$Font$color(props.textColor)
 					]),
 				{
 					label: $mdgriffith$elm_ui$Element$text(model),
@@ -22012,15 +22102,16 @@ var $author$project$UI$Components$Toolbar$toolbarView = F5(
 						A2(
 						$author$project$Utils$addElementIf,
 						model.showCreateAction,
-						A4($author$project$UI$Elements$button, $author$project$UI$Elements$Subtle, 'Add', create, config)),
+						A4($author$project$UI$Elements$button, $author$project$UI$Elements$PrimaryLight, 'Add', create, config)),
 						A2(
 						$author$project$Utils$addElementsIf,
 						model.valueChanged,
 						_List_fromArray(
 							[
 								$author$project$UI$Elements$spacer($author$project$UI$Styles$FILL),
-								A4($author$project$UI$Elements$button, $author$project$UI$Elements$Clear, 'Save', sync, config),
-								A4($author$project$UI$Elements$button, $author$project$UI$Elements$Clear, 'Cancel', cancel, config)
+								A4($author$project$UI$Elements$button, $author$project$UI$Elements$PrimaryLight, 'Save', sync, config),
+								$author$project$UI$Elements$spacer($author$project$UI$Styles$XS),
+								A4($author$project$UI$Elements$button, $author$project$UI$Elements$Subtle, 'Cancel', cancel, config)
 							]))
 					])));
 	});
@@ -22887,6 +22978,9 @@ var $author$project$UI$PageViews$Documents$view = F2(
 				]));
 	});
 var $author$project$UI$Styles$Dark = {$: 'Dark'};
+var $author$project$UI$PageViews$Settings$EndpointValueChanged = function (a) {
+	return {$: 'EndpointValueChanged', a: a};
+};
 var $author$project$UI$PageViews$Settings$None = {$: 'None'};
 var $author$project$UI$PageViews$Settings$TokenValueChanged = function (a) {
 	return {$: 'TokenValueChanged', a: a};
@@ -22895,10 +22989,13 @@ var $author$project$UI$PageViews$Settings$UpdateColorScheme = function (a) {
 	return {$: 'UpdateColorScheme', a: a};
 };
 var $author$project$UI$Styles$XL = {$: 'XL'};
-var $mdgriffith$elm_ui$Element$Input$HiddenLabel = function (a) {
-	return {$: 'HiddenLabel', a: a};
-};
-var $mdgriffith$elm_ui$Element$Input$labelHidden = $mdgriffith$elm_ui$Element$Input$HiddenLabel;
+var $author$project$UI$Styles$Label = {$: 'Label'};
+var $mdgriffith$elm_ui$Element$Input$Above = {$: 'Above'};
+var $mdgriffith$elm_ui$Element$Input$Label = F3(
+	function (a, b, c) {
+		return {$: 'Label', a: a, b: b, c: c};
+	});
+var $mdgriffith$elm_ui$Element$Input$labelAbove = $mdgriffith$elm_ui$Element$Input$Label($mdgriffith$elm_ui$Element$Input$Above);
 var $mdgriffith$elm_ui$Element$htmlAttribute = $mdgriffith$elm_ui$Internal$Model$Attr;
 var $author$project$UI$Elements$onEnter = function (msg) {
 	return $mdgriffith$elm_ui$Element$htmlAttribute(
@@ -23693,8 +23790,8 @@ var $mdgriffith$elm_ui$Element$Input$text = $mdgriffith$elm_ui$Element$Input$tex
 		spellchecked: false,
 		type_: $mdgriffith$elm_ui$Element$Input$TextInputNode('text')
 	});
-var $author$project$UI$Elements$textfield = F6(
-	function (value, placeholder, valueChanged, loseFocus, returnKeyMsg, config) {
+var $author$project$UI$Elements$textfield = F7(
+	function (value, label, placeholder, valueChanged, loseFocus, returnKeyMsg, config) {
 		return A2(
 			$mdgriffith$elm_ui$Element$el,
 			_Utils_ap(
@@ -23714,13 +23811,32 @@ var $author$project$UI$Elements$textfield = F6(
 						$mdgriffith$elm_ui$Element$Background$color(
 						$author$project$UI$Styles$color(config).white),
 						$mdgriffith$elm_ui$Element$Border$color(
-						$author$project$UI$Styles$color(config).gray300),
+						$author$project$UI$Styles$color(config).gray200),
+						$mdgriffith$elm_ui$Element$Border$width(1),
 						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-						$mdgriffith$elm_ui$Element$padding(12),
-						$mdgriffith$elm_ui$Element$Events$onLoseFocus(loseFocus)
+						A2($mdgriffith$elm_ui$Element$paddingXY, 12, 14),
+						$mdgriffith$elm_ui$Element$Events$onLoseFocus(loseFocus),
+						$mdgriffith$elm_ui$Element$mouseOver(
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$Background$color(
+								$author$project$UI$Styles$color(config).gray200)
+							]))
 					]),
 				{
-					label: $mdgriffith$elm_ui$Element$Input$labelHidden(''),
+					label: A2(
+						$mdgriffith$elm_ui$Element$Input$labelAbove,
+						A2($author$project$UI$Styles$getTypographicStyleFor, $author$project$UI$Styles$Label, config),
+						A2(
+							$mdgriffith$elm_ui$Element$column,
+							_List_fromArray(
+								[
+									A2($mdgriffith$elm_ui$Element$paddingXY, 0, 4)
+								]),
+							_List_fromArray(
+								[
+									$mdgriffith$elm_ui$Element$text(label)
+								]))),
 					onChange: valueChanged,
 					placeholder: $elm$core$Maybe$Just(
 						A2(
@@ -23730,11 +23846,19 @@ var $author$project$UI$Elements$textfield = F6(
 					text: value
 				}));
 	});
-var $author$project$UI$PageViews$Settings$SaveKeyValue = {$: 'SaveKeyValue'};
+var $author$project$UI$PageViews$Settings$Save = {$: 'Save'};
+var $author$project$UI$PageViews$Settings$valueChanged = function (model) {
+	return ((!_Utils_eq(model.tokenValue, model.savedTokenValue)) || (!_Utils_eq(model.endpointValue, model.savedEndpointValue))) ? true : false;
+};
 var $author$project$UI$PageViews$Settings$toolbarView = F2(
-	function (_v0, config) {
-		var toolbarModel = {loading: false, showCreateAction: false, title: 'Settings', valueChanged: false};
-		return A5($author$project$UI$Components$Toolbar$toolbarView, toolbarModel, $author$project$UI$PageViews$Settings$None, $author$project$UI$PageViews$Settings$SaveKeyValue, $author$project$UI$PageViews$Settings$None, config);
+	function (model, config) {
+		var toolbarModel = {
+			loading: false,
+			showCreateAction: false,
+			title: 'Settings',
+			valueChanged: $author$project$UI$PageViews$Settings$valueChanged(model)
+		};
+		return A5($author$project$UI$Components$Toolbar$toolbarView, toolbarModel, $author$project$UI$PageViews$Settings$None, $author$project$UI$PageViews$Settings$Save, $author$project$UI$PageViews$Settings$None, config);
 	});
 var $author$project$UI$PageViews$Settings$view = F2(
 	function (model, config) {
@@ -23763,8 +23887,10 @@ var $author$project$UI$PageViews$Settings$view = F2(
 					_List_fromArray(
 						[
 							$author$project$UI$Elements$spacer($author$project$UI$Styles$XL),
-							A6($author$project$UI$Elements$textfield, model.tokenValue, 'Token', $author$project$UI$PageViews$Settings$TokenValueChanged, $author$project$UI$PageViews$Settings$None, $author$project$UI$PageViews$Settings$None, config),
+							A7($author$project$UI$Elements$textfield, model.endpointValue, 'Endpoint', 'http://localhost:7700', $author$project$UI$PageViews$Settings$EndpointValueChanged, $author$project$UI$PageViews$Settings$None, $author$project$UI$PageViews$Settings$None, config),
 							$author$project$UI$Elements$spacer($author$project$UI$Styles$MD),
+							A7($author$project$UI$Elements$textfield, model.tokenValue, 'Token', '9438u093ty94y3989428ur929r20kfjvdfv7vfs', $author$project$UI$PageViews$Settings$TokenValueChanged, $author$project$UI$PageViews$Settings$None, $author$project$UI$PageViews$Settings$None, config),
+							$author$project$UI$Elements$spacer($author$project$UI$Styles$LG),
 							A2(
 							$mdgriffith$elm_ui$Element$row,
 							_List_Nil,
@@ -23909,7 +24035,7 @@ var $author$project$UI$PageViews$StopWords$view = F2(
 					_List_fromArray(
 						[
 							$author$project$UI$Elements$spacer($author$project$UI$Styles$XL),
-							A6($author$project$UI$Elements$textfield, model.newValue, 'Add a word', $author$project$UI$PageViews$StopWords$NewValueUpdated, $author$project$UI$PageViews$StopWords$None, $author$project$UI$PageViews$StopWords$Create, config),
+							A7($author$project$UI$Elements$textfield, model.newValue, 'Add a word', 'blah', $author$project$UI$PageViews$StopWords$NewValueUpdated, $author$project$UI$PageViews$StopWords$None, $author$project$UI$PageViews$StopWords$Create, config),
 							$author$project$UI$Elements$spacer($author$project$UI$Styles$SM),
 							A2(
 							$mdgriffith$elm_ui$Element$wrappedRow,
@@ -24127,7 +24253,7 @@ var $author$project$UI$Components$SynonymCard$view = F2(
 			$mdgriffith$elm_ui$Element$column,
 			_List_fromArray(
 				[
-					$mdgriffith$elm_ui$Element$padding(12),
+					$mdgriffith$elm_ui$Element$padding(20),
 					$mdgriffith$elm_ui$Element$Background$color(
 					$author$project$UI$Styles$color(config).white),
 					$mdgriffith$elm_ui$Element$Border$rounded(10),
@@ -24136,17 +24262,20 @@ var $author$project$UI$Components$SynonymCard$view = F2(
 				]),
 			_List_fromArray(
 				[
-					A6(
+					A7(
 					$author$project$UI$Elements$textfield,
 					model.synonymKey,
+					'Title',
 					'Tomato',
 					$author$project$UI$Components$SynonymCard$UpdatedTitle(model.index),
 					$author$project$UI$Components$SynonymCard$DoneEditing,
 					$author$project$UI$Components$SynonymCard$DoneEditing,
 					config),
-					A6(
+					$author$project$UI$Elements$spacer($author$project$UI$Styles$MD),
+					A7(
 					$author$project$UI$Elements$textfield,
 					model.synonymsValue,
+					'Synonyms',
 					'Tomayto, Tomaato, Tomaeto',
 					$author$project$UI$Components$SynonymCard$UpdatedList(model.index),
 					$author$project$UI$Components$SynonymCard$DoneEditing,
@@ -24253,8 +24382,27 @@ var $author$project$UI$PageView$view = F2(
 	});
 var $author$project$Main$view = function (model) {
 	var config = $author$project$Main$getConfig(model);
-	return A2(
-		$mdgriffith$elm_ui$Element$layout,
+	return A3(
+		$mdgriffith$elm_ui$Element$layoutWith,
+		{
+			options: _List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$focusStyle(
+					{
+						backgroundColor: $elm$core$Maybe$Just(
+							$author$project$UI$Styles$color(config).white),
+						borderColor: $elm$core$Maybe$Just(
+							$author$project$UI$Styles$color(config).primary300),
+						shadow: $elm$core$Maybe$Just(
+							{
+								blur: 0,
+								color: $author$project$UI$Styles$color(config).primary300,
+								offset: _Utils_Tuple2(0, 0),
+								size: 2
+							})
+					})
+				])
+		},
 		_List_fromArray(
 			[
 				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
@@ -24285,4 +24433,4 @@ var $author$project$Main$view = function (model) {
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Api.Routes.Main.IndexKeys":{"args":[],"type":"{ indexUid : String.String, keys : List.List String.String }"},"Api.Routes.Main.IndexStats":{"args":[],"type":"{ numberOfDocuments : Basics.Int, isIndexing : Basics.Bool, fieldDistribution : Dict.Dict String.String Basics.Int }"},"Api.Routes.Main.IndexesRouteResponseListItem":{"args":[],"type":"{ uid : String.String, name : String.String, createdAt : String.String, updatedAt : String.String, primaryKey : String.String }"},"Api.Routes.Main.SettingsRouteResponseItem":{"args":[],"type":"{ uid : Basics.Int, indexUid : String.String }"},"UI.PageViews.Attributes.Attribute":{"args":[],"type":"{ title : String.String, enabled : Basics.Bool, saved : Basics.Bool, requestStatus : Request.RequestStatus }"},"UI.Components.Dropdown.Item":{"args":[],"type":"{ title : String.String, id : String.String }"},"UI.Components.SynonymCard.Model":{"args":[],"type":"{ index : Basics.Int, synonymKey : String.String, synonymsValue : String.String, synonymList : List.List String.String, saved : Maybe.Maybe ( String.String, List.List String.String ), requestStatus : Request.RequestStatus, taskId : Maybe.Maybe Basics.Int }"},"UI.PageViews.Attributes.Model":{"args":[],"type":"{ displayed : List.List UI.PageViews.Attributes.Attribute, sortable : List.List UI.PageViews.Attributes.Attribute, searchable : List.List UI.PageViews.Attributes.Attribute, filterable : List.List UI.PageViews.Attributes.Attribute, distinct : List.List UI.PageViews.Attributes.Attribute }"},"UI.PageViews.Documents.Model":{"args":[],"type":"{ documents : List.List String.String }"},"UI.PageViews.Settings.Model":{"args":[],"type":"{ tokenValue : String.String, colorScheme : UI.Styles.ColorScheme, savedTokenValue : String.String }"},"UI.PageViews.StopWords.Model":{"args":[],"type":"{ words : List.List UI.PageViews.StopWords.StopWord, newValue : String.String, deletionQueue : List.List UI.PageViews.StopWords.StopWord }"},"UI.PageViews.Synonyms.Model":{"args":[],"type":"{ synonymStates : List.List UI.Components.SynonymCard.Model }"},"UI.PageViews.StopWords.StopWord":{"args":[],"type":"{ title : String.String, requestStatus : Request.RequestStatus, saved : Basics.Bool }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"],"ApiRequest":["Api.Routes.Main.Msg"],"PollUpdate":["Main.Task","SweetPoll.Msg String.String"],"AddToPollQueue":["Main.Task"],"UpdateKeysForIndex":["Api.Routes.Main.IndexKeys"]}},"List.List":{"args":["a"],"tags":{}},"Api.Routes.Main.Msg":{"args":[],"tags":{"HandleListIndexesResponse":["Result.Result Http.Error (List.List Api.Routes.Main.IndexesRouteResponseListItem)"],"HandleShowResponse":["Result.Result Http.Error Api.Routes.Main.IndexesRouteResponseListItem"],"HandleDocumentsResponse":["Result.Result Http.Error String.String"],"HandleListStopWordsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleUpdateSynonymsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleListSynonymsResponse":["Result.Result Http.Error (Dict.Dict String.String (List.List String.String))","String.String"],"HandleIndexKeysResponse":["Api.Routes.Main.IndexKeys"],"HandleListDisplayedAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleListSearchableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleListSortableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleListFilterableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleListDistinctAttrResponse":["Result.Result Http.Error (Maybe.Maybe String.String)","String.String"],"HandleUpdateDisplayedAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateFilterableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateSortableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateSearchableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateDistinctAttrResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateStopWordsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleStatsResponse":["Result.Result Http.Error Api.Routes.Main.IndexStats","String.String"]}},"SweetPoll.Msg":{"args":["data"],"tags":{"PollResult":["Result.Result Http.Error data"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.PageViews.Indexes.Msg"],"SettingsViewMsg":["UI.PageViews.Settings.Msg"],"DocumentsViewMsg":["UI.PageViews.Documents.Msg"],"StopWordsViewMsg":["UI.PageViews.StopWords.Msg"],"SynonymsViewMsg":["UI.PageViews.Synonyms.Msg"],"AttributesViewMsg":["UI.PageViews.Attributes.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"],"DropdownMsg":["UI.Components.Dropdown.Msg"]}},"String.String":{"args":[],"tags":{"String":[]}},"Main.Task":{"args":[],"tags":{"UpdateSynonymsTask":["Basics.Int","String.String"],"UpdateAttributeTask":["Basics.Int","String.String","UI.PageViews.Attributes.AttributeType"],"UpdateStopWordsTask":["Basics.Int","String.String"]}},"UI.PageViews.Attributes.AttributeType":{"args":[],"tags":{"Displayed":[],"Sortable":[],"Searchable":[],"Filterable":[],"Distinct":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"UI.Components.Dropdown.Msg":{"args":[],"tags":{"TriggerClicked":[],"Select":["UI.Components.Dropdown.Item"]}},"UI.PageViews.Attributes.Msg":{"args":[],"tags":{"X":["Basics.Bool"],"Toggle":["UI.PageViews.Attributes.Attribute","UI.PageViews.Attributes.AttributeType"],"Save":[],"Reset":[],"None":[]}},"UI.PageViews.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Settings.Msg":{"args":[],"tags":{"TokenValueChanged":["String.String"],"SaveKeyValue":[],"UpdateColorScheme":["UI.Styles.ColorScheme"],"None":[]}},"UI.PageViews.StopWords.Msg":{"args":[],"tags":{"Create":[],"NewValueUpdated":["String.String"],"Remove":["UI.PageViews.StopWords.StopWord"],"Sync":[],"Reset":[],"None":[]}},"UI.PageViews.Synonyms.Msg":{"args":[],"tags":{"CardViewMsg":["UI.Components.SynonymCard.Msg"],"Sync":[],"New":[],"NoAction":[],"Reset":[]}},"UI.Pages.Page":{"args":[],"tags":{"Settings":["UI.PageViews.Settings.Model"],"Documents":["UI.PageViews.Documents.Model"],"Synonyms":["UI.PageViews.Synonyms.Model"],"StopWords":["UI.PageViews.StopWords.Model"],"Attributes":["UI.PageViews.Attributes.Model"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"UI.Styles.ColorScheme":{"args":[],"tags":{"Light":[],"Dark":[]}},"UI.Components.SynonymCard.Msg":{"args":[],"tags":{"UpdatedTitle":["Basics.Int","String.String"],"UpdatedList":["Basics.Int","String.String"],"Remove":["Basics.Int"],"RetrySave":["Basics.Int"],"Save":["Basics.Int"],"Reset":[],"DoneEditing":[]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}},"Request.RequestStatus":{"args":[],"tags":{"NoRequest":[],"Fired":[],"Success":[],"Failed":[]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Api.Routes.Main.IndexKeys":{"args":[],"type":"{ indexUid : String.String, keys : List.List String.String }"},"Api.Routes.Main.IndexStats":{"args":[],"type":"{ numberOfDocuments : Basics.Int, isIndexing : Basics.Bool, fieldDistribution : Dict.Dict String.String Basics.Int }"},"Api.Routes.Main.IndexesRouteResponseListItem":{"args":[],"type":"{ uid : String.String, name : String.String, createdAt : String.String, updatedAt : String.String, primaryKey : String.String }"},"Api.Routes.Main.SettingsRouteResponseItem":{"args":[],"type":"{ uid : Basics.Int, indexUid : String.String }"},"UI.PageViews.Attributes.Attribute":{"args":[],"type":"{ title : String.String, enabled : Basics.Bool, saved : Basics.Bool, requestStatus : Request.RequestStatus }"},"UI.Components.Dropdown.Item":{"args":[],"type":"{ title : String.String, id : String.String }"},"UI.Components.SynonymCard.Model":{"args":[],"type":"{ index : Basics.Int, synonymKey : String.String, synonymsValue : String.String, synonymList : List.List String.String, saved : Maybe.Maybe ( String.String, List.List String.String ), requestStatus : Request.RequestStatus, taskId : Maybe.Maybe Basics.Int }"},"UI.PageViews.Attributes.Model":{"args":[],"type":"{ displayed : List.List UI.PageViews.Attributes.Attribute, sortable : List.List UI.PageViews.Attributes.Attribute, searchable : List.List UI.PageViews.Attributes.Attribute, filterable : List.List UI.PageViews.Attributes.Attribute, distinct : List.List UI.PageViews.Attributes.Attribute }"},"UI.PageViews.Documents.Model":{"args":[],"type":"{ documents : List.List String.String }"},"UI.PageViews.Settings.Model":{"args":[],"type":"{ tokenValue : String.String, colorScheme : UI.Styles.ColorScheme, savedTokenValue : String.String, endpointValue : String.String, savedEndpointValue : String.String }"},"UI.PageViews.StopWords.Model":{"args":[],"type":"{ words : List.List UI.PageViews.StopWords.StopWord, newValue : String.String, deletionQueue : List.List UI.PageViews.StopWords.StopWord }"},"UI.PageViews.Synonyms.Model":{"args":[],"type":"{ synonymStates : List.List UI.Components.SynonymCard.Model }"},"UI.PageViews.StopWords.StopWord":{"args":[],"type":"{ title : String.String, requestStatus : Request.RequestStatus, saved : Basics.Bool }"}},"unions":{"Main.Msg":{"args":[],"tags":{"SidebarMsg":["UI.Sidebar.Msg"],"PageViewMsg":["UI.PageView.Msg"],"ApiRequest":["Api.Routes.Main.Msg"],"PollUpdate":["Main.Task","SweetPoll.Msg String.String"],"AddToPollQueue":["Main.Task"],"UpdateKeysForIndex":["Api.Routes.Main.IndexKeys"]}},"List.List":{"args":["a"],"tags":{}},"Api.Routes.Main.Msg":{"args":[],"tags":{"HandleListIndexesResponse":["Result.Result Http.Error (List.List Api.Routes.Main.IndexesRouteResponseListItem)"],"HandleShowResponse":["Result.Result Http.Error Api.Routes.Main.IndexesRouteResponseListItem"],"HandleDocumentsResponse":["Result.Result Http.Error String.String"],"HandleListStopWordsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleUpdateSynonymsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleListSynonymsResponse":["Result.Result Http.Error (Dict.Dict String.String (List.List String.String))","String.String"],"HandleIndexKeysResponse":["Api.Routes.Main.IndexKeys"],"HandleListDisplayedAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleListSearchableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleListSortableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleListFilterableAttrsResponse":["Result.Result Http.Error (List.List String.String)","String.String"],"HandleListDistinctAttrResponse":["Result.Result Http.Error (Maybe.Maybe String.String)","String.String"],"HandleUpdateDisplayedAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateFilterableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateSortableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateSearchableAttrsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateDistinctAttrResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleUpdateStopWordsResponse":["Result.Result Http.Error Api.Routes.Main.SettingsRouteResponseItem"],"HandleStatsResponse":["Result.Result Http.Error Api.Routes.Main.IndexStats","String.String"]}},"SweetPoll.Msg":{"args":["data"],"tags":{"PollResult":["Result.Result Http.Error data"]}},"UI.PageView.Msg":{"args":[],"tags":{"IndexesViewMsg":["UI.PageViews.Indexes.Msg"],"SettingsViewMsg":["UI.PageViews.Settings.Msg"],"DocumentsViewMsg":["UI.PageViews.Documents.Msg"],"StopWordsViewMsg":["UI.PageViews.StopWords.Msg"],"SynonymsViewMsg":["UI.PageViews.Synonyms.Msg"],"AttributesViewMsg":["UI.PageViews.Attributes.Msg"]}},"UI.Sidebar.Msg":{"args":[],"tags":{"SelectPage":["UI.Pages.Page"],"DropdownMsg":["UI.Components.Dropdown.Msg"]}},"String.String":{"args":[],"tags":{"String":[]}},"Main.Task":{"args":[],"tags":{"UpdateSynonymsTask":["Basics.Int","String.String"],"UpdateAttributeTask":["Basics.Int","String.String","UI.PageViews.Attributes.AttributeType"],"UpdateStopWordsTask":["Basics.Int","String.String"]}},"UI.PageViews.Attributes.AttributeType":{"args":[],"tags":{"Displayed":[],"Sortable":[],"Searchable":[],"Filterable":[],"Distinct":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"UI.Components.Dropdown.Msg":{"args":[],"tags":{"TriggerClicked":[],"Select":["UI.Components.Dropdown.Item"]}},"UI.PageViews.Attributes.Msg":{"args":[],"tags":{"X":["Basics.Bool"],"Toggle":["UI.PageViews.Attributes.Attribute","UI.PageViews.Attributes.AttributeType"],"Save":[],"Reset":[],"None":[]}},"UI.PageViews.Documents.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Indexes.Msg":{"args":[],"tags":{"X":[]}},"UI.PageViews.Settings.Msg":{"args":[],"tags":{"TokenValueChanged":["String.String"],"EndpointValueChanged":["String.String"],"Save":[],"UpdateColorScheme":["UI.Styles.ColorScheme"],"None":[]}},"UI.PageViews.StopWords.Msg":{"args":[],"tags":{"Create":[],"NewValueUpdated":["String.String"],"Remove":["UI.PageViews.StopWords.StopWord"],"Sync":[],"Reset":[],"None":[]}},"UI.PageViews.Synonyms.Msg":{"args":[],"tags":{"CardViewMsg":["UI.Components.SynonymCard.Msg"],"Sync":[],"New":[],"NoAction":[],"Reset":[]}},"UI.Pages.Page":{"args":[],"tags":{"Settings":["UI.PageViews.Settings.Model"],"Documents":["UI.PageViews.Documents.Model"],"Synonyms":["UI.PageViews.Synonyms.Model"],"StopWords":["UI.PageViews.StopWords.Model"],"Attributes":["UI.PageViews.Attributes.Model"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"UI.Styles.ColorScheme":{"args":[],"tags":{"Light":[],"Dark":[]}},"UI.Components.SynonymCard.Msg":{"args":[],"tags":{"UpdatedTitle":["Basics.Int","String.String"],"UpdatedList":["Basics.Int","String.String"],"Remove":["Basics.Int"],"RetrySave":["Basics.Int"],"Save":["Basics.Int"],"Reset":[],"DoneEditing":[]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}},"Request.RequestStatus":{"args":[],"tags":{"NoRequest":[],"Fired":[],"Success":[],"Failed":[]}}}}})}});}(this));

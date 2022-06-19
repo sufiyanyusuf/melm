@@ -37,8 +37,3 @@ getRequestMethodTitle requestMethod =
 headers : String -> List Http.Header
 headers token =
     [ Http.header "Authorization" ("Bearer " ++ token) ]
-
-
-rootUrl : String
-rootUrl =
-    "http://localhost:7700"

@@ -59,14 +59,15 @@ update msg model =
 view : Model -> Config -> Element Msg
 view model config =
     Element.column
-        [ padding 12
+        [ padding 20
         , Element.Background.color (UI.Styles.color config).white
         , Element.Border.rounded 10
         , Element.width fill
         , spacing 4
         ]
-        [ UI.Elements.textfield model.synonymKey "Tomato" (UpdatedTitle model.index) DoneEditing DoneEditing config
-        , UI.Elements.textfield model.synonymsValue "Tomayto, Tomaato, Tomaeto" (UpdatedList model.index) DoneEditing DoneEditing config
+        [ UI.Elements.textfield model.synonymKey "Title" "Tomato" (UpdatedTitle model.index) DoneEditing DoneEditing config
+        , UI.Elements.spacer UI.Styles.MD
+        , UI.Elements.textfield model.synonymsValue "Synonyms" "Tomayto, Tomaato, Tomaeto" (UpdatedList model.index) DoneEditing DoneEditing config
         , loadingView model config
         , failedView model config
         ]
