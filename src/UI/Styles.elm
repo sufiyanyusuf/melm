@@ -135,7 +135,7 @@ getTypographicStyleFor style config =
 
         BodyBold ->
             [ Font.size 18
-            , Font.bold
+            , Font.semiBold
             , Font.family
                 [ Font.typeface "Inter"
                 , Font.sansSerif
