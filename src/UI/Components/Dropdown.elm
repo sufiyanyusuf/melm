@@ -6,7 +6,7 @@ import Element.Border exposing (rounded)
 import Element.Events
 import Request exposing (RequestStatus(..))
 import UI.Icons exposing (Icon(..), Style(..))
-import UI.Styles exposing (Config, Size(..))
+import UI.Styles exposing (ColorHue(..), ColorIntensity(..), Config, Size(..))
 import Utils exposing (addIf)
 
 
@@ -52,7 +52,7 @@ view model config =
     column
         [ padding 12
         , moveDown 8
-        , Background.color (UI.Styles.color config).white
+        , Background.color (UI.Styles.color White I100 config)
         , Element.scrollbarY
         , Element.height
             (shrink
@@ -84,13 +84,13 @@ dropDownButton item expanded selectedItem config =
               , paddingXY 4 10
               , rounded 4
               , pointer
-              , Element.mouseOver <| [ Background.color (UI.Styles.color config).gray100 ]
+              , Element.mouseOver <| [ Background.color (UI.Styles.color Grayscale I100 config) ]
               , Element.Border.width 1
-              , Element.Border.color (UI.Styles.color config).gray100
-              , Background.color (UI.Styles.color config).gray200
+              , Element.Border.color (UI.Styles.color Grayscale I100 config)
+              , Background.color (UI.Styles.color Grayscale I200 config)
               ]
-            , addIf expanded <| Background.color (UI.Styles.color config).gray200
-            , addIf expanded <| Element.Border.color (UI.Styles.color config).white
+            , addIf expanded <| Background.color (UI.Styles.color Grayscale I200 config)
+            , addIf expanded <| Element.Border.color (UI.Styles.color White Generic config)
             ]
         )
         [ paragraph [ paddingEach { top = 0, left = 8, bottom = 0, right = 0 } ]
@@ -112,11 +112,11 @@ dropDownMenu visible items config =
                 { offset = ( 0, 0 )
                 , size = 1
                 , blur = 12
-                , color = (UI.Styles.color config).gray200
+                , color = UI.Styles.color Grayscale I200 config
                 }
             , Element.Border.width 1
-            , Element.Border.color (UI.Styles.color config).gray200
-            , Background.color (UI.Styles.color config).gray100
+            , Element.Border.color (UI.Styles.color Grayscale I200 config)
+            , Background.color (UI.Styles.color Grayscale I100 config)
             ]
             (List.map (\item -> dropDownMenuListItem item config) items)
 
@@ -133,7 +133,7 @@ dropDownMenuListItem item config =
               , paddingEach { top = 8, bottom = 10, left = 8, right = 8 }
               , rounded 4
               , pointer
-              , Element.mouseOver <| [ Background.color (UI.Styles.color config).gray200 ]
+              , Element.mouseOver <| [ Background.color (UI.Styles.color Grayscale I200 config) ]
               ]
 
             -- , addIf isSelected <| Background.color UI.Styles.color.primary200

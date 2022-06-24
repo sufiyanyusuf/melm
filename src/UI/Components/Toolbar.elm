@@ -3,7 +3,7 @@ module UI.Components.Toolbar exposing (Model, toolbarView)
 import Element exposing (Element, fill)
 import Element.Background
 import UI.Elements
-import UI.Styles exposing (Config)
+import UI.Styles exposing (ColorHue(..), ColorIntensity(..), Config)
 import Utils exposing (addElementIf, addElementsIf)
 
 
@@ -21,7 +21,7 @@ toolbarView model create sync cancel config =
         [ Element.width fill
         , Element.paddingXY 40 12
         , Element.alignTop
-        , Element.Background.color (UI.Styles.color config).gray100
+        , Element.Background.color (UI.Styles.color Grayscale I100 config)
         ]
         (List.concat
             [ [ Element.el

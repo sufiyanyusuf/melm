@@ -8,7 +8,7 @@ import UI.Components.Toolbar
 import UI.Elements exposing (syncIndicator)
 import UI.Icons exposing (Icon(..), Style(..))
 import UI.PageViews.Settings exposing (Msg(..))
-import UI.Styles exposing (Config, Size(..))
+import UI.Styles exposing (ColorHue(..), ColorIntensity(..), Config, Size(..))
 
 
 type alias Model =
@@ -108,22 +108,22 @@ cardView model attrType config =
         ( title, icon ) =
             case attrType of
                 Displayed ->
-                    ( "Displayed", UI.Icons.buildIcon UI.Icons.Displayed Outline config (UI.Styles.color config).gray300 )
+                    ( "Displayed", UI.Icons.buildIcon UI.Icons.Displayed Outline config Grayscale I300 )
 
                 Sortable ->
-                    ( "Sortable", UI.Icons.buildIcon UI.Icons.Sortable Outline config (UI.Styles.color config).gray300 )
+                    ( "Sortable", UI.Icons.buildIcon UI.Icons.Sortable Outline config Grayscale I300 )
 
                 Searchable ->
-                    ( "Searchable", UI.Icons.buildIcon UI.Icons.Searchable Outline config (UI.Styles.color config).gray300 )
+                    ( "Searchable", UI.Icons.buildIcon UI.Icons.Searchable Outline config Grayscale I300 )
 
                 Filterable ->
-                    ( "Filterable", UI.Icons.buildIcon UI.Icons.Filterable Outline config (UI.Styles.color config).gray300 )
+                    ( "Filterable", UI.Icons.buildIcon UI.Icons.Filterable Outline config Grayscale I300 )
 
                 Distinct ->
-                    ( "Distinct", UI.Icons.buildIcon UI.Icons.Distinct Outline config (UI.Styles.color config).gray300 )
+                    ( "Distinct", UI.Icons.buildIcon UI.Icons.Distinct Outline config Grayscale I300 )
     in
     Element.column
-        [ Element.Background.color (UI.Styles.color config).white
+        [ Element.Background.color (UI.Styles.color White Generic config)
         , Element.Border.rounded 14
         , padding 24
         , Element.width (px 320)

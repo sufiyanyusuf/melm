@@ -8,7 +8,7 @@ import Request exposing (..)
 import Svg.Attributes exposing (radius)
 import UI.Elements
 import UI.Icons exposing (Icon(..), Style(..))
-import UI.Styles exposing (Config)
+import UI.Styles exposing (ColorHue(..), ColorIntensity(..), Config)
 
 
 type alias Model =
@@ -60,13 +60,13 @@ view : Model -> Config -> Element Msg
 view model config =
     Element.column
         [ padding 20
-        , Element.Background.color (UI.Styles.color config).white
+        , Element.Background.color (UI.Styles.color White Generic config)
         , Element.Border.rounded 10
         , Element.width fill
         , spacing 4
         ]
         [ UI.Elements.textfield model.synonymKey "Title" "Tomato" (UpdatedTitle model.index) DoneEditing DoneEditing config
-        , UI.Elements.spacer UI.Styles.MD
+        , UI.Elements.spacer UI.Styles.XS
         , UI.Elements.textfield model.synonymsValue "Synonyms" "Tomayto, Tomaato, Tomaeto" (UpdatedList model.index) DoneEditing DoneEditing config
         , loadingView model config
         , failedView model config
@@ -96,7 +96,7 @@ loadingView model config =
                 , paddingEach { top = 0, left = 8, bottom = 0, right = 0 }
                 ]
                 [ el
-                    [ Element.Background.color (UI.Styles.color config).primary200
+                    [ Element.Background.color (UI.Styles.color Primary I200 config)
                     , width (px 12)
                     , height (px 12)
                     , rounded 6
@@ -117,7 +117,7 @@ failedView model config =
         Failed ->
             Element.row
                 ([ padding 8
-                 , Element.Background.color (UI.Styles.color config).white
+                 , Element.Background.color (UI.Styles.color White Generic config)
                  , Element.Border.rounded 8
                  , Element.width Element.fill
                  ]

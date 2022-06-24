@@ -6,7 +6,7 @@ import Element.Background as Background
 import Iso8601
 import Time exposing (Month(..), toDay, toHour, toMinute, toMonth, toSecond, toYear, utc)
 import UI.Elements exposing (spacer)
-import UI.Styles exposing (Config, Size(..))
+import UI.Styles exposing (ColorHue(..), ColorIntensity(..), Config, Size(..))
 
 
 type Msg
@@ -88,7 +88,7 @@ headerView title config =
         , spacer SM
         , el
             [ height (px 1)
-            , Background.color (UI.Styles.color config).gray300
+            , Background.color (UI.Styles.color Grayscale I300 config)
             , width fill
             ]
             Element.none
@@ -107,7 +107,7 @@ cellView title config =
         , spacer SM
         , el
             [ height (px 1)
-            , Background.color (UI.Styles.color config).gray300
+            , Background.color (UI.Styles.color Grayscale I300 config)
             , width fill
             ]
             Element.none

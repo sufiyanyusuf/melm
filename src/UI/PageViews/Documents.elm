@@ -12,7 +12,7 @@ import Json.Print as Print
 import Request exposing (RequestStatus(..))
 import UI.Components.Toolbar
 import UI.Elements
-import UI.Styles exposing (Config)
+import UI.Styles exposing (ColorHue(..), ColorIntensity(..), Config)
 
 
 type Msg
@@ -82,7 +82,7 @@ card t config =
     t
         ++ [ padding 20
            , rounded 12
-           , Background.color (UI.Styles.color config).white
+           , Background.color (UI.Styles.color White Generic config)
            ]
 
 

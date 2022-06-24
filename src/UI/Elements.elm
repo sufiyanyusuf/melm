@@ -11,7 +11,7 @@ import Html.Events exposing (onMouseOver)
 import Json.Decode as Decode
 import Request exposing (RequestStatus(..))
 import UI.Icons exposing (Icon(..), Style(..), buildIcon)
-import UI.Styles exposing (Config, Size(..))
+import UI.Styles exposing (ColorHue(..), ColorIntensity(..), Config, Size(..))
 
 
 spacer : UI.Styles.Size -> Element msg
@@ -48,13 +48,13 @@ textfield value label placeholder valueChanged loseFocus returnKeyMsg config =
             [ spacing 8
             , Element.Border.width 0
             , Element.Border.rounded 6
-            , Background.color (UI.Styles.color config).white
-            , Element.Border.color (UI.Styles.color config).gray200
+            , Background.color (UI.Styles.color White Generic config)
+            , Element.Border.color (UI.Styles.color Grayscale I200 config)
             , Element.Border.width 1
             , width fill
             , paddingXY 12 14
             , onLoseFocus loseFocus
-            , Element.mouseOver <| [ Background.color (UI.Styles.color config).gray200 ]
+            , Element.mouseOver <| [ Background.color (UI.Styles.color Grayscale I200 config) ]
             ]
             { text = value
             , placeholder = Just (Input.placeholder [] (Element.text placeholder))
@@ -107,7 +107,7 @@ switchHandle model config =
                 4
     in
     el
-        [ Background.color (UI.Styles.color config).white
+        [ Background.color (UI.Styles.color White Generic config)
         , width (px 16)
         , Element.height (px 16)
         , Element.Border.rounded 12
@@ -122,10 +122,10 @@ switchBody model config =
     let
         background =
             if model == True then
-                (UI.Styles.color config).green500
+                UI.Styles.color Green I500 config
 
             else
-                (UI.Styles.color config).gray200
+                UI.Styles.color Grayscale I200 config
     in
     el
         [ Background.color background
@@ -168,27 +168,27 @@ getButtonProps : Theme -> Config -> ButtonProps
 getButtonProps buttonType config =
     case buttonType of
         Subtle ->
-            { bgColor = (UI.Styles.color config).white
-            , hoverColor = (UI.Styles.color config).gray200
-            , textColor = (UI.Styles.color config).gray500
+            { bgColor = UI.Styles.color White Generic config
+            , hoverColor = UI.Styles.color Grayscale I200 config
+            , textColor = UI.Styles.color Grayscale I500 config
             }
 
         Clear ->
-            { bgColor = (UI.Styles.color config).clear
-            , hoverColor = (UI.Styles.color config).gray200
-            , textColor = (UI.Styles.color config).gray500
+            { bgColor = UI.Styles.color UI.Styles.Clear Generic config
+            , hoverColor = UI.Styles.color Grayscale I200 config
+            , textColor = UI.Styles.color Grayscale I500 config
             }
 
         PrimaryLight ->
-            { bgColor = (UI.Styles.color config).primary100
-            , hoverColor = (UI.Styles.color config).primary200
-            , textColor = (UI.Styles.color config).primary500
+            { bgColor = UI.Styles.color Primary I100 config
+            , hoverColor = UI.Styles.color Primary I200 config
+            , textColor = UI.Styles.color Primary I500 config
             }
 
         PrimaryDark ->
-            { bgColor = (UI.Styles.color config).primary400
-            , hoverColor = (UI.Styles.color config).primary500
-            , textColor = (UI.Styles.color config).primary100
+            { bgColor = UI.Styles.color Primary I400 config
+            , hoverColor = UI.Styles.color Primary I500 config
+            , textColor = UI.Styles.color Primary I100 config
             }
 
 
@@ -206,10 +206,10 @@ iconButton icon msg config =
         , Element.Border.rounded 6
         , pointer
         , Element.Events.onClick msg
-        , Element.mouseOver [ Background.color (UI.Styles.color config).gray100 ]
-        , Element.mouseDown [ Background.color (UI.Styles.color config).gray300 ]
+        , Element.mouseOver [ Background.color (UI.Styles.color Grayscale I100 config) ]
+        , Element.mouseDown [ Background.color (UI.Styles.color Grayscale I300 config) ]
         ]
-        (buildIcon icon Outline config (UI.Styles.color config).primary400)
+        (buildIcon icon Outline config Primary I400)
 
 
 chip : String -> RequestStatus -> Bool -> msg -> Config -> Element msg
@@ -217,11 +217,11 @@ chip text requestStatus saved msg config =
     el
         (UI.Styles.getTypographicStyleFor UI.Styles.Body config)
         (Element.row
-            [ Background.color (UI.Styles.color config).white
+            [ Background.color (UI.Styles.color White Generic config)
             , paddingEach { top = 4, left = 12, bottom = 4, right = 4 }
             , Element.Border.rounded 6
-            , Element.mouseOver <| [ Background.color (UI.Styles.color config).gray100 ]
-            , Element.Border.color (UI.Styles.color config).gray200
+            , Element.mouseOver <| [ Background.color (UI.Styles.color Grayscale I100 config) ]
+            , Element.Border.color (UI.Styles.color Grayscale I200 config)
             , Element.Border.width 1
             , spacing 4
             ]
@@ -234,7 +234,7 @@ chip text requestStatus saved msg config =
                 , Element.Events.onClick msg
                 , Element.mouseOver <| [ alpha 0.3 ]
                 ]
-                (buildIcon UI.Icons.Close Outline config (UI.Styles.color config).primary500)
+                (buildIcon UI.Icons.Close Outline config Primary I500)
             ]
         )
 
@@ -245,7 +245,7 @@ syncIndicator status valueChanged config =
         case status of
             NoRequest ->
                 el
-                    [ Background.color (UI.Styles.color config).primary200
+                    [ Background.color (UI.Styles.color Primary I200 config)
                     , width (px 8)
                     , Element.height (px 8)
                     , Element.Border.rounded 12
@@ -255,7 +255,7 @@ syncIndicator status valueChanged config =
 
             Fired ->
                 el
-                    [ Background.color (UI.Styles.color config).primary500
+                    [ Background.color (UI.Styles.color Primary I500 config)
                     , width (px 8)
                     , Element.height (px 8)
                     , Element.Border.rounded 12
@@ -265,7 +265,7 @@ syncIndicator status valueChanged config =
 
             Success ->
                 el
-                    [ Background.color (UI.Styles.color config).primary200
+                    [ Background.color (UI.Styles.color Primary I200 config)
                     , width (px 8)
                     , Element.height (px 8)
                     , Element.Border.rounded 12
@@ -275,7 +275,7 @@ syncIndicator status valueChanged config =
 
             Failed ->
                 el
-                    [ Background.color (UI.Styles.color config).green500
+                    [ Background.color (UI.Styles.color Green I500 config)
                     , width (px 8)
                     , Element.height (px 8)
                     , Element.Border.rounded 12

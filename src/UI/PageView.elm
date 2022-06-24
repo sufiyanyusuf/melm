@@ -9,7 +9,7 @@ import UI.PageViews.Settings as SettingsView
 import UI.PageViews.StopWords as StopWords
 import UI.PageViews.Synonyms as SynonymsView
 import UI.Pages as Views exposing (Page(..))
-import UI.Styles exposing (Config)
+import UI.Styles exposing (ColorHue(..), ColorIntensity(..), Config)
 
 
 
@@ -34,7 +34,7 @@ view currentPage config =
     el
         [ height fill
         , width fill
-        , Element.Background.color (UI.Styles.color config).gray100
+        , Element.Background.color (UI.Styles.color Grayscale I100 config)
         , padding 1
         ]
         (getCurrentPageView currentPage config)

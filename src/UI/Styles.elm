@@ -1,4 +1,14 @@
-module UI.Styles exposing (..)
+module UI.Styles exposing
+    ( ColorHue(..)
+    , ColorIntensity(..)
+    , ColorScheme(..)
+    , Config
+    , Size(..)
+    , Typography(..)
+    , color
+    , getTypographicStyleFor
+    , hexColor
+    )
 
 import Element exposing (..)
 import Element.Font as Font
@@ -13,20 +23,13 @@ type Size
     | FILL
 
 
-type Typography
-    = H1
-    | H2
-    | H3
-    | Body
-    | BodyBold
-    | Code
-    | CardTitle
-    | Label
-
-
 type alias Config =
     { scheme : ColorScheme
     }
+
+
+
+-- Colors
 
 
 type ColorScheme
@@ -37,6 +40,9 @@ type ColorScheme
 type ColorHue
     = Primary
     | Grayscale
+    | Green
+    | White
+    | Clear
 
 
 type ColorIntensity
@@ -45,188 +51,174 @@ type ColorIntensity
     | I300
     | I400
     | I500
+    | Generic
 
 
-buildColor : ColorHue -> ColorIntensity -> Config -> String
-buildColor hue intensity config =
+hexColor : ColorHue -> ColorIntensity -> Config -> String
+hexColor hue intensity config =
+    color hue intensity config
+        |> convertToHex
+
+
+color : ColorHue -> ColorIntensity -> Config -> Color
+color hue intensity config =
     case config.scheme of
         Light ->
             case hue of
                 Primary ->
                     case intensity of
                         I100 ->
-                            "#D3D8FF"
+                            rgb255 211 216 255
 
                         I200 ->
-                            "#B1B8FA"
+                            rgb255 177 184 250
 
                         I300 ->
-                            "#959EF0"
+                            rgb255 149 158 240
 
                         I400 ->
-                            "#4E5BCF"
+                            rgb255 78 91 207
 
-                        I500 ->
-                            "#1C2890"
+                        _ ->
+                            rgb255 28 40 144
 
                 Grayscale ->
                     case intensity of
                         I100 ->
-                            "#1A1A1A"
+                            rgb255 244 244 244
 
                         I200 ->
-                            "#4C4C4C"
+                            rgb255 225 225 225
 
                         I300 ->
-                            "#808080"
+                            rgb255 128 128 128
 
                         I400 ->
-                            "#E1E1E1"
+                            rgb255 76 76 76
 
-                        I500 ->
-                            "#F4F4F4"
+                        _ ->
+                            rgb255 26 26 26
+
+                Green ->
+                    rgb255 17 199 112
+
+                White ->
+                    rgb255 255 255 255
+
+                Clear ->
+                    rgba 255 255 255 0
 
         Dark ->
             case hue of
                 Primary ->
                     case intensity of
                         I100 ->
-                            "#D3D8FF"
+                            rgb255 9 13 51
 
                         I200 ->
-                            "#B1B8FA"
+                            rgb255 23 33 123
 
                         I300 ->
-                            "#959EF0"
+                            rgb255 60 75 211
 
                         I400 ->
-                            "#4E5BCF"
+                            rgb255 114 128 253
 
-                        I500 ->
-                            "#1C2890"
+                        _ ->
+                            rgba255 159 169 255 1
 
                 Grayscale ->
                     case intensity of
                         I100 ->
-                            "#1A1A1A"
+                            rgb255 18 18 18
 
                         I200 ->
-                            "#4C4C4C"
+                            rgb255 41 41 41
 
                         I300 ->
-                            "#808080"
+                            rgb255 89 89 89
 
                         I400 ->
-                            "#E1E1E1"
+                            rgb255 153 153 153
 
-                        I500 ->
-                            "#F4F4F4"
+                        _ ->
+                            rgb255 229 229 229
 
+                Green ->
+                    rgb255 17 199 112
 
-type alias Colors =
-    { primary500 : Color
-    , primary400 : Color
-    , primary300 : Color
-    , primary200 : Color
-    , primary100 : Color
-    , gray500 : Color
-    , gray400 : Color
-    , gray300 : Color
-    , gray200 : Color
-    , gray100 : Color
-    , green500 : Color
-    , white : Color
-    , clear : Color
-    }
+                White ->
+                    rgb255 25 25 25
+
+                Clear ->
+                    rgba 255 255 255 0
 
 
-type alias ColorsHexValue =
-    { primary500 : String
-    , primary400 : String
-    , primary300 : String
-    , primary200 : String
-    , primary100 : String
-    , gray500 : String
-    , gray400 : String
-    , gray300 : String
-    , gray200 : String
-    , gray100 : String
-    , green500 : String
-    , white : String
-    , clear : String
-    }
+
+-- color : Config -> Palette
+-- color config =
+--     case config.scheme of
+--         Light ->
+--             { primary500 = rgb255 28 40 144
+--             , primary400 = rgb255 78 91 207
+--             , primary300 = rgb255 149 158 240
+--             , primary200 = rgb255 177 184 250
+--             , primary100 = rgb255 211 216 255
+--             , gray500 = rgb255 26 26 26
+--             , gray400 = rgb255 76 76 76
+--             , gray300 = rgb255 128 128 128
+--             , gray200 = rgb255 225 225 225
+--             , gray100 = rgb255 244 244 244
+--             , white = rgb255 255 255 255
+--             , green500 = rgb255 17 199 112
+--             , clear = rgba 0 0 0 0
+--             }
+--         Dark ->
+--             { primary500 = rgb255 9 13 51
+--             , primary400 = rgb255 23 33 123
+--             , primary300 = rgb255 60 75 211
+--             , primary200 = rgb255 114 128 253
+--             , primary100 = rgb255 159 169 255
+--             , gray500 = rgb255 229 229 229
+--             , gray400 = rgb255 153 153 153
+--             , gray300 = rgb255 89 89 89
+--             , gray200 = rgb255 41 41 41
+--             , gray100 = rgb255 18 18 18
+--             , white = rgb255 25 25 25
+--             , green500 = rgb255 17 199 112
+--             , clear = rgba 0 0 0 0
+--             }
 
 
-colorHexValue : Config -> ColorsHexValue
-colorHexValue config =
-    case config.scheme of
-        Light ->
-            { primary500 = "#1C2890"
-            , primary400 = "#4E5BCF"
-            , primary300 = "#959EF0"
-            , primary200 = "#B1B8FA"
-            , primary100 = "#D3D8FF"
-            , gray500 = "#F4F4F4"
-            , gray400 = "#E1E1E1"
-            , gray300 = "#808080"
-            , gray200 = "#4C4C4C"
-            , gray100 = "#1A1A1A"
-            , white = "#FFFFFF"
-            , green500 = "#11C74F"
-            , clear = ""
-            }
-
-        Dark ->
-            { primary500 = "#1C2890"
-            , primary400 = "#4E5BCF"
-            , primary300 = "#959EF0"
-            , primary200 = "#B1B8FA"
-            , primary100 = "#D3D8FF"
-            , gray500 = "#F4F4F4"
-            , gray400 = "#E1E1E1"
-            , gray300 = "#808080"
-            , gray200 = "#4C4C4C"
-            , gray100 = "#1A1A1A"
-            , white = "#FFFFFF"
-            , green500 = "#11C74F"
-            , clear = ""
-            }
+convertToHex : Color -> String
+convertToHex data =
+    Element.toRgb data
+        |> (\rgb ->
+                "rgba("
+                    ++ String.fromInt (ceiling (rgb.red * 255))
+                    ++ ","
+                    ++ String.fromInt (ceiling (rgb.green * 255))
+                    ++ ","
+                    ++ String.fromInt (ceiling (rgb.blue * 255))
+                    ++ ","
+                    ++ String.fromFloat rgb.alpha
+                    ++ ")"
+           )
 
 
-color : Config -> Colors
-color config =
-    case config.scheme of
-        Light ->
-            { primary500 = rgb255 28 40 144
-            , primary400 = rgb255 78 91 207
-            , primary300 = rgb255 149 158 240
-            , primary200 = rgb255 177 184 250
-            , primary100 = rgb255 211 216 255
-            , gray500 = rgb255 26 26 26
-            , gray400 = rgb255 76 76 76
-            , gray300 = rgb255 128 128 128
-            , gray200 = rgb255 225 225 225
-            , gray100 = rgb255 244 244 244
-            , white = rgb255 255 255 255
-            , green500 = rgb255 17 199 112
-            , clear = rgba 0 0 0 0
-            }
 
-        Dark ->
-            { primary500 = rgb255 9 13 51
-            , primary400 = rgb255 23 33 123
-            , primary300 = rgb255 60 75 211
-            , primary200 = rgb255 114 128 253
-            , primary100 = rgb255 159 169 255
-            , gray500 = rgb255 229 229 229
-            , gray400 = rgb255 153 153 153
-            , gray300 = rgb255 89 89 89
-            , gray200 = rgb255 41 41 41
-            , gray100 = rgb255 18 18 18
-            , white = rgb255 25 25 25
-            , green500 = rgb255 17 199 112
-            , clear = rgba 0 0 0 0
-            }
+-- Typography
+
+
+type Typography
+    = H1
+    | H2
+    | H3
+    | Body
+    | BodyBold
+    | Code
+    | CardTitle
+    | Label
 
 
 getTypographicStyleFor : Typography -> Config -> List (Element.Attr () msg)
@@ -239,7 +231,7 @@ getTypographicStyleFor style config =
                 [ Font.typeface "Inter"
                 , Font.sansSerif
                 ]
-            , Font.color (color config).gray400
+            , Font.color (color Grayscale I400 config)
             , Font.letterSpacing -0.6
             ]
 
@@ -250,7 +242,7 @@ getTypographicStyleFor style config =
                 [ Font.typeface "Inter"
                 , Font.sansSerif
                 ]
-            , Font.color (color config).gray400
+            , Font.color (color Grayscale I400 config)
             , Font.letterSpacing -0.4
             ]
 
@@ -262,7 +254,7 @@ getTypographicStyleFor style config =
                 , Font.sansSerif
                 ]
             , Font.letterSpacing -0.2
-            , Font.color (color config).gray400
+            , Font.color (color Grayscale I400 config)
             ]
 
         Body ->
@@ -272,7 +264,7 @@ getTypographicStyleFor style config =
                 [ Font.typeface "Inter"
                 , Font.sansSerif
                 ]
-            , Font.color (color config).gray400
+            , Font.color (color Grayscale I400 config)
             , Font.letterSpacing -0.1
             ]
 
@@ -283,7 +275,7 @@ getTypographicStyleFor style config =
                 [ Font.typeface "Inter"
                 , Font.sansSerif
                 ]
-            , Font.color (color config).gray300
+            , Font.color (color Grayscale I400 config)
             , Font.letterSpacing 0.2
             ]
 
@@ -294,7 +286,7 @@ getTypographicStyleFor style config =
                 [ Font.typeface "Inter"
                 , Font.sansSerif
                 ]
-            , Font.color (color config).gray400
+            , Font.color (color Grayscale I400 config)
             , Font.letterSpacing -0.1
             ]
 
@@ -305,7 +297,7 @@ getTypographicStyleFor style config =
                 [ Font.typeface "Inter"
                 , Font.monospace
                 ]
-            , Font.color (color config).gray400
+            , Font.color (color Grayscale I400 config)
             ]
 
         CardTitle ->
@@ -316,5 +308,5 @@ getTypographicStyleFor style config =
                 , Font.sansSerif
                 ]
             , Font.letterSpacing -0.2
-            , Font.color (color config).gray400
+            , Font.color (color Grayscale I400 config)
             ]

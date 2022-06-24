@@ -10,7 +10,7 @@ import UI.Components.Dropdown as Dropdown
 import UI.Icons exposing (Icon(..), Style(..))
 import UI.PageViews.Documents as Documents
 import UI.Pages
-import UI.Styles exposing (Config, color)
+import UI.Styles exposing (ColorHue(..), ColorIntensity(..), Config, color)
 import Utils exposing (addIf)
 
 
@@ -69,7 +69,7 @@ sidebarView model config =
         , Element.inFront
             (Dropdown.view model.dropDown config |> Element.map DropdownMsg)
         , scrollbarY
-        , Background.color (UI.Styles.color config).white
+        , Background.color (UI.Styles.color White Generic config)
         ]
         [ Element.table
             [ width fill
@@ -105,22 +105,22 @@ sidebarListItemView title isSelected page config =
                   , pointer
                   , Element.mouseOver <|
                         [ if isSelected then
-                            Background.color (UI.Styles.color config).primary200
+                            Background.color (UI.Styles.color Primary I200 config)
 
                           else
-                            Background.color (UI.Styles.color config).gray200
+                            Background.color (UI.Styles.color Grayscale I200 config)
                         ]
                   ]
-                , addIf isSelected <| Background.color (UI.Styles.color config).primary100
+                , addIf isSelected <| Background.color (UI.Styles.color Primary I100 config)
                 ]
             )
-            [ getPageIcon page (getIconStyle isSelected) config (UI.Styles.color config).primary100
+            [ getPageIcon page (getIconStyle isSelected) config
             , paragraph [ paddingEach { top = 0, left = 8, bottom = 4, right = 0 } ]
                 [ el
                     (List.concat
                         [ UI.Styles.getTypographicStyleFor UI.Styles.Body config
-                        , [ Font.color (UI.Styles.color config).gray500 ]
-                        , addIf isSelected <| Font.color (UI.Styles.color config).primary500
+                        , [ Font.color (UI.Styles.color Grayscale I500 config) ]
+                        , addIf isSelected <| Font.color (UI.Styles.color Primary I500 config)
                         ]
                     )
                     (text title)
@@ -148,23 +148,23 @@ getPageTitle page =
             "Attributes"
 
 
-getPageIcon : UI.Pages.Page -> UI.Icons.Style -> Config -> color -> Element msg
-getPageIcon page style config color =
+getPageIcon : UI.Pages.Page -> UI.Icons.Style -> Config -> Element msg
+getPageIcon page style config =
     case page of
         UI.Pages.Settings _ ->
-            UI.Icons.buildIcon SettingsGear style config color
+            UI.Icons.buildIcon SettingsGear style config Primary I500
 
         UI.Pages.Documents _ ->
-            UI.Icons.buildIcon Documents style config color
+            UI.Icons.buildIcon Documents style config Primary I500
 
         UI.Pages.Synonyms _ ->
-            UI.Icons.buildIcon Dictionary style config color
+            UI.Icons.buildIcon Dictionary style config Primary I500
 
         UI.Pages.StopWords _ ->
-            UI.Icons.buildIcon Block style config color
+            UI.Icons.buildIcon Block style config Primary I500
 
         UI.Pages.Attributes _ ->
-            UI.Icons.buildIcon Switches style config color
+            UI.Icons.buildIcon Switches style config Primary I500
 
 
 getIconStyle : Bool -> UI.Icons.Style
