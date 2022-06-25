@@ -4,6 +4,7 @@ import Element exposing (..)
 import Request exposing (RequestStatus(..))
 import UI.Components.Toolbar
 import UI.Elements as Elements exposing (Theme(..), button, textfield)
+import UI.Icons exposing (Icon(..))
 import UI.Styles exposing (ColorScheme(..), Config)
 
 
@@ -77,13 +78,19 @@ view model config =
             ]
             [ Elements.spacer UI.Styles.XL
             , textfield model.endpointValue "Endpoint" "http://localhost:7700" EndpointValueChanged None None config
-            , Elements.spacer UI.Styles.MD
+            , Elements.spacer UI.Styles.LG
             , textfield model.tokenValue "Token" "9438u093ty94y3989428ur929r20kfjvdfv7vfs" TokenValueChanged None None config
             , Elements.spacer UI.Styles.LG
-            , Element.row []
-                [ button Subtle "Light" (UpdateColorScheme Light) config
-                , Elements.spacer UI.Styles.MD
-                , button Subtle "Dark" (UpdateColorScheme Dark) config
+            , Element.column []
+                [ el (UI.Styles.getTypographicStyleFor UI.Styles.Label config) (Element.text "Theme")
+                , Elements.spacer UI.Styles.SM
+                , Element.row []
+                    [ Elements.tile LightMode "Light" (model.colorScheme == Light) (UpdateColorScheme Light) config
+                    , Elements.spacer UI.Styles.SM
+                    , Elements.tile DarkMode "Dark" (model.colorScheme == Dark) (UpdateColorScheme Dark) config
+                    , Elements.spacer UI.Styles.SM
+                    , Elements.tile SystemThemeMode "System" False (UpdateColorScheme Dark) config
+                    ]
                 ]
             ]
         ]

@@ -20,7 +20,7 @@ toolbarView : Model -> msg -> msg -> msg -> Config -> Element msg
 toolbarView model create sync cancel config =
     Element.row
         [ Element.width fill
-        , Element.paddingXY 40 12
+        , Element.paddingXY 120 20
         , Element.alignTop
         , Element.Background.color (UI.Styles.color Grayscale I100 config)
         ]

@@ -1,5 +1,6 @@
-module UI.Elements exposing (Theme(..), button, chip, iconButton, spacer, switch, syncIndicator, textfield)
+module UI.Elements exposing (Theme(..), button, chip, iconButton, spacer, switch, syncIndicator, textfield, tile)
 
+import Chart.Attributes exposing (alignMiddle)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border exposing (rounded)
@@ -7,11 +8,12 @@ import Element.Events exposing (onClick, onLoseFocus)
 import Element.Font
 import Element.Input as Input exposing (OptionState(..))
 import Expect exposing (true)
+import Html.Attributes exposing (align, selected, style)
 import Html.Events exposing (onMouseOver)
 import Json.Decode as Decode
 import Request exposing (RequestStatus(..))
 import UI.Icons exposing (Icon(..), Style(..), buildIcon)
-import UI.Styles exposing (ColorHue(..), ColorIntensity(..), Config, Size(..))
+import UI.Styles exposing (ColorHue(..), ColorIntensity(..), Config, Size(..), color)
 
 
 spacer : UI.Styles.Size -> Element msg
@@ -226,17 +228,16 @@ chip text requestStatus saved msg config =
         (Element.row
             [ Background.color (UI.Styles.color White Generic config)
             , paddingEach { top = 4, left = 12, bottom = 4, right = 4 }
-            , Element.Border.rounded 6
+            , Element.Border.rounded 20
             , Element.mouseOver <| [ Background.color (UI.Styles.color Grayscale I100 config) ]
             , Element.Border.color (UI.Styles.color Grayscale I200 config)
             , Element.Border.width 1
-            , spacing 4
             ]
             [ syncIndicator requestStatus (not saved) config
             , Element.text text
             , el
-                [ padding 8
-                , Element.Border.rounded 5
+                [ padding 4
+                , Element.Border.rounded 20
                 , pointer
                 , Element.Events.onClick msg
                 , Element.mouseOver <| [ alpha 0.3 ]
@@ -292,3 +293,64 @@ syncIndicator status valueChanged config =
 
     else
         Element.none
+
+
+tile : Icon -> String -> Bool -> msg -> Config -> Element msg
+tile icon title selected clicked config =
+    let
+        iconFillStyle =
+            if selected == True then
+                Filled
+
+            else
+                Outline
+
+        bgColor =
+            if selected == True then
+                UI.Styles.color Primary I100 config
+
+            else
+                UI.Styles.color White Generic config
+
+        hue =
+            if selected == True then
+                Primary
+
+            else
+                Grayscale
+    in
+    el
+        (UI.Styles.getTypographicStyleFor UI.Styles.Body config)
+        (Element.column
+            [ Background.color bgColor
+            , Element.Border.rounded 8
+            , Element.mouseOver <|
+                [ Background.color (UI.Styles.color hue I200 config)
+                ]
+            , Element.Border.color (UI.Styles.color hue I200 config)
+            , Element.Border.width
+                (if selected then
+                    0
+
+                 else
+                    1
+                )
+            , spacing 6
+            , width (px 80)
+            , height (px 80)
+            , Element.Events.onClick clicked
+            , pointer
+            ]
+            [ el
+                [ Element.centerY
+                , Element.centerX
+                ]
+                (buildIcon icon iconFillStyle config hue I500)
+            , el
+                [ Element.centerY
+                , Element.centerX
+                , Element.Font.color (color hue I500 config)
+                ]
+                (Element.text title)
+            ]
+        )
