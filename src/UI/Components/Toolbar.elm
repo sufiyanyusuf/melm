@@ -2,6 +2,7 @@ module UI.Components.Toolbar exposing (Model, toolbarView)
 
 import Element exposing (Element, fill)
 import Element.Background
+import Element.Border
 import UI.Elements
 import UI.Styles exposing (ColorHue(..), ColorIntensity(..), Config)
 import Utils exposing (addElementIf, addElementsIf)

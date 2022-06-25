@@ -191,7 +191,7 @@ getTypographicStyleFor style config =
     case style of
         H1 ->
             [ Font.size 40
-            , Font.bold
+            , Font.semiBold
             , Font.family
                 [ Font.typeface "Inter"
                 , Font.sansSerif
@@ -202,7 +202,7 @@ getTypographicStyleFor style config =
 
         H2 ->
             [ Font.size 32
-            , Font.bold
+            , Font.semiBold
             , Font.family
                 [ Font.typeface "Inter"
                 , Font.sansSerif
@@ -213,7 +213,7 @@ getTypographicStyleFor style config =
 
         H3 ->
             [ Font.size 24
-            , Font.bold
+            , Font.semiBold
             , Font.family
                 [ Font.typeface "Inter"
                 , Font.sansSerif
@@ -223,7 +223,7 @@ getTypographicStyleFor style config =
             ]
 
         Body ->
-            [ Font.size 18
+            [ Font.size 16
             , Font.regular
             , Font.family
                 [ Font.typeface "Inter"
@@ -245,7 +245,7 @@ getTypographicStyleFor style config =
             ]
 
         BodyBold ->
-            [ Font.size 18
+            [ Font.size 16
             , Font.semiBold
             , Font.family
                 [ Font.typeface "Inter"
@@ -267,7 +267,7 @@ getTypographicStyleFor style config =
 
         CardTitle ->
             [ Font.size 24
-            , Font.semiBold
+            , Font.medium
             , Font.family
                 [ Font.typeface "Inter"
                 , Font.sansSerif

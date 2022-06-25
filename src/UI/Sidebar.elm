@@ -100,7 +100,7 @@ sidebarListItemView title isSelected page config =
                             |> minimum 200
                             |> maximum 320
                         )
-                  , padding 8
+                  , paddingXY 8 6
                   , rounded 4
                   , pointer
                   , Element.mouseOver <|
@@ -121,6 +121,7 @@ sidebarListItemView title isSelected page config =
                         [ UI.Styles.getTypographicStyleFor UI.Styles.Body config
                         , [ Font.color (UI.Styles.color Grayscale I500 config) ]
                         , addIf isSelected <| Font.color (UI.Styles.color Primary I500 config)
+                        , [ Font.letterSpacing 0 ]
                         ]
                     )
                     (text title)
