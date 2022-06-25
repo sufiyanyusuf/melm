@@ -193,7 +193,29 @@ handleApiResponse model apiResponse =
                         s =
                             model.sidebarModel
                     in
-                    ( { model | sidebarModel = { s | dropDown = { d | options = List.map (\x -> { id = x.uid, title = x.name }) payload } } }, Cmd.none )
+                    ( { model
+                        | sidebarModel =
+                            { s
+                                | dropDown =
+                                    let
+                                        options =
+                                            List.map (\x -> { id = x.uid, title = x.name }) payload
+
+                                        selectedValue =
+                                            if d.selectedValue == Nothing then
+                                                List.head options
+
+                                            else
+                                                d.selectedValue
+                                    in
+                                    { d
+                                        | options = options
+                                        , selectedValue = selectedValue
+                                    }
+                            }
+                      }
+                    , Cmd.none
+                    )
 
                 Err _ ->
                     ( model, Cmd.none )

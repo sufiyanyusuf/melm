@@ -13126,16 +13126,18 @@ var $author$project$Main$handleApiResponse = F2(
 								sidebarModel: _Utils_update(
 									s,
 									{
-										dropDown: _Utils_update(
-											d,
-											{
-												options: A2(
-													$elm$core$List$map,
-													function (x) {
-														return {id: x.uid, title: x.name};
-													},
-													payload)
-											})
+										dropDown: function () {
+											var options = A2(
+												$elm$core$List$map,
+												function (x) {
+													return {id: x.uid, title: x.name};
+												},
+												payload);
+											var selectedValue = _Utils_eq(d.selectedValue, $elm$core$Maybe$Nothing) ? $elm$core$List$head(options) : d.selectedValue;
+											return _Utils_update(
+												d,
+												{options: options, selectedValue: selectedValue});
+										}()
 									})
 							}),
 						$elm$core$Platform$Cmd$none);
@@ -13788,8 +13790,8 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 492, column: 13},
-						end: {line: 492, column: 23}
+						start: {line: 514, column: 13},
+						end: {line: 514, column: 23}
 					})('branch \'IndexesViewMsg _\' not implemented');
 			case 'DocumentsViewMsg':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
