@@ -5,6 +5,7 @@ module UI.Styles exposing
     , Config
     , Size(..)
     , Typography(..)
+    , applyFontColor
     , color
     , getTypographicStyleFor
     , hexColor
@@ -274,3 +275,9 @@ getTypographicStyleFor style config =
             , Font.letterSpacing -0.2
             , Font.color (color Grayscale I400 config)
             ]
+
+
+applyFontColor : ColorHue -> ColorIntensity -> Config -> List (Element.Attr () msg) -> List (Element.Attr () msg)
+applyFontColor hue intensity config attrs =
+    attrs
+        ++ [ Font.color (color hue intensity config) ]

@@ -54,10 +54,17 @@ textfield value label placeholder valueChanged loseFocus returnKeyMsg config =
             , width fill
             , paddingXY 12 14
             , onLoseFocus loseFocus
-            , Element.mouseOver <| [ Background.color (UI.Styles.color Grayscale I200 config) ]
+            , Element.mouseOver <| [ Background.color (UI.Styles.color Grayscale I100 config) ]
             ]
             { text = value
-            , placeholder = Just (Input.placeholder [] (Element.text placeholder))
+            , placeholder =
+                Just
+                    (Input.placeholder
+                        (UI.Styles.getTypographicStyleFor UI.Styles.Body config
+                            |> UI.Styles.applyFontColor Grayscale I200 config
+                        )
+                        (Element.text placeholder)
+                    )
             , onChange = valueChanged
             , label =
                 Input.labelAbove (UI.Styles.getTypographicStyleFor UI.Styles.Label config)

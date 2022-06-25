@@ -22773,6 +22773,16 @@ var $author$project$UI$PageViews$Settings$UpdateColorScheme = function (a) {
 };
 var $author$project$UI$Styles$XL = {$: 'XL'};
 var $author$project$UI$Styles$Label = {$: 'Label'};
+var $author$project$UI$Styles$applyFontColor = F4(
+	function (hue, intensity, config, attrs) {
+		return _Utils_ap(
+			attrs,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$Font$color(
+					A3($author$project$UI$Styles$color, hue, intensity, config))
+				]));
+	});
 var $mdgriffith$elm_ui$Element$Input$Above = {$: 'Above'};
 var $mdgriffith$elm_ui$Element$Input$Label = F3(
 	function (a, b, c) {
@@ -23603,7 +23613,7 @@ var $author$project$UI$Elements$textfield = F7(
 						_List_fromArray(
 							[
 								$mdgriffith$elm_ui$Element$Background$color(
-								A3($author$project$UI$Styles$color, $author$project$UI$Styles$Grayscale, $author$project$UI$Styles$I200, config))
+								A3($author$project$UI$Styles$color, $author$project$UI$Styles$Grayscale, $author$project$UI$Styles$I100, config))
 							]))
 					]),
 				{
@@ -23624,7 +23634,12 @@ var $author$project$UI$Elements$textfield = F7(
 					placeholder: $elm$core$Maybe$Just(
 						A2(
 							$mdgriffith$elm_ui$Element$Input$placeholder,
-							_List_Nil,
+							A4(
+								$author$project$UI$Styles$applyFontColor,
+								$author$project$UI$Styles$Grayscale,
+								$author$project$UI$Styles$I200,
+								config,
+								A2($author$project$UI$Styles$getTypographicStyleFor, $author$project$UI$Styles$Body, config)),
 							$mdgriffith$elm_ui$Element$text(placeholder))),
 					text: value
 				}));
