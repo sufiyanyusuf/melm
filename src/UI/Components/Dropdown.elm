@@ -76,12 +76,33 @@ dropDownButton item expanded selectedItem config =
 
                 Nothing ->
                     text "Select an index"
+
+        style =
+            if expanded then
+                Filled
+
+            else
+                Outline
+
+        hue =
+            if expanded then
+                Primary
+
+            else
+                Grayscale
+
+        closeIcon =
+            if expanded then
+                UI.Icons.Close
+
+            else
+                UI.Icons.ChevronDown
     in
     Element.row
         (List.concat
             [ [ Element.Events.onClick selectedItem
               , width fill
-              , paddingXY 4 10
+              , paddingXY 8 10
               , rounded 4
               , pointer
               , Element.mouseOver <| [ Background.color (UI.Styles.color Grayscale I100 config) ]
@@ -93,11 +114,13 @@ dropDownButton item expanded selectedItem config =
             , addIf expanded <| Element.Border.color (UI.Styles.color White Generic config)
             ]
         )
-        [ paragraph [ paddingEach { top = 0, left = 8, bottom = 0, right = 0 } ]
+        [ UI.Icons.buildIcon UI.Icons.Folder style config hue I500
+        , paragraph [ paddingEach { top = 0, left = 8, bottom = 4, right = 0 } ]
             [ el
                 (UI.Styles.getTypographicStyleFor UI.Styles.Body config)
                 t
             ]
+        , UI.Icons.buildIcon closeIcon style config hue I500
         ]
 
 

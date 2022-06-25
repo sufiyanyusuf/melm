@@ -13117,30 +13117,33 @@ var $author$project$Main$handleApiResponse = F2(
 				var r = apiResponse.a;
 				if (r.$ === 'Ok') {
 					var payload = r.a;
+					var selectedPage = model.pages.selectedPage;
 					var s = model.sidebarModel;
 					var d = model.sidebarModel.dropDown;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								sidebarModel: _Utils_update(
-									s,
-									{
-										dropDown: function () {
-											var options = A2(
-												$elm$core$List$map,
-												function (x) {
-													return {id: x.uid, title: x.name};
-												},
-												payload);
-											var selectedValue = _Utils_eq(d.selectedValue, $elm$core$Maybe$Nothing) ? $elm$core$List$head(options) : d.selectedValue;
-											return _Utils_update(
-												d,
-												{options: options, selectedValue: selectedValue});
-										}()
-									})
-							}),
-						$elm$core$Platform$Cmd$none);
+					var u = _Utils_update(
+						model,
+						{
+							sidebarModel: _Utils_update(
+								s,
+								{
+									dropDown: function () {
+										var options = A2(
+											$elm$core$List$map,
+											function (x) {
+												return {id: x.uid, title: x.name};
+											},
+											payload);
+										var selectedValue = _Utils_eq(d.selectedValue, $elm$core$Maybe$Nothing) ? $elm$core$List$head(options) : d.selectedValue;
+										return _Utils_update(
+											d,
+											{options: options, selectedValue: selectedValue});
+									}()
+								})
+						});
+					return A2(
+						$author$project$Main$handleSidebarSelection,
+						u,
+						$author$project$UI$Sidebar$SelectPage(selectedPage));
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
@@ -13790,8 +13793,8 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 514, column: 13},
-						end: {line: 514, column: 23}
+						start: {line: 519, column: 13},
+						end: {line: 519, column: 23}
 					})('branch \'IndexesViewMsg _\' not implemented');
 			case 'DocumentsViewMsg':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -20016,30 +20019,46 @@ var $author$project$UI$Icons$checkmark = function (style) {
 			]);
 	}
 };
-var $author$project$UI$Icons$close = function (style) {
-	if (style.$ === 'Outline') {
-		return _List_fromArray(
-			[
-				A2(
-				$elm$svg$Svg$path,
-				_List_fromArray(
-					[
-						$elm$svg$Svg$Attributes$d('M13.5922 12.0004L18.0453 7.54724C18.2567 7.33627 18.3756 7.04998 18.3758 6.75136C18.3761 6.45274 18.2577 6.16624 18.0467 5.9549C17.8358 5.74355 17.5495 5.62467 17.2509 5.62441C16.9522 5.62414 16.6657 5.74252 16.4544 5.95349L12.0013 10.4066L7.54816 5.95349C7.33681 5.74215 7.05017 5.62341 6.75128 5.62341C6.45239 5.62341 6.16575 5.74215 5.95441 5.95349C5.74306 6.16483 5.62433 6.45148 5.62433 6.75036C5.62433 7.04925 5.74306 7.3359 5.95441 7.54724L10.4075 12.0004L5.95441 16.4535C5.74306 16.6648 5.62433 16.9515 5.62433 17.2504C5.62433 17.5493 5.74306 17.8359 5.95441 18.0472C6.16575 18.2586 6.45239 18.3773 6.75128 18.3773C7.05017 18.3773 7.33681 18.2586 7.54816 18.0472L12.0013 13.5941L16.4544 18.0472C16.6657 18.2586 16.9524 18.3773 17.2513 18.3773C17.5502 18.3773 17.8368 18.2586 18.0482 18.0472C18.2595 17.8359 18.3782 17.5493 18.3782 17.2504C18.3782 16.9515 18.2595 16.6648 18.0482 16.4535L13.5922 12.0004Z')
-					]),
-				_List_Nil)
-			]);
-	} else {
-		return _List_fromArray(
-			[
-				A2(
-				$elm$svg$Svg$path,
-				_List_fromArray(
-					[
-						$elm$svg$Svg$Attributes$d('M13.5922 12.0004L18.0453 7.54724C18.2567 7.33627 18.3756 7.04998 18.3758 6.75136C18.3761 6.45274 18.2577 6.16624 18.0467 5.9549C17.8358 5.74355 17.5495 5.62467 17.2509 5.62441C16.9522 5.62414 16.6657 5.74252 16.4544 5.95349L12.0013 10.4066L7.54816 5.95349C7.33681 5.74215 7.05017 5.62341 6.75128 5.62341C6.45239 5.62341 6.16575 5.74215 5.95441 5.95349C5.74306 6.16483 5.62433 6.45148 5.62433 6.75036C5.62433 7.04925 5.74306 7.3359 5.95441 7.54724L10.4075 12.0004L5.95441 16.4535C5.74306 16.6648 5.62433 16.9515 5.62433 17.2504C5.62433 17.5493 5.74306 17.8359 5.95441 18.0472C6.16575 18.2586 6.45239 18.3773 6.75128 18.3773C7.05017 18.3773 7.33681 18.2586 7.54816 18.0472L12.0013 13.5941L16.4544 18.0472C16.6657 18.2586 16.9524 18.3773 17.2513 18.3773C17.5502 18.3773 17.8368 18.2586 18.0482 18.0472C18.2595 17.8359 18.3782 17.5493 18.3782 17.2504C18.3782 16.9515 18.2595 16.6648 18.0482 16.4535L13.5922 12.0004Z')
-					]),
-				_List_Nil)
-			]);
-	}
+var $author$project$UI$Icons$chevronDown = function (_v0) {
+	return _List_fromArray(
+		[
+			A2(
+			$elm$svg$Svg$path,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Attributes$fillRule('evenodd'),
+					$elm$svg$Svg$Attributes$clipRule('evenodd'),
+					$elm$svg$Svg$Attributes$d('M4.4545 7.8295C4.89384 7.39017 5.60616 7.39017 6.0455 7.8295L12 13.784L17.9545 7.8295C18.3938 7.39017 19.1062 7.39017 19.5455 7.8295C19.9848 8.26884 19.9848 8.98116 19.5455 9.4205L12.7955 16.1705C12.3562 16.6098 11.6438 16.6098 11.2045 16.1705L4.4545 9.4205C4.01517 8.98116 4.01517 8.26884 4.4545 7.8295Z')
+				]),
+			_List_Nil)
+		]);
+};
+var $author$project$UI$Icons$chevronUp = function (_v0) {
+	return _List_fromArray(
+		[
+			A2(
+			$elm$svg$Svg$path,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Attributes$fillRule('evenodd'),
+					$elm$svg$Svg$Attributes$clipRule('evenodd'),
+					$elm$svg$Svg$Attributes$d('M11.2045 7.8295C11.6438 7.39017 12.3562 7.39017 12.7955 7.8295L19.5455 14.5795C19.9848 15.0188 19.9848 15.7312 19.5455 16.1705C19.1062 16.6098 18.3938 16.6098 17.9545 16.1705L12 10.216L6.0455 16.1705C5.60616 16.6098 4.89384 16.6098 4.4545 16.1705C4.01517 15.7312 4.01517 15.0188 4.4545 14.5795L11.2045 7.8295Z'),
+					$elm$svg$Svg$Attributes$fill('#373737')
+				]),
+			_List_Nil)
+		]);
+};
+var $author$project$UI$Icons$close = function (_v0) {
+	return _List_fromArray(
+		[
+			A2(
+			$elm$svg$Svg$path,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Attributes$d('M13.5922 12.0004L18.0453 7.54724C18.2567 7.33627 18.3756 7.04998 18.3758 6.75136C18.3761 6.45274 18.2577 6.16624 18.0467 5.9549C17.8358 5.74355 17.5495 5.62467 17.2509 5.62441C16.9522 5.62414 16.6657 5.74252 16.4544 5.95349L12.0013 10.4066L7.54816 5.95349C7.33681 5.74215 7.05017 5.62341 6.75128 5.62341C6.45239 5.62341 6.16575 5.74215 5.95441 5.95349C5.74306 6.16483 5.62433 6.45148 5.62433 6.75036C5.62433 7.04925 5.74306 7.3359 5.95441 7.54724L10.4075 12.0004L5.95441 16.4535C5.74306 16.6648 5.62433 16.9515 5.62433 17.2504C5.62433 17.5493 5.74306 17.8359 5.95441 18.0472C6.16575 18.2586 6.45239 18.3773 6.75128 18.3773C7.05017 18.3773 7.33681 18.2586 7.54816 18.0472L12.0013 13.5941L16.4544 18.0472C16.6657 18.2586 16.9524 18.3773 17.2513 18.3773C17.5502 18.3773 17.8368 18.2586 18.0482 18.0472C18.2595 17.8359 18.3782 17.5493 18.3782 17.2504C18.3782 16.9515 18.2595 16.6648 18.0482 16.4535L13.5922 12.0004Z')
+				]),
+			_List_Nil)
+		]);
 };
 var $author$project$UI$Icons$darkMode = function (style) {
 	if (style.$ === 'Filled') {
@@ -20235,6 +20254,40 @@ var $author$project$UI$Icons$filter = function (_v0) {
 				]),
 			_List_Nil)
 		]);
+};
+var $author$project$UI$Icons$folder = function (style) {
+	if (style.$ === 'Filled') {
+		return _List_fromArray(
+			[
+				A2(
+				$elm$svg$Svg$path,
+				_List_fromArray(
+					[
+						$elm$svg$Svg$Attributes$d('M19.1246 4.49988H11.8173C11.5953 4.50059 11.3782 4.43533 11.1934 4.31238L9.89025 3.44098C9.45873 3.15242 8.95107 2.99887 8.43197 2.99988H4.87462C4.17866 3.00063 3.51141 3.27743 3.01929 3.76955C2.52717 4.26167 2.25037 4.92892 2.24962 5.62488V6.74988H21.7496C21.7496 5.30238 20.5721 4.49988 19.1246 4.49988Z')
+					]),
+				_List_Nil),
+				A2(
+				$elm$svg$Svg$path,
+				_List_fromArray(
+					[
+						$elm$svg$Svg$Attributes$d('M19.8629 20.9999H4.13634C3.44756 20.9991 2.78669 20.7276 2.29624 20.244C1.8058 19.7604 1.52508 19.1034 1.51462 18.4147L0.758059 10.6925V10.6794C0.733284 10.3699 0.772837 10.0586 0.87423 9.76515C0.975623 9.47167 1.13666 9.20236 1.34721 8.97415C1.55776 8.74594 1.81326 8.56379 2.09764 8.43914C2.38202 8.31449 2.68912 8.25006 2.99962 8.24988H21.0043C21.3147 8.25019 21.6217 8.31472 21.906 8.43942C22.1903 8.56413 22.4457 8.7463 22.6561 8.97449C22.8666 9.20269 23.0275 9.47195 23.1288 9.76537C23.2302 10.0588 23.2697 10.37 23.2449 10.6794V10.6925L22.4846 18.4147C22.4742 19.1034 22.1934 19.7604 21.703 20.244C21.2126 20.7276 20.5517 20.9991 19.8629 20.9999Z')
+					]),
+				_List_Nil)
+			]);
+	} else {
+		return _List_fromArray(
+			[
+				A2(
+				$elm$svg$Svg$path,
+				_List_fromArray(
+					[
+						$elm$svg$Svg$Attributes$fillRule('evenodd'),
+						$elm$svg$Svg$Attributes$clipRule('evenodd'),
+						$elm$svg$Svg$Attributes$d('M3.375 4.5C3.07663 4.5 2.79048 4.61853 2.5795 4.8295C2.36853 5.04048 2.25 5.32663 2.25 5.625V8.25H21.75V7.125C21.75 6.82663 21.6315 6.54048 21.4205 6.3295C21.2095 6.11853 20.9234 6 20.625 6H10.3177C9.79938 5.99999 9.29269 5.84655 8.86147 5.55904C8.86146 5.55903 8.86144 5.55901 8.86142 5.559L7.55642 4.689C7.37161 4.56577 7.15446 4.50001 6.93234 4.5C6.93234 4.5 6.93235 4.5 6.93234 4.5H3.375ZM21.75 9.75H2.25V18.375C2.25 18.6734 2.36853 18.9595 2.5795 19.1705C2.79048 19.3815 3.07663 19.5 3.375 19.5H20.625C20.9234 19.5 21.2095 19.3815 21.4205 19.1705C21.6315 18.9595 21.75 18.6734 21.75 18.375V9.75ZM0.75 18.375C0.75 19.0712 1.02656 19.7389 1.51884 20.2312C2.01113 20.7234 2.67881 21 3.375 21H20.625C21.3212 21 21.9889 20.7234 22.4812 20.2312C22.9734 19.7389 23.25 19.0712 23.25 18.375V7.125C23.25 6.42881 22.9734 5.76113 22.4812 5.26884C21.9889 4.77656 21.3212 4.5 20.625 4.5H10.3177C10.3177 4.5 10.3177 4.5 10.3177 4.5C10.0956 4.49999 9.87839 4.43423 9.69358 4.311L8.38858 3.441C8.38856 3.44099 8.38854 3.44097 8.38853 3.44096C7.95731 3.15345 7.45064 3.00001 6.93236 3H3.375C2.67881 3 2.01113 3.27656 1.51884 3.76884C1.02656 4.26113 0.75 4.92881 0.75 5.625V18.375Z')
+					]),
+				_List_Nil)
+			]);
+	}
 };
 var $author$project$UI$Icons$lightMode = function (style) {
 	if (style.$ === 'Outline') {
@@ -20553,9 +20606,16 @@ var $author$project$UI$Icons$systemThemeMode = function (style) {
 				$elm$svg$Svg$path,
 				_List_fromArray(
 					[
+						$elm$svg$Svg$Attributes$d('M12 8.25C11.0054 8.25 10.0516 8.64509 9.34835 9.34835C8.64509 10.0516 8.25 11.0054 8.25 12C8.25 12.9946 8.64509 13.9484 9.34835 14.6517C10.0516 15.3549 11.0054 15.75 12 15.75V8.25Z')
+					]),
+				_List_Nil),
+				A2(
+				$elm$svg$Svg$path,
+				_List_fromArray(
+					[
 						$elm$svg$Svg$Attributes$fillRule('evenodd'),
 						$elm$svg$Svg$Attributes$clipRule('evenodd'),
-						$elm$svg$Svg$Attributes$d('M12 1.5C6.20101 1.5 1.5 6.20101 1.5 12C1.5 17.799 6.20101 22.5 12 22.5C17.799 22.5 22.5 17.799 22.5 12C22.5 6.20101 17.799 1.5 12 1.5ZM12 3V21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3Z')
+						$elm$svg$Svg$Attributes$d('M1.5 12C1.5 6.20101 6.20101 1.5 12 1.5C17.799 1.5 22.5 6.20101 22.5 12C22.5 17.799 17.799 22.5 12 22.5C6.20101 22.5 1.5 17.799 1.5 12ZM12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21V15.75C12.9946 15.75 13.9484 15.3549 14.6517 14.6517C15.3549 13.9484 15.75 12.9946 15.75 12C15.75 11.0054 15.3549 10.0516 14.6517 9.34835C13.9484 8.64509 12.9946 8.25 12 8.25V3Z')
 					]),
 				_List_Nil)
 			]);
@@ -20566,7 +20626,9 @@ var $author$project$UI$Icons$systemThemeMode = function (style) {
 				$elm$svg$Svg$path,
 				_List_fromArray(
 					[
-						$elm$svg$Svg$Attributes$d('M11.9998 1.49921C9.92315 1.49925 7.89312 2.11508 6.16643 3.26884C4.43975 4.4226 3.09397 6.06246 2.29926 7.98106C1.50455 9.89966 1.29662 12.0108 1.70175 14.0476C2.10688 16.0844 3.10688 17.9553 4.57529 19.4237C5.54856 20.4066 6.70644 21.1875 7.98241 21.7216C9.25838 22.2556 10.6273 22.5323 12.0105 22.5357C13.3938 22.5391 14.764 22.2692 16.0426 21.7414C17.3212 21.2137 18.4829 20.4385 19.461 19.4604C20.4391 18.4823 21.2143 17.3206 21.742 16.042C22.2698 14.7634 22.5397 13.3931 22.5363 12.0099C22.5329 10.6267 22.2563 9.25777 21.7222 7.9818C21.1882 6.70583 20.4073 5.54795 19.4244 4.57468C18.4516 3.5966 17.2946 2.82116 16.0202 2.29325C14.7457 1.76535 13.3793 1.49546 11.9998 1.49921ZM2.99983 11.9992C2.99983 7.03656 7.03717 2.99921 11.9998 2.99921V20.9992C7.03717 20.9992 2.99983 16.9619 2.99983 11.9992Z')
+						$elm$svg$Svg$Attributes$fillRule('evenodd'),
+						$elm$svg$Svg$Attributes$clipRule('evenodd'),
+						$elm$svg$Svg$Attributes$d('M12 3V8.25C11.0054 8.25 10.0516 8.64509 9.34835 9.34835C8.64509 10.0516 8.25 11.0054 8.25 12C8.25 12.9946 8.64509 13.9484 9.34835 14.6517C10.0516 15.3549 11.0054 15.75 12 15.75V21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3ZM12 15.75V8.25C12.9946 8.25 13.9484 8.64509 14.6517 9.34835C15.3549 10.0516 15.75 11.0054 15.75 12C15.75 12.9946 15.3549 13.9484 14.6517 14.6517C13.9484 15.3549 12.9946 15.75 12 15.75ZM1.5 12C1.5 6.20101 6.20101 1.5 12 1.5C17.799 1.5 22.5 6.20101 22.5 12C22.5 17.799 17.799 22.5 12 22.5C6.20101 22.5 1.5 17.799 1.5 12Z')
 					]),
 				_List_Nil)
 			]);
@@ -20613,8 +20675,14 @@ var $author$project$UI$Icons$getPath = F2(
 				return $author$project$UI$Icons$darkMode(style);
 			case 'LightMode':
 				return $author$project$UI$Icons$lightMode(style);
-			default:
+			case 'SystemThemeMode':
 				return $author$project$UI$Icons$systemThemeMode(style);
+			case 'ChevronDown':
+				return $author$project$UI$Icons$chevronDown(style);
+			case 'ChevronUp':
+				return $author$project$UI$Icons$chevronUp(style);
+			default:
+				return $author$project$UI$Icons$folder(style);
 		}
 	});
 var $mdgriffith$elm_ui$Element$toRgb = function (_v0) {
@@ -21343,6 +21411,9 @@ var $mdgriffith$elm_ui$Element$table = F2(
 	});
 var $author$project$UI$Styles$Clear = {$: 'Clear'};
 var $author$project$UI$Components$Dropdown$TriggerClicked = {$: 'TriggerClicked'};
+var $author$project$UI$Icons$ChevronDown = {$: 'ChevronDown'};
+var $author$project$UI$Icons$Close = {$: 'Close'};
+var $author$project$UI$Icons$Folder = {$: 'Folder'};
 var $mdgriffith$elm_ui$Internal$Flag$borderColor = $mdgriffith$elm_ui$Internal$Flag$flag(28);
 var $mdgriffith$elm_ui$Element$Border$color = function (clr) {
 	return A2(
@@ -21380,6 +21451,9 @@ var $author$project$UI$Components$Dropdown$dropDownButton = F4(
 				return $mdgriffith$elm_ui$Element$text('Select an index');
 			}
 		}();
+		var style = expanded ? $author$project$UI$Icons$Filled : $author$project$UI$Icons$Outline;
+		var hue = expanded ? $author$project$UI$Styles$Primary : $author$project$UI$Styles$Grayscale;
+		var closeIcon = expanded ? $author$project$UI$Icons$Close : $author$project$UI$Icons$ChevronDown;
 		return A2(
 			$mdgriffith$elm_ui$Element$row,
 			$elm$core$List$concat(
@@ -21389,7 +21463,7 @@ var $author$project$UI$Components$Dropdown$dropDownButton = F4(
 						[
 							$mdgriffith$elm_ui$Element$Events$onClick(selectedItem),
 							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-							A2($mdgriffith$elm_ui$Element$paddingXY, 4, 10),
+							A2($mdgriffith$elm_ui$Element$paddingXY, 8, 10),
 							$mdgriffith$elm_ui$Element$Border$rounded(4),
 							$mdgriffith$elm_ui$Element$pointer,
 							$mdgriffith$elm_ui$Element$mouseOver(
@@ -21417,12 +21491,13 @@ var $author$project$UI$Components$Dropdown$dropDownButton = F4(
 					])),
 			_List_fromArray(
 				[
+					A5($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Folder, style, config, hue, $author$project$UI$Styles$I500),
 					A2(
 					$mdgriffith$elm_ui$Element$paragraph,
 					_List_fromArray(
 						[
 							$mdgriffith$elm_ui$Element$paddingEach(
-							{bottom: 0, left: 8, right: 0, top: 0})
+							{bottom: 4, left: 8, right: 0, top: 0})
 						]),
 					_List_fromArray(
 						[
@@ -21430,7 +21505,8 @@ var $author$project$UI$Components$Dropdown$dropDownButton = F4(
 							$mdgriffith$elm_ui$Element$el,
 							A2($author$project$UI$Styles$getTypographicStyleFor, $author$project$UI$Styles$Body, config),
 							t)
-						]))
+						])),
+					A5($author$project$UI$Icons$buildIcon, closeIcon, style, config, hue, $author$project$UI$Styles$I500)
 				]));
 	});
 var $author$project$UI$Components$Dropdown$Select = function (a) {
@@ -24111,7 +24187,6 @@ var $author$project$UI$PageViews$StopWords$None = {$: 'None'};
 var $author$project$UI$PageViews$StopWords$Remove = function (a) {
 	return {$: 'Remove', a: a};
 };
-var $author$project$UI$Icons$Close = {$: 'Close'};
 var $author$project$UI$Elements$chip = F5(
 	function (text, requestStatus, saved, msg, config) {
 		return A2(

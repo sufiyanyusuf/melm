@@ -183,6 +183,7 @@ update msg model =
 handleApiResponse : Model -> Api.Routes.Main.Msg -> ( Model, Cmd Msg )
 handleApiResponse model apiResponse =
     case apiResponse of
+        -- dis the one
         HandleListIndexesResponse r ->
             case r of
                 Ok payload ->
@@ -192,30 +193,34 @@ handleApiResponse model apiResponse =
 
                         s =
                             model.sidebarModel
-                    in
-                    ( { model
-                        | sidebarModel =
-                            { s
-                                | dropDown =
-                                    let
-                                        options =
-                                            List.map (\x -> { id = x.uid, title = x.name }) payload
 
-                                        selectedValue =
-                                            if d.selectedValue == Nothing then
-                                                List.head options
+                        selectedPage =
+                            model.pages.selectedPage
 
-                                            else
-                                                d.selectedValue
-                                    in
-                                    { d
-                                        | options = options
-                                        , selectedValue = selectedValue
+                        u =
+                            { model
+                                | sidebarModel =
+                                    { s
+                                        | dropDown =
+                                            let
+                                                options =
+                                                    List.map (\x -> { id = x.uid, title = x.name }) payload
+
+                                                selectedValue =
+                                                    if d.selectedValue == Nothing then
+                                                        List.head options
+
+                                                    else
+                                                        d.selectedValue
+                                            in
+                                            { d
+                                                | options = options
+                                                , selectedValue = selectedValue
+                                            }
                                     }
                             }
-                      }
-                    , Cmd.none
-                    )
+                    in
+                    handleSidebarSelection u (Sidebar.SelectPage selectedPage)
 
                 Err _ ->
                     ( model, Cmd.none )
