@@ -20445,7 +20445,7 @@ var $author$project$UI$Styles$getTypographicStyleFor = F2(
 				return _List_fromArray(
 					[
 						$mdgriffith$elm_ui$Element$Font$size(18),
-						$mdgriffith$elm_ui$Element$Font$medium,
+						$mdgriffith$elm_ui$Element$Font$regular,
 						$mdgriffith$elm_ui$Element$Font$family(
 						_List_fromArray(
 							[
@@ -20454,7 +20454,7 @@ var $author$project$UI$Styles$getTypographicStyleFor = F2(
 							])),
 						$mdgriffith$elm_ui$Element$Font$color(
 						A3($author$project$UI$Styles$color, $author$project$UI$Styles$Grayscale, $author$project$UI$Styles$I400, config)),
-						$mdgriffith$elm_ui$Element$Font$letterSpacing(-0.1)
+						$mdgriffith$elm_ui$Element$Font$letterSpacing(-0.08)
 					]);
 			case 'Label':
 				return _List_fromArray(
@@ -20513,7 +20513,7 @@ var $author$project$UI$Styles$getTypographicStyleFor = F2(
 							])),
 						$mdgriffith$elm_ui$Element$Font$letterSpacing(-0.2),
 						$mdgriffith$elm_ui$Element$Font$color(
-						A3($author$project$UI$Styles$color, $author$project$UI$Styles$Grayscale, $author$project$UI$Styles$I400, config))
+						A3($author$project$UI$Styles$color, $author$project$UI$Styles$Grayscale, $author$project$UI$Styles$I500, config))
 					]);
 		}
 	});
@@ -21575,23 +21575,23 @@ var $author$project$UI$PageViews$Attributes$cardView = F3(
 				case 'Displayed':
 					return _Utils_Tuple2(
 						'Displayed',
-						A5($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Displayed, $author$project$UI$Icons$Outline, config, $author$project$UI$Styles$Grayscale, $author$project$UI$Styles$I300));
+						A5($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Displayed, $author$project$UI$Icons$Outline, config, $author$project$UI$Styles$Grayscale, $author$project$UI$Styles$I500));
 				case 'Sortable':
 					return _Utils_Tuple2(
 						'Sortable',
-						A5($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Sortable, $author$project$UI$Icons$Outline, config, $author$project$UI$Styles$Grayscale, $author$project$UI$Styles$I300));
+						A5($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Sortable, $author$project$UI$Icons$Outline, config, $author$project$UI$Styles$Grayscale, $author$project$UI$Styles$I500));
 				case 'Searchable':
 					return _Utils_Tuple2(
 						'Searchable',
-						A5($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Searchable, $author$project$UI$Icons$Outline, config, $author$project$UI$Styles$Grayscale, $author$project$UI$Styles$I300));
+						A5($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Searchable, $author$project$UI$Icons$Outline, config, $author$project$UI$Styles$Grayscale, $author$project$UI$Styles$I500));
 				case 'Filterable':
 					return _Utils_Tuple2(
 						'Filterable',
-						A5($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Filterable, $author$project$UI$Icons$Outline, config, $author$project$UI$Styles$Grayscale, $author$project$UI$Styles$I300));
+						A5($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Filterable, $author$project$UI$Icons$Outline, config, $author$project$UI$Styles$Grayscale, $author$project$UI$Styles$I500));
 				default:
 					return _Utils_Tuple2(
 						'Distinct',
-						A5($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Distinct, $author$project$UI$Icons$Outline, config, $author$project$UI$Styles$Grayscale, $author$project$UI$Styles$I300));
+						A5($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Distinct, $author$project$UI$Icons$Outline, config, $author$project$UI$Styles$Grayscale, $author$project$UI$Styles$I500));
 			}
 		}();
 		var title = _v0.a;
@@ -21677,6 +21677,16 @@ var $author$project$Utils$addElementsIf = F2(
 	});
 var $mdgriffith$elm_ui$Internal$Model$Top = {$: 'Top'};
 var $mdgriffith$elm_ui$Element$alignTop = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$Top);
+var $author$project$UI$Styles$applyFontColor = F4(
+	function (hue, intensity, config, attrs) {
+		return _Utils_ap(
+			attrs,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$Font$color(
+					A3($author$project$UI$Styles$color, hue, intensity, config))
+				]));
+	});
 var $mdgriffith$elm_ui$Internal$Model$Button = {$: 'Button'};
 var $elm$json$Json$Encode$bool = _Json_wrap;
 var $elm$html$Html$Attributes$boolProperty = F2(
@@ -21874,7 +21884,12 @@ var $author$project$UI$Components$Toolbar$toolbarView = F5(
 							A2(
 							$mdgriffith$elm_ui$Element$el,
 							_Utils_ap(
-								A2($author$project$UI$Styles$getTypographicStyleFor, $author$project$UI$Styles$H3, config),
+								A4(
+									$author$project$UI$Styles$applyFontColor,
+									$author$project$UI$Styles$Grayscale,
+									$author$project$UI$Styles$I500,
+									config,
+									A2($author$project$UI$Styles$getTypographicStyleFor, $author$project$UI$Styles$H3, config)),
 								_List_fromArray(
 									[
 										A2($mdgriffith$elm_ui$Element$paddingXY, 0, 8)
@@ -22773,16 +22788,6 @@ var $author$project$UI$PageViews$Settings$UpdateColorScheme = function (a) {
 };
 var $author$project$UI$Styles$XL = {$: 'XL'};
 var $author$project$UI$Styles$Label = {$: 'Label'};
-var $author$project$UI$Styles$applyFontColor = F4(
-	function (hue, intensity, config, attrs) {
-		return _Utils_ap(
-			attrs,
-			_List_fromArray(
-				[
-					$mdgriffith$elm_ui$Element$Font$color(
-					A3($author$project$UI$Styles$color, hue, intensity, config))
-				]));
-	});
 var $mdgriffith$elm_ui$Element$Input$Above = {$: 'Above'};
 var $mdgriffith$elm_ui$Element$Input$Label = F3(
 	function (a, b, c) {

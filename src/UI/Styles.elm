@@ -224,13 +224,13 @@ getTypographicStyleFor style config =
 
         Body ->
             [ Font.size 18
-            , Font.medium
+            , Font.regular
             , Font.family
                 [ Font.typeface "Inter"
                 , Font.sansSerif
                 ]
             , Font.color (color Grayscale I400 config)
-            , Font.letterSpacing -0.1
+            , Font.letterSpacing -0.08
             ]
 
         Label ->
@@ -273,7 +273,7 @@ getTypographicStyleFor style config =
                 , Font.sansSerif
                 ]
             , Font.letterSpacing -0.2
-            , Font.color (color Grayscale I400 config)
+            , Font.color (color Grayscale I500 config)
             ]
 
 

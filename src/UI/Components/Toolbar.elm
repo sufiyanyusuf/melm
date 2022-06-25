@@ -25,7 +25,11 @@ toolbarView model create sync cancel config =
         ]
         (List.concat
             [ [ Element.el
-                    (UI.Styles.getTypographicStyleFor UI.Styles.H3 config ++ [ Element.paddingXY 0 8 ])
+                    ((UI.Styles.getTypographicStyleFor UI.Styles.H3 config
+                        |> UI.Styles.applyFontColor Grayscale I500 config
+                     )
+                        ++ [ Element.paddingXY 0 8 ]
+                    )
                     (Element.text model.title)
               , UI.Elements.spacer UI.Styles.MD
               ]
