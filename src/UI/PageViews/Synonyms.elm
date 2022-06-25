@@ -1,12 +1,14 @@
 module UI.PageViews.Synonyms exposing (..)
 
 import Api.Routes.Main exposing (..)
+import Array
 import Element exposing (..)
 import Request exposing (..)
 import UI.Components.SynonymCard as SynonymCard exposing (Msg(..))
 import UI.Components.Toolbar
 import UI.Elements
 import UI.Styles exposing (Config)
+import Utils
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -17,14 +19,38 @@ update msg model =
 
         CardViewMsg m ->
             case m of
+                Remove i ->
+                    update (Delete i) model
+
                 _ ->
                     let
                         synonymCards =
-                            model.synonymStates
+                            model.synonymCards
                                 |> List.map (\c -> SynonymCard.update m c)
                                 |> List.map (\( a, _ ) -> a)
                     in
-                    ( { model | synonymStates = synonymCards }, Cmd.none )
+                    ( { model | synonymCards = synonymCards }, Cmd.none )
+
+        Delete index ->
+            let
+                arr =
+                    Array.fromList model.synonymCards
+
+                dq =
+                    model.deletionQueue
+
+                udq =
+                    case Array.get index arr of
+                        Just e ->
+                            dq ++ [ e ]
+
+                        Nothing ->
+                            dq
+
+                uarr =
+                    Utils.remove index arr
+            in
+            ( { model | synonymCards = Array.toList uarr, deletionQueue = udq }, Cmd.none )
 
         _ ->
             ( model, Cmd.none )
@@ -36,22 +62,24 @@ type Msg
     | New
     | NoAction
     | Reset
+    | Delete Int
 
 
 type alias Model =
-    { synonymStates : List SynonymCard.Model
+    { synonymCards : List SynonymCard.Model
+    , deletionQueue : List SynonymCard.Model
     }
 
 
 init : Model
 init =
-    { synonymStates = [] }
+    { synonymCards = [], deletionQueue = [] }
 
 
 addNew : Model -> ( Model, Cmd Msg )
 addNew model =
     ( { model
-        | synonymStates = model.synonymStates ++ [ SynonymCard.init (List.length model.synonymStates) ]
+        | synonymCards = model.synonymCards ++ [ SynonymCard.init (List.length model.synonymCards) ]
       }
     , Cmd.none
     )
@@ -74,7 +102,7 @@ view model config =
             , spacing 20
             , paddingXY 120 60
             ]
-            { data = model.synonymStates
+            { data = model.synonymCards
             , columns =
                 [ { header = Element.none
                   , width = fill
@@ -89,7 +117,7 @@ view model config =
 
 isLoading : Model -> Bool
 isLoading model =
-    (List.map (\x -> x.requestStatus) model.synonymStates
+    (List.map (\x -> x.requestStatus) model.synonymCards
         |> List.filter (\x -> x == Fired)
         |> List.length
     )
@@ -98,11 +126,13 @@ isLoading model =
 
 getValueChanged : Model -> Bool
 getValueChanged model =
-    (List.map (\x -> SynonymCard.valueChanged x) model.synonymStates
+    (List.map (\x -> SynonymCard.valueChanged x) model.synonymCards
         |> List.filter (\x -> x == True)
         |> List.length
     )
         /= 0
+        || List.length model.deletionQueue
+        > 0
 
 
 toolbarView : Model -> Config -> Element Msg
@@ -122,8 +152,20 @@ updateSyncStatusState : List SynonymCard.Model -> RequestStatus -> List SynonymC
 updateSyncStatusState model status =
     List.map
         (\c ->
+            let
+                savedValue =
+                    case status of
+                        Success ->
+                            Just ( c.synonymKey, c.synonymList )
+
+                        _ ->
+                            c.saved
+            in
             if SynonymCard.valueChanged c then
-                { c | requestStatus = status }
+                { c
+                    | requestStatus = status
+                    , saved = savedValue
+                }
 
             else
                 c

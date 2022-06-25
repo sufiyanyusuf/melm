@@ -177,7 +177,7 @@ getButtonProps : Theme -> Config -> ButtonProps
 getButtonProps buttonType config =
     case buttonType of
         Subtle ->
-            { bgColor = UI.Styles.color White Generic config
+            { bgColor = UI.Styles.color Grayscale I100 config
             , hoverColor = UI.Styles.color Grayscale I200 config
             , textColor = UI.Styles.color Grayscale I500 config
             }
@@ -252,44 +252,56 @@ syncIndicator status valueChanged config =
     if valueChanged then
         case status of
             NoRequest ->
-                el
-                    [ Background.color (UI.Styles.color Primary I200 config)
-                    , width (px 8)
-                    , Element.height (px 8)
-                    , Element.Border.rounded 12
-                    , Element.centerY
+                row []
+                    [ el
+                        [ Background.color (UI.Styles.color Primary I200 config)
+                        , width (px 8)
+                        , Element.height (px 8)
+                        , Element.Border.rounded 12
+                        , Element.centerY
+                        ]
+                        (text "")
+                    , spacer XS
                     ]
-                    (text "")
 
             Fired ->
-                el
-                    [ Background.color (UI.Styles.color Primary I500 config)
-                    , width (px 8)
-                    , Element.height (px 8)
-                    , Element.Border.rounded 12
-                    , Element.centerY
+                row []
+                    [ el
+                        [ Background.color (UI.Styles.color Primary I500 config)
+                        , width (px 8)
+                        , Element.height (px 8)
+                        , Element.Border.rounded 12
+                        , Element.centerY
+                        ]
+                        (text "")
+                    , spacer XS
                     ]
-                    (text "")
 
             Success ->
-                el
-                    [ Background.color (UI.Styles.color Primary I200 config)
-                    , width (px 8)
-                    , Element.height (px 8)
-                    , Element.Border.rounded 12
-                    , Element.centerY
+                row []
+                    [ el
+                        [ Background.color (UI.Styles.color Primary I200 config)
+                        , width (px 8)
+                        , Element.height (px 8)
+                        , Element.Border.rounded 12
+                        , Element.centerY
+                        ]
+                        (text "")
+                    , spacer XS
                     ]
-                    (text "")
 
             Failed ->
-                el
-                    [ Background.color (UI.Styles.color Green I500 config)
-                    , width (px 8)
-                    , Element.height (px 8)
-                    , Element.Border.rounded 12
-                    , Element.centerY
+                row []
+                    [ el
+                        [ Background.color (UI.Styles.color Green I500 config)
+                        , width (px 8)
+                        , Element.height (px 8)
+                        , Element.Border.rounded 12
+                        , Element.centerY
+                        ]
+                        (text "")
+                    , spacer XS
                     ]
-                    (text "")
 
     else
         Element.none

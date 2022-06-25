@@ -6,7 +6,7 @@ import Element.Border exposing (rounded)
 import Element.Events
 import Request exposing (RequestStatus(..))
 import UI.Icons exposing (Icon(..), Style(..))
-import UI.Styles exposing (ColorHue(..), ColorIntensity(..), Config, Size(..))
+import UI.Styles exposing (ColorHue(..), ColorIntensity(..), Config, Size(..), applyFontColor)
 import Utils exposing (addIf)
 
 
@@ -103,7 +103,7 @@ dropDownButton item expanded selectedItem config =
             [ [ Element.Events.onClick selectedItem
               , width fill
               , paddingXY 8 10
-              , rounded 4
+              , rounded 6
               , pointer
               , Element.mouseOver <| [ Background.color (UI.Styles.color Grayscale I100 config) ]
               , Element.Border.width 1
@@ -117,7 +117,9 @@ dropDownButton item expanded selectedItem config =
         [ UI.Icons.buildIcon UI.Icons.Folder style config hue I500
         , paragraph [ paddingEach { top = 0, left = 8, bottom = 4, right = 0 } ]
             [ el
-                (UI.Styles.getTypographicStyleFor UI.Styles.Body config)
+                (UI.Styles.getTypographicStyleFor UI.Styles.Body config
+                    |> applyFontColor hue I500 config
+                )
                 t
             ]
         , UI.Icons.buildIcon closeIcon style config hue I500

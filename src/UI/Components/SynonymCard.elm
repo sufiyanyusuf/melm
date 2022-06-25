@@ -28,7 +28,7 @@ type Msg
     | Remove Int
     | RetrySave Int
     | Save Int
-    | Reset
+    | Reset Int
     | DoneEditing
 
 
@@ -49,8 +49,12 @@ update msg model =
             else
                 ( model, Cmd.none )
 
-        Reset ->
-            ( resetValue model, Cmd.none )
+        Reset i ->
+            if model.index == i then
+                ( resetValue model, Cmd.none )
+
+            else
+                ( model, Cmd.none )
 
         _ ->
             ( model, Cmd.none )
@@ -59,7 +63,7 @@ update msg model =
 view : Model -> Config -> Element Msg
 view model config =
     Element.column
-        [ padding 20
+        [ padding 24
         , Element.Background.color (UI.Styles.color White Generic config)
         , Element.Border.rounded 10
         , Element.width fill
@@ -68,19 +72,36 @@ view model config =
         [ UI.Elements.textfield model.synonymKey "Title" "Tomato" (UpdatedTitle model.index) DoneEditing DoneEditing config
         , UI.Elements.spacer UI.Styles.XS
         , UI.Elements.textfield model.synonymsValue "Synonyms" "Tomayto, Tomaato, Tomaeto" (UpdatedList model.index) DoneEditing DoneEditing config
-        , loadingView model config
-        , failedView model config
+        , UI.Elements.spacer UI.Styles.SM
+        , cardToolbar model config
+        ]
+
+
+cardToolbar : Model -> Config -> Element Msg
+cardToolbar model config =
+    Element.row
+        [ width fill ]
+        [ if model.requestStatus /= Fired then
+            UI.Elements.iconButton Trash (Remove model.index) config
+
+          else
+            Element.none
+        , Element.row []
+            [ loadingView model config
+            , failedView model config
+            , valueChangedView model config
+            ]
         ]
 
 
 valueChangedView : Model -> Config -> Element Msg
 valueChangedView model config =
-    if valueChanged model then
+    if valueChanged model && model.requestStatus /= Fired then
         Element.row
             [ Element.width Element.shrink
             , padding 12
             ]
-            [ UI.Elements.button UI.Elements.Subtle "Cancel" Reset config
+            [ UI.Elements.button UI.Elements.Subtle "Cancel" (Reset model.index) config
             ]
 
     else

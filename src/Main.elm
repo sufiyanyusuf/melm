@@ -88,7 +88,6 @@ type alias Model =
     { pages : Views.Model
     , documents : List String
     , documentKeys : ( String, List String )
-    , synonyms : List UI.Components.SynonymCard.Model -- Decouple this
     , pollingQueue : List ( Task, SweetPoll.PollingState String )
     , displayedAttrs : List AttributesPage.Attribute
     , sortableAttrs : List AttributesPage.Attribute
@@ -289,11 +288,10 @@ handleApiResponse model apiResponse =
                             buildSynonymsViewModelFromApiResponse payload
 
                         updatedSynonymsViewModel =
-                            { synonymStates = synonyms }
+                            { synonymCards = synonyms, deletionQueue = model.pages.synonyms.deletionQueue }
                     in
                     ( { model
-                        | synonyms = synonyms
-                        , pages = updateSynonymsViewModel model.pages updatedSynonymsViewModel
+                        | pages = updateSynonymsViewModel model.pages updatedSynonymsViewModel
                       }
                     , Cmd.none
                     )
@@ -759,13 +757,12 @@ handleSynonymsViewMsg model msg =
                         currentSynonyms =
                             List.map
                                 (\s -> ( s.synonymKey, s.synonymList ))
-                                model.synonyms
+                                model.pages.synonyms.synonymCards
                                 |> List.filter (\( k, v ) -> k /= "" && v /= [])
 
                         updatedModel =
                             { model
                                 | pages = updateSynonymsViewModel model.pages updatedSynonymsViewModel
-                                , synonyms = updatedSynonymsViewModel.synonymStates
                             }
                     in
                     case getCurrentlySelectedIndexId updatedModel of
@@ -796,7 +793,6 @@ handleSynonymsViewMsg model msg =
                     in
                     ( { model
                         | pages = updateSynonymsViewModel model.pages updatedSynonymsViewModel
-                        , synonyms = updatedSynonymsViewModel.synonymStates
                       }
                     , Cmd.none
                     )
@@ -1002,7 +998,7 @@ getSidebarViewModel model =
 
 getSynonymsViewModel : Model -> SynonymsPage.Model
 getSynonymsViewModel model =
-    { synonymStates = model.synonyms }
+    model.pages.synonyms
 
 
 getAttributesViewModel : Model -> AttributesPage.Model
@@ -1102,17 +1098,16 @@ handlePollSignal model newState newData error cmd task =
                                 UpdateSynonymsTask _ _ ->
                                     let
                                         updatedSynonyms =
-                                            SynonymsPage.updateSyncStatusState model.synonyms Fired
+                                            SynonymsPage.updateSyncStatusState model.pages.synonyms.synonymCards Fired
 
                                         updatedSynonymsPageViewModel =
-                                            { synonymStates = updatedSynonyms }
+                                            { synonymCards = updatedSynonyms, deletionQueue = model.pages.synonyms.deletionQueue }
                                     in
                                     ( { model
                                         | pollingQueue =
                                             List.map
                                                 (updatePollState task newState)
                                                 model.pollingQueue
-                                        , synonyms = updatedSynonyms
                                         , pages = updateSynonymsViewModel model.pages updatedSynonymsPageViewModel
                                       }
                                     , cmd |> Cmd.map (PollUpdate task)
@@ -1150,14 +1145,13 @@ handlePollSignal model newState newData error cmd task =
                                 UpdateSynonymsTask _ _ ->
                                     let
                                         updatedSynonyms =
-                                            SynonymsPage.updateSyncStatusState model.synonyms Success
+                                            SynonymsPage.updateSyncStatusState model.pages.synonyms.synonymCards Success
 
                                         updatedSynonymsPageViewModel =
-                                            { synonymStates = updatedSynonyms }
+                                            { synonymCards = updatedSynonyms, deletionQueue = [] }
                                     in
                                     ( { model
                                         | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue
-                                        , synonyms = updatedSynonyms
                                         , pages = updateSynonymsViewModel model.pages updatedSynonymsPageViewModel
                                       }
                                     , Cmd.none
@@ -1252,9 +1246,16 @@ handlePollSignal model newState newData error cmd task =
                         "failed" ->
                             case task of
                                 UpdateSynonymsTask _ _ ->
+                                    let
+                                        updatedSynonyms =
+                                            SynonymsPage.updateSyncStatusState model.pages.synonyms.synonymCards Failed
+
+                                        updatedSynonymsPageViewModel =
+                                            { synonymCards = updatedSynonyms, deletionQueue = model.pages.synonyms.deletionQueue }
+                                    in
                                     ( { model
                                         | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue
-                                        , synonyms = SynonymsPage.updateSyncStatusState model.synonyms Failed
+                                        , pages = updateSynonymsViewModel model.pages updatedSynonymsPageViewModel
                                       }
                                     , Cmd.none
                                     )
@@ -1343,7 +1344,6 @@ init _ =
         model =
             { pages = Views.init
             , documents = []
-            , synonyms = SynonymsPage.init.synonymStates
             , pollingQueue = []
             , documentKeys = ( "", [] )
             , displayedAttrs = []
