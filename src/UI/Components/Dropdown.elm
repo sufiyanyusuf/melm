@@ -102,7 +102,7 @@ dropDownButton item expanded selectedItem config =
         (List.concat
             [ [ Element.Events.onClick selectedItem
               , width fill
-              , paddingXY 8 10
+              , paddingXY 8 6
               , rounded 6
               , pointer
               , Element.mouseOver <| [ Background.color (UI.Styles.color Grayscale I100 config) ]

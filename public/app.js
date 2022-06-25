@@ -21610,7 +21610,7 @@ var $author$project$UI$Components$Dropdown$dropDownButton = F4(
 						[
 							$mdgriffith$elm_ui$Element$Events$onClick(selectedItem),
 							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-							A2($mdgriffith$elm_ui$Element$paddingXY, 8, 10),
+							A2($mdgriffith$elm_ui$Element$paddingXY, 8, 6),
 							$mdgriffith$elm_ui$Element$Border$rounded(6),
 							$mdgriffith$elm_ui$Element$pointer,
 							$mdgriffith$elm_ui$Element$mouseOver(
