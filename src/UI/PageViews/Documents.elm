@@ -71,7 +71,7 @@ toolbarView _ config =
             { valueChanged = False
             , loading = False
             , showCreateAction = False
-            , title = "Document"
+            , title = "Documents"
             }
     in
     UI.Components.Toolbar.toolbarView toolbarModel X X X config

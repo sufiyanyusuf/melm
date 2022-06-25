@@ -78,9 +78,9 @@ view model config =
             ]
             [ Elements.spacer UI.Styles.XL
             , textfield model.endpointValue "Endpoint" "http://localhost:7700" EndpointValueChanged None None config
-            , Elements.spacer UI.Styles.LG
+            , Elements.spacer UI.Styles.XL
             , textfield model.tokenValue "Token" "9438u093ty94y3989428ur929r20kfjvdfv7vfs" TokenValueChanged None None config
-            , Elements.spacer UI.Styles.LG
+            , Elements.spacer UI.Styles.XL
             , Element.column []
                 [ el (UI.Styles.getTypographicStyleFor UI.Styles.Label config) (Element.text "Theme")
                 , Elements.spacer UI.Styles.SM

@@ -65,9 +65,9 @@ view model config =
             , scrollbarY
             , paddingXY 120 60
             ]
-            [ UI.Elements.spacer UI.Styles.XL
+            [ UI.Elements.spacer UI.Styles.MD
             , UI.Elements.textfield model.newValue "Add a word" "blah" NewValueUpdated None Create config
-            , UI.Elements.spacer UI.Styles.SM
+            , UI.Elements.spacer UI.Styles.LG
             , Element.wrappedRow
                 [ spacing 12
                 ]

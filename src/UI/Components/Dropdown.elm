@@ -134,7 +134,7 @@ dropDownMenu visible items config =
             , Element.Border.rounded 6
             , padding 4
             , Element.Border.shadow
-                { offset = ( 0, 0 )
+                { offset = ( 0, 4 )
                 , size = 1
                 , blur = 12
                 , color = UI.Styles.color Grayscale I200 config

@@ -21743,7 +21743,7 @@ var $author$project$UI$Components$Dropdown$dropDownMenu = F3(
 					{
 						blur: 12,
 						color: A3($author$project$UI$Styles$color, $author$project$UI$Styles$Grayscale, $author$project$UI$Styles$I200, config),
-						offset: _Utils_Tuple2(0, 0),
+						offset: _Utils_Tuple2(0, 4),
 						size: 1
 					}),
 					$mdgriffith$elm_ui$Element$Border$width(1),
@@ -23257,7 +23257,7 @@ var $ThinkAlexandria$elm_pretty_print_json$Json$Print$prettyString = F2(
 var $author$project$UI$PageViews$Documents$X = {$: 'X'};
 var $author$project$UI$PageViews$Documents$toolbarView = F2(
 	function (_v0, config) {
-		var toolbarModel = {loading: false, showCreateAction: false, title: 'Document', valueChanged: false};
+		var toolbarModel = {loading: false, showCreateAction: false, title: 'Documents', valueChanged: false};
 		return A5($author$project$UI$Components$Toolbar$toolbarView, toolbarModel, $author$project$UI$PageViews$Documents$X, $author$project$UI$PageViews$Documents$X, $author$project$UI$PageViews$Documents$X, config);
 	});
 var $elm$core$Result$withDefault = F2(
@@ -24303,9 +24303,9 @@ var $author$project$UI$PageViews$Settings$view = F2(
 						[
 							$author$project$UI$Elements$spacer($author$project$UI$Styles$XL),
 							A7($author$project$UI$Elements$textfield, model.endpointValue, 'Endpoint', 'http://localhost:7700', $author$project$UI$PageViews$Settings$EndpointValueChanged, $author$project$UI$PageViews$Settings$None, $author$project$UI$PageViews$Settings$None, config),
-							$author$project$UI$Elements$spacer($author$project$UI$Styles$LG),
+							$author$project$UI$Elements$spacer($author$project$UI$Styles$XL),
 							A7($author$project$UI$Elements$textfield, model.tokenValue, 'Token', '9438u093ty94y3989428ur929r20kfjvdfv7vfs', $author$project$UI$PageViews$Settings$TokenValueChanged, $author$project$UI$PageViews$Settings$None, $author$project$UI$PageViews$Settings$None, config),
-							$author$project$UI$Elements$spacer($author$project$UI$Styles$LG),
+							$author$project$UI$Elements$spacer($author$project$UI$Styles$XL),
 							A2(
 							$mdgriffith$elm_ui$Element$column,
 							_List_Nil,
@@ -24468,9 +24468,9 @@ var $author$project$UI$PageViews$StopWords$view = F2(
 						]),
 					_List_fromArray(
 						[
-							$author$project$UI$Elements$spacer($author$project$UI$Styles$XL),
+							$author$project$UI$Elements$spacer($author$project$UI$Styles$MD),
 							A7($author$project$UI$Elements$textfield, model.newValue, 'Add a word', 'blah', $author$project$UI$PageViews$StopWords$NewValueUpdated, $author$project$UI$PageViews$StopWords$None, $author$project$UI$PageViews$StopWords$Create, config),
-							$author$project$UI$Elements$spacer($author$project$UI$Styles$SM),
+							$author$project$UI$Elements$spacer($author$project$UI$Styles$LG),
 							A2(
 							$mdgriffith$elm_ui$Element$wrappedRow,
 							_List_fromArray(
