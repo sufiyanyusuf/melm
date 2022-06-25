@@ -13974,10 +13974,6 @@ var $mdgriffith$elm_ui$Element$rgb255 = F3(
 		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
 	});
 var $mdgriffith$elm_ui$Element$rgba = $mdgriffith$elm_ui$Internal$Model$Rgba;
-var $mdgriffith$elm_ui$Element$rgba255 = F4(
-	function (red, green, blue, a) {
-		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, a);
-	});
 var $author$project$UI$Styles$color = F3(
 	function (hue, intensity, config) {
 		var _v0 = config.scheme;
@@ -14021,33 +14017,33 @@ var $author$project$UI$Styles$color = F3(
 				case 'Primary':
 					switch (intensity.$) {
 						case 'I100':
-							return A3($mdgriffith$elm_ui$Element$rgb255, 9, 13, 51);
+							return A3($mdgriffith$elm_ui$Element$rgb255, 39, 44, 94);
 						case 'I200':
-							return A3($mdgriffith$elm_ui$Element$rgb255, 23, 33, 123);
+							return A3($mdgriffith$elm_ui$Element$rgb255, 60, 68, 143);
 						case 'I300':
-							return A3($mdgriffith$elm_ui$Element$rgb255, 60, 75, 211);
+							return A3($mdgriffith$elm_ui$Element$rgb255, 78, 88, 180);
 						case 'I400':
-							return A3($mdgriffith$elm_ui$Element$rgb255, 114, 128, 253);
+							return A3($mdgriffith$elm_ui$Element$rgb255, 100, 111, 215);
 						default:
-							return A4($mdgriffith$elm_ui$Element$rgba255, 159, 169, 255, 1);
+							return A3($mdgriffith$elm_ui$Element$rgb255, 152, 162, 255);
 					}
 				case 'Grayscale':
 					switch (intensity.$) {
 						case 'I100':
-							return A3($mdgriffith$elm_ui$Element$rgb255, 18, 18, 18);
+							return A3($mdgriffith$elm_ui$Element$rgb255, 27, 28, 32);
 						case 'I200':
-							return A3($mdgriffith$elm_ui$Element$rgb255, 41, 41, 41);
+							return A3($mdgriffith$elm_ui$Element$rgb255, 44, 45, 51);
 						case 'I300':
-							return A3($mdgriffith$elm_ui$Element$rgb255, 89, 89, 89);
+							return A3($mdgriffith$elm_ui$Element$rgb255, 80, 82, 96);
 						case 'I400':
-							return A3($mdgriffith$elm_ui$Element$rgb255, 153, 153, 153);
+							return A3($mdgriffith$elm_ui$Element$rgb255, 137, 141, 159);
 						default:
 							return A3($mdgriffith$elm_ui$Element$rgb255, 229, 229, 229);
 					}
 				case 'Green':
 					return A3($mdgriffith$elm_ui$Element$rgb255, 17, 199, 112);
 				case 'White':
-					return A3($mdgriffith$elm_ui$Element$rgb255, 25, 25, 25);
+					return A3($mdgriffith$elm_ui$Element$rgb255, 32, 33, 38);
 				default:
 					return A4($mdgriffith$elm_ui$Element$rgba, 255, 255, 255, 0);
 			}
@@ -19906,6 +19902,9 @@ var $mdgriffith$elm_ui$Element$el = F2(
 				_List_fromArray(
 					[child])));
 	});
+var $author$project$UI$Sidebar$getIconHue = function (isSelected) {
+	return isSelected ? $author$project$UI$Styles$Primary : $author$project$UI$Styles$Grayscale;
+};
 var $author$project$UI$Icons$Filled = {$: 'Filled'};
 var $author$project$UI$Icons$Outline = {$: 'Outline'};
 var $author$project$UI$Sidebar$getIconStyle = function (isSelected) {
@@ -20343,19 +20342,19 @@ var $author$project$UI$Icons$buildIcon = F5(
 		return $mdgriffith$elm_ui$Element$html(
 			A2($elm$svg$Svg$svg, attrs, path));
 	});
-var $author$project$UI$Sidebar$getPageIcon = F3(
-	function (page, style, config) {
+var $author$project$UI$Sidebar$getPageIcon = F4(
+	function (page, style, hue, config) {
 		switch (page.$) {
 			case 'Settings':
-				return A5($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$SettingsGear, style, config, $author$project$UI$Styles$Primary, $author$project$UI$Styles$I500);
+				return A5($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$SettingsGear, style, config, hue, $author$project$UI$Styles$I500);
 			case 'Documents':
-				return A5($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Documents, style, config, $author$project$UI$Styles$Primary, $author$project$UI$Styles$I500);
+				return A5($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Documents, style, config, hue, $author$project$UI$Styles$I500);
 			case 'Synonyms':
-				return A5($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Dictionary, style, config, $author$project$UI$Styles$Primary, $author$project$UI$Styles$I500);
+				return A5($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Dictionary, style, config, hue, $author$project$UI$Styles$I500);
 			case 'StopWords':
-				return A5($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Block, style, config, $author$project$UI$Styles$Primary, $author$project$UI$Styles$I500);
+				return A5($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Block, style, config, hue, $author$project$UI$Styles$I500);
 			default:
-				return A5($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Switches, style, config, $author$project$UI$Styles$Primary, $author$project$UI$Styles$I500);
+				return A5($author$project$UI$Icons$buildIcon, $author$project$UI$Icons$Switches, style, config, hue, $author$project$UI$Styles$I500);
 		}
 	});
 var $author$project$UI$Styles$I400 = {$: 'I400'};
@@ -20772,10 +20771,11 @@ var $author$project$UI$Sidebar$sidebarListItemView = F4(
 						])),
 				_List_fromArray(
 					[
-						A3(
+						A4(
 						$author$project$UI$Sidebar$getPageIcon,
 						page,
 						$author$project$UI$Sidebar$getIconStyle(isSelected),
+						$author$project$UI$Sidebar$getIconHue(isSelected),
 						config),
 						A2(
 						$mdgriffith$elm_ui$Element$paragraph,
@@ -21031,6 +21031,7 @@ var $mdgriffith$elm_ui$Element$table = F2(
 				data: config.data
 			});
 	});
+var $author$project$UI$Styles$Clear = {$: 'Clear'};
 var $author$project$UI$Components$Dropdown$TriggerClicked = {$: 'TriggerClicked'};
 var $mdgriffith$elm_ui$Internal$Flag$borderColor = $mdgriffith$elm_ui$Internal$Flag$flag(28);
 var $mdgriffith$elm_ui$Element$Border$color = function (clr) {
@@ -21239,7 +21240,7 @@ var $author$project$UI$Components$Dropdown$view = F2(
 					$mdgriffith$elm_ui$Element$padding(12),
 					$mdgriffith$elm_ui$Element$moveDown(8),
 					$mdgriffith$elm_ui$Element$Background$color(
-					A3($author$project$UI$Styles$color, $author$project$UI$Styles$White, $author$project$UI$Styles$I100, config)),
+					A3($author$project$UI$Styles$color, $author$project$UI$Styles$Clear, $author$project$UI$Styles$I100, config)),
 					$mdgriffith$elm_ui$Element$scrollbarY,
 					$mdgriffith$elm_ui$Element$height(
 					A2($mdgriffith$elm_ui$Element$maximum, 320, $mdgriffith$elm_ui$Element$shrink)),
@@ -21676,7 +21677,6 @@ var $author$project$Utils$addElementsIf = F2(
 	});
 var $mdgriffith$elm_ui$Internal$Model$Top = {$: 'Top'};
 var $mdgriffith$elm_ui$Element$alignTop = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$Top);
-var $author$project$UI$Styles$BodyBold = {$: 'BodyBold'};
 var $mdgriffith$elm_ui$Internal$Model$Button = {$: 'Button'};
 var $elm$json$Json$Encode$bool = _Json_wrap;
 var $elm$html$Html$Attributes$boolProperty = F2(
@@ -21799,7 +21799,6 @@ var $mdgriffith$elm_ui$Element$Input$button = F2(
 				_List_fromArray(
 					[label])));
 	});
-var $author$project$UI$Styles$Clear = {$: 'Clear'};
 var $author$project$UI$Elements$getButtonProps = F2(
 	function (buttonType, config) {
 		switch (buttonType.$) {
@@ -21834,7 +21833,7 @@ var $author$project$UI$Elements$button = F4(
 		var props = A2($author$project$UI$Elements$getButtonProps, buttonTheme, config);
 		return A2(
 			$mdgriffith$elm_ui$Element$el,
-			A2($author$project$UI$Styles$getTypographicStyleFor, $author$project$UI$Styles$BodyBold, config),
+			A2($author$project$UI$Styles$getTypographicStyleFor, $author$project$UI$Styles$Body, config),
 			A2(
 				$mdgriffith$elm_ui$Element$Input$button,
 				_List_fromArray(

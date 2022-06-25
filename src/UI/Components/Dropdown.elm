@@ -52,7 +52,7 @@ view model config =
     column
         [ padding 12
         , moveDown 8
-        , Background.color (UI.Styles.color White I100 config)
+        , Background.color (UI.Styles.color Clear I100 config)
         , Element.scrollbarY
         , Element.height
             (shrink

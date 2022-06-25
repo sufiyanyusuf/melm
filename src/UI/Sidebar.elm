@@ -114,7 +114,7 @@ sidebarListItemView title isSelected page config =
                 , addIf isSelected <| Background.color (UI.Styles.color Primary I100 config)
                 ]
             )
-            [ getPageIcon page (getIconStyle isSelected) config
+            [ getPageIcon page (getIconStyle isSelected) (getIconHue isSelected) config
             , paragraph [ paddingEach { top = 0, left = 8, bottom = 4, right = 0 } ]
                 [ el
                     (List.concat
@@ -148,23 +148,23 @@ getPageTitle page =
             "Attributes"
 
 
-getPageIcon : UI.Pages.Page -> UI.Icons.Style -> Config -> Element msg
-getPageIcon page style config =
+getPageIcon : UI.Pages.Page -> UI.Icons.Style -> ColorHue -> Config -> Element msg
+getPageIcon page style hue config =
     case page of
         UI.Pages.Settings _ ->
-            UI.Icons.buildIcon SettingsGear style config Primary I500
+            UI.Icons.buildIcon SettingsGear style config hue I500
 
         UI.Pages.Documents _ ->
-            UI.Icons.buildIcon Documents style config Primary I500
+            UI.Icons.buildIcon Documents style config hue I500
 
         UI.Pages.Synonyms _ ->
-            UI.Icons.buildIcon Dictionary style config Primary I500
+            UI.Icons.buildIcon Dictionary style config hue I500
 
         UI.Pages.StopWords _ ->
-            UI.Icons.buildIcon Block style config Primary I500
+            UI.Icons.buildIcon Block style config hue I500
 
         UI.Pages.Attributes _ ->
-            UI.Icons.buildIcon Switches style config Primary I500
+            UI.Icons.buildIcon Switches style config hue I500
 
 
 getIconStyle : Bool -> UI.Icons.Style
@@ -174,3 +174,12 @@ getIconStyle isSelected =
 
     else
         Outline
+
+
+getIconHue : Bool -> ColorHue
+getIconHue isSelected =
+    if isSelected then
+        Primary
+
+    else
+        Grayscale

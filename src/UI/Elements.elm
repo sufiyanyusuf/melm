@@ -150,7 +150,7 @@ button buttonTheme model msg config =
             getButtonProps buttonTheme config
     in
     el
-        (UI.Styles.getTypographicStyleFor UI.Styles.BodyBold config)
+        (UI.Styles.getTypographicStyleFor UI.Styles.Body config)
         (Input.button
             [ Background.color props.bgColor
             , paddingEach { top = 8, right = 12, bottom = 8, left = 12 }

@@ -113,33 +113,33 @@ color hue intensity config =
                 Primary ->
                     case intensity of
                         I100 ->
-                            rgb255 9 13 51
+                            rgb255 39 44 94
 
                         I200 ->
-                            rgb255 23 33 123
+                            rgb255 60 68 143
 
                         I300 ->
-                            rgb255 60 75 211
+                            rgb255 78 88 180
 
                         I400 ->
-                            rgb255 114 128 253
+                            rgb255 100 111 215
 
                         _ ->
-                            rgba255 159 169 255 1
+                            rgb255 152 162 255
 
                 Grayscale ->
                     case intensity of
                         I100 ->
-                            rgb255 18 18 18
+                            rgb255 27 28 32
 
                         I200 ->
-                            rgb255 41 41 41
+                            rgb255 44 45 51
 
                         I300 ->
-                            rgb255 89 89 89
+                            rgb255 80 82 96
 
                         I400 ->
-                            rgb255 153 153 153
+                            rgb255 137 141 159
 
                         _ ->
                             rgb255 229 229 229
@@ -148,46 +148,10 @@ color hue intensity config =
                     rgb255 17 199 112
 
                 White ->
-                    rgb255 25 25 25
+                    rgb255 32 33 38
 
                 Clear ->
                     rgba 255 255 255 0
-
-
-
--- color : Config -> Palette
--- color config =
---     case config.scheme of
---         Light ->
---             { primary500 = rgb255 28 40 144
---             , primary400 = rgb255 78 91 207
---             , primary300 = rgb255 149 158 240
---             , primary200 = rgb255 177 184 250
---             , primary100 = rgb255 211 216 255
---             , gray500 = rgb255 26 26 26
---             , gray400 = rgb255 76 76 76
---             , gray300 = rgb255 128 128 128
---             , gray200 = rgb255 225 225 225
---             , gray100 = rgb255 244 244 244
---             , white = rgb255 255 255 255
---             , green500 = rgb255 17 199 112
---             , clear = rgba 0 0 0 0
---             }
---         Dark ->
---             { primary500 = rgb255 9 13 51
---             , primary400 = rgb255 23 33 123
---             , primary300 = rgb255 60 75 211
---             , primary200 = rgb255 114 128 253
---             , primary100 = rgb255 159 169 255
---             , gray500 = rgb255 229 229 229
---             , gray400 = rgb255 153 153 153
---             , gray300 = rgb255 89 89 89
---             , gray200 = rgb255 41 41 41
---             , gray100 = rgb255 18 18 18
---             , white = rgb255 25 25 25
---             , green500 = rgb255 17 199 112
---             , clear = rgba 0 0 0 0
---             }
 
 
 convertToHex : Color -> String
