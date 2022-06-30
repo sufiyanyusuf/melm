@@ -3,3 +3,4 @@ generate:
 
 prod:
 	elm make src/Main.elm --output public/app.js
+	cargo tauri build

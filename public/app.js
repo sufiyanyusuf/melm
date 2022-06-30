@@ -11647,14 +11647,7 @@ var $author$project$UI$Components$Dropdown$Model = F3(
 	function (selectedValue, expanded, options) {
 		return {expanded: expanded, options: options, selectedValue: selectedValue};
 	});
-var $author$project$UI$Components$Dropdown$init = A3(
-	$author$project$UI$Components$Dropdown$Model,
-	$elm$core$Maybe$Nothing,
-	false,
-	_List_fromArray(
-		[
-			{id: 'mock', title: 'mock'}
-		]));
+var $author$project$UI$Components$Dropdown$init = A3($author$project$UI$Components$Dropdown$Model, $elm$core$Maybe$Nothing, false, _List_Nil);
 var $author$project$UI$Sidebar$init = A3(
 	$author$project$UI$Sidebar$Model,
 	_List_fromArray(
@@ -11664,19 +11657,7 @@ var $author$project$UI$Sidebar$init = A3(
 	$author$project$UI$Pages$Documents($author$project$UI$PageViews$Documents$init),
 	$author$project$UI$Components$Dropdown$init);
 var $author$project$Main$init = function (_v0) {
-	var model = {
-		displayedAttrs: _List_Nil,
-		distinctAttr: _List_Nil,
-		documentKeys: _Utils_Tuple2('', _List_Nil),
-		documents: _List_Nil,
-		filterableAttrs: _List_Nil,
-		indexStats: $elm$core$Maybe$Nothing,
-		pages: $author$project$UI$Pages$init,
-		pollingQueue: _List_Nil,
-		searchableAttrs: _List_Nil,
-		sidebarModel: $author$project$UI$Sidebar$init,
-		sortableAttrs: _List_Nil
-	};
+	var model = {displayedAttrs: _List_Nil, distinctAttr: _List_Nil, filterableAttrs: _List_Nil, indexStats: $elm$core$Maybe$Nothing, pages: $author$project$UI$Pages$init, pollingQueue: _List_Nil, searchableAttrs: _List_Nil, sidebarModel: $author$project$UI$Sidebar$init, sortableAttrs: _List_Nil};
 	return _Utils_Tuple2(
 		model,
 		A2(
@@ -12729,7 +12710,22 @@ var $author$project$Main$handleSettingsViewMsg = F2(
 		var updatedModelValue = _Utils_update(
 			model,
 			{pages: updatedPagesModel});
-		return _Utils_Tuple2(updatedModelValue, $elm$core$Platform$Cmd$none);
+		if (msg.$ === 'Save') {
+			return _Utils_Tuple2(
+				updatedModelValue,
+				A2(
+					$elm$core$Platform$Cmd$map,
+					$author$project$Main$ApiRequest,
+					A2(
+						$author$project$Api$Routes$Main$buildRequest,
+						A2(
+							$author$project$Api$Routes$Main$buildPayload,
+							$author$project$Api$Routes$Main$ListIndexes($author$project$Api$Routes$Main$indexesRouteResponseListDecoder),
+							updatedSettingsPageViewModel.endpointValue),
+						$author$project$Main$getSavedToken(model))));
+		} else {
+			return _Utils_Tuple2(updatedModelValue, $elm$core$Platform$Cmd$none);
+		}
 	});
 var $author$project$Api$Routes$Main$ListDocuments = function (a) {
 	return {$: 'ListDocuments', a: a};
@@ -13001,6 +12997,12 @@ var $author$project$UI$PageViews$StopWords$update = F2(
 				var w = msg.a;
 				return _Utils_Tuple2(
 					A2($author$project$UI$PageViews$StopWords$removeWord, model, w),
+					$elm$core$Platform$Cmd$none);
+			case 'Reset':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{deletionQueue: _List_Nil}),
 					$elm$core$Platform$Cmd$none);
 			default:
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -13283,7 +13285,24 @@ var $author$project$Main$handleApiResponse = F2(
 						u,
 						$author$project$UI$Sidebar$SelectPage(selectedPage));
 				} else {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					var s = model.sidebarModel;
+					var d = model.sidebarModel.dropDown;
+					var u = _Utils_update(
+						model,
+						{
+							sidebarModel: _Utils_update(
+								s,
+								{
+									dropDown: function () {
+										var selectedValue = $elm$core$Maybe$Nothing;
+										var options = _List_Nil;
+										return _Utils_update(
+											d,
+											{options: options, selectedValue: selectedValue});
+									}()
+								})
+						});
+					return _Utils_Tuple2(u, $elm$core$Platform$Cmd$none);
 				}
 			case 'HandleShowResponse':
 				var r = apiResponse.a;
@@ -13313,7 +13332,6 @@ var $author$project$Main$handleApiResponse = F2(
 						_Utils_update(
 							model,
 							{
-								documents: documents,
 								pages: A2($author$project$Main$updateDocumentsViewModel, model.pages, documentsPageViewModel)
 							}),
 						$elm$core$Platform$Cmd$none);
@@ -13567,7 +13585,6 @@ var $author$project$Main$handleApiResponse = F2(
 							{
 								displayedAttrs: updatedAttributesPageViewModel.displayed,
 								distinctAttr: updatedAttributesPageViewModel.distinct,
-								documentKeys: _Utils_Tuple2(indexUid, keys),
 								filterableAttrs: updatedAttributesPageViewModel.filterable,
 								indexStats: $elm$core$Maybe$Just(payload),
 								pages: A2($author$project$Main$updateAttributesViewModel, model.pages, updatedAttributesPageViewModel),
@@ -13760,9 +13777,9 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 							$elm$core$Platform$Cmd$none);
 				}
 			case 'Save':
-				var _v13 = $author$project$Main$getCurrentlySelectedIndexId(model);
-				if (_v13.$ === 'Just') {
-					var uid = _v13.a;
+				var _v14 = $author$project$Main$getCurrentlySelectedIndexId(model);
+				if (_v14.$ === 'Just') {
+					var uid = _v14.a;
 					return _Utils_Tuple2(
 						model,
 						$elm$core$Platform$Cmd$batch(
@@ -13889,9 +13906,9 @@ var $author$project$Main$handleAttributesViewMsg = F2(
 											rootUrl),
 										$author$project$Main$getSavedToken(model))),
 									function () {
-									var _v14 = $author$project$UI$PageViews$Attributes$getDistinctAttr(model.distinctAttr);
-									if (_v14.$ === 'Just') {
-										var da = _v14.a;
+									var _v15 = $author$project$UI$PageViews$Attributes$getDistinctAttr(model.distinctAttr);
+									if (_v15.$ === 'Just') {
+										var da = _v15.a;
 										return A2(
 											$elm$core$Platform$Cmd$map,
 											$author$project$Main$ApiRequest,
@@ -13930,8 +13947,8 @@ var $author$project$Main$handlePageViewMessage = F2(
 				return _Debug_todo(
 					'Main',
 					{
-						start: {line: 517, column: 13},
-						end: {line: 517, column: 23}
+						start: {line: 544, column: 13},
+						end: {line: 544, column: 23}
 					})('branch \'IndexesViewMsg _\' not implemented');
 			case 'DocumentsViewMsg':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -13978,14 +13995,21 @@ var $author$project$Main$handleStopWordsViewMsg = F2(
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
 			case 'Reset':
+				var _v9 = A2($author$project$UI$PageViews$StopWords$update, msg, model.pages.stopWords);
+				var m = _v9.a;
+				var um = _Utils_update(
+					model,
+					{
+						pages: A2($author$project$Main$updateStopWordsViewModel, model.pages, m)
+					});
 				return A2(
 					$author$project$Main$update,
 					$author$project$Main$SidebarMsg(
 						$author$project$UI$Sidebar$SelectPage(model.pages.selectedPage)),
-					model);
+					um);
 			default:
-				var _v9 = A2($author$project$UI$PageViews$StopWords$update, msg, model.pages.stopWords);
-				var m = _v9.a;
+				var _v10 = A2($author$project$UI$PageViews$StopWords$update, msg, model.pages.stopWords);
+				var m = _v10.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -14092,7 +14116,6 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{
-							documentKeys: _Utils_Tuple2(p.indexUid, p.keys),
 							pages: A2($author$project$Main$updateAttributesViewModel, model.pages, updatedAttributes)
 						}),
 					$elm$core$Platform$Cmd$none);
@@ -21661,6 +21684,8 @@ var $author$project$UI$Components$Dropdown$dropDownButton = F4(
 					A5($author$project$UI$Icons$buildIcon, closeIcon, style, config, hue, $author$project$UI$Styles$I500)
 				]));
 	});
+var $mdgriffith$elm_ui$Internal$Flag$fontAlignment = $mdgriffith$elm_ui$Internal$Flag$flag(12);
+var $mdgriffith$elm_ui$Element$Font$center = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$fontAlignment, $mdgriffith$elm_ui$Internal$Style$classes.textCenter);
 var $author$project$UI$Components$Dropdown$Select = function (a) {
 	return {$: 'Select', a: a};
 };
@@ -21752,12 +21777,25 @@ var $author$project$UI$Components$Dropdown$dropDownMenu = F3(
 					$mdgriffith$elm_ui$Element$Background$color(
 					A3($author$project$UI$Styles$color, $author$project$UI$Styles$Grayscale, $author$project$UI$Styles$I100, config))
 				]),
-			A2(
+			($elm$core$List$length(items) > 0) ? A2(
 				$elm$core$List$map,
 				function (item) {
 					return A2($author$project$UI$Components$Dropdown$dropDownMenuListItem, item, config);
 				},
-				items)) : $mdgriffith$elm_ui$Element$none;
+				items) : _List_fromArray(
+				[
+					A2(
+					$mdgriffith$elm_ui$Element$el,
+					_Utils_ap(
+						A2($author$project$UI$Styles$getTypographicStyleFor, $author$project$UI$Styles$Body, config),
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$padding(20),
+								$mdgriffith$elm_ui$Element$Font$center,
+								$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+							])),
+					$mdgriffith$elm_ui$Element$text('No indexes found'))
+				])) : $mdgriffith$elm_ui$Element$none;
 	});
 var $mdgriffith$elm_ui$Internal$Model$MoveY = function (a) {
 	return {$: 'MoveY', a: a};
@@ -23339,7 +23377,6 @@ var $author$project$UI$PageViews$Settings$EndpointValueChanged = function (a) {
 var $author$project$UI$Styles$Label = {$: 'Label'};
 var $author$project$UI$Icons$LightMode = {$: 'LightMode'};
 var $author$project$UI$PageViews$Settings$None = {$: 'None'};
-var $author$project$UI$Icons$SystemThemeMode = {$: 'SystemThemeMode'};
 var $author$project$UI$PageViews$Settings$TokenValueChanged = function (a) {
 	return {$: 'TokenValueChanged', a: a};
 };
@@ -24336,14 +24373,7 @@ var $author$project$UI$PageViews$Settings$view = F2(
 											_Utils_eq(model.colorScheme, $author$project$UI$Styles$Dark),
 											$author$project$UI$PageViews$Settings$UpdateColorScheme($author$project$UI$Styles$Dark),
 											config),
-											$author$project$UI$Elements$spacer($author$project$UI$Styles$SM),
-											A5(
-											$author$project$UI$Elements$tile,
-											$author$project$UI$Icons$SystemThemeMode,
-											'System',
-											false,
-											$author$project$UI$PageViews$Settings$UpdateColorScheme($author$project$UI$Styles$Dark),
-											config)
+											$author$project$UI$Elements$spacer($author$project$UI$Styles$SM)
 										]))
 								]))
 						]))
@@ -24698,7 +24728,7 @@ var $author$project$UI$Components$SynonymCard$valueChangedView = F2(
 					A4(
 					$author$project$UI$Elements$button,
 					$author$project$UI$Elements$Subtle,
-					'Cancel',
+					'Undo',
 					$author$project$UI$Components$SynonymCard$Reset(model.index),
 					config)
 				])) : $mdgriffith$elm_ui$Element$none;

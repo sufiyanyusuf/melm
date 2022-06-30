@@ -1,9 +1,11 @@
 module UI.Components.Dropdown exposing (Model, Msg(..), init, update, view)
 
+import Chart.Attributes exposing (alignMiddle)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border exposing (rounded)
 import Element.Events
+import Element.Font
 import Request exposing (RequestStatus(..))
 import UI.Icons exposing (Icon(..), Style(..))
 import UI.Styles exposing (ColorHue(..), ColorIntensity(..), Config, Size(..), applyFontColor)
@@ -31,10 +33,7 @@ init =
     Model
         Nothing
         False
-        [ { id = "mock"
-          , title = "mock"
-          }
-        ]
+        []
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -143,7 +142,28 @@ dropDownMenu visible items config =
             , Element.Border.color (UI.Styles.color Grayscale I200 config)
             , Background.color (UI.Styles.color Grayscale I100 config)
             ]
-            (List.map (\item -> dropDownMenuListItem item config) items)
+            (if List.length items > 0 then
+                List.map (\item -> dropDownMenuListItem item config) items
+
+             else
+                [ el
+                    (UI.Styles.getTypographicStyleFor UI.Styles.Body config
+                        ++ [ padding 20
+                           , Element.Font.center
+                           , Element.width Element.fill
+                           ]
+                    )
+                    (text "No indexes found")
+
+                -- , Element.paragraph
+                --     [ Font.center
+                --     , Element.spacingXY 0 4
+                --     , Element.height Element.shrink
+                --     , Element.width Element.fill
+                --     ]
+                --     [ Element.text "" ]
+                ]
+            )
 
     else
         Element.none

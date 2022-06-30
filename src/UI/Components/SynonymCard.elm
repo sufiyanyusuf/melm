@@ -101,7 +101,7 @@ valueChangedView model config =
             [ Element.width Element.shrink
             , padding 12
             ]
-            [ UI.Elements.button UI.Elements.Subtle "Cancel" (Reset model.index) config
+            [ UI.Elements.button UI.Elements.Subtle "Undo" (Reset model.index) config
             ]
 
     else

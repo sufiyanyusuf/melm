@@ -89,7 +89,8 @@ view model config =
                     , Elements.spacer UI.Styles.SM
                     , Elements.tile DarkMode "Dark" (model.colorScheme == Dark) (UpdateColorScheme Dark) config
                     , Elements.spacer UI.Styles.SM
-                    , Elements.tile SystemThemeMode "System" False (UpdateColorScheme Dark) config
+
+                    -- , Elements.tile SystemThemeMode "System" False (UpdateColorScheme Dark) config
                     ]
                 ]
             ]

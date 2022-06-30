@@ -86,8 +86,6 @@ getTaskId t =
 
 type alias Model =
     { pages : Views.Model
-    , documents : List String
-    , documentKeys : ( String, List String )
     , pollingQueue : List ( Task, SweetPoll.PollingState String )
     , displayedAttrs : List AttributesPage.Attribute
     , sortableAttrs : List AttributesPage.Attribute
@@ -168,8 +166,8 @@ update msg model =
             in
             -- update keys in model for index
             ( { model
-                | documentKeys = ( p.indexUid, p.keys )
-                , pages = updateAttributesViewModel model.pages updatedAttributes
+                -- | documentKeys = ( p.indexUid, p.keys )
+                | pages = updateAttributesViewModel model.pages updatedAttributes
               }
             , Cmd.none
             )
@@ -222,7 +220,33 @@ handleApiResponse model apiResponse =
                     handleSidebarSelection u (Sidebar.SelectPage selectedPage)
 
                 Err _ ->
-                    ( model, Cmd.none )
+                    let
+                        d =
+                            model.sidebarModel.dropDown
+
+                        s =
+                            model.sidebarModel
+
+                        u =
+                            { model
+                                | sidebarModel =
+                                    { s
+                                        | dropDown =
+                                            let
+                                                options =
+                                                    []
+
+                                                selectedValue =
+                                                    Nothing
+                                            in
+                                            { d
+                                                | options = options
+                                                , selectedValue = selectedValue
+                                            }
+                                    }
+                            }
+                    in
+                    ( u, Cmd.none )
 
         HandleShowResponse r ->
             case r of
@@ -246,8 +270,7 @@ handleApiResponse model apiResponse =
                             DocumentsPage.Model documents
                     in
                     ( { model
-                        | documents = documents
-                        , pages = updateDocumentsViewModel model.pages documentsPageViewModel
+                        | pages = updateDocumentsViewModel model.pages documentsPageViewModel
                       }
                     , Cmd.none
                     )
@@ -472,7 +495,8 @@ handleApiResponse model apiResponse =
                         , searchableAttrs = updatedAttributesPageViewModel.searchable
                         , filterableAttrs = updatedAttributesPageViewModel.filterable
                         , distinctAttr = updatedAttributesPageViewModel.distinct
-                        , documentKeys = ( indexUid, keys )
+
+                        -- , documentKeys = ( indexUid, keys )
                         , pages = updateAttributesViewModel model.pages updatedAttributesPageViewModel
                       }
                     , let
@@ -821,7 +845,14 @@ handleStopWordsViewMsg model msg =
                     ( model, Cmd.none )
 
         StopWordsPage.Reset ->
-            update (SidebarMsg (SelectPage model.pages.selectedPage)) model
+            let
+                ( m, _ ) =
+                    StopWordsPage.update msg model.pages.stopWords
+
+                um =
+                    { model | pages = updateStopWordsViewModel model.pages m }
+            in
+            update (SidebarMsg (SelectPage model.pages.selectedPage)) um
 
         _ ->
             let
@@ -851,7 +882,17 @@ handleSettingsViewMsg model msg =
                 | pages = updatedPagesModel
             }
     in
-    ( updatedModelValue, Cmd.none )
+    case msg of
+        SettingsPage.Save ->
+            ( updatedModelValue
+            , Api.Routes.Main.buildRequest
+                (Api.Routes.Main.buildPayload (ListIndexes Api.Routes.Main.indexesRouteResponseListDecoder) updatedSettingsPageViewModel.endpointValue)
+                (getSavedToken model)
+                |> Cmd.map ApiRequest
+            )
+
+        _ ->
+            ( updatedModelValue, Cmd.none )
 
 
 handleSidebarSelection : Model -> Sidebar.Msg -> ( Model, Cmd Msg )
@@ -1343,9 +1384,11 @@ init _ =
     let
         model =
             { pages = Views.init
-            , documents = []
+
+            -- , documents = []
             , pollingQueue = []
-            , documentKeys = ( "", [] )
+
+            -- , documentKeys = ( "", [] )
             , displayedAttrs = []
             , sortableAttrs = []
             , searchableAttrs = []

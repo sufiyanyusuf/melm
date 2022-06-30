@@ -42,6 +42,9 @@ update msg model =
         Remove w ->
             ( removeWord model w, Cmd.none )
 
+        Reset ->
+            ( { model | deletionQueue = [] }, Cmd.none )
+
         _ ->
             ( model, Cmd.none )
 
