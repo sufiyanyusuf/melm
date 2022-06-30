@@ -21,6 +21,7 @@ import Utils exposing (addIf)
 type Msg
     = SelectPage UI.Pages.Page
     | DropdownMsg Dropdown.Msg
+    | ClearDropdownOptions
 
 
 
@@ -28,7 +29,10 @@ type Msg
 
 
 type alias Model =
-    { pages : List UI.Pages.Page, selectedPage : UI.Pages.Page, dropDown : Dropdown.Model }
+    { pages : List UI.Pages.Page
+    , selectedPage : UI.Pages.Page
+    , dropDown : Dropdown.Model
+    }
 
 
 init : Model
@@ -51,6 +55,26 @@ update msg model =
                     Dropdown.update m model.dropDown
             in
             ( { model | dropDown = d }, Cmd.none )
+
+        ClearDropdownOptions ->
+            let
+                dropdown =
+                    let
+                        d =
+                            model.dropDown
+
+                        options =
+                            []
+
+                        selectedValue =
+                            Nothing
+                    in
+                    { d
+                        | options = options
+                        , selectedValue = selectedValue
+                    }
+            in
+            ( { model | dropDown = dropdown }, Cmd.none )
 
         _ ->
             ( model, Cmd.none )

@@ -1,13 +1,9 @@
 module UI.PageViews.Documents exposing (..)
 
--- import JsonTree
-
-import Dict exposing (Dict)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border exposing (rounded)
-import Json.Decode as Decode exposing (Value, decodeString, dict, errorToString, field, int, string)
-import Json.Encode as Encode
+import Json.Decode exposing (decodeString, field, int, string)
 import Json.Print as Print
 import Request exposing (RequestStatus(..))
 import UI.Components.Toolbar
@@ -16,7 +12,18 @@ import UI.Styles exposing (ColorHue(..), ColorIntensity(..), Config)
 
 
 type Msg
-    = X
+    = Clear
+    | None
+
+
+update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        Clear ->
+            { model | documents = [] }
+
+        None ->
+            model
 
 
 type alias Model =
@@ -74,7 +81,7 @@ toolbarView _ config =
             , title = "Documents"
             }
     in
-    UI.Components.Toolbar.toolbarView toolbarModel X X X config
+    UI.Components.Toolbar.toolbarView toolbarModel None None None config
 
 
 card : List (Element.Attr () msg) -> Config -> List (Element.Attr () msg)

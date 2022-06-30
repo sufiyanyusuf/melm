@@ -10,7 +10,7 @@ import SweetPoll
 
 type Msg
     = HandleListIndexesResponse (Result Http.Error (List IndexesRouteResponseListItem))
-    | HandleShowResponse (Result Http.Error IndexesRouteResponseListItem)
+      -- | HandleShowResponse (Result Http.Error IndexesRouteResponseListItem)
     | HandleDocumentsResponse (Result Http.Error String)
     | HandleListStopWordsResponse (Result Http.Error (List String)) String
     | HandleUpdateSynonymsResponse (Result Http.Error SettingsRouteResponseItem)
@@ -32,7 +32,7 @@ type Msg
 
 type Route
     = ListIndexes (Decoder (List IndexesRouteResponseListItem))
-    | ShowIndex String (Decoder IndexesRouteResponseListItem)
+      -- | ShowIndex String (Decoder IndexesRouteResponseListItem)
     | CreateIndex ( String, Maybe String )
     | UpdateIndex String
     | DeleteIndex String
@@ -114,17 +114,16 @@ buildRequest payload token =
                 , tracker = Nothing
                 }
 
-        ShowIndex _ d ->
-            Http.request
-                { method = getRequestMethodTitle payload.method
-                , headers = headers token
-                , url = payload.endpoint
-                , body = payload.body
-                , expect = Http.expectJson HandleShowResponse d
-                , timeout = Nothing
-                , tracker = Nothing
-                }
-
+        -- ShowIndex _ d ->
+        --     Http.request
+        --         { method = getRequestMethodTitle payload.method
+        --         , headers = headers token
+        --         , url = payload.endpoint
+        --         , body = payload.body
+        --         , expect = Http.expectJson HandleShowResponse d
+        --         , timeout = Nothing
+        --         , tracker = Nothing
+        --         }
         CreateIndex _ ->
             Debug.todo "branch 'Create _' not implemented"
 
@@ -331,9 +330,8 @@ buildPayload r rootUrl =
         ListIndexes _ ->
             { method = GET, endpoint = rootUrl ++ "/indexes", body = Http.emptyBody, route = r }
 
-        ShowIndex i _ ->
-            { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i, body = Http.emptyBody, route = r }
-
+        -- ShowIndex i _ ->
+        --     { method = GET, endpoint = rootUrl ++ "/indexes/" ++ i, body = Http.emptyBody, route = r }
         CreateIndex ( i, k ) ->
             case k of
                 Just key ->

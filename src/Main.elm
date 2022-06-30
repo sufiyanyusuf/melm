@@ -92,7 +92,6 @@ type alias Model =
     , searchableAttrs : List AttributesPage.Attribute
     , filterableAttrs : List AttributesPage.Attribute
     , distinctAttr : List AttributesPage.Attribute --get rid of list, as is singular...
-    , indexStats : Maybe IndexStats
     , sidebarModel : Sidebar.Model
     }
 
@@ -180,7 +179,6 @@ update msg model =
 handleApiResponse : Model -> Api.Routes.Main.Msg -> ( Model, Cmd Msg )
 handleApiResponse model apiResponse =
     case apiResponse of
-        -- dis the one
         HandleListIndexesResponse r ->
             case r of
                 Ok payload ->
@@ -221,40 +219,13 @@ handleApiResponse model apiResponse =
 
                 Err _ ->
                     let
-                        d =
-                            model.sidebarModel.dropDown
+                        purgedModel =
+                            purgeModel model
 
-                        s =
-                            model.sidebarModel
-
-                        u =
-                            { model
-                                | sidebarModel =
-                                    { s
-                                        | dropDown =
-                                            let
-                                                options =
-                                                    []
-
-                                                selectedValue =
-                                                    Nothing
-                                            in
-                                            { d
-                                                | options = options
-                                                , selectedValue = selectedValue
-                                            }
-                                    }
-                            }
+                        selectedPage =
+                            model.pages.selectedPage
                     in
-                    ( u, Cmd.none )
-
-        HandleShowResponse r ->
-            case r of
-                Ok _ ->
-                    ( model, Cmd.none )
-
-                Err _ ->
-                    ( model, Cmd.none )
+                    handleSidebarSelection purgedModel (Sidebar.SelectPage selectedPage)
 
         HandleDocumentsResponse r ->
             case r of
@@ -276,7 +247,18 @@ handleApiResponse model apiResponse =
                     )
 
                 Err _ ->
-                    ( model, Cmd.none )
+                    let
+                        documents =
+                            []
+
+                        documentsPageViewModel =
+                            DocumentsPage.Model documents
+                    in
+                    ( { model
+                        | pages = updateDocumentsViewModel model.pages documentsPageViewModel
+                      }
+                    , Cmd.none
+                    )
 
         HandleListStopWordsResponse r _ ->
             case r of
@@ -489,8 +471,7 @@ handleApiResponse model apiResponse =
                             AttributesPage.buildMockModelFromAttributes keys
                     in
                     ( { model
-                        | indexStats = Just payload
-                        , displayedAttrs = updatedAttributesPageViewModel.displayed
+                        | displayedAttrs = updatedAttributesPageViewModel.displayed
                         , sortableAttrs = updatedAttributesPageViewModel.sortable
                         , searchableAttrs = updatedAttributesPageViewModel.searchable
                         , filterableAttrs = updatedAttributesPageViewModel.filterable
@@ -924,7 +905,18 @@ handleSidebarSelection model sidebarMsg =
                             )
 
                         Nothing ->
-                            ( updatedModel, Cmd.none )
+                            let
+                                updatedDocsPage =
+                                    DocumentsPage.update DocumentsPage.Clear model.pages.documents
+
+                                up =
+                                    updateDocumentsViewModel model.pages updatedDocsPage
+                            in
+                            ( { updatedModel
+                                | pages = up
+                              }
+                            , Cmd.none
+                            )
 
                 Synonyms m ->
                     case getCurrentlySelectedIndexId updatedModel of
@@ -984,6 +976,9 @@ handleSidebarSelection model sidebarMsg =
                             Sidebar.update sidebarMsg model.sidebarModel
                     in
                     ( { model | sidebarModel = updatedSidebarModel }, Cmd.none )
+
+        ClearDropdownOptions ->
+            ( purgeModel model, Cmd.none )
 
 
 handlePollRequest : Model -> Task -> ( Model, Cmd Msg )
@@ -1054,6 +1049,43 @@ getAttributesViewModel model =
 
 
 -- VIEW MODEL SETTERS
+
+
+purgeModel : Model -> Model
+purgeModel model =
+    let
+        ( s, _ ) =
+            Sidebar.update Sidebar.ClearDropdownOptions model.sidebarModel
+
+        documents =
+            DocumentsPage.update DocumentsPage.Clear model.pages.documents
+
+        synonyms =
+            model.pages.synonyms
+
+        stopWords =
+            model.pages.stopWords
+
+        attributes =
+            model.pages.attributes
+
+        selectedPage =
+            model.pages.selectedPage
+
+        settings =
+            model.pages.settings
+    in
+    { model
+        | sidebarModel = s
+        , pages =
+            { documents = documents
+            , settings = settings
+            , synonyms = synonyms
+            , stopWords = stopWords
+            , attributes = attributes
+            , selectedPage = selectedPage
+            }
+    }
 
 
 updateSettingsViewModel : Views.Model -> SettingsPage.Model -> Views.Model
@@ -1384,17 +1416,12 @@ init _ =
     let
         model =
             { pages = Views.init
-
-            -- , documents = []
             , pollingQueue = []
-
-            -- , documentKeys = ( "", [] )
             , displayedAttrs = []
             , sortableAttrs = []
             , searchableAttrs = []
             , filterableAttrs = []
             , distinctAttr = []
-            , indexStats = Nothing
             , sidebarModel = Sidebar.init
             }
     in
