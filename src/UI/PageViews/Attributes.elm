@@ -328,6 +328,7 @@ type Msg
     | UpdateAttributes (List Attribute) AttributeType
     | HandleResponse AttributeType (List String)
     | UpdateSyncStatusState AttributeType RequestStatus
+    | Purge
 
 
 update : Msg -> Model -> Model
@@ -363,6 +364,9 @@ update msg model =
                         (getAttrs model t)
             in
             update (UpdateAttributes ul t) model
+
+        Purge ->
+            init
 
         _ ->
             model

@@ -52,6 +52,9 @@ update msg model =
             in
             ( { model | synonymCards = Array.toList uarr, deletionQueue = udq }, Cmd.none )
 
+        Purge ->
+            ( init, Cmd.none )
+
         _ ->
             ( model, Cmd.none )
 
@@ -63,6 +66,7 @@ type Msg
     | NoAction
     | Reset
     | Delete Int
+    | Purge
 
 
 type alias Model =

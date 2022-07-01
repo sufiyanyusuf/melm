@@ -314,7 +314,7 @@ handleApiResponse model apiResponse =
                         updatedAttrViewModel =
                             AttributesPage.update
                                 (AttributesPage.HandleResponse AttributesPage.Displayed payload)
-                                (getAttributesViewModel model)
+                                model.pages.attributes
                     in
                     ( { model
                         | pages = updateAttributesViewModel model.pages updatedAttrViewModel
@@ -332,7 +332,7 @@ handleApiResponse model apiResponse =
                         updatedAttrViewModel =
                             AttributesPage.update
                                 (AttributesPage.HandleResponse AttributesPage.Sortable payload)
-                                (getAttributesViewModel model)
+                                model.pages.attributes
                     in
                     ( { model
                         | pages = updateAttributesViewModel model.pages updatedAttrViewModel
@@ -350,7 +350,7 @@ handleApiResponse model apiResponse =
                         updatedAttrViewModel =
                             AttributesPage.update
                                 (AttributesPage.HandleResponse AttributesPage.Filterable payload)
-                                (getAttributesViewModel model)
+                                model.pages.attributes
                     in
                     ( { model
                         | pages = updateAttributesViewModel model.pages updatedAttrViewModel
@@ -368,7 +368,7 @@ handleApiResponse model apiResponse =
                         updatedAttrViewModel =
                             AttributesPage.update
                                 (AttributesPage.HandleResponse AttributesPage.Searchable payload)
-                                (getAttributesViewModel model)
+                                model.pages.attributes
                     in
                     ( { model
                         | pages = updateAttributesViewModel model.pages updatedAttrViewModel
@@ -388,7 +388,7 @@ handleApiResponse model apiResponse =
                                 updatedAttrViewModel =
                                     AttributesPage.update
                                         (AttributesPage.HandleResponse AttributesPage.Distinct [ p ])
-                                        (getAttributesViewModel model)
+                                        model.pages.attributes
                             in
                             ( { model
                                 | pages = updateAttributesViewModel model.pages updatedAttrViewModel
@@ -501,9 +501,6 @@ handlePageViewMessage model pageViewMsg =
         PageView.SettingsViewMsg m ->
             handleSettingsViewMsg model m
 
-        PageView.IndexesViewMsg _ ->
-            Debug.todo "branch 'IndexesViewMsg _' not implemented"
-
         PageView.DocumentsViewMsg _ ->
             ( model, Cmd.none )
 
@@ -606,7 +603,7 @@ handleAttributesViewMsg model msg =
                 updatedAttrsViewModel =
                     AttributesPage.update
                         msg
-                        (getAttributesViewModel model)
+                        model.pages.attributes
             in
             ( { model
                 | pages = updateAttributesViewModel model.pages updatedAttrsViewModel
@@ -903,19 +900,7 @@ getSynonymsViewModel model =
     model.pages.synonyms
 
 
-getAttributesViewModel : Model -> AttributesPage.Model
-getAttributesViewModel model =
-    -- TODO - Dispose this fn
-    model.pages.attributes
 
-
-
--- { displayed = model.displayedAttrs
--- , sortable = model.sortableAttrs
--- , searchable = model.searchableAttrs
--- , filterable = model.filterableAttrs
--- , distinct = model.distinctAttr
--- }
 -- VIEW MODEL SETTERS
 
 
@@ -928,14 +913,14 @@ purgeModel model =
         documents =
             DocumentsPage.update DocumentsPage.Clear model.pages.documents
 
-        synonyms =
-            model.pages.synonyms
+        ( synonyms, _ ) =
+            SynonymsPage.update SynonymsPage.Purge model.pages.synonyms
 
-        stopWords =
-            model.pages.stopWords
+        ( stopWords, _ ) =
+            StopWordsPage.update StopWordsPage.Purge model.pages.stopWords
 
         attributes =
-            model.pages.attributes
+            AttributesPage.update AttributesPage.Purge model.pages.attributes
 
         selectedPage =
             model.pages.selectedPage

@@ -17,8 +17,7 @@ import UI.Styles exposing (ColorHue(..), ColorIntensity(..), Config)
 
 
 type Msg
-    = IndexesViewMsg IndexesView.Msg
-    | SettingsViewMsg SettingsView.Msg
+    = SettingsViewMsg SettingsView.Msg
     | DocumentsViewMsg DocumentsView.Msg
     | StopWordsViewMsg StopWords.Msg
     | SynonymsViewMsg SynonymsView.Msg

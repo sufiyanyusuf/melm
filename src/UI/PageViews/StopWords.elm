@@ -14,6 +14,7 @@ type Msg
     | Sync
     | Reset
     | None
+    | Purge
 
 
 type alias Model =
@@ -44,6 +45,9 @@ update msg model =
 
         Reset ->
             ( { model | deletionQueue = [] }, Cmd.none )
+
+        Purge ->
+            ( init, Cmd.none )
 
         _ ->
             ( model, Cmd.none )
