@@ -1,4 +1,13 @@
-module UI.PageViews.Attributes exposing (..)
+module UI.PageViews.Attributes exposing
+    ( AttributeType(..)
+    , Model
+    , Msg(..)
+    , getDistinctAttr
+    , init
+    , seedModelFromAttributeKeys
+    , update
+    , view
+    )
 
 import Element exposing (..)
 import Element.Background
@@ -26,14 +35,6 @@ type alias Attribute =
     , saved : Bool
     , requestStatus : RequestStatus
     }
-
-
-type Msg
-    = X Bool
-    | Toggle Attribute AttributeType
-    | Save
-    | Reset
-    | None
 
 
 view : Model -> Config -> Element Msg
@@ -69,6 +70,25 @@ view model config =
 getAllAttrs : Model -> List Attribute
 getAllAttrs model =
     List.concat [ model.displayed, model.sortable, model.searchable, model.filterable, model.distinct ]
+
+
+getAttrs : Model -> AttributeType -> List Attribute
+getAttrs model attrType =
+    case attrType of
+        Displayed ->
+            model.displayed
+
+        Searchable ->
+            model.searchable
+
+        Sortable ->
+            model.sortable
+
+        Filterable ->
+            model.filterable
+
+        Distinct ->
+            model.distinct
 
 
 isLoading : Model -> Bool
@@ -155,7 +175,7 @@ cardViewRow model attrType config =
 
 init : Model
 init =
-    buildMockModelFromAttributes []
+    seedModelFromAttributeKeys []
 
 
 type AttributeType
@@ -300,12 +320,60 @@ updateSyncStatusState model status =
         model
 
 
+type Msg
+    = Toggle Attribute AttributeType
+    | Save
+    | Reset
+    | None
+    | UpdateAttributes (List Attribute) AttributeType
+    | HandleResponse AttributeType (List String)
+    | UpdateSyncStatusState AttributeType RequestStatus
+
+
+update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        UpdateAttributes l t ->
+            updateAttributes model l t
+
+        HandleResponse t l ->
+            buildModelFromResponse t l model
+
+        UpdateSyncStatusState t r ->
+            let
+                l =
+                    getAttrs model t
+
+                ul =
+                    updateSyncStatusState l r
+            in
+            update (UpdateAttributes ul t) model
+
+        Toggle a t ->
+            let
+                ul =
+                    List.map
+                        (\x ->
+                            if x.title == a.title then
+                                { x | enabled = not x.enabled }
+
+                            else
+                                x
+                        )
+                        (getAttrs model t)
+            in
+            update (UpdateAttributes ul t) model
+
+        _ ->
+            model
+
+
 
 -- MOCK
 
 
-buildMockModelFromAttributes : List String -> Model
-buildMockModelFromAttributes l =
+seedModelFromAttributeKeys : List String -> Model
+seedModelFromAttributeKeys l =
     { displayed =
         List.map
             (\x ->

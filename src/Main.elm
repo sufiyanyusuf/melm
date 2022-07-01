@@ -11,7 +11,7 @@ import SweetPoll exposing (PollingState)
 import UI.Components.Dropdown exposing (Msg(..))
 import UI.Components.SynonymCard exposing (Msg(..))
 import UI.PageView as PageView exposing (Msg(..))
-import UI.PageViews.Attributes as AttributesPage exposing (buildModelFromResponse)
+import UI.PageViews.Attributes as AttributesPage
 import UI.PageViews.Documents as DocumentsPage
 import UI.PageViews.Settings as SettingsPage
 import UI.PageViews.StopWords as StopWordsPage
@@ -87,11 +87,6 @@ getTaskId t =
 type alias Model =
     { pages : Views.Model
     , pollingQueue : List ( Task, SweetPoll.PollingState String )
-    , displayedAttrs : List AttributesPage.Attribute
-    , sortableAttrs : List AttributesPage.Attribute
-    , searchableAttrs : List AttributesPage.Attribute
-    , filterableAttrs : List AttributesPage.Attribute
-    , distinctAttr : List AttributesPage.Attribute --get rid of list, as is singular...
     , sidebarModel : Sidebar.Model
     }
 
@@ -161,7 +156,7 @@ update msg model =
         UpdateKeysForIndex p ->
             let
                 updatedAttributes =
-                    AttributesPage.buildMockModelFromAttributes p.keys
+                    AttributesPage.seedModelFromAttributeKeys p.keys
             in
             -- update keys in model for index
             ( { model
@@ -316,14 +311,13 @@ handleApiResponse model apiResponse =
             case r of
                 Ok payload ->
                     let
-                        updatedViewModel =
-                            buildModelFromResponse AttributesPage.Displayed
-                                payload
+                        updatedAttrViewModel =
+                            AttributesPage.update
+                                (AttributesPage.HandleResponse AttributesPage.Displayed payload)
                                 (getAttributesViewModel model)
                     in
                     ( { model
-                        | displayedAttrs = updatedViewModel.displayed
-                        , pages = updateAttributesViewModel model.pages updatedViewModel
+                        | pages = updateAttributesViewModel model.pages updatedAttrViewModel
                       }
                     , Cmd.none
                     )
@@ -335,14 +329,13 @@ handleApiResponse model apiResponse =
             case r of
                 Ok payload ->
                     let
-                        updatedViewModel =
-                            buildModelFromResponse AttributesPage.Sortable
-                                payload
+                        updatedAttrViewModel =
+                            AttributesPage.update
+                                (AttributesPage.HandleResponse AttributesPage.Sortable payload)
                                 (getAttributesViewModel model)
                     in
                     ( { model
-                        | sortableAttrs = updatedViewModel.sortable
-                        , pages = updateAttributesViewModel model.pages updatedViewModel
+                        | pages = updateAttributesViewModel model.pages updatedAttrViewModel
                       }
                     , Cmd.none
                     )
@@ -354,14 +347,13 @@ handleApiResponse model apiResponse =
             case r of
                 Ok payload ->
                     let
-                        updatedViewModel =
-                            buildModelFromResponse AttributesPage.Filterable
-                                payload
+                        updatedAttrViewModel =
+                            AttributesPage.update
+                                (AttributesPage.HandleResponse AttributesPage.Filterable payload)
                                 (getAttributesViewModel model)
                     in
                     ( { model
-                        | filterableAttrs = updatedViewModel.filterable
-                        , pages = updateAttributesViewModel model.pages updatedViewModel
+                        | pages = updateAttributesViewModel model.pages updatedAttrViewModel
                       }
                     , Cmd.none
                     )
@@ -373,14 +365,13 @@ handleApiResponse model apiResponse =
             case r of
                 Ok payload ->
                     let
-                        updatedViewModel =
-                            buildModelFromResponse AttributesPage.Searchable
-                                payload
+                        updatedAttrViewModel =
+                            AttributesPage.update
+                                (AttributesPage.HandleResponse AttributesPage.Searchable payload)
                                 (getAttributesViewModel model)
                     in
                     ( { model
-                        | searchableAttrs = updatedViewModel.searchable
-                        , pages = updateAttributesViewModel model.pages updatedViewModel
+                        | pages = updateAttributesViewModel model.pages updatedAttrViewModel
                       }
                     , Cmd.none
                     )
@@ -394,14 +385,13 @@ handleApiResponse model apiResponse =
                     case payload of
                         Just p ->
                             let
-                                updatedViewModel =
-                                    buildModelFromResponse AttributesPage.Distinct
-                                        [ p ]
+                                updatedAttrViewModel =
+                                    AttributesPage.update
+                                        (AttributesPage.HandleResponse AttributesPage.Distinct [ p ])
                                         (getAttributesViewModel model)
                             in
                             ( { model
-                                | distinctAttr = updatedViewModel.distinct
-                                , pages = updateAttributesViewModel model.pages updatedViewModel
+                                | pages = updateAttributesViewModel model.pages updatedAttrViewModel
                               }
                             , Cmd.none
                             )
@@ -468,17 +458,10 @@ handleApiResponse model apiResponse =
                             Dict.keys payload.fieldDistribution
 
                         updatedAttributesPageViewModel =
-                            AttributesPage.buildMockModelFromAttributes keys
+                            AttributesPage.seedModelFromAttributeKeys keys
                     in
                     ( { model
-                        | displayedAttrs = updatedAttributesPageViewModel.displayed
-                        , sortableAttrs = updatedAttributesPageViewModel.sortable
-                        , searchableAttrs = updatedAttributesPageViewModel.searchable
-                        , filterableAttrs = updatedAttributesPageViewModel.filterable
-                        , distinctAttr = updatedAttributesPageViewModel.distinct
-
-                        -- , documentKeys = ( indexUid, keys )
-                        , pages = updateAttributesViewModel model.pages updatedAttributesPageViewModel
+                        | pages = updateAttributesViewModel model.pages updatedAttributesPageViewModel
                       }
                     , let
                         rootUrl =
@@ -541,121 +524,6 @@ handleAttributesViewMsg model msg =
             getRootUrl model
     in
     case msg of
-        AttributesPage.X _ ->
-            ( model, Cmd.none )
-
-        AttributesPage.Toggle attr attrType ->
-            case attrType of
-                AttributesPage.Displayed ->
-                    let
-                        updatedDisplayAttrs =
-                            List.map
-                                (\x ->
-                                    if x.title == attr.title then
-                                        { x | enabled = not x.enabled }
-
-                                    else
-                                        x
-                                )
-                                model.displayedAttrs
-
-                        updatedModel =
-                            { model | displayedAttrs = updatedDisplayAttrs }
-                    in
-                    ( { updatedModel
-                        | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
-                      }
-                    , Cmd.none
-                    )
-
-                AttributesPage.Searchable ->
-                    let
-                        updatedSearchableAttrs =
-                            List.map
-                                (\x ->
-                                    if x.title == attr.title then
-                                        { x | enabled = not x.enabled }
-
-                                    else
-                                        x
-                                )
-                                model.searchableAttrs
-
-                        updatedModel =
-                            { model | searchableAttrs = updatedSearchableAttrs }
-                    in
-                    ( { updatedModel
-                        | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
-                      }
-                    , Cmd.none
-                    )
-
-                AttributesPage.Sortable ->
-                    let
-                        updatedSortableAttrs =
-                            List.map
-                                (\x ->
-                                    if x.title == attr.title then
-                                        { x | enabled = not x.enabled }
-
-                                    else
-                                        x
-                                )
-                                model.sortableAttrs
-
-                        updatedModel =
-                            { model | sortableAttrs = updatedSortableAttrs }
-                    in
-                    ( { updatedModel
-                        | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
-                      }
-                    , Cmd.none
-                    )
-
-                AttributesPage.Filterable ->
-                    let
-                        updatedFilterableAttrs =
-                            List.map
-                                (\x ->
-                                    if x.title == attr.title then
-                                        { x | enabled = not x.enabled }
-
-                                    else
-                                        x
-                                )
-                                model.filterableAttrs
-
-                        updatedModel =
-                            { model | filterableAttrs = updatedFilterableAttrs }
-                    in
-                    ( { updatedModel
-                        | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
-                      }
-                    , Cmd.none
-                    )
-
-                AttributesPage.Distinct ->
-                    let
-                        updatedDistinctAttr =
-                            List.map
-                                (\x ->
-                                    if x.title == attr.title then
-                                        { x | enabled = not x.enabled }
-
-                                    else
-                                        { x | enabled = False }
-                                )
-                                model.distinctAttr
-
-                        updatedModel =
-                            { model | distinctAttr = updatedDistinctAttr }
-                    in
-                    ( { updatedModel
-                        | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
-                      }
-                    , Cmd.none
-                    )
-
         AttributesPage.Save ->
             case getCurrentlySelectedIndexId model of
                 Just uid ->
@@ -664,7 +532,7 @@ handleAttributesViewMsg model msg =
                         [ Api.Routes.Main.buildRequest
                             (Api.Routes.Main.buildPayload
                                 (UpdateDisplayedAttrs uid
-                                    (List.filter (\x -> x.enabled == True) model.displayedAttrs
+                                    (List.filter (\x -> x.enabled == True) model.pages.attributes.displayed
                                         |> List.map (\x -> x.title)
                                     )
                                     Api.Routes.Main.settingsUpdateDecoder
@@ -676,7 +544,7 @@ handleAttributesViewMsg model msg =
                         , Api.Routes.Main.buildRequest
                             (Api.Routes.Main.buildPayload
                                 (UpdateFilterableAttrs uid
-                                    (List.filter (\x -> x.enabled == True) model.filterableAttrs
+                                    (List.filter (\x -> x.enabled == True) model.pages.attributes.filterable
                                         |> List.map (\x -> x.title)
                                     )
                                     Api.Routes.Main.settingsUpdateDecoder
@@ -688,7 +556,7 @@ handleAttributesViewMsg model msg =
                         , Api.Routes.Main.buildRequest
                             (Api.Routes.Main.buildPayload
                                 (UpdateSearchableAttrs uid
-                                    (List.filter (\x -> x.enabled == True) model.searchableAttrs
+                                    (List.filter (\x -> x.enabled == True) model.pages.attributes.searchable
                                         |> List.map (\x -> x.title)
                                     )
                                     Api.Routes.Main.settingsUpdateDecoder
@@ -700,7 +568,7 @@ handleAttributesViewMsg model msg =
                         , Api.Routes.Main.buildRequest
                             (Api.Routes.Main.buildPayload
                                 (UpdateSortableAttrs uid
-                                    (List.filter (\x -> x.enabled == True) model.sortableAttrs
+                                    (List.filter (\x -> x.enabled == True) model.pages.attributes.sortable
                                         |> List.map (\x -> x.title)
                                     )
                                     Api.Routes.Main.settingsUpdateDecoder
@@ -709,19 +577,7 @@ handleAttributesViewMsg model msg =
                             )
                             (getSavedToken model)
                             |> Cmd.map ApiRequest
-                        , Api.Routes.Main.buildRequest
-                            (Api.Routes.Main.buildPayload
-                                (UpdateDisplayedAttrs uid
-                                    (List.filter (\x -> x.enabled == True) model.displayedAttrs
-                                        |> List.map (\x -> x.title)
-                                    )
-                                    Api.Routes.Main.settingsUpdateDecoder
-                                )
-                                rootUrl
-                            )
-                            (getSavedToken model)
-                            |> Cmd.map ApiRequest
-                        , case AttributesPage.getDistinctAttr model.distinctAttr of
+                        , case AttributesPage.getDistinctAttr model.pages.attributes.distinct of
                             Just da ->
                                 Api.Routes.Main.buildRequest
                                     (Api.Routes.Main.buildPayload
@@ -746,7 +602,17 @@ handleAttributesViewMsg model msg =
             update (SidebarMsg (SelectPage model.pages.selectedPage)) model
 
         _ ->
-            ( model, Cmd.none )
+            let
+                updatedAttrsViewModel =
+                    AttributesPage.update
+                        msg
+                        (getAttributesViewModel model)
+            in
+            ( { model
+                | pages = updateAttributesViewModel model.pages updatedAttrsViewModel
+              }
+            , Cmd.none
+            )
 
 
 handleSynonymsViewMsg : Model -> SynonymsPage.Msg -> ( Model, Cmd Msg )
@@ -1039,15 +905,17 @@ getSynonymsViewModel model =
 
 getAttributesViewModel : Model -> AttributesPage.Model
 getAttributesViewModel model =
-    { displayed = model.displayedAttrs
-    , sortable = model.sortableAttrs
-    , searchable = model.searchableAttrs
-    , filterable = model.filterableAttrs
-    , distinct = model.distinctAttr
-    }
+    -- TODO - Dispose this fn
+    model.pages.attributes
 
 
 
+-- { displayed = model.displayedAttrs
+-- , sortable = model.sortableAttrs
+-- , searchable = model.searchableAttrs
+-- , filterable = model.filterableAttrs
+-- , distinct = model.distinctAttr
+-- }
 -- VIEW MODEL SETTERS
 
 
@@ -1237,84 +1105,24 @@ handlePollSignal model newState newData error cmd task =
                                     in
                                     ( { model
                                         | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue
-
-                                        -- , stopWords = updatedStopWordsViewModel.words
                                         , pages = updateStopWordsViewModel model.pages updatedStopWordsViewModel
                                       }
                                     , Cmd.none
                                     )
 
                                 UpdateAttributeTask _ _ attrType ->
-                                    case attrType of
-                                        AttributesPage.Displayed ->
-                                            let
-                                                updatedDisplayAttrs =
-                                                    AttributesPage.updateSyncStatusState model.displayedAttrs Success
-
-                                                updatedModel =
-                                                    { model | displayedAttrs = updatedDisplayAttrs }
-                                            in
-                                            ( { updatedModel
-                                                | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
-                                              }
-                                            , Cmd.none
-                                            )
-
-                                        AttributesPage.Searchable ->
-                                            let
-                                                updatedSearchableAttrs =
-                                                    AttributesPage.updateSyncStatusState model.searchableAttrs Success
-
-                                                updatedModel =
-                                                    { model | searchableAttrs = updatedSearchableAttrs }
-                                            in
-                                            ( { updatedModel
-                                                | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
-                                              }
-                                            , Cmd.none
-                                            )
-
-                                        AttributesPage.Sortable ->
-                                            let
-                                                updatedSortableAttrs =
-                                                    AttributesPage.updateSyncStatusState model.sortableAttrs Success
-
-                                                updatedModel =
-                                                    { model | sortableAttrs = updatedSortableAttrs }
-                                            in
-                                            ( { updatedModel
-                                                | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
-                                              }
-                                            , Cmd.none
-                                            )
-
-                                        AttributesPage.Filterable ->
-                                            let
-                                                updatedFilterableAttrs =
-                                                    AttributesPage.updateSyncStatusState model.filterableAttrs Success
-
-                                                updatedModel =
-                                                    { model | filterableAttrs = updatedFilterableAttrs }
-                                            in
-                                            ( { updatedModel
-                                                | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
-                                              }
-                                            , Cmd.none
-                                            )
-
-                                        AttributesPage.Distinct ->
-                                            let
-                                                updatedDistinctAttr =
-                                                    AttributesPage.updateSyncStatusState model.distinctAttr Success
-
-                                                updatedModel =
-                                                    { model | distinctAttr = updatedDistinctAttr }
-                                            in
-                                            ( { updatedModel
-                                                | pages = updateAttributesViewModel model.pages (getAttributesViewModel updatedModel)
-                                              }
-                                            , Cmd.none
-                                            )
+                                    let
+                                        attrsPageViewModel =
+                                            AttributesPage.update
+                                                (AttributesPage.UpdateSyncStatusState attrType Success)
+                                                model.pages.attributes
+                                    in
+                                    ( { model
+                                        | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue
+                                        , pages = updateAttributesViewModel model.pages attrsPageViewModel
+                                      }
+                                    , Cmd.none
+                                    )
 
                         "failed" ->
                             case task of
@@ -1333,10 +1141,16 @@ handlePollSignal model newState newData error cmd task =
                                     , Cmd.none
                                     )
 
-                                UpdateAttributeTask _ _ _ ->
+                                UpdateAttributeTask _ _ t ->
+                                    let
+                                        attrsPageViewModel =
+                                            AttributesPage.update
+                                                (AttributesPage.UpdateSyncStatusState t Failed)
+                                                model.pages.attributes
+                                    in
                                     ( { model
-                                        | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue
-                                        , displayedAttrs = AttributesPage.updateSyncStatusState model.displayedAttrs Failed
+                                        | pages = updateAttributesViewModel model.pages attrsPageViewModel
+                                        , pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue
                                       }
                                     , Cmd.none
                                     )
@@ -1348,8 +1162,6 @@ handlePollSignal model newState newData error cmd task =
                                     in
                                     ( { model
                                         | pollingQueue = List.filter (\( x, _ ) -> x /= task) model.pollingQueue
-
-                                        -- , stopWords = updatedStopWordsViewModel.words
                                         , pages = updateStopWordsViewModel model.pages updatedStopWordsViewModel
                                       }
                                     , Cmd.none
@@ -1417,11 +1229,6 @@ init _ =
         model =
             { pages = Views.init
             , pollingQueue = []
-            , displayedAttrs = []
-            , sortableAttrs = []
-            , searchableAttrs = []
-            , filterableAttrs = []
-            , distinctAttr = []
             , sidebarModel = Sidebar.init
             }
     in
